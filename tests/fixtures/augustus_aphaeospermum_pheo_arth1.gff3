@@ -1,0 +1,1187 @@
+##gff-version 3
+# fixture: AUGUSTUS (A. phaeospermum) -- comment blocks PRESERVED
+# source: aug_arth_pheos.gff3   seqid: pheo_arth1
+# graph-closed slice; per-gene comment blocks retained verbatim,
+# including the "# protein sequence = [...]" blocks, which are the
+# ONLY place AUGUSTUS emits translations.
+# start gene g1
+pheo_arth1	AUGUSTUS	gene	644	1840	0.41	-	.	ID=g1
+pheo_arth1	AUGUSTUS	transcript	644	1840	0.41	-	.	ID=g1.t1;Parent=g1
+pheo_arth1	AUGUSTUS	stop_codon	644	646	.	-	0	Parent=g1.t1
+pheo_arth1	AUGUSTUS	intron	740	800	1	-	.	Parent=g1.t1
+pheo_arth1	AUGUSTUS	intron	1349	1394	0.5	-	.	Parent=g1.t1
+pheo_arth1	AUGUSTUS	intron	1602	1650	0.85	-	.	Parent=g1.t1
+pheo_arth1	AUGUSTUS	CDS	644	739	0.99	-	0	ID=g1.t1.cds;Parent=g1.t1
+pheo_arth1	AUGUSTUS	CDS	801	1348	0.51	-	2	ID=g1.t1.cds;Parent=g1.t1
+pheo_arth1	AUGUSTUS	CDS	1395	1601	0.47	-	2	ID=g1.t1.cds;Parent=g1.t1
+pheo_arth1	AUGUSTUS	CDS	1651	1840	0.84	-	0	ID=g1.t1.cds;Parent=g1.t1
+pheo_arth1	AUGUSTUS	start_codon	1838	1840	.	-	0	Parent=g1.t1
+# protein sequence = [MRRPREVKEGKAIVAELASLKYELQHDRQMPLRDDGEGDIAGYNAELEKLGMPTWFQAPGSSAMEAVRHLSRQKMATF
+# RSSRPAVLELAARYRELIGQINKDKSQKGTPEHAEAEKPLPRDVRDLPGATPPTCSEARKASEKNILVNDLEAAYAVLKKAREGKAERRVDIVLDTAS
+# SCTSTLSWPACSRRASRPTSSCTPSRSWFVSDVVPQDFSDLLSALAQPKKFYETQSEDEQLQDKTPEPLADKEAEDLLPVPGVGPALRRGPICHPAEP
+# VLDARRQLLEAARREGLVEDLKTSELVIFKGDLNYRKLTADAAWDPTTPFTEAIGPMGPGSGVNPGAADVQS]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/4
+# CDS introns: 0/3
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 10
+#     RM:  10 
+# end gene g1
+# start gene g2
+pheo_arth1	AUGUSTUS	gene	2820	3944	0.9	-	.	ID=g2
+pheo_arth1	AUGUSTUS	transcript	2820	3944	0.9	-	.	ID=g2.t1;Parent=g2
+pheo_arth1	AUGUSTUS	stop_codon	2820	2822	.	-	0	Parent=g2.t1
+pheo_arth1	AUGUSTUS	intron	3444	3518	1	-	.	Parent=g2.t1
+pheo_arth1	AUGUSTUS	CDS	2820	3443	0.9	-	0	ID=g2.t1.cds;Parent=g2.t1
+pheo_arth1	AUGUSTUS	CDS	3519	3944	1	-	0	ID=g2.t1.cds;Parent=g2.t1
+pheo_arth1	AUGUSTUS	start_codon	3942	3944	.	-	0	Parent=g2.t1
+# protein sequence = [MPTFSYSPIDLSKDAIRLVRLYKGAFYQDIRCELVETFLRELDGVPYEALSYTWGGDPLEENAAEVLLDGQIVSVTEN
+# LRDALRCLRLHDQDRMLWIDALCINQADNKEKGHQVGQMRLVYELAEQVLIWLGPSSDDMESLMEVMAMLDKKVLDHSDYAKNPLEIWTKEWTDLRIA
+# LATLPRYSDRRLRDGLWDLLLRPWFQRVWVLQEAACARVATVVCGTHSVSSRTFAIMPTLLNRPSSTGSHTDEHAKAVLELMPGPMRREGWRSEDRKL
+# ATLLQKFQDSRASIPLDRVYALLGISSDAWNFRHFPVDYSITMRALLRNTMSFFLYGKVVRDPETTGNAFPPSTP]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 2
+#     RM:   2 
+# end gene g2
+# start gene g3
+pheo_arth1	AUGUSTUS	gene	7664	9304	1	-	.	ID=g3
+pheo_arth1	AUGUSTUS	transcript	7664	9304	1	-	.	ID=g3.t1;Parent=g3
+pheo_arth1	AUGUSTUS	stop_codon	7664	7666	.	-	0	Parent=g3.t1
+pheo_arth1	AUGUSTUS	CDS	7664	9304	1	-	0	ID=g3.t1.cds;Parent=g3.t1
+pheo_arth1	AUGUSTUS	start_codon	9302	9304	.	-	0	Parent=g3.t1
+# protein sequence = [MGFLKTAVTSSLLLASQANAALDPIVQKGSKLFYKTSGEQFFMQGIAYQQEFAAAGKDSSSDSKTKYIDPLSNADNCK
+# RDVPILKDLHTNVIRTYAINPKADHKECMEMLEKAGIYVIADLGEPALSINRDSPAWNVELFDRYKGVIDEMGKYTNTIGFFAGNEVTNNATNTAASA
+# FVKAAVRDTKKYIKDTQNRWMGVGYAANDDSEIRINMAQYFNCGEEEQAIDFWGYNIYSWCGESSFTKSGYDTQVEFFSNYSVPVFFAEYGCNSPGGA
+# DGRKFDETKALYSDKMTDVISGGIVYMYFEEDNDYGLVKVKGNDAKMLKNAENLKKSLAGVKPSGTTVDKYQPSNKAATCPNTGKDWKVSAEAMPPTP
+# NTDLCDCMFKSLECKPADDLEPKNFGEIFDYICSKDSKACAGIKQDTAKGVYGPYLGCNAKEQLGHVLNTYYKNQKGAKDACDFKGKAQVNSSPSTEG
+# KCSKLVDAGDKAAQAAATATSASEVGTIAADGSSSQKSDDASAAAGLRASGFSFGGLAIGAYMVAAMGVGAAVFAL]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/1
+# CDS introns: 0/0
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 17
+#     RM:  17 
+# end gene g3
+# start gene g4
+pheo_arth1	AUGUSTUS	gene	16734	18437	0.72	+	.	ID=g4
+pheo_arth1	AUGUSTUS	transcript	16734	18437	0.72	+	.	ID=g4.t1;Parent=g4
+pheo_arth1	AUGUSTUS	start_codon	16734	16736	.	+	0	Parent=g4.t1
+pheo_arth1	AUGUSTUS	intron	16831	17973	1	+	.	Parent=g4.t1
+pheo_arth1	AUGUSTUS	CDS	16734	16830	0.72	+	0	ID=g4.t1.cds;Parent=g4.t1
+pheo_arth1	AUGUSTUS	CDS	17974	18437	1	+	2	ID=g4.t1.cds;Parent=g4.t1
+pheo_arth1	AUGUSTUS	stop_codon	18435	18437	.	+	0	Parent=g4.t1
+# protein sequence = [MRDIEYAIHYNFCSDATYSTLAAHLSSTGEEQLVQHPCEALLYGPDHQPQDYDPVTGQAINHSSNAATGNNHNHHSHS
+# HSHNSGTTSSSNNCNSGTTSTAGSETVFDYNDPCATGGCLYSPGCGSGQCRLEQLGGRWVCCRCRRGGNSFRWCAHPMRRVPDTLCYHTVCLGCWADQ
+# GDSGQQGGGA]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 3
+#     RM:   3 
+# incompatible hint groups: 5
+#     RM:   5 
+# end gene g4
+# start gene g5
+pheo_arth1	AUGUSTUS	gene	20879	21286	0.95	+	.	ID=g5
+pheo_arth1	AUGUSTUS	transcript	20879	21286	0.95	+	.	ID=g5.t1;Parent=g5
+pheo_arth1	AUGUSTUS	start_codon	20879	20881	.	+	0	Parent=g5.t1
+pheo_arth1	AUGUSTUS	CDS	20879	21286	0.95	+	0	ID=g5.t1.cds;Parent=g5.t1
+pheo_arth1	AUGUSTUS	stop_codon	21284	21286	.	+	0	Parent=g5.t1
+# protein sequence = [MCTETTYTLRCEHVTTRIAYCPEATTSSSSSSKSSSSSSSSSRKHHHHNKTPKPCKRVTRTSVAYPPPPEFVGQQPVK
+# CPLSPCPFEQRGGYWNCCWCGKEWNDQGRCRCIMIIDRQEYRCEHICCDTCEAAVEL]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/1
+# CDS introns: 0/0
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 5
+#     RM:   5 
+# end gene g5
+# start gene g6
+pheo_arth1	AUGUSTUS	gene	23266	23979	0.85	+	.	ID=g6
+pheo_arth1	AUGUSTUS	transcript	23266	23979	0.85	+	.	ID=g6.t1;Parent=g6
+pheo_arth1	AUGUSTUS	start_codon	23266	23268	.	+	0	Parent=g6.t1
+pheo_arth1	AUGUSTUS	intron	23615	23689	0.99	+	.	Parent=g6.t1
+pheo_arth1	AUGUSTUS	CDS	23266	23614	0.85	+	0	ID=g6.t1.cds;Parent=g6.t1
+pheo_arth1	AUGUSTUS	CDS	23690	23979	1	+	2	ID=g6.t1.cds;Parent=g6.t1
+pheo_arth1	AUGUSTUS	stop_codon	23977	23979	.	+	0	Parent=g6.t1
+# protein sequence = [MCHGHPHYHTCHHTSVKWLYCPEAMFDLETGYETPCSNPIYSTPQLASSECPLQNCLFKQLKGDRWTCCRCGHNANKE
+# GWCVGKINHPFGSWTPRGLEPQSWQTCGHGYCSKCNRDLSSSRAGTPIEQVGEQRKGKSSRKSGFHHSRSSHPHRRGTGGGGDYYPMVEEYVPSPVPS
+# SSRISKAPSLEPGNDASQRKSKSSTGKKKGPRRTHH]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 2
+#     RM:   2 
+# end gene g6
+# start gene g7
+pheo_arth1	AUGUSTUS	gene	28791	29511	0.81	+	.	ID=g7
+pheo_arth1	AUGUSTUS	transcript	28791	29511	0.81	+	.	ID=g7.t1;Parent=g7
+pheo_arth1	AUGUSTUS	start_codon	28791	28793	.	+	0	Parent=g7.t1
+pheo_arth1	AUGUSTUS	intron	28836	29172	0.94	+	.	Parent=g7.t1
+pheo_arth1	AUGUSTUS	CDS	28791	28835	0.81	+	0	ID=g7.t1.cds;Parent=g7.t1
+pheo_arth1	AUGUSTUS	CDS	29173	29511	0.94	+	0	ID=g7.t1.cds;Parent=g7.t1
+pheo_arth1	AUGUSTUS	stop_codon	29509	29511	.	+	0	Parent=g7.t1
+# protein sequence = [MPTSLESSRPIMAPSVNSTPRTSVRFSQYSMQAPSVAATMQTTDSAQAEIQEIGTGLDRMENKALSQQRVELSEEKTA
+# NMSKLALGAKLERALDRRMSSQDAVMRPRRPTKSGVMNEKTAGQVETKA]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 2
+#     RM:   2 
+# incompatible hint groups: 3
+#     RM:   3 
+# end gene g7
+# start gene g8
+pheo_arth1	AUGUSTUS	gene	31467	32117	1	-	.	ID=g8
+pheo_arth1	AUGUSTUS	transcript	31467	32117	1	-	.	ID=g8.t1;Parent=g8
+pheo_arth1	AUGUSTUS	stop_codon	31467	31469	.	-	0	Parent=g8.t1
+pheo_arth1	AUGUSTUS	CDS	31467	32117	1	-	0	ID=g8.t1.cds;Parent=g8.t1
+pheo_arth1	AUGUSTUS	start_codon	32115	32117	.	-	0	Parent=g8.t1
+# protein sequence = [MAATEEYFDLLPLDLDPQTKAVLAPANASKALQAELLALNNLHRSILSLEVSPQIPPPPIPVNPKRSAQITKLKDSGN
+# DLYRKGKHAEAVKMYQLGIAMALGRPLWEPQGLVREEVSQLFANRAQAHMALQSWAEGAVDAEASVEAKRAGNAKAWWRRGKCLLEMGRLDEAHEWVG
+# HGLEMEGEEQELLALQQDIAARLDKKNRQEEAAKVAGEKA]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/1
+# CDS introns: 0/0
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 8
+#     RM:   8 
+# end gene g8
+# start gene g9
+pheo_arth1	AUGUSTUS	gene	35984	36270	1	-	.	ID=g9
+pheo_arth1	AUGUSTUS	transcript	35984	36270	1	-	.	ID=g9.t1;Parent=g9
+pheo_arth1	AUGUSTUS	stop_codon	35984	35986	.	-	0	Parent=g9.t1
+pheo_arth1	AUGUSTUS	intron	36142	36203	1	-	.	Parent=g9.t1
+pheo_arth1	AUGUSTUS	CDS	35984	36141	1	-	2	ID=g9.t1.cds;Parent=g9.t1
+pheo_arth1	AUGUSTUS	CDS	36204	36270	1	-	0	ID=g9.t1.cds;Parent=g9.t1
+pheo_arth1	AUGUSTUS	start_codon	36268	36270	.	-	0	Parent=g9.t1
+# protein sequence = [MKMQFAFVAALVAIVAAAPATTPANPMAVEARQCVPEGGRCNAHSQCCSDNCRFGSLPNQSTCRPPLGSPNDKI]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 1
+#     RM:   1 
+# end gene g9
+# start gene g10
+pheo_arth1	AUGUSTUS	gene	37809	38463	0.6	+	.	ID=g10
+pheo_arth1	AUGUSTUS	transcript	37809	38463	0.6	+	.	ID=g10.t1;Parent=g10
+pheo_arth1	AUGUSTUS	start_codon	37809	37811	.	+	0	Parent=g10.t1
+pheo_arth1	AUGUSTUS	intron	38379	38448	0.6	+	.	Parent=g10.t1
+pheo_arth1	AUGUSTUS	CDS	37809	38378	0.66	+	0	ID=g10.t1.cds;Parent=g10.t1
+pheo_arth1	AUGUSTUS	CDS	38449	38463	0.79	+	0	ID=g10.t1.cds;Parent=g10.t1
+pheo_arth1	AUGUSTUS	stop_codon	38461	38463	.	+	0	Parent=g10.t1
+# protein sequence = [MDHFPIELIQRIYTQLDLASLRNAALSCRIFLNAFKNAEVLITSEIVLREIGLDVLPEAILVQESRALGEPSIDQAIK
+# FAQDHLSSRAPAPVQWRLADALPLERFHRYVDYFANLYSAEALSKQPRLLALGKPSYAELLRFQRAFYRFQLYCNVVGRKVSDGPELRDMYFGHFAAW
+# ESEQLACVYEYLMRHSTT]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 1
+#     RM:   1 
+# end gene g10
+# start gene g11
+pheo_arth1	AUGUSTUS	gene	39401	40268	0.51	-	.	ID=g11
+pheo_arth1	AUGUSTUS	transcript	39401	40268	0.51	-	.	ID=g11.t1;Parent=g11
+pheo_arth1	AUGUSTUS	stop_codon	39401	39403	.	-	0	Parent=g11.t1
+pheo_arth1	AUGUSTUS	intron	39935	40019	0.51	-	.	Parent=g11.t1
+pheo_arth1	AUGUSTUS	CDS	39401	39934	0.85	-	0	ID=g11.t1.cds;Parent=g11.t1
+pheo_arth1	AUGUSTUS	CDS	40020	40268	0.63	-	0	ID=g11.t1.cds;Parent=g11.t1
+pheo_arth1	AUGUSTUS	start_codon	40266	40268	.	-	0	Parent=g11.t1
+# protein sequence = [MSPQPLKIAIIGAGPAGCTLAHLLLRQLPKVSAKLEIFERETHLHDRDQGGTLDLHDETGLAALRAAGLIDTPAFDAA
+# AAAFGFRSWAPELRELIASFDEARVWPRSLVMLPTGIRWDSRPGVTVLGDAAHVMCPFVGLGLNAAMGDAMGLADEIARAVRSGAATAAELSAAALGK
+# YEAGMLERAHTAQHFTEDIMKLMLFTPGAVIEDYIVRVTADDMSATLASAWRFLIAIYYFFFKLFFVGSKAAIEGTPLRKLSVS]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 7
+#     RM:   7 
+# end gene g11
+# start gene g12
+pheo_arth1	AUGUSTUS	gene	40414	43658	0.69	+	.	ID=g12
+pheo_arth1	AUGUSTUS	transcript	40414	43658	0.69	+	.	ID=g12.t1;Parent=g12
+pheo_arth1	AUGUSTUS	start_codon	40414	40416	.	+	0	Parent=g12.t1
+pheo_arth1	AUGUSTUS	intron	40434	41542	0.69	+	.	Parent=g12.t1
+pheo_arth1	AUGUSTUS	intron	41751	41881	1	+	.	Parent=g12.t1
+pheo_arth1	AUGUSTUS	intron	42158	42325	1	+	.	Parent=g12.t1
+pheo_arth1	AUGUSTUS	intron	42437	42518	1	+	.	Parent=g12.t1
+pheo_arth1	AUGUSTUS	CDS	40414	40433	0.69	+	0	ID=g12.t1.cds;Parent=g12.t1
+pheo_arth1	AUGUSTUS	CDS	41543	41750	0.69	+	1	ID=g12.t1.cds;Parent=g12.t1
+pheo_arth1	AUGUSTUS	CDS	41882	42157	1	+	0	ID=g12.t1.cds;Parent=g12.t1
+pheo_arth1	AUGUSTUS	CDS	42326	42436	1	+	0	ID=g12.t1.cds;Parent=g12.t1
+pheo_arth1	AUGUSTUS	CDS	42519	43658	1	+	0	ID=g12.t1.cds;Parent=g12.t1
+pheo_arth1	AUGUSTUS	stop_codon	43656	43658	.	+	0	Parent=g12.t1
+# protein sequence = [MLSSTSIDKKTEERSTTMFGPAEAGGTNQPATSATEAHTTPTVFKPGAKFWIALTPVLILAMMVSLDSTSVSVALPLM
+# AEDLRGSSLEAFWTGTAFLLASAVLQAPMGALSDIVGRMGVLLVCTFLFLIGLILAAVAQSFLLIFVGRAIQGVGGGGIILLNDIIITDLVPMRDRGK
+# YFGIIGGIWALGSVTGPVIGGALAFKASWRWLFWINVPFAAIALAAIPFCLRLSRPPGSIAPKLKKFDWLGSFLFVGAATCFLMPLTWGGVQYPWTAW
+# QTLFPLILGVASLIGFGFYERYMARDPIVKVELLLANYEMGYSLWSTVINAAIVYGALYFLPLYFQAVQGYNPILAGVALFPATFTVAPMSILAGLII
+# TKRGEYRWVTWIGWVVSTLGLGIMILLDTGMSVQQWFFLTIIVGLGLGLLYTSLAIINQAAAASDELMSFAISMFIFARMLGQCLGVAICGVVFQNSM
+# KKELQKTATLVDKADEYSRDASGLIPLLEGMPAGPEKTELIQAYADALKTVWLVMCVLSGVAMIGSFFVKHISLDREHKTQHGIENKNDKNSGVENSD
+# SSRASEKPPHASAGAV]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/5
+# CDS introns: 0/4
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 5
+#     RM:   5 
+# incompatible hint groups: 13
+#     RM:  13 
+# end gene g12
+# start gene g13
+pheo_arth1	AUGUSTUS	gene	44205	44967	0.69	+	.	ID=g13
+pheo_arth1	AUGUSTUS	transcript	44205	44967	0.69	+	.	ID=g13.t1;Parent=g13
+pheo_arth1	AUGUSTUS	start_codon	44205	44207	.	+	0	Parent=g13.t1
+pheo_arth1	AUGUSTUS	intron	44330	44496	1	+	.	Parent=g13.t1
+pheo_arth1	AUGUSTUS	intron	44808	44890	0.69	+	.	Parent=g13.t1
+pheo_arth1	AUGUSTUS	CDS	44205	44329	1	+	0	ID=g13.t1.cds;Parent=g13.t1
+pheo_arth1	AUGUSTUS	CDS	44497	44807	0.82	+	1	ID=g13.t1.cds;Parent=g13.t1
+pheo_arth1	AUGUSTUS	CDS	44891	44967	0.78	+	2	ID=g13.t1.cds;Parent=g13.t1
+pheo_arth1	AUGUSTUS	stop_codon	44965	44967	.	+	0	Parent=g13.t1
+# protein sequence = [MHACVCALNFRVSCRLTGRPDLPLLHAALDEFVARNPVLRTRYYEGDECTEQALVPSRGLELRLQYDPTLYAPDAMAR
+# FLDNFAVFLGSAARDHRQPLDEVALCGARELVYQKAHCWGGAEVTPDPEGWAGGSRGRGLCTLRRRPSAAREELCEPVDDRFIQKVMSSLGV]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/3
+# CDS introns: 0/2
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 11
+#     RM:  11 
+# end gene g13
+# start gene g14
+pheo_arth1	AUGUSTUS	gene	46042	47040	1	+	.	ID=g14
+pheo_arth1	AUGUSTUS	transcript	46042	47040	1	+	.	ID=g14.t1;Parent=g14
+pheo_arth1	AUGUSTUS	start_codon	46042	46044	.	+	0	Parent=g14.t1
+pheo_arth1	AUGUSTUS	CDS	46042	47040	1	+	0	ID=g14.t1.cds;Parent=g14.t1
+pheo_arth1	AUGUSTUS	stop_codon	47038	47040	.	+	0	Parent=g14.t1
+# protein sequence = [MPSQPPGHEPVVKVSSPLPKGYTFVPKGNVYITANCRRLTQAAKKTVYAVINHRRQSVGIRVPAPIHAQVVQDERASR
+# ADRASAVEKRDATLEKQFREAILNQFPQTPAASVPLVVKRAMLKGSRRVGRTGKLDIETKARLAVRAHIRHTHTDYDGMLRAKTHTKNQARDVVLAKI
+# DEVAKSWGGKVDEHRRGRHSKKQRKEGRNDRRRGNEKDKGKAKSDTKSAAAAAKPRGGNTERGGSSSRRRSSLVRNKSPMQVKKLEIRLAGRDGGGSS
+# NPVKTPAQTGTSLQPYTIDSDSEEELDDDYESDESDEFEWCESDDDDVNSDSEWTPDD]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/1
+# CDS introns: 0/0
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 10
+#     RM:  10 
+# end gene g14
+# start gene g15
+pheo_arth1	AUGUSTUS	gene	47481	49495	0.83	-	.	ID=g15
+pheo_arth1	AUGUSTUS	transcript	47481	49495	0.83	-	.	ID=g15.t1;Parent=g15
+pheo_arth1	AUGUSTUS	stop_codon	47481	47483	.	-	0	Parent=g15.t1
+pheo_arth1	AUGUSTUS	intron	47635	47718	1	-	.	Parent=g15.t1
+pheo_arth1	AUGUSTUS	intron	48531	48720	1	-	.	Parent=g15.t1
+pheo_arth1	AUGUSTUS	intron	48996	49080	0.96	-	.	Parent=g15.t1
+pheo_arth1	AUGUSTUS	CDS	47481	47634	0.87	-	1	ID=g15.t1.cds;Parent=g15.t1
+pheo_arth1	AUGUSTUS	CDS	47719	48530	1	-	0	ID=g15.t1.cds;Parent=g15.t1
+pheo_arth1	AUGUSTUS	CDS	48721	48995	0.96	-	2	ID=g15.t1.cds;Parent=g15.t1
+pheo_arth1	AUGUSTUS	CDS	49081	49495	1	-	0	ID=g15.t1.cds;Parent=g15.t1
+pheo_arth1	AUGUSTUS	start_codon	49493	49495	.	-	0	Parent=g15.t1
+# protein sequence = [MSSSGVDYAKSSPSTQYATASNGSDAEKNVEFGAPAGRIPSVSVGSALDQTHRKLKSRHIQLIGIGGTIGTALYVQIG
+# KGLLQGGPASLFLAFTLWCSVILSVTLCMAEMVTYLPISSPFIRFAGRWVDEAFGFAAGWNFFIFEAALVPFEITACNVIIHFWSEAVPTAAIISIVI
+# ILYALINLLAVKWYGESEFWAALGKVLLIIGLIIFTFIVMLGGNPQHDRFGFKYWKNPGSFNTFYHSGDLGRFMGFLQCLIQASFTIAGPDYVSMAAG
+# EAENPRFVMPRAYNAVFYRLTTFFMLGSLCVGILVPYNDATMADAFEKDKPGAAASPYVIAMSRLGIPVLPHIVNAMVLTAAFSAGNSYVYCASRSLF
+# GLALEGKAPRFLTVCLGNGVPIYSVAVVLLISLLSFLQVSEGSATVLSWFVSLVTASQLINFSVMCVTYLCFHRALRAQGIPRESLPYRGFGQPYAAW
+# YALVATFVMAWMGGYTVFLPGKWDVPSFLFSYMMLFICPVLYVGWKIVHRTKFVKPHEADLVQDLAGIEEYTRNFVVVPAK]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/4
+# CDS introns: 0/3
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 10
+#     RM:  10 
+# end gene g15
+# start gene g16
+pheo_arth1	AUGUSTUS	gene	50918	52441	1	-	.	ID=g16
+pheo_arth1	AUGUSTUS	transcript	50918	52441	1	-	.	ID=g16.t1;Parent=g16
+pheo_arth1	AUGUSTUS	stop_codon	50918	50920	.	-	0	Parent=g16.t1
+pheo_arth1	AUGUSTUS	CDS	50918	52441	1	-	0	ID=g16.t1.cds;Parent=g16.t1
+pheo_arth1	AUGUSTUS	start_codon	52439	52441	.	-	0	Parent=g16.t1
+# protein sequence = [MSAALEAFVAPWRYHLDHNGDSKFRDTRKTQFPDYYHRHNATDQGVDSDTLVTTSHIHSFQLGTGASIYTQSILPAIL
+# QARREIILVTCFWAKSDTLTALCDAIAQLAQERERFISQSGAPIEPLRIRICFSSRSLFQKLFHPNSKDGYVYPPHTWPSQLGLPAAEALRAGAIDLQ
+# VKTLFFLPFSVMHPKFVVIDRQRAWLPSCNVSWEPWLEGCVDISGSAVSSVMQFYQSVWESDLPVLPADNDTSPLSPEIIPSWLNVIQSPASRFAPLS
+# MDAIPTVLLPSSHHRNPCFRPFPWMDDPKPPLTPLNVAVSCLLDMAHHSIYIQTPNLTSASVMDGILQALGRGVHVTIVTGKNMMLVEQIITAGTTTS
+# RCLKSLIRRYHNLKGSTSPLTQNQVDDALATNPDIDLEAGRPRLGRLRIAYFRPNVQAKGVSEEPVQSHLKLTVVDDEYIVLGSGNMDRASWFTSQEL
+# GILFRSVQFANVVSSNVNDVLKTRTDTIYESGRARDD]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/1
+# CDS introns: 0/0
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 5
+#     RM:   5 
+# end gene g16
+# start gene g17
+pheo_arth1	AUGUSTUS	gene	57011	59117	0.94	-	.	ID=g17
+pheo_arth1	AUGUSTUS	transcript	57011	59117	0.94	-	.	ID=g17.t1;Parent=g17
+pheo_arth1	AUGUSTUS	stop_codon	57011	57013	.	-	0	Parent=g17.t1
+pheo_arth1	AUGUSTUS	intron	57265	57322	1	-	.	Parent=g17.t1
+pheo_arth1	AUGUSTUS	intron	57810	57869	1	-	.	Parent=g17.t1
+pheo_arth1	AUGUSTUS	intron	57973	58031	1	-	.	Parent=g17.t1
+pheo_arth1	AUGUSTUS	intron	58972	59062	0.99	-	.	Parent=g17.t1
+pheo_arth1	AUGUSTUS	CDS	57011	57264	1	-	2	ID=g17.t1.cds;Parent=g17.t1
+pheo_arth1	AUGUSTUS	CDS	57323	57809	1	-	0	ID=g17.t1.cds;Parent=g17.t1
+pheo_arth1	AUGUSTUS	CDS	57870	57972	1	-	1	ID=g17.t1.cds;Parent=g17.t1
+pheo_arth1	AUGUSTUS	CDS	58032	58971	0.99	-	2	ID=g17.t1.cds;Parent=g17.t1
+pheo_arth1	AUGUSTUS	CDS	59063	59117	0.95	-	0	ID=g17.t1.cds;Parent=g17.t1
+pheo_arth1	AUGUSTUS	start_codon	59115	59117	.	-	0	Parent=g17.t1
+# protein sequence = [MNSDPDIIVSVDLGTTYTGVAWTTPRRSIDVLHNWPGTGDGSEKKVPTILLYPHGQPTPASWGYSCIYNESSDLTRRE
+# FFKIFLDHETLEATRRQGLSAAPETTAEARKYVTDFLRHVYEHTKDTVERETARLHRGGWADLAVEFLFSVPTTWTNQGIINDFKQAVREAGFGTEGP
+# RHSAAVDLTEAEAAAVATLKYSPADFAQGDVFMCIDAGGGTTDLALMQVTSVDAAYPQMKQIAEVQGTGIGATQVDRLFARLVAQRLSAFPDVLAQLP
+# QNLPARMARSPYFRMMKYTFGERAFMELPRHFVQMEGVSCDFSHAEAGIDQGRMIFTIGEFEALFDPAVQGIISRVTEQLNWLQKRGRTEQVRYFVLS
+# GGLGSNKYVQNKLQAHFENSGHPNAGQVAILCAQEPQLVVVRGLLEDRKQRMESGNMSVLASRIARVSYGVVVKQVYSPIHHFDADVQEDQFDKSTKF
+# ALNQIQWLIRKGDTVTPGNPLVKTLHIRLAADDTTRAWDTQFVVSHNEPSFLPASMKHAGATRLCEVKSNLTGVEQHQLTMKHKRGTCFKAGYKFYIC
+# EFDIRVIVAPADLRFELWFGGTKFSSDHEPITVTWDEDGSRAKS]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/5
+# CDS introns: 0/4
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 1
+#     RM:   1 
+# incompatible hint groups: 10
+#     RM:  10 
+# end gene g17
+# start gene g18
+pheo_arth1	AUGUSTUS	gene	59741	61088	0.95	+	.	ID=g18
+pheo_arth1	AUGUSTUS	transcript	59741	61088	0.95	+	.	ID=g18.t1;Parent=g18
+pheo_arth1	AUGUSTUS	start_codon	59741	59743	.	+	0	Parent=g18.t1
+pheo_arth1	AUGUSTUS	intron	60618	60681	1	+	.	Parent=g18.t1
+pheo_arth1	AUGUSTUS	CDS	59741	60617	1	+	0	ID=g18.t1.cds;Parent=g18.t1
+pheo_arth1	AUGUSTUS	CDS	60682	61088	0.95	+	2	ID=g18.t1.cds;Parent=g18.t1
+pheo_arth1	AUGUSTUS	stop_codon	61086	61088	.	+	0	Parent=g18.t1
+# protein sequence = [MAPQEPQAPANGAITTIVSTHWADNKSTLLNIISTVGGGPGTTLTVAPAVPSGTGGEVPVPTTALTSGVGPGSAPTPT
+# ATTSGSSSAGPSATNDAQPSGPSSIDTGTLAGAVVGAFIGGLIIGLAVMLLVSRGKKRKQKHGLSNQPEIEMHSEVVRPKDRGPTDRHLQADSSLLDA
+# TSDGELAEGYRNIHKLLQQHMDNFYHRQPVDVDVATLNRAAQRLELVHDDALDLDTLLSLVLDPRTRAAAIHHIIAQVLVKSIDFNSPGNMSMLPPHL
+# TGLAKSFPAAERGGGNFDAYGKSLQQWRTLTAYLMQPHRSHRLPLVPSEESVNPQTELLTSALVDFLGPFIAADEVSQTKQRSHLQAIAFECAKFGYL
+# LLSQPREWQFVYHNAGQARGQHGVVLHPGLQKLGGQGGGKRGGPQLVEAPVIAKI]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 0
+# end gene g18
+# start gene g19
+pheo_arth1	AUGUSTUS	gene	61827	63489	0.79	+	.	ID=g19
+pheo_arth1	AUGUSTUS	transcript	61827	63489	0.79	+	.	ID=g19.t1;Parent=g19
+pheo_arth1	AUGUSTUS	start_codon	61827	61829	.	+	0	Parent=g19.t1
+pheo_arth1	AUGUSTUS	intron	62446	62509	0.83	+	.	Parent=g19.t1
+pheo_arth1	AUGUSTUS	CDS	61827	62445	0.8	+	0	ID=g19.t1.cds;Parent=g19.t1
+pheo_arth1	AUGUSTUS	CDS	62510	63489	0.98	+	2	ID=g19.t1.cds;Parent=g19.t1
+pheo_arth1	AUGUSTUS	stop_codon	63487	63489	.	+	0	Parent=g19.t1
+# protein sequence = [MGSSRTHLPIDSEPSLSTTRSEGSVDEPVRASGVMVKTSRFFSAVVEFDKVPDDIQSCLEIVRTCHANVQKLIAKRNE
+# HIDLLTRRPNDLAHVNSVIESALSSLQDVAAIVERSRPQTSGGRTTFAKRFRWTYSDKESFRKHLPLVNQHHNAVSSELAYLGQLAGARSSGTAPERN
+# PSFGRVENRRTFQDMGLLMDLMGGLSLPQEGLRGGSNTPFAAATTSVQTASITTTSSHAIPRDATPAPPPSYEQSTSCHDASSAAVAPLPSPPSPQEL
+# ASSPDSAGDTSRPPETEISNNTSIDASGLAMMLSDYAPLPETNTSVTIQNTVFNAPVNLVINVNGASGEQSAAQIAEDTRAAVQLSLRDLLGSGAMGM
+# GAHLAKVSPPAMKLGTQESEVRKDVFTVSETRGSHRGKDFVMRSGTTKSYVGKEVVMGPETTRLNFGEGVNMASRTGDLHPSKEDVMGSMAYQARLDH
+# ADPNQESMNTFIPSAPPLPPKTPLPSPAAPSYHMERSRYDANKGSSGEVFENVFELPAEPRR]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 5
+#     RM:   5 
+# end gene g19
+# start gene g20
+pheo_arth1	AUGUSTUS	gene	65388	66312	1	-	.	ID=g20
+pheo_arth1	AUGUSTUS	transcript	65388	66312	1	-	.	ID=g20.t1;Parent=g20
+pheo_arth1	AUGUSTUS	stop_codon	65388	65390	.	-	0	Parent=g20.t1
+pheo_arth1	AUGUSTUS	intron	65608	65675	1	-	.	Parent=g20.t1
+pheo_arth1	AUGUSTUS	intron	65956	66008	1	-	.	Parent=g20.t1
+pheo_arth1	AUGUSTUS	CDS	65388	65607	1	-	1	ID=g20.t1.cds;Parent=g20.t1
+pheo_arth1	AUGUSTUS	CDS	65676	65955	1	-	2	ID=g20.t1.cds;Parent=g20.t1
+pheo_arth1	AUGUSTUS	CDS	66009	66312	1	-	0	ID=g20.t1.cds;Parent=g20.t1
+pheo_arth1	AUGUSTUS	start_codon	66310	66312	.	-	0	Parent=g20.t1
+# protein sequence = [MSASTPPQTFQNKVIAITGASRGIGLAVTKHLLARGATVSMCATSSENLAKALDEIHQEFPEAKDRVMTCVVDISKLE
+# TVRAWIEQTVARFGPLDGCCNNAGKEQRKIYPMTDLDADYFHDLINVNVCGLFHCLKEEMKVIKDGGSIVNLGSIACNYASAGTSAYITAKHAVLGLS
+# KTAAFEGAPRGIRVNAMCPGTTNTTMMNQAFETPNGDFYLTPENTPALLKRRAEPEEVATFIAFLLGDDSKFITKATYYMDGGWLEGNYTS]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/3
+# CDS introns: 0/2
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 5
+#     RM:   5 
+# end gene g20
+# start gene g21
+pheo_arth1	AUGUSTUS	gene	68388	69485	1	-	.	ID=g21
+pheo_arth1	AUGUSTUS	transcript	68388	69485	1	-	.	ID=g21.t1;Parent=g21
+pheo_arth1	AUGUSTUS	stop_codon	68388	68390	.	-	0	Parent=g21.t1
+pheo_arth1	AUGUSTUS	CDS	68388	69485	1	-	0	ID=g21.t1.cds;Parent=g21.t1
+pheo_arth1	AUGUSTUS	start_codon	69483	69485	.	-	0	Parent=g21.t1
+# protein sequence = [MSSNHANASGATGSAKPVILHLGDSIKYNTDTYQRLSSKFTIIRPSIEERQRDAFLQSLREGKWGEFAGVFRPWWATG
+# GEIGRIDKELVSLLPKSLKVWASAGAGYDWADVDVLAEHGILYCNGALASSEAVADMAIYHIISVFRNMQWSNMAGRANDPDAWTDAHINGQFTAHNP
+# QGHVLGIVGLGNIGYRIAVKAFRGFDMRITYYDPIPKSVEQEAAINATRCASLEELLSGADCVVLAAPGGSGKLMTRERIAQMKKGSRLVNIARGGLV
+# DEEAVVEALESGQLSAVGLDVFENEPRPHPRLTGFRNATLTCHTAGGALETAMGFEGLSMKNVLAGLTGQPPLTPVNQHLMKRPGLGGPKL]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/1
+# CDS introns: 0/0
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 5
+#     RM:   5 
+# end gene g21
+# start gene g22
+pheo_arth1	AUGUSTUS	gene	70087	71141	0.99	+	.	ID=g22
+pheo_arth1	AUGUSTUS	transcript	70087	71141	0.99	+	.	ID=g22.t1;Parent=g22
+pheo_arth1	AUGUSTUS	start_codon	70087	70089	.	+	0	Parent=g22.t1
+pheo_arth1	AUGUSTUS	intron	70244	70317	0.99	+	.	Parent=g22.t1
+pheo_arth1	AUGUSTUS	CDS	70087	70243	0.99	+	0	ID=g22.t1.cds;Parent=g22.t1
+pheo_arth1	AUGUSTUS	CDS	70318	71141	1	+	2	ID=g22.t1.cds;Parent=g22.t1
+pheo_arth1	AUGUSTUS	stop_codon	71139	71141	.	+	0	Parent=g22.t1
+# protein sequence = [MGSSSTTSASKPFPPGVHVPSLTWFRNDKTQEIDWEVQTKHLEFLVSSGLHGIVLAGTNGEAVTLTAEEKSKLVSTTR
+# EVATRLGRPDLPITMGCGGGCTRDVIGETVLAHKAGADFALVLVPSYFHFAMDAEAIAAFFEELADASPVPVVIYNFPGVAAGLDVNSEMLSRLGKHA
+# NIVGVKLTCGGIAKVARVAAEFAPERFAALAGQSDWLVPALAVGGVGTITGVANLYPRACLEIFELHRAGKTKEAAAAQLELAKMEWGFGKGGINGTK
+# WVVAKLLGYPVEGCHCRRPYPVFGDAKKQAWIMETVQPLQETELRLSKSGSQ]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 10
+#     RM:  10 
+# end gene g22
+# start gene g23
+pheo_arth1	AUGUSTUS	gene	71775	74096	0.46	+	.	ID=g23
+pheo_arth1	AUGUSTUS	transcript	71775	74096	0.46	+	.	ID=g23.t1;Parent=g23
+pheo_arth1	AUGUSTUS	start_codon	71775	71777	.	+	0	Parent=g23.t1
+pheo_arth1	AUGUSTUS	intron	71975	72041	0.63	+	.	Parent=g23.t1
+pheo_arth1	AUGUSTUS	intron	72074	72171	0.63	+	.	Parent=g23.t1
+pheo_arth1	AUGUSTUS	intron	72274	72346	0.84	+	.	Parent=g23.t1
+pheo_arth1	AUGUSTUS	intron	72413	72471	1	+	.	Parent=g23.t1
+pheo_arth1	AUGUSTUS	intron	72767	72839	1	+	.	Parent=g23.t1
+pheo_arth1	AUGUSTUS	intron	73101	73217	1	+	.	Parent=g23.t1
+pheo_arth1	AUGUSTUS	intron	73327	73397	1	+	.	Parent=g23.t1
+pheo_arth1	AUGUSTUS	intron	73528	73624	0.97	+	.	Parent=g23.t1
+pheo_arth1	AUGUSTUS	intron	73793	73929	1	+	.	Parent=g23.t1
+pheo_arth1	AUGUSTUS	CDS	71775	71974	0.99	+	0	ID=g23.t1.cds;Parent=g23.t1
+pheo_arth1	AUGUSTUS	CDS	72042	72073	0.63	+	1	ID=g23.t1.cds;Parent=g23.t1
+pheo_arth1	AUGUSTUS	CDS	72172	72273	0.49	+	2	ID=g23.t1.cds;Parent=g23.t1
+pheo_arth1	AUGUSTUS	CDS	72347	72412	1	+	2	ID=g23.t1.cds;Parent=g23.t1
+pheo_arth1	AUGUSTUS	CDS	72472	72766	1	+	2	ID=g23.t1.cds;Parent=g23.t1
+pheo_arth1	AUGUSTUS	CDS	72840	73100	1	+	1	ID=g23.t1.cds;Parent=g23.t1
+pheo_arth1	AUGUSTUS	CDS	73218	73326	1	+	1	ID=g23.t1.cds;Parent=g23.t1
+pheo_arth1	AUGUSTUS	CDS	73398	73527	1	+	0	ID=g23.t1.cds;Parent=g23.t1
+pheo_arth1	AUGUSTUS	CDS	73625	73792	0.97	+	2	ID=g23.t1.cds;Parent=g23.t1
+pheo_arth1	AUGUSTUS	CDS	73930	74096	1	+	2	ID=g23.t1.cds;Parent=g23.t1
+pheo_arth1	AUGUSTUS	stop_codon	74094	74096	.	+	0	Parent=g23.t1
+# protein sequence = [MLTGQEDRGFAEGDDFSKADTKHLDETRSDSVGRHTVATPESLRGMAEGDLKKLERKMVRKVDFVILPIMTILYILNF
+# VDRSALAASKVYGITDDLNMSEQDFATAISILFVGYIPFQIPSNLIITKVSRPGLYICSAALIWGCVSAATAAVQTYRALLAVRVFLGVTEAVFLPGV
+# IYFLSAWYTKSELGKRLAGLFMAQLVGSAFGGFVAAACLTLDGRHGIAGWRWLFLVEGVVTVGCGILFALVMPEYPHNARLLSPVERDYAVWRLEKEA
+# GAGEAHEDTTTRQGFFMALRDPKIWVLVWCMTMSQAIGSSGNFFPSIVQTLGYGKNQTLLLTAPPYLLAVVVIVGASWASDRYNSIYSMIVGSLCIGV
+# FAYVIPLATLNTGGRYFAMMLMPTAITLPQIMMYKTLNLHMARPYPKRSAGTAMINSLGGLSNLWASYLWYAPPHYYGAFGCLLACVAVLFLTITVYR
+# WHVRGLNKLLGGTPEQQSRAMKSGVTQQQIDLGWRYIGY]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/10
+# CDS introns: 0/9
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 8
+#     RM:   8 
+# end gene g23
+# start gene g24
+pheo_arth1	AUGUSTUS	gene	74922	75928	1	+	.	ID=g24
+pheo_arth1	AUGUSTUS	transcript	74922	75928	1	+	.	ID=g24.t1;Parent=g24
+pheo_arth1	AUGUSTUS	start_codon	74922	74924	.	+	0	Parent=g24.t1
+pheo_arth1	AUGUSTUS	intron	75053	75135	1	+	.	Parent=g24.t1
+pheo_arth1	AUGUSTUS	CDS	74922	75052	1	+	0	ID=g24.t1.cds;Parent=g24.t1
+pheo_arth1	AUGUSTUS	CDS	75136	75928	1	+	1	ID=g24.t1.cds;Parent=g24.t1
+pheo_arth1	AUGUSTUS	stop_codon	75926	75928	.	+	0	Parent=g24.t1
+# protein sequence = [MKYATAAVAVLPLAWAASIETRGQDSKYNVSELEAACDSNDKCSYNFKIATGDDGESTDCSMKSLMKMGAAPETKCGP
+# YSVSAMKPHDGGLIFNIDQAGKGLSGTFTAYPKDLKTVKSDDGERMSYKGGAAFDVAAKAVNVKAADEKDGGDDDKEGGSTTTASPKVSSIASHAAMD
+# PPQATSSAKPSMIFSVGDGSGPVAGTTKVESADPTAVPTGSLKLAPSAAPSAASGGSTMVTATATDSSSSSKSTSSSDDSSSSSSSSSSSDKSDSSSS
+# GSSGSSDDESSGAARQSAFAAVMAAVGLMAFAF]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 12
+#     RM:  12 
+# end gene g24
+# start gene g25
+pheo_arth1	AUGUSTUS	gene	76947	77927	0.88	-	.	ID=g25
+pheo_arth1	AUGUSTUS	transcript	76947	77927	0.88	-	.	ID=g25.t1;Parent=g25
+pheo_arth1	AUGUSTUS	stop_codon	76947	76949	.	-	0	Parent=g25.t1
+pheo_arth1	AUGUSTUS	CDS	76947	77927	0.88	-	0	ID=g25.t1.cds;Parent=g25.t1
+pheo_arth1	AUGUSTUS	start_codon	77925	77927	.	-	0	Parent=g25.t1
+# protein sequence = [MNLESIEAPKGNDFPLLRRGWALQERLLSPRVLHFCRRELLFECRAGNQCQCGERKPEIGLKETFAKLLAGDTALDTR
+# QYDRGWWAVTGQYTQLRLTFRKDMLLALSGIARRIGEVRPKGDYLGGIWKSTLPYGLLWFVPHLGFDDGSASAYPHPHHISDLRVPSWSWASVVGPIR
+# WELPGPHWNQHLVEMQHAECTTDAGDDGYGQIVKASLKLTGPILASELTWGPLNPVFYELGLFDWRLPELSEFVGRSQYSFFPDYAFFSGQESPMSVL
+# CLWFMPEVVLVLKAAADEGKFERIGLLHLYLEDSVALSSEELRQRLGTIELV]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/1
+# CDS introns: 0/0
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 5
+#     RM:   5 
+# end gene g25
+# start gene g26
+pheo_arth1	AUGUSTUS	gene	82356	83743	0.63	-	.	ID=g26
+pheo_arth1	AUGUSTUS	transcript	82356	83743	0.63	-	.	ID=g26.t1;Parent=g26
+pheo_arth1	AUGUSTUS	stop_codon	82356	82358	.	-	0	Parent=g26.t1
+pheo_arth1	AUGUSTUS	intron	82809	82885	0.93	-	.	Parent=g26.t1
+pheo_arth1	AUGUSTUS	CDS	82356	82808	0.66	-	0	ID=g26.t1.cds;Parent=g26.t1
+pheo_arth1	AUGUSTUS	CDS	82886	83743	0.93	-	0	ID=g26.t1.cds;Parent=g26.t1
+pheo_arth1	AUGUSTUS	start_codon	83741	83743	.	-	0	Parent=g26.t1
+# protein sequence = [MALEYHTFQNIQLKRNELSRFENIVQGHRRRFFSVLEYIVVLPAYRDEDRRRFERDRDRLENDEAFPEAIHGFFHALA
+# TWDAARDACIALCLFDIYSSANHPFLLSSTPPSDSQGPSHVRRCDDDQKLVDLWKWRYLYSYLRLFRPSELPLVPLVSSFDTWPMTRKLYDRVVIDMA
+# ARLPGLREAEWELNDWEIRYIGLRRTHRHDLAHAVAETLPQSSALQSLILVMKGTASFCVPDFSVGNLNMEDCQDLDYLRVCEVVDGALFWLCAASAA
+# TKSYWQNLEHLSAEIPPGFEARGGGHAAIVDELFSPEAYLNMGELREVVPHDEALVPVMEAFGRGCLQMLKLKSAELSAVMPTRLHEGEDSDKVDLAI
+# RCTWGVWYFCHDVWLRVRDVMDPAFSEDVHERRLFRDVKDWRPPCSSTEPLPSHRARKRWDAPG]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 1
+#     RM:   1 
+# incompatible hint groups: 2
+#     RM:   2 
+# end gene g26
+# start gene g27
+pheo_arth1	AUGUSTUS	gene	86329	89288	0.31	+	.	ID=g27
+pheo_arth1	AUGUSTUS	transcript	86329	89288	0.31	+	.	ID=g27.t1;Parent=g27
+pheo_arth1	AUGUSTUS	start_codon	86329	86331	.	+	0	Parent=g27.t1
+pheo_arth1	AUGUSTUS	intron	86624	87596	0.88	+	.	Parent=g27.t1
+pheo_arth1	AUGUSTUS	intron	89134	89275	0.66	+	.	Parent=g27.t1
+pheo_arth1	AUGUSTUS	CDS	86329	86623	0.51	+	0	ID=g27.t1.cds;Parent=g27.t1
+pheo_arth1	AUGUSTUS	CDS	87597	89133	0.81	+	2	ID=g27.t1.cds;Parent=g27.t1
+pheo_arth1	AUGUSTUS	CDS	89276	89288	0.66	+	1	ID=g27.t1.cds;Parent=g27.t1
+pheo_arth1	AUGUSTUS	stop_codon	89286	89288	.	+	0	Parent=g27.t1
+# protein sequence = [MPVAAGVGIGTGLGVLILAALVYLVLFYRRKARSPMTTIEGKGPPRTAEADDPDCPALDGNHIVEANDTCLPHQIGGS
+# EVVEASGVQVPAEAEAERVPVPRSALDMILSLHHSGHIADKWIWIDYICLNQQDLAEKSVQVGLMGSIYSLSAQTVVYTGPASASTPTAMDFIKMLKS
+# IFEKLDQTDGRGPSDDNAITCQDLLEATGTSSGSPEWAALRDLLMRPWFGRLWVMQEAVLPRDVLFVWGQYSLSWAEMETLAGWDTRSNLFALLGNAN
+# GKWTAISTLKKINLLRHNRDGATRGHRCDLSFALYACDAATSFDPRDRIYGMLGLLYGRGAAIDIKPDYSPENAAAAVFTDATLKWTMQNDSFDLVYG
+# AGIGLPRDIEGLPSWVPDYTKTLPQYPAAHLRAGKGDFRSLALEPLKFQGSDFEVQAFLIDTIDSVLPYKTLSRSIEYTSIEDDGQVAWYLEQAILHV
+# SQTYPVPWSEGLAACFVRTLTCNSVVLSGADGGAPSPAGYDRAFAQLAIVRKLGVFGHPPPVWPDQNPTAQERQSFLTTVAGYMSDNTICTVPRGRFA
+# LVPRRAEPGDVVAVCPGARLPFILRPSCRGTAGSQRFQMVGTGFKN]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/3
+# CDS introns: 0/2
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 2
+#     RM:   2 
+# incompatible hint groups: 6
+#     RM:   6 
+# end gene g27
+# start gene g28
+pheo_arth1	AUGUSTUS	gene	89513	91153	0.82	-	.	ID=g28
+pheo_arth1	AUGUSTUS	transcript	89513	91153	0.82	-	.	ID=g28.t1;Parent=g28
+pheo_arth1	AUGUSTUS	stop_codon	89513	89515	.	-	0	Parent=g28.t1
+pheo_arth1	AUGUSTUS	intron	90453	90521	0.83	-	.	Parent=g28.t1
+pheo_arth1	AUGUSTUS	CDS	89513	90452	0.95	-	1	ID=g28.t1.cds;Parent=g28.t1
+pheo_arth1	AUGUSTUS	CDS	90522	91153	0.82	-	0	ID=g28.t1.cds;Parent=g28.t1
+pheo_arth1	AUGUSTUS	start_codon	91151	91153	.	-	0	Parent=g28.t1
+# protein sequence = [MQFSELPPEIIHEILIACVRARHIRRALRLRHVSREWDVAVVRAVFASGVLYDDPYSVFIEWPRYIVYRATGSAARRQ
+# GWPRPLFVLRRAAEFLVARRDEGSGGDPSDDAVDDAIVDLFATMRPGCAFELPSGFGGSAEGSNQPDDELIDGDDDQLDQGPIDDDDDQLLQTLLCVA
+# AARNDVALVKELLQRIHDRPRLVYEHSPGFIPKPKPLFRQPLEGASFAGHDEVVRIFLDFKSSTSSTPEIRRAKDVVFNYACYGGKLSTLEIVFEPMR
+# EEYAEWGEEWGESLVGMMEEVTDVEVFKRLYSSATDFIHAEKSEDEKSKDQLLCSLLCGAAKKGAVPLMEHLMELGATLDNPVWSQEPDPEDPLDRED
+# PLEDAVGGGHTEAVIYLLGKGFHPRDYSTITEDDCLVEAVRWEKPRMVEPILLHLDRESPDFLKRLEGGLDMAMQRENERILSMLLTFGSTAFTDRAI
+# RKVMYRAEMLGLESMALFLQGYLPEDDNDLLFAQLSSTGSESSGSDSESLGSE]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 7
+#     RM:   7 
+# end gene g28
+# start gene g29
+pheo_arth1	AUGUSTUS	gene	91748	92442	0.79	-	.	ID=g29
+pheo_arth1	AUGUSTUS	transcript	91748	92442	0.79	-	.	ID=g29.t1;Parent=g29
+pheo_arth1	AUGUSTUS	stop_codon	91748	91750	.	-	0	Parent=g29.t1
+pheo_arth1	AUGUSTUS	intron	91890	91964	1	-	.	Parent=g29.t1
+pheo_arth1	AUGUSTUS	intron	92158	92261	1	-	.	Parent=g29.t1
+pheo_arth1	AUGUSTUS	CDS	91748	91889	1	-	1	ID=g29.t1.cds;Parent=g29.t1
+pheo_arth1	AUGUSTUS	CDS	91965	92157	1	-	2	ID=g29.t1.cds;Parent=g29.t1
+pheo_arth1	AUGUSTUS	CDS	92262	92442	0.79	-	0	ID=g29.t1.cds;Parent=g29.t1
+pheo_arth1	AUGUSTUS	start_codon	92440	92442	.	-	0	Parent=g29.t1
+# protein sequence = [MPFFIMLASLLLAAFQTQALALPAFNSLTADNETATVGVQRFQSVWTATPDTKRICTRSGMAAMTSNFAREADCKELE
+# DNSANTPGYWDTSDWGSDSNAKIITFAGTCNVRVSLPSLPGGDGHVWIGNGDVSDAVGQAVAGYAHAGYVAAIGQLTCSDPNGDVVVYWSISS]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/3
+# CDS introns: 0/2
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 3
+#     RM:   3 
+# end gene g29
+# start gene g30
+pheo_arth1	AUGUSTUS	gene	93965	95671	1	+	.	ID=g30
+pheo_arth1	AUGUSTUS	transcript	93965	95671	1	+	.	ID=g30.t1;Parent=g30
+pheo_arth1	AUGUSTUS	start_codon	93965	93967	.	+	0	Parent=g30.t1
+pheo_arth1	AUGUSTUS	CDS	93965	95671	1	+	0	ID=g30.t1.cds;Parent=g30.t1
+pheo_arth1	AUGUSTUS	stop_codon	95669	95671	.	+	0	Parent=g30.t1
+# protein sequence = [MELVQGEDNLYDVRIPVAELGQEGLPTAWDLGIDLKAVWAAQNASILAQNASEGWIDPSSPKIARMPREGVAPGLLPF
+# APLLLAVFCVAYMYFDKFLHAFLLPRLYGPLFSTQDRAQRLTFALHHNALVAFGLVLGFLGVPLLRVLAGEAVLSDPLLFAGGRVTFGDWIFVPAIAY
+# CSTYLGEMFVRRDQPGLIPRLHHMAVLLVALATIGITGDIERNRSATVSFYIIAVWCLFDLVTELPVHAGLIVWRCARDRARARSLSRLMLVLALWRL
+# AMLLANWGVTVYLLLAAWRKLSTIWAVLAPMAGWLWFYAQLQSAHVLYALSRRLGDEHRAAERRAKHGEVGYSLEEIGGGGARPPHRGGLLFNDPAYA
+# GLTLGTTLLSWTHASGASRALLSEPSRTHLVVLVGLGLALGVVIVGVRYLTQDADGALGLAARSGTAGGDKSDASNFNTHNDAKGADRTKSPHEDKNG
+# GDHGSGGGGGGGDGHGGVVERSTGLMAAVAEVFRQALDDNTAAAAADGAEPTAVVESSAPALGDSGDSSSISPAQSGNEKESATKRRQRRMVQESHRA]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/1
+# CDS introns: 0/0
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 16
+#     RM:  16 
+# end gene g30
+# start gene g31
+pheo_arth1	AUGUSTUS	gene	96202	98707	0.82	-	.	ID=g31
+pheo_arth1	AUGUSTUS	transcript	96202	98707	0.82	-	.	ID=g31.t1;Parent=g31
+pheo_arth1	AUGUSTUS	stop_codon	96202	96204	.	-	0	Parent=g31.t1
+pheo_arth1	AUGUSTUS	intron	96374	96565	0.82	-	.	Parent=g31.t1
+pheo_arth1	AUGUSTUS	intron	98440	98524	1	-	.	Parent=g31.t1
+pheo_arth1	AUGUSTUS	CDS	96202	96373	0.83	-	1	ID=g31.t1.cds;Parent=g31.t1
+pheo_arth1	AUGUSTUS	CDS	96566	98439	0.82	-	0	ID=g31.t1.cds;Parent=g31.t1
+pheo_arth1	AUGUSTUS	CDS	98525	98707	1	-	0	ID=g31.t1.cds;Parent=g31.t1
+pheo_arth1	AUGUSTUS	start_codon	98705	98707	.	-	0	Parent=g31.t1
+# protein sequence = [MISDEVITLDSMSSPAPAIRTLDYGRSVEGIPAFEVLSAEGDTSAFEMTYAESEAALGIYMSDGPLPLAAAMDTYRVN
+# RYNISRAGQMTNRLIQGAFRYQKLNLSSPGVLKLRGVGVSSQLDNTPLTDLPGFFNSSDAKLNAIWTTGARTVQMTEIPKNSVPAFWEVGPEGALVDS
+# LAPQVLGSAVAAQLVEYNVEFKVKPIQGGFGFSVVADTLNVGVYITCDVEAGRIAAHAGSTALDQLLQETALPSNLSMPLHTLHSVRAVVAMGEIAVS
+# IDNTPVMQLSQTSRIFGSVGLGASFGHKAVFRDLSVTSPAGDTVHYAHPLTDPSFLPAFFLGPNPAAVAVDGSRRDRIAYAGDLDIAGGASLASTHGL
+# DALLGTLDLLGSYQAAPGFFIPNAKVQQAPLAGGGLDVNVTGLIGYSFNFVTAVAATYMHTGDAAFARSWAPKVQRMLDWAHSQTTTGEGLLNISDPS
+# LGGDWNYYDPPQSGIVTKFNVLYAYSLQESMPLLADGGVAPDVYQTRLQRLRQTIDRHLWSDDLQAYVVSDALRTAFAQDANALAILAGVNLDPDHST
+# PKILSTLSTGLLPNPATGQPPFPLAFSAGALTAEAGFQPYASPYASAYHLRAALAANATAAARALLLDGLWGPMADPTNANYTGAFWETLDAAGRPGL
+# GIATSLCHGWSAGPTAELSRIVVEAPAGTAGTVHLPRDLRVAREKSTFTVNGEVVEGTSFRVTGGTRFQLQQAYKA]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/3
+# CDS introns: 0/2
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 2
+#     RM:   2 
+# incompatible hint groups: 15
+#     RM:  15 
+# end gene g31
+# start gene g32
+pheo_arth1	AUGUSTUS	gene	99711	100692	0.97	-	.	ID=g32
+pheo_arth1	AUGUSTUS	transcript	99711	100692	0.97	-	.	ID=g32.t1;Parent=g32
+pheo_arth1	AUGUSTUS	stop_codon	99711	99713	.	-	0	Parent=g32.t1
+pheo_arth1	AUGUSTUS	intron	100418	100484	1	-	.	Parent=g32.t1
+pheo_arth1	AUGUSTUS	CDS	99711	100417	0.97	-	2	ID=g32.t1.cds;Parent=g32.t1
+pheo_arth1	AUGUSTUS	CDS	100485	100692	1	-	0	ID=g32.t1.cds;Parent=g32.t1
+pheo_arth1	AUGUSTUS	start_codon	100690	100692	.	-	0	Parent=g32.t1
+# protein sequence = [MNNTTGTGYDPAAAAAASEAFDFKLYRYTPSLPAAIVFAAVFAVLSALHTWQLARHRAYYFTAFTVGGYFQLVGYCGR
+# IWSHFDPSAIGGFVMQAILILVAPALYAASVYMVLGRLIRTLRADRLSLLPVAWATKVFVVSDVVSFTLQAGGGGIQAAGTLELYAIGEKIIIAGLFV
+# QIAMFGFFMATAVLFHVRYVRCRRWRSVDNSEGDCGRLVGKTVQWRRHLWVLYAVSTLILVRSIFRVVEYLQGNKGYLIAHEVFLYVFDAVLMALVMA
+# ILLVWYVDDLDAEQGPRRDSELTLDNVCSA]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 10
+#     RM:  10 
+# end gene g32
+# start gene g33
+pheo_arth1	AUGUSTUS	gene	101262	102565	0.95	+	.	ID=g33
+pheo_arth1	AUGUSTUS	transcript	101262	102565	0.95	+	.	ID=g33.t1;Parent=g33
+pheo_arth1	AUGUSTUS	start_codon	101262	101264	.	+	0	Parent=g33.t1
+pheo_arth1	AUGUSTUS	intron	101358	101404	1	+	.	Parent=g33.t1
+pheo_arth1	AUGUSTUS	intron	101766	101849	0.97	+	.	Parent=g33.t1
+pheo_arth1	AUGUSTUS	CDS	101262	101357	1	+	0	ID=g33.t1.cds;Parent=g33.t1
+pheo_arth1	AUGUSTUS	CDS	101405	101765	1	+	0	ID=g33.t1.cds;Parent=g33.t1
+pheo_arth1	AUGUSTUS	CDS	101850	102565	0.95	+	2	ID=g33.t1.cds;Parent=g33.t1
+pheo_arth1	AUGUSTUS	stop_codon	102563	102565	.	+	0	Parent=g33.t1
+# protein sequence = [MAGPKPRGAVTNRRHHAKTRTGCRTCKTRKVKCDEKKPACGNCTKHNVVCEFLTSGKESPVSSVPAQPRALDMQDLEL
+# LHNFTTRTHATLSDNLILADFYRTSAVQYGLKEEYIMRTLLSISACHLAYHRHDRQSHYQSLAMSHHQIAAKSAMELMTSPTPSQAEGLFLFSVLTIF
+# FALGCPRRDDQFLMVGESGFPQWMFLLQGTKAFTSSIIDSGTDTILAPLLNHGADRWVARAAAADRDRAGGTPGERPKVHEHLDSIHHLIALRQPDAR
+# LRGIYVHAIEELQKSFAFLEAVTDPQGSSGGRRCALTDAFVWIFEVANGFLPLLRDATQEAVAIFAFFTVFLGRGGSSQWCLHGWAEHLIGRCYALLD
+# EEHRSWIQWPLEEMGWVG]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/3
+# CDS introns: 0/2
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 8
+#     RM:   8 
+# end gene g33
+# start gene g34
+pheo_arth1	AUGUSTUS	gene	103292	103866	0.26	+	.	ID=g34
+pheo_arth1	AUGUSTUS	transcript	103292	103866	0.26	+	.	ID=g34.t1;Parent=g34
+pheo_arth1	AUGUSTUS	start_codon	103292	103294	.	+	0	Parent=g34.t1
+pheo_arth1	AUGUSTUS	intron	103802	103851	0.34	+	.	Parent=g34.t1
+pheo_arth1	AUGUSTUS	CDS	103292	103801	0.59	+	0	ID=g34.t1.cds;Parent=g34.t1
+pheo_arth1	AUGUSTUS	CDS	103852	103866	0.34	+	0	ID=g34.t1.cds;Parent=g34.t1
+pheo_arth1	AUGUSTUS	stop_codon	103864	103866	.	+	0	Parent=g34.t1
+# protein sequence = [MSVVPSTESAMQKALRLPEIVALIAEELEDDAWVSFRLPFALGNFIRVNHLWFDSGVHLLWRHLSEWDGLILTDLFMH
+# LDPSRRSFYAAFVEDANVKLESADNSERLQLLQDVNFPKLQALDLDISYRNINNNQLPLLGQNIVKYVEMHYDHGPGIIRAYKTADMINKCLIKSG]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 2
+#     RM:   2 
+# end gene g34
+# start gene g35
+pheo_arth1	AUGUSTUS	gene	104376	104984	1	-	.	ID=g35
+pheo_arth1	AUGUSTUS	transcript	104376	104984	1	-	.	ID=g35.t1;Parent=g35
+pheo_arth1	AUGUSTUS	stop_codon	104376	104378	.	-	0	Parent=g35.t1
+pheo_arth1	AUGUSTUS	CDS	104376	104984	1	-	0	ID=g35.t1.cds;Parent=g35.t1
+pheo_arth1	AUGUSTUS	start_codon	104982	104984	.	-	0	Parent=g35.t1
+# protein sequence = [MHLRRIIYAALLAAAASPLASAAKDGDPPPTKTSSPTTSTTRSTKSANTNKNPNLLGSLFRVSREFGILGCVPQVLPL
+# VTALPSIPPELLGADLVRQALAQTTLPLDQVCEYQVTGTVGDAFTSFLPAWYEWYDAHADLEIRRLVEKCPKVGELTRTAEAYRTCAQVVEVMSAAAA
+# SEARATATGEAESDAVEGGGNEKDEL]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/1
+# CDS introns: 0/0
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 3
+#     RM:   3 
+# end gene g35
+# start gene g36
+pheo_arth1	AUGUSTUS	gene	105411	106088	0.71	-	.	ID=g36
+pheo_arth1	AUGUSTUS	transcript	105411	106088	0.71	-	.	ID=g36.t1;Parent=g36
+pheo_arth1	AUGUSTUS	stop_codon	105411	105413	.	-	0	Parent=g36.t1
+pheo_arth1	AUGUSTUS	CDS	105411	106088	0.71	-	0	ID=g36.t1.cds;Parent=g36.t1
+pheo_arth1	AUGUSTUS	start_codon	106086	106088	.	-	0	Parent=g36.t1
+# protein sequence = [MPEQIGGPTYSHTMTMDHHTTITTDGYTSPPFVSSSSTLNFTITHQERGMWNEADDAYSDYSEDLVVDGGKDPGTLQD
+# FGVTTEFRKAVQTATLPWSIPVDACVMLGHFRVDTALLDETFPPSPLPAVLVRLWKRLDDREKLTDYIRGFKEWMVFTNPPMEKFPKSALLIVAQPDD
+# FDEDVVIEGKKVKKVQGRFTKLLFPPRPPADMSTPGSRWRGSTLPRQEP]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/1
+# CDS introns: 0/0
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 3
+#     RM:   3 
+# end gene g36
+# start gene g37
+pheo_arth1	AUGUSTUS	gene	109157	110365	0.93	+	.	ID=g37
+pheo_arth1	AUGUSTUS	transcript	109157	110365	0.93	+	.	ID=g37.t1;Parent=g37
+pheo_arth1	AUGUSTUS	start_codon	109157	109159	.	+	0	Parent=g37.t1
+pheo_arth1	AUGUSTUS	CDS	109157	110365	0.93	+	0	ID=g37.t1.cds;Parent=g37.t1
+pheo_arth1	AUGUSTUS	stop_codon	110363	110365	.	+	0	Parent=g37.t1
+# protein sequence = [MKPSRPLIRQDQLLRTLQSPTSRCLRPSISPQCPRSQQQSRTFLRRSPTSHRAVENLNLDRMRHNSYDYHVRRRNFML
+# AGAVSGALAFIYTAYLLQQEITKPKQFDSGLPAGSADPFSTEAGSKRKTIVHDADGREIVPTGHSSITSFPRTLELDTTTAEDRQQQPPTKINTGGVE
+# YTLVGLGMRTVSFLGIQVYLVGYYVATSDVAALQKRLTREIHPTATTLVPSEKDELRRRLLDPVEGDRIWQDLLREVRPRSLFRIVPVRDTDFHHLRD
+# GFVRAITARSNEGGPEYKEDSFGEAMRAFRDVFNRGKVPKAGELIMARDERGRLTVVFDDSKGKDAEGARQQKRTTIGRVDDERVSRALWMNYLAGKA
+# VASEPARRNIVDGVLEFVERPVGTVATQVV]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/1
+# CDS introns: 0/0
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 12
+#     RM:  12 
+# end gene g37
+# start gene g38
+pheo_arth1	AUGUSTUS	gene	112084	113238	0.73	+	.	ID=g38
+pheo_arth1	AUGUSTUS	transcript	112084	113238	0.73	+	.	ID=g38.t1;Parent=g38
+pheo_arth1	AUGUSTUS	start_codon	112084	112086	.	+	0	Parent=g38.t1
+pheo_arth1	AUGUSTUS	intron	112224	112295	1	+	.	Parent=g38.t1
+pheo_arth1	AUGUSTUS	intron	112520	112600	1	+	.	Parent=g38.t1
+pheo_arth1	AUGUSTUS	CDS	112084	112223	0.73	+	0	ID=g38.t1.cds;Parent=g38.t1
+pheo_arth1	AUGUSTUS	CDS	112296	112519	1	+	1	ID=g38.t1.cds;Parent=g38.t1
+pheo_arth1	AUGUSTUS	CDS	112601	113238	1	+	2	ID=g38.t1.cds;Parent=g38.t1
+pheo_arth1	AUGUSTUS	stop_codon	113236	113238	.	+	0	Parent=g38.t1
+# protein sequence = [MTLDHLVPNDPRVENKFVKISDEITYHYMLVKPEGTPKATVVLIHGWPDLGMGWRFQVPMLLSMGLQVVVPDMLGYGQ
+# TSAPESHEHYTMKKMCGHIAQVIKDVTPQPIILGGHDWGGFFIWRFTMYYPEMVRAVFSLCVPYIPAMPAVETLDDFAARQPNFGYQKQLASGEAEKM
+# IHQTPEGIKHFLNGMYGARTPAGGVVFTPEAGVQKDNLAEIPFENPMVPQDMVDYYVQEYSRHGFHGPCNWYRVRELNMTDELPLAEAAKTFQFKQPA
+# MLVMSGKDTVLLPSYAKGQERFFEQPLKSELVEEAGHWVAFQCPDKANKHIRDFVESVL]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/3
+# CDS introns: 0/2
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 9
+#     RM:   9 
+# end gene g38
+# start gene g39
+pheo_arth1	AUGUSTUS	gene	116097	118488	0.95	+	.	ID=g39
+pheo_arth1	AUGUSTUS	transcript	116097	118488	0.95	+	.	ID=g39.t1;Parent=g39
+pheo_arth1	AUGUSTUS	start_codon	116097	116099	.	+	0	Parent=g39.t1
+pheo_arth1	AUGUSTUS	intron	116967	117031	1	+	.	Parent=g39.t1
+pheo_arth1	AUGUSTUS	intron	117749	117804	1	+	.	Parent=g39.t1
+pheo_arth1	AUGUSTUS	CDS	116097	116966	1	+	0	ID=g39.t1.cds;Parent=g39.t1
+pheo_arth1	AUGUSTUS	CDS	117032	117748	1	+	0	ID=g39.t1.cds;Parent=g39.t1
+pheo_arth1	AUGUSTUS	CDS	117805	118488	0.95	+	0	ID=g39.t1.cds;Parent=g39.t1
+pheo_arth1	AUGUSTUS	stop_codon	118486	118488	.	+	0	Parent=g39.t1
+# protein sequence = [MRASKAPSLDVIAGQNAAAAAAAAAAMAAGGIEPTAAAAAAPTTNGEPAESTSRDSRSSSSTNSPAPADNEESDFYMA
+# NNDSQSSLGVVPNIQDMQVNDLDCLSIAASLPSEILISIFARLSTPAELFKCMLVSRRWARNVVEMLWHRPSCNSWERHMLICQTLALDQPTFAYPEF
+# IKRLNLAALAPNVSDGSVLPLAVCSRVERLTLTNCKDLSDDGLMALVKNNPNLLALDISQDSKVNNEVSKITEASIFAIAENCRKLQGLNVSGCKNIS
+# NESMIALAESCKYIKRLKLNDCDQLNDSAILAFANNCPNILEIDLHACSNIGNEPVTALLAKGQSLRELRLASCDLIDDGAFLNLPPGRTYEHLRILD
+# LTCCVKLTDRSVEKIVDVAPRLRNLVLAKCGNMTDSAVYAISKLGRNLHYVHLGHCRHITDEGVKRLVSSCNRIRYIDLGCCSLLTDESVVKLATLPK
+# LKRIGLVKCSNITDASMYALAKANLRRPRRDANGHVVADYHHSSLERVHLSYCINLTIPCIMRLLNSCQKLTHLSLTGVHAFMRDDLAVFCRAAPQEF
+# TEHQRQVFCVYSGTGVSGLRRFLNTEAEFADYQDMGAQNRRRAATATEPMPIPDVDGFDEADGVDDEDMGDGSEIAGIDEPQFNTTIPPPPPPPAPPA
+# MFLQAPLSNNPGATTASQAWPVPTTPTQSSLEQSIAVHLPRRRIRVPALLLWAHKGLLARPQRKLAPVPLPNRHKQTMTMSRLASTRAGF]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/3
+# CDS introns: 0/2
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 14
+#     RM:  14 
+# end gene g39
+# start gene g40
+pheo_arth1	AUGUSTUS	gene	119927	120641	0.51	-	.	ID=g40
+pheo_arth1	AUGUSTUS	transcript	119927	120641	0.51	-	.	ID=g40.t1;Parent=g40
+pheo_arth1	AUGUSTUS	stop_codon	119927	119929	.	-	0	Parent=g40.t1
+pheo_arth1	AUGUSTUS	intron	120046	120186	0.99	-	.	Parent=g40.t1
+pheo_arth1	AUGUSTUS	intron	120402	120483	1	-	.	Parent=g40.t1
+pheo_arth1	AUGUSTUS	CDS	119927	120045	0.99	-	2	ID=g40.t1.cds;Parent=g40.t1
+pheo_arth1	AUGUSTUS	CDS	120187	120401	1	-	1	ID=g40.t1.cds;Parent=g40.t1
+pheo_arth1	AUGUSTUS	CDS	120484	120641	0.51	-	0	ID=g40.t1.cds;Parent=g40.t1
+pheo_arth1	AUGUSTUS	start_codon	120639	120641	.	-	0	Parent=g40.t1
+# protein sequence = [MLSQIVFALTFAAGGMAQALPEGYRQVLITSAWNAKFVVQPVAPVKSGSNIILKTSTNAPEQQWYLQDGPTKIQVANT
+# TLCLDAGTARSNGSPLTVAACADDRAAQKWVYNADSQIVLDAASGAKLCADLYTGAVRDNTRIVLWQCISGDKNHVWKAQNITAT]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/3
+# CDS introns: 0/2
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 1
+#     RM:   1 
+# incompatible hint groups: 5
+#     RM:   5 
+# end gene g40
+# start gene g41
+pheo_arth1	AUGUSTUS	gene	121514	123780	0.17	-	.	ID=g41
+pheo_arth1	AUGUSTUS	transcript	121514	123780	0.17	-	.	ID=g41.t1;Parent=g41
+pheo_arth1	AUGUSTUS	stop_codon	121514	121516	.	-	0	Parent=g41.t1
+pheo_arth1	AUGUSTUS	intron	122069	122118	0.99	-	.	Parent=g41.t1
+pheo_arth1	AUGUSTUS	intron	122293	122357	0.68	-	.	Parent=g41.t1
+pheo_arth1	AUGUSTUS	intron	122447	122505	1	-	.	Parent=g41.t1
+pheo_arth1	AUGUSTUS	intron	122582	122672	1	-	.	Parent=g41.t1
+pheo_arth1	AUGUSTUS	intron	122995	123085	0.96	-	.	Parent=g41.t1
+pheo_arth1	AUGUSTUS	intron	123200	123291	0.62	-	.	Parent=g41.t1
+pheo_arth1	AUGUSTUS	intron	123524	123665	0.63	-	.	Parent=g41.t1
+pheo_arth1	AUGUSTUS	CDS	121514	122068	0.69	-	0	ID=g41.t1.cds;Parent=g41.t1
+pheo_arth1	AUGUSTUS	CDS	122119	122292	0.67	-	0	ID=g41.t1.cds;Parent=g41.t1
+pheo_arth1	AUGUSTUS	CDS	122358	122446	1	-	2	ID=g41.t1.cds;Parent=g41.t1
+pheo_arth1	AUGUSTUS	CDS	122506	122581	1	-	0	ID=g41.t1.cds;Parent=g41.t1
+pheo_arth1	AUGUSTUS	CDS	122673	122994	0.96	-	1	ID=g41.t1.cds;Parent=g41.t1
+pheo_arth1	AUGUSTUS	CDS	123086	123199	0.62	-	1	ID=g41.t1.cds;Parent=g41.t1
+pheo_arth1	AUGUSTUS	CDS	123292	123523	0.74	-	2	ID=g41.t1.cds;Parent=g41.t1
+pheo_arth1	AUGUSTUS	CDS	123666	123780	0.58	-	0	ID=g41.t1.cds;Parent=g41.t1
+pheo_arth1	AUGUSTUS	start_codon	123778	123780	.	-	0	Parent=g41.t1
+# protein sequence = [MVITYAVHDIPETPPAQPELTTADDGVVLSSDTDAEVLAAMGYQQELKRNYRAVEIFGIAFSIMGLMPSIATTLSFSL
+# LAGPAGMVWSWFVASGCIFLVGLAMADLGSAYPTSGALSAKMRNYLCFLVGYSNSLGLIGGLCSIDYGFAAMFCAGISMASDGRWQPSHNFVYVVFLV
+# CVLTHGVLASTTSKFMGKFLYLSIFLNVALAFATIVALLVGRAGKHNDARFLFTNVTNLTTWPTGWAFMLAWLSPIWSIGSFDSCVYMSEEASNAAKA
+# VPMGILSSIGMCWGLGFVIVIVIAQCMSSDIESILNSKFGQPMAQIYYDALGKRGALVFTVFMFIVQYFMGLSFCVSASRQLWAFSRDGAPPFSRFIR
+# PVSRRFGHVPVRAIWACVLVAAAFGLLCLAAPAAANAVFSLCIAGDSLAWCVPILARAVWGRSRFRPGPFYTGRRFSVPLAWAAAAFLVFGIVLAMFP
+# VGGPRLAPDSMNYCVVVNAAVWGGASLYYFLDARKWFTGPGEAVEVEGDEEEEGQEGVRDEAVQSFAVEKKEQGRQGRVDSAQNDGVL]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/8
+# CDS introns: 0/7
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 15
+#     RM:  15 
+# end gene g41
+# start gene g42
+pheo_arth1	AUGUSTUS	gene	125341	126226	0.95	-	.	ID=g42
+pheo_arth1	AUGUSTUS	transcript	125341	126226	0.95	-	.	ID=g42.t1;Parent=g42
+pheo_arth1	AUGUSTUS	stop_codon	125341	125343	.	-	0	Parent=g42.t1
+pheo_arth1	AUGUSTUS	intron	125793	125853	0.97	-	.	Parent=g42.t1
+pheo_arth1	AUGUSTUS	CDS	125341	125792	0.97	-	2	ID=g42.t1.cds;Parent=g42.t1
+pheo_arth1	AUGUSTUS	CDS	125854	126226	0.95	-	0	ID=g42.t1.cds;Parent=g42.t1
+pheo_arth1	AUGUSTUS	start_codon	126224	126226	.	-	0	Parent=g42.t1
+# protein sequence = [MAKISPLAAKTLHNILANHAEVLEKKAPEANPLYVPLPKQTEDEIDDLTFTYADFSDGESSWGSSTWGSPNTISTMGT
+# SAEDLWGGNGDISDADFMSPACSDTTDTTDASSPRIHYRSLVRLRRRDSASASADRDGSNWGWESRKERVAKMEAYKTHRVQRWTPRQLELFRYNGVF
+# CGRDDDRDHDRLLAARYMGARALDFAERRRSQAKARFDAHSARVARTLKEKEKENNNGNNNNNNNNNNNNESPAVIDLTTEPKQGRKRCWVSMTVDEI]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/2
+# CDS introns: 0/1
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 1
+#     RM:   1 
+# incompatible hint groups: 7
+#     RM:   7 
+# end gene g42
+# start gene g43
+pheo_arth1	AUGUSTUS	gene	127326	129005	0.83	-	.	ID=g43
+pheo_arth1	AUGUSTUS	transcript	127326	129005	0.83	-	.	ID=g43.t1;Parent=g43
+pheo_arth1	AUGUSTUS	stop_codon	127326	127328	.	-	0	Parent=g43.t1
+pheo_arth1	AUGUSTUS	intron	127644	127725	1	-	.	Parent=g43.t1
+pheo_arth1	AUGUSTUS	intron	128101	128171	1	-	.	Parent=g43.t1
+pheo_arth1	AUGUSTUS	CDS	127326	127643	0.98	-	0	ID=g43.t1.cds;Parent=g43.t1
+pheo_arth1	AUGUSTUS	CDS	127726	128100	1	-	0	ID=g43.t1.cds;Parent=g43.t1
+pheo_arth1	AUGUSTUS	CDS	128172	129005	0.84	-	0	ID=g43.t1.cds;Parent=g43.t1
+pheo_arth1	AUGUSTUS	start_codon	129003	129005	.	-	0	Parent=g43.t1
+# protein sequence = [MARSTKRIPNYMLASLAVSLGGLAMGCDTGAIGAIMAMPAFAASMGGPLSATQVGFTVSLIMLTGAVPSVFGGYLADR
+# YGRLRVILAGAVLFGLGAAVQGAAYALPPFLVGRALAGLGAGAFLSNISVYICEVAPARHRGILAGLPQFMATAGICLGYFTCYGTVRLGEGNSMAWR
+# APYVVQGALCLALAGACWVLPDSPRWYLLQGRREEAAAALARLDVSLVGEDRELLTSTGQQVSLSLWQGLALLFRRGYRTRTMLALFILGMVQLSGID
+# GVLYYAPTLFAQAGLASETASFLASGLSAVLMLAASIPAFLLADKWGRRTSAIAGGVGLSGVMLLIGSLYAAGAVHSYGVARWVVIVAVYVFGLTYCS
+# TWAIVGKIYASEIQPTHTRAAANCVAQGLGFFTNWLVAMITPILLDKSAYGAYFLFGGLALGTVLVLAAYMPETRGRSLESIQEAFTHTGSSSLAQTL
+# RRRIGFSGREPQENGVELVTEGIAVSNSGSLRMQLASA]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/3
+# CDS introns: 0/2
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 1
+#     RM:   1 
+# incompatible hint groups: 12
+#     RM:  12 
+# end gene g43
+# start gene g44
+pheo_arth1	AUGUSTUS	gene	132625	133440	0.7	+	.	ID=g44
+pheo_arth1	AUGUSTUS	transcript	132625	133440	0.7	+	.	ID=g44.t1;Parent=g44
+pheo_arth1	AUGUSTUS	start_codon	132625	132627	.	+	0	Parent=g44.t1
+pheo_arth1	AUGUSTUS	CDS	132625	133440	0.7	+	0	ID=g44.t1.cds;Parent=g44.t1
+pheo_arth1	AUGUSTUS	stop_codon	133438	133440	.	+	0	Parent=g44.t1
+# protein sequence = [MPHDALSKATYNIFFRAVRPFLGPAFAALPERAELSHASSPPKYEDGNGNGNESDNDTVAVTTPSGYGPPDDDEELPG
+# YPTSAAANDRKRHFHGSSEESSNRTTPKRGRFWSPDAQAFVETESPSPPIKVNLDHSSNLLAAIEARMRLQDERIEKLEAENRQCSSRNVELEHRVAE
+# LEGCVRELQGLESRVDELGEQHEVLEETVANVDVHQSELEADCSRIGLELAEIRDMSRDAIIDEINEKVQESIGDVVVMYREELKRKLISTLQNT]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/1
+# CDS introns: 0/0
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 3
+#     RM:   3 
+# end gene g44
+# start gene g45
+pheo_arth1	AUGUSTUS	gene	134104	135165	0.96	-	.	ID=g45
+pheo_arth1	AUGUSTUS	transcript	134104	135165	0.96	-	.	ID=g45.t1;Parent=g45
+pheo_arth1	AUGUSTUS	stop_codon	134104	134106	.	-	0	Parent=g45.t1
+pheo_arth1	AUGUSTUS	CDS	134104	135165	0.96	-	0	ID=g45.t1.cds;Parent=g45.t1
+pheo_arth1	AUGUSTUS	start_codon	135163	135165	.	-	0	Parent=g45.t1
+# protein sequence = [MSFASGWTQTFPPRNGAPLTETNLPSQIGKVFIVTGGSSGLGYLLSRVLYGAGGKVYMLTRTRQHAEDAISRIKAHYH
+# DDTKDAAAQRGSLEFIYMDLLDFATVEAAAQQFLQSEGPKGRLDVLFNNAGTGAVSNAPKSKQGCEYHFCVNSIGAHLLTRLLMPMLSKTAAQNPKDT
+# VRVVWAASMLVEMMSPQDGVRKSFLENPDSVTNQNELYSSSKAANWFLASEFSRRQLADQSAGTTTATQPRVVHIAGNPGNYVTNIWRSVPAWTYYLT
+# RPILRDPIHGMETYLWMAFSNSVTFDRVVAGGYAICDGRWHPGQREDLLLALKGVDQGGSGRASEYFDWCDEAVKDFVK]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/1
+# CDS introns: 0/0
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 7
+#     RM:   7 
+# end gene g45
+# start gene g46
+pheo_arth1	AUGUSTUS	gene	138864	140222	0.94	-	.	ID=g46
+pheo_arth1	AUGUSTUS	transcript	138864	140222	0.94	-	.	ID=g46.t1;Parent=g46
+pheo_arth1	AUGUSTUS	stop_codon	138864	138866	.	-	0	Parent=g46.t1
+pheo_arth1	AUGUSTUS	intron	138902	138954	0.98	-	.	Parent=g46.t1
+pheo_arth1	AUGUSTUS	intron	139146	139218	1	-	.	Parent=g46.t1
+pheo_arth1	AUGUSTUS	intron	139629	139698	1	-	.	Parent=g46.t1
+pheo_arth1	AUGUSTUS	intron	139948	140030	0.97	-	.	Parent=g46.t1
+pheo_arth1	AUGUSTUS	CDS	138864	138901	1	-	2	ID=g46.t1.cds;Parent=g46.t1
+pheo_arth1	AUGUSTUS	CDS	138955	139145	0.98	-	1	ID=g46.t1.cds;Parent=g46.t1
+pheo_arth1	AUGUSTUS	CDS	139219	139628	1	-	0	ID=g46.t1.cds;Parent=g46.t1
+pheo_arth1	AUGUSTUS	CDS	139699	139947	0.97	-	0	ID=g46.t1.cds;Parent=g46.t1
+pheo_arth1	AUGUSTUS	CDS	140031	140222	0.99	-	0	ID=g46.t1.cds;Parent=g46.t1
+pheo_arth1	AUGUSTUS	start_codon	140220	140222	.	-	0	Parent=g46.t1
+# protein sequence = [MWQYLVATALFADGILGQSLGSASFLRFGCSQLVVERVDPLVAPGLNPSPHVHQVVGGNSFNVTMDPNTIDPPAQSTC
+# TSCIYKEDTSNYWTASMYFQSPENGTFKRVPQMANGRLNGTLLPQDGGLTVYYMLPFSGRNMKVTAFPVGFRMLAGNPMLRSQTGMAPGICHRCLAKT
+# DRVSGGAGAPCDRSDTATFPKTPCPGGIRATIIFPSCWDGVNVDSPDHQSHVAYAPSGMALPGDRCPSTHPVRIPQVMYEIMFDTTQFNDARYWQGGK
+# QPLVYSFGDPTGYGAHGDYLFGWKDDALQRAMDGLGKTCGSEYCDKVLTIQDGKDAIACTKSQQAKEDVGSGGWISELPGGTKVA]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/5
+# CDS introns: 0/4
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 1
+#     RM:   1 
+# incompatible hint groups: 3
+#     RM:   3 
+# end gene g46
+# start gene g47
+pheo_arth1	AUGUSTUS	gene	142020	143354	0.52	+	.	ID=g47
+pheo_arth1	AUGUSTUS	transcript	142020	143354	0.52	+	.	ID=g47.t1;Parent=g47
+pheo_arth1	AUGUSTUS	start_codon	142020	142022	.	+	0	Parent=g47.t1
+pheo_arth1	AUGUSTUS	intron	142102	142191	0.92	+	.	Parent=g47.t1
+pheo_arth1	AUGUSTUS	intron	142334	142624	0.56	+	.	Parent=g47.t1
+pheo_arth1	AUGUSTUS	CDS	142020	142101	0.92	+	0	ID=g47.t1.cds;Parent=g47.t1
+pheo_arth1	AUGUSTUS	CDS	142192	142333	0.54	+	2	ID=g47.t1.cds;Parent=g47.t1
+pheo_arth1	AUGUSTUS	CDS	142625	143354	0.98	+	1	ID=g47.t1.cds;Parent=g47.t1
+pheo_arth1	AUGUSTUS	stop_codon	143352	143354	.	+	0	Parent=g47.t1
+# protein sequence = [MTANIPASVLSSLAASPNFQGFYVDGTTQAIMVGTDFTYTTSDRWAGEYEDGGFATFYTEGYGSVLVESGTTLTCNYH
+# IPHEHGRRHDDIGLPGSSTNPTATSTQTDQDTDLADAPVAAPSQAWIAGAVVGPIAGCALVGFLVFWIMRRRAKKASAANAAAMAAVSAGAGAAASST
+# YNNNNYNNHNGGPYHDNPQSPPLPPPSASSRPVSSAPPYAVPGGGAGAWDGQKQFDGRPLSSTTYASAPPQELANVPGTNSWHFQNATELAPPPAAAA
+# EIGGGVGGYGGAATPPPPPQELSNIPGSIDHQGVVYEMHENSR]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/3
+# CDS introns: 0/2
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 1
+#     RM:   1 
+# incompatible hint groups: 10
+#     RM:  10 
+# end gene g47
+# start gene g48
+pheo_arth1	AUGUSTUS	gene	144158	151246	0.57	-	.	ID=g48
+pheo_arth1	AUGUSTUS	transcript	144158	151246	0.57	-	.	ID=g48.t1;Parent=g48
+pheo_arth1	AUGUSTUS	stop_codon	144158	144160	.	-	0	Parent=g48.t1
+pheo_arth1	AUGUSTUS	intron	145001	145070	1	-	.	Parent=g48.t1
+pheo_arth1	AUGUSTUS	intron	145392	145443	0.99	-	.	Parent=g48.t1
+pheo_arth1	AUGUSTUS	intron	149877	149934	0.58	-	.	Parent=g48.t1
+pheo_arth1	AUGUSTUS	intron	150046	150098	0.92	-	.	Parent=g48.t1
+pheo_arth1	AUGUSTUS	intron	150516	150588	0.99	-	.	Parent=g48.t1
+pheo_arth1	AUGUSTUS	CDS	144158	145000	1	-	0	ID=g48.t1.cds;Parent=g48.t1
+pheo_arth1	AUGUSTUS	CDS	145071	145391	0.99	-	0	ID=g48.t1.cds;Parent=g48.t1
+pheo_arth1	AUGUSTUS	CDS	145444	149876	0.95	-	2	ID=g48.t1.cds;Parent=g48.t1
+pheo_arth1	AUGUSTUS	CDS	149935	150045	0.58	-	2	ID=g48.t1.cds;Parent=g48.t1
+pheo_arth1	AUGUSTUS	CDS	150099	150515	0.99	-	2	ID=g48.t1.cds;Parent=g48.t1
+pheo_arth1	AUGUSTUS	CDS	150589	151246	1	-	0	ID=g48.t1.cds;Parent=g48.t1
+pheo_arth1	AUGUSTUS	start_codon	151244	151246	.	-	0	Parent=g48.t1
+# protein sequence = [MAPSAVNGHGPYAQANGRPNGLGNGVSTNGMNGTPNGLGTGHRRVGDAFPGETPAPTNGVTTEASKPKTKPMPLAIVG
+# MSCRLPGNVTTAAEFWELCARARSGYSTIPKSRFDASSFQHPNPGKAGCHNPVGGHFLSDETVDLAAFDAPFFSLTEKEAISMDPQQRLLLECTFEAL
+# ENAGVPKHTIVGKDVGVFVGGSFPEYESHCFRDTDRIPMHQATGCAYAMQSNRLSHFFDLKGPSFTTDTACSSSLVALHLACQSLRAGESSMAIVGGC
+# HLNMLPEFWISFAKSRLFSDSGRSYSFDNRGTGFGRGEGCGMIILKPLEQARRDNDSIRAIIVGSGINQDGKTPGITMPCGTAQENLMRQVYQNADIN
+# PSDTGFIEAHGTGTRVGDPIEATAIHNVFGANRSVRDPLLLGSVKSNIGHLEGASGIVAVIKAAMMLERGFVLPNYDFTYPNEKIPFKEWHLKVPTNQ
+# RPWPRNKKYVSVNNFGFGGTNAHVVLERLPFTQRGGPKDDADLKDEDPGLKLFALSANDKTSLESVMKQLVIYLEQRPEMFQKDLMSNVAYTVCQRRS
+# LLQWRVAIPARRSFDLIDAINSQKSVPGKEGDPLRIGFIFTGQGAQWYGMGRELYEHYPVFTKAIDYADQCLASLGATWSLVEELNKDEKTTAVGASH
+# ISQPSCTAIQLALTDLLFSWGVQPTAVAGHSSGEIGAAYAAGILTFEACVAIAYHRGRLIPVLKERHSELRGAMMAVGGTREEFEPLLSEVKNGNVRI
+# ACYNSPSSLTISGDEAGIDELRAVVEEKQMFNRKLFVDTAYHSHHMGLIGKDYMQSIRMVDAPVSTKIRFHSSLVGRRIDGAELEPSYWVQNLTCPVR
+# FSEAVQSMVEPMGEHRTGVNMLVELGPHSALQGPLKQILKAAGGPAAKIPYASMLARRKDAVETAMEVAATLFTKGAVLNFEAINYPKPAKAPVLLTD
+# LPRYPWNKSSKYWHESRMTLKHRNRSAPRNDILGTEANFSSDLEPTWRNIVRLDDLPWLEHHKIQSLTIFPMSGYIAMAVEAVRQLALEAGEPFDHYQ
+# LEDVAVTAPLVIQDEDLELTITLRPHQERTPIVASETWREFHINSWTRSQGWKEHCKGFVAVVDRDTNGVDGDKRAKDTSALRETSIKAVNQGASKAV
+# DSSGMYERLADLGVSYGTVFQGIVNGSASDTCCKSDLVVPDVAKEMPNQRISSAVVQPAFLESLISMYWLVAGQVRPSLDTIYLPSSVDRVSISRNVT
+# ESTGVVGQKLQAFCQSNNSTHGTQPMRLSMFVASPADPLESLVTLDGLTVTPILDREAEALASHRELCYKIDWEPMATESESATEIEPQMPETDIAII
+# HADTPLQRELVASLANVLWRSTGRRPETGTLFNVNVDDKLCIFLAELERPLLSTLRGDQFAALQKILTSVQGVLWIVRGAYDHATSPDLNMVTGLSRT
+# IRSETLLPFASLDLDGQATLTVDQMQRTIIKAFSTAFTKGKASSGELEFMERDGQLLTPRIINDPVMNEIVHNETNLSALRLTPFDQTDRPLKLAIGD
+# PGILETLHFTDDDNLASSLASDEIEMQVGAVGVNHRDLAAAHGKLANTGFGFEASGVITAVGSDVRGLQVGNRVAALAVEGGAYASRLRTKAGFAFKL
+# PASTSFEAGASLPLAYSTAYYSLIELGRLHEDESVLIHAAAGAVGQAAVSLAQMVGADIYATVGSPEKKQVLITEYGIPADHIFYSRNLAFGNSLRTV
+# TAGRGVDVVLNCVGGDALKESWQCLNRFGRLVDIGTRDTDASTRLEMVQFDHNASFISVDMMSLAAERPRIMQRLLTDVSKLVKYNKVRPVLPIITFP
+# ISEIEGALKTLQSAKSHGKLVVVPGPSDNVKATPPKTPRQILRSNATYLLIGGTGGLGRSMSRWMVSRGARHLVLLSRSGSATGKVKELIDEVAHLGA
+# EILVQKCDVANPADVENLVTYELEDMPPVRGVIHGAMVLRDVLFEKMTYDQYTTVIESKVQGAWNFHRALCNAPLDFFVAISSAAGAVGNRGQAAYAA
+# ANCFLNAFVQYRLSQGLPASSMDLTAVSDTGYLAEDAEKAAEVAKNLGGDTICEAEVLALLGAAIDGRMAASCNNHTITGMRITPSAQPFWTTDAKFK
+# HLREAAEAAAAADASLGASSKVVSYNAAVKSAQSAAEAEQVVCDGLVYKLASVMMMEQDDLDVTRSLSYYPLDSLVAIEIRNFITREFEATLQVLELL
+# SSGSIQTLAKAVCVKSKLVGLSGGAS]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/6
+# CDS introns: 0/5
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 22
+#     RM:  22 
+# end gene g48
+# start gene g51
+pheo_arth1	AUGUSTUS	gene	164490	166058	0.73	+	.	ID=g51
+pheo_arth1	AUGUSTUS	transcript	164490	166058	0.73	+	.	ID=g51.t1;Parent=g51
+pheo_arth1	AUGUSTUS	start_codon	164490	164492	.	+	0	Parent=g51.t1
+pheo_arth1	AUGUSTUS	CDS	164490	166058	0.73	+	0	ID=g51.t1.cds;Parent=g51.t1
+pheo_arth1	AUGUSTUS	stop_codon	166056	166058	.	+	0	Parent=g51.t1
+# protein sequence = [MAFSSCTTKDQPLRFACDRCHFHKLRCSRTDQRASGSAETDEPCSRCAKAQVACVQGVRGKVGRPAKSSKRKAPQYEA
+# AQYEESHPIPRNNGSGASIEYQPRREGQYQLLTSTPDAQQKPSTTTTVTIASSNVDLDENARPTPRPCRLQSPLQYQQPDMTVFPLLSSEVGSWETLM
+# MPQDTFEPAFVTNFDLPPFPTPTSESCFPEGLAATPRADGSSHEAMASSAGSTPIPPPRCVDRDGMNEHYKDRIGSNSYSLSLASSGGQLPTPSRSTT
+# PGFCTRTNYEKLSGLNLRINAVLGGSEKDSGCSDKALEDASGLASELIDTARQIMPQLAIEPSSADTADLVGQTIISELSPASDAVVPETEYGSPRRA
+# QRRIPDSGLVFLLLACYTGILDIFEFVVAELWAARRGALALAGQQQQGSVGSLLKTSLAVHTVHCLFRLLREAVFLRDASGGGFGGLEMDPVLLDEEE
+# GAADWRGGASAGRGGRPLPPALGLLGATCAGMRERELRLLRRMQNLQQLLIR]
+# Evidence for and against this transcript:
+# % of transcript supported by hints (any source): 0
+# CDS exons: 0/1
+# CDS introns: 0/0
+# 5'UTR exons and introns: 0/0
+# 3'UTR exons and introns: 0/0
+# hint groups fully obeyed: 0
+# incompatible hint groups: 7
+#     RM:   7 
+# end gene g51

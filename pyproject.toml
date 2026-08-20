@@ -1,0 +1,90 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cgload"
+dynamic = ["version"]
+description = "Load genome annotations into a queryable relational database, reconcile annotation dialects, and verify that nothing was lost"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Aditya Upadhyay" },
+    { name = "Arijit Panda" },
+    { name = "Sucheta Tripathy", email = "tsucheta@gmail.com" },
+]
+keywords = [
+    "genomics", "genome annotation", "GFF3", "GTF", "GenBank",
+    "eukaryotes", "comparative genomics", "eggNOG",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+# The dependency budget: four, plus biopython admitted deliberately in D-009.
+# Three. tomllib is standard library because the floor is 3.11 (D-010), and
+# biopython was dropped in D-028 when the GenBank reader turned out not to need
+# it -- the declaration outlived the import. A fourth requires a new entry in
+# docs/decisions.md before the import is written.
+dependencies = [
+    "sqlalchemy>=2.0",
+    "pyfaidx>=0.7",
+    "click>=8.1",
+]
+
+[project.optional-dependencies]
+mysql = ["pymysql>=1.1"]
+postgres = ["psycopg[binary]>=3.1"]
+test = ["pytest>=7.4", "pytest-cov>=4.1"]
+dev = ["cgload[test]", "ruff>=0.6", "build>=1.2"]
+docs = ["mkdocs>=1.6", "mkdocs-material>=9.5"]
+
+[project.urls]
+Homepage = "https://github.com/computational-genomics-lab/cgload"
+Source = "https://github.com/computational-genomics-lab/cgload"
+Issues = "https://github.com/computational-genomics-lab/cgload/issues"
+
+[project.scripts]
+cgload = "cgload.__main__:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "cgload.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["cgload*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers --strict-config"
+markers = [
+    "slow: real-genome tests; excluded from the default run, nightly in CI",
+    "requires_server: needs a live MySQL/PostgreSQL server",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["cgload", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "C4", "SIM", "RET", "ARG"]
+ignore = ["S101"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S", "ARG"]
+
+[tool.coverage.run]
+source = ["cgload"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]

@@ -1,0 +1,19 @@
+##gff-version 3
+#!processor NCBI annotwriter
+#!genome-build-accession NCBI_Assembly:GCF_000001405.40
+# fixture: RefSeq immunoglobulin gene segments, GRCh38.p14 NC_000014.9 IGH locus
+# gene -> {V,D,J,C}_gene_segment -> CDS/exon. Measured on the real region
+# (105,586,437-106,879,844): 175 segment rows, ALL carrying a Parent of type
+# gene, with 164 CDS and 162 exon rows beneath them. They occupy exactly the
+# position an mRNA occupies, so they canonicalise to mRNA (D-063).
+# graph-closed.
+NC_000014.9	BestRefSeq	gene	105861837	105862343	.	-	.	ID=gene-IGHV1-2;Name=IGHV1-2;gbkey=Gene;gene_biotype=V_segment
+NC_000014.9	BestRefSeq	V_gene_segment	105861837	105862343	.	-	.	ID=id-IGHV1-2;Parent=gene-IGHV1-2;gbkey=V_segment
+NC_000014.9	BestRefSeq	CDS	105861940	105862235	.	-	0	ID=cds-IGHV1-2;Parent=id-IGHV1-2
+NC_000014.9	BestRefSeq	exon	105861837	105862343	.	-	.	ID=exon-IGHV1-2-1;Parent=id-IGHV1-2
+NC_000014.9	BestRefSeq	gene	105865480	105865517	.	-	.	ID=gene-IGHD1-1;Name=IGHD1-1;gbkey=Gene;gene_biotype=D_segment
+NC_000014.9	BestRefSeq	D_gene_segment	105865480	105865517	.	-	.	ID=id-IGHD1-1;Parent=gene-IGHD1-1;gbkey=D_segment
+NC_000014.9	BestRefSeq	exon	105865480	105865517	.	-	.	ID=exon-IGHD1-1-1;Parent=id-IGHD1-1
+NC_000014.9	BestRefSeq	gene	105863198	105863259	.	-	.	ID=gene-IGHJ1;Name=IGHJ1;gbkey=Gene;gene_biotype=J_segment
+NC_000014.9	BestRefSeq	J_gene_segment	105863198	105863259	.	-	.	ID=id-IGHJ1;Parent=gene-IGHJ1;gbkey=J_segment
+NC_000014.9	BestRefSeq	exon	105863198	105863259	.	-	.	ID=exon-IGHJ1-1;Parent=id-IGHJ1

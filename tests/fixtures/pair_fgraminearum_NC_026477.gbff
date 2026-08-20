@@ -1,0 +1,1070 @@
+LOCUS       NC_026477            8033942 bp    DNA     linear   CON 02-JAN-2024
+DEFINITION  Fusarium graminearum PH-1 chromosome 4, whole genome shotgun
+            sequence.
+ACCESSION   NC_026477 NZ_AACM02000000
+VERSION     NC_026477.1
+DBLINK      BioProject: PRJNA243
+            BioSample: SAMN02953593
+            Assembly: GCF_000240135.3
+KEYWORDS    WGS; RefSeq.
+SOURCE      Fusarium graminearum PH-1 (Gibberella zeae PH-1)
+  ORGANISM  Fusarium graminearum PH-1
+            Eukaryota; Fungi; Dikarya; Ascomycota; Pezizomycotina;
+            Sordariomycetes; Hypocreomycetidae; Hypocreales; Nectriaceae;
+            Fusarium.
+REFERENCE   1  (bases 1 to 8033942)
+  AUTHORS   Cuomo,C.A., Guldener,U., Xu,J.R., Trail,F., Turgeon,B.G., Di
+            Pietro,A., Walton,J.D., Ma,L.J., Baker,S.E., Rep,M., Adam,G.,
+            Antoniw,J., Baldwin,T., Calvo,S., Chang,Y.L., Decaprio,D.,
+            Gale,L.R., Gnerre,S., Goswami,R.S., Hammond-Kosack,K., Harris,L.J.,
+            Hilburn,K., Kennell,J.C., Kroken,S., Magnuson,J.K., Mannhaupt,G.,
+            Mauceli,E., Mewes,H.W., Mitterbauer,R., Muehlbauer,G.,
+            Munsterkotter,M., Nelson,D., O'donnell,K., Ouellet,T., Qi,W.,
+            Quesneville,H., Roncero,M.I., Seong,K.Y., Tetko,I.V., Urban,M.,
+            Waalwijk,C., Ward,T.J., Yao,J., Birren,B.W. and Kistler,H.C.
+  TITLE     The Fusarium graminearum genome reveals a link between localized
+            polymorphism and pathogen specialization
+  JOURNAL   Science 317 (5843), 1400-1402 (2007)
+   PUBMED   17823352
+REFERENCE   2  (bases 1 to 8033942)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (29-DEC-2023) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+REFERENCE   3  (bases 1 to 8033942)
+  AUTHORS   Birren,B., Lander,E., Galagan,J., Nusbaum,C., Devon,K., Ma,L.-J.,
+            Jaffe,D., Butler,J., Alvarez,P., Gnerre,S., Grabherr,M., Kleber,M.,
+            Mauceli,E., Brockman,W., MacCallum,I.A., Young,S., LaButti,K.,
+            DeCaprio,D., Crawford,M., Koehrsen,M., Engels,R., Montgomery,P.,
+            Pearson,M., Howarth,C., Larson,L., White,J., O'Leary,S., Kodira,C.,
+            Zeng,Q., Yandava,C., Alvarado,L., Kistler,C., Xu,J.-R. and Trail,F.
+  CONSRTM   The Broad Institute Genome Sequencing Platform
+  TITLE     Direct Submission
+  JOURNAL   Submitted (08-NOV-2008) Broad Institute of MIT and Harvard, 7
+            Cambridge Center, Cambridge, MA 02142, USA
+COMMENT     PROVISIONAL REFSEQ: This record has not yet been subject to final
+            NCBI review. The reference sequence is identical to CM000577.
+            
+            ##Genome-Annotation-Data-START##
+            Annotation Provider :: INSDC submitter
+            Annotation Status   :: Full annotation
+            Annotation Pipeline :: Eukaryotic Annotation Propagation Pipeline
+            ##Genome-Annotation-Data-END##
+FEATURES             Location/Qualifiers
+     source          1..8033942
+                     /organism="Fusarium graminearum PH-1"
+                     /mol_type="genomic DNA"
+                     /strain="PH-1; NRRL 31084"
+                     /db_xref="taxon:229533"
+                     /chromosome="4"
+     gene            complement(<795..>1625)
+                     /locus_tag="FGSG_14027"
+                     /db_xref="GeneID:23560829"
+     mRNA            complement(<795..>1625)
+                     /locus_tag="FGSG_14027"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327721.1"
+                     /db_xref="GeneID:23560829"
+     CDS             complement(795..1625)
+                     /locus_tag="FGSG_14027"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326023.1"
+                     /db_xref="GeneID:23560829"
+                     /translation="MMTDYILERCREDINKECRPETQPKDLIRKLGRAIQLHNTEACK
+                     FIYPAGELGYLEDQPESDKLYVEAIVILVEELWKPCWKTGASRETFMASILAMTKRFR
+                     DLMVERAYVNAQGSHYDNALQAASSNGHREVVQLLLDKGADVNAQGSRYGSALQAASS
+                     NGHREVVQLLLDKGAHVNAQGSRYGSALQAASSNGHREVVQLLLDKGAHVNAQGSRYG
+                     SALQAASLRPHREVIQLLLDKGADINAQGGSYNNALQAALSNGHREVVQLLLDKGAVL
+                     "
+     gene            complement(<3250..>5086)
+                     /locus_tag="FGSG_11614"
+                     /db_xref="GeneID:23558436"
+     mRNA            complement(join(<3250..3284,3374..3666,3713..3799,
+                     3869..4213,4273..5000,5066..>5086))
+                     /locus_tag="FGSG_11614"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327722.1"
+                     /db_xref="GeneID:23558436"
+     CDS             complement(join(3250..3284,3374..3666,3713..3799,
+                     3869..4213,4273..5000,5066..5086))
+                     /locus_tag="FGSG_11614"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326024.1"
+                     /db_xref="GeneID:23558436"
+                     /translation="MHIQSSVGESLSMASNLSWNTFLSRTSVTSLTRAAFSDNNRGTI
+                     QGFDDVLRVLKTLDLPSFRYNEIEREEVVGEGETYLVERCFIKNNVLAVKHLKINAAP
+                     NDSTLKRRLQAAVLELCVMRHRPLRNHPNIPAVFGYGWNQSGTQPLPYLLVQYSRHGT
+                     LRQYLHHVGSEILPTAKEILIGDVASGLSALHTCKIIHGDVKMDNVLVFHSWDRPAKA
+                     LAKLSDFGHSFIIAGAEDKQGTESARYGGTYLYNAPEVHDQENCPIDQSDLHKCDVWA
+                     FGLLAWEVFLNGKEYITALGDTQQDAEDSRKFSPEECAKLVQLAKESIPFSKHHIRGS
+                     VLRAIFPMTMQWDPTKRVSNLTKLPVMTNWHFSDIHGFQGELALHLESSNWSYEVFPY
+                     FTPETGSEIPWEHEEQIFLGLKRLCSSSPTLDRAAATWQMALCYHVGFGTSRNTLTAF
+                     QFAQTAEDLGHTVAKAFSGLLAPQSDASSSTQYGAQVAELLRRRESCSLPRD"
+     gene            <5679..>7261
+                     /locus_tag="FGSG_11613"
+                     /db_xref="GeneID:23558435"
+     mRNA            join(<5679..6694,6864..6949,7002..>7261)
+                     /locus_tag="FGSG_11613"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327723.1"
+                     /db_xref="GeneID:23558435"
+     CDS             join(5679..6694,6864..6949,7002..7261)
+                     /locus_tag="FGSG_11613"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326025.1"
+                     /db_xref="GeneID:23558435"
+                     /translation="MFEQFDSEVQNHIQVFFEQATGVIDEAFQILSRRQGKTDANKDQ
+                     PESSGQSYPSSHLVTIPMLTVPVSKSSSKSSSTENLLKSVSVQRLRWSLLDKKRIEVI
+                     VHNFSDLNARIHENIKLWSLATSMGIDLQHLERLKENNDAKTLGFDIDAKLHMVATMT
+                     QPISQTLEVEDPLVRQDLNKVTTFEDKFGIFHWDGKPMLVEYRSYNLQSPVPVDLDPR
+                     SKDLVDSLASLLHQPKEMVFRTPRCTGWVRQINHNRVAYIFAVPEGGEPAPVSLLKAL
+                     PPLDSSSSSQLPTPSLGHRFQLAHKLARCISQLQLVKWVLFLASIICSFVNIPNFQGS
+                     RELPQHPRRQQNPTEPFNKLHDVYALGVVLLEIGLWQPAMSLERHGFSSVKEPKAIQK
+                     YLIKVAEKRLSSKVGEKYQKVVLKCLRGNFEVDNDTKEDTKLQVAFRSQVVDILEKIA
+                     DAI"
+     gap             9328..11350
+                     /estimated_length=2023
+     gap             12507..13506
+                     /estimated_length=1000
+     gene            complement(<15867..>18611)
+                     /locus_tag="FGSG_06429"
+                     /db_xref="GeneID:23553562"
+     mRNA            complement(join(<15867..16900,16994..17087,17156..18261,
+                     18318..18353,18419..>18611))
+                     /locus_tag="FGSG_06429"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327724.1"
+                     /db_xref="GeneID:23553562"
+     CDS             complement(join(15867..16900,16994..17087,17156..18261,
+                     18318..18353,18419..18611))
+                     /locus_tag="FGSG_06429"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326026.1"
+                     /db_xref="GeneID:23553562"
+                     /translation="MPAGKTVSIATPASYWYLKAFPIDKIAEVIDYIVYMSYDLHGQW
+                     DYGNPNAYDMCESGRCIRSHVNMTETKNALSMITKAGVPNRNIFVGESSYGISFHMAK
+                     DGCWEPMCEFTGTRIESDAMPGRCTKTGGYLAYAEIMEIVNEKSGAKLFYDKSSQSDV
+                     MLYKGTRLLHFVVKRPLTRLGDYVSYMTPKTKISRRDVWKNLNFAGSIDWAVDLQEFT
+                     ADDFNAPPDRPESGTGCIAGNDNTIDSADLCFFSCNYGFCPSSLCTCYEKGPVKKLPG
+                     KTMQGEFISHDLISVDMNRLCKFACKYEYCPEDVCTRAVVGYNDDDEEEDDNNDAEYT
+                     GPMVGDPKYIDTGEIREGHKSTCFNYKGLNGPPGNMDTCKAYCKPVMDAAEEEGRLTN
+                     YGCVVWSPIDKPIEWKKVPGSDLEIAAGECSCDNWLINELAEFVIDALPIIGQIGCFL
+                     LMSSLKLILDIGLSLFAPGRALSAGVEMVNYIYPDGENPQGAWEWWLSPCGGSDLVPD
+                     EFKQIFDILGEVPAGRSKFKEPKKIKKSSGKKGDDGNSTDRSAPRPNNGGSKGQGAGK
+                     GGGKAPAKPPPANSNNKKKRRVPAKQSTRHLGRLKNTLRLKSCDTNDETQVTDMVVTT
+                     MTYEANAKPTVWTTACDPANAQECYHYSSANSVNPKWATIECPQEAATTAHRFEGKAV
+                     GAWTNEHKGEGWKDASHRTYKKQCERDEWPPAYLLAKNAPEFTLGGTKGGQRIRWIPS
+                     SDNQGAAKHWKGVCMKHAVNHLSLNDWSDKVNNGTKGPTVNQKNNYEVTELSIDVDVR
+                     PEFSLRFRHKAPKDDGLWDNGC"
+     gene            <20332..>22052
+                     /locus_tag="FGSG_12918"
+                     /db_xref="GeneID:23559728"
+     mRNA            join(<20332..20550,20606..20762,20815..21070,
+                     21128..>22052)
+                     /locus_tag="FGSG_12918"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327725.1"
+                     /db_xref="GeneID:23559728"
+     CDS             join(20332..20550,20606..20762,20815..21070,21128..22052)
+                     /locus_tag="FGSG_12918"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326027.1"
+                     /db_xref="GeneID:23559728"
+                     /translation="MKHLAHLLAFAAFLQAGNGAVIDRHSRRDTAPGYPYDPNTSAHC
+                     TWWFDMDTPTTCDDLLKHNSITIEQFRRWNPSITAKCGGLTLAKSYCVEALFETVPEP
+                     QPGTPTKSSATKPTQNTSVKPSNGVQTPQPLQLEIVDNCKKFHLVAKGETCAAIAAKY
+                     KIPIAKIVEWNPSVQDGCSFLWADAWACIMALDYVPGGDSPAPSPTKPSNSITTPEPT
+                     QLIIVNNCNKFHFIKSGEGCAYITSKYSITGAEFLKWNPSIETGCTGLWANAWACVST
+                     IDHKPSTPTKPTTTAKPSATGNVPSPVQGGIAKNCNKYHLVSKTTTCSSIEKYYSLPF
+                     TTFYKWNPSVGDKCQYLMAGYHVCVSVPGWTPTPTTGNNGIETPLPIQSGMTSSCNKF
+                     HLVSKTTTCSSIESYYKLDMSDFLKWNTAIDKSCNGLWAGYNVCIGVIGQKPKPSPTT
+                     PGVVQTPSPIQKNMVKGCKKFHLVQSTTTCASIQNYYKISWANLYKWNPSIGSGCAAL
+                     WAKYWVCVAA"
+     gene            <22489..>23295
+                     /locus_tag="FGSG_12919"
+                     /db_xref="GeneID:23559729"
+     mRNA            <22489..>23295
+                     /locus_tag="FGSG_12919"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327726.1"
+                     /db_xref="GeneID:23559729"
+     CDS             22489..23295
+                     /locus_tag="FGSG_12919"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326028.1"
+                     /db_xref="GeneID:23559729"
+                     /translation="MSTHSNESSDSDCESIEEPTPCNPQEIKGQFLDFYNFLTTLHFD
+                     KNDLKVPPREGWPHLTPEFCAHFKADHTIEVLRHLPYFDQRTKIHIHRGSTLLDYTTF
+                     TREDFENAVEEYEFDDEYWGMEGEIDPKHVFLISLGSEQGTIGLCLNARDGEIIQEQI
+                     GVYEGDHPIQHYFDSLKDMYRRLELIGLPNRPIIDTWGVPEPERTISLEEVCEESEQF
+                     PTNLDKQYLRQLFRKHGWPDAFSKEDAVDAVDNMIDAIERTGKRSANWKL"
+     gene            <23461..>24656
+                     /locus_tag="FGSG_06431"
+                     /db_xref="GeneID:23553563"
+     mRNA            join(<23461..23709,23742..24041,24113..24140,24189..24247,
+                     24567..>24656)
+                     /locus_tag="FGSG_06431"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327727.1"
+                     /db_xref="GeneID:23553563"
+     CDS             join(23461..23709,23742..24041,24113..24140,24189..24247,
+                     24567..24656)
+                     /locus_tag="FGSG_06431"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326029.1"
+                     /db_xref="GeneID:23553563"
+                     /translation="MTKSKADAAKIHFIDFKDHASRPAETFWSGQKHRVLPPLPSLCF
+                     YFVHPDFNLDELDLRAFWRDVIDGLYGPFRFEMFCIPGEELKARGDIFEQVREASRAY
+                     KDPEYAAARKAQGKLPGLVTSHRYPGALVYHGLVIIYKDATWNREDEDKTFDVIKFGL
+                     ALTSEDFELGDKIIVQEPLKTTQRINSALSSISGMLHFPNRPKDQAVMAQCAVSATLR
+                     RGIELTTFAQPEDPYYAITIIRV"
+     gene            complement(26293..>27292)
+                     /locus_tag="FGSG_06432"
+                     /db_xref="GeneID:23553564"
+     mRNA            complement(join(26293..27228,27283..>27292))
+                     /locus_tag="FGSG_06432"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327728.1"
+                     /db_xref="GeneID:23553564"
+     CDS             complement(join(26435..27228,27283..27292))
+                     /locus_tag="FGSG_06432"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326030.1"
+                     /db_xref="GeneID:23553564"
+                     /translation="MTMAASQIPSKAVTGYNVGEIKAKGAFSSEITFAKAGLSLSDII
+                     NSQYPQSLEMMERPGMQLKYLPTRFDEVTGKLLTGGAYLFDKWEEAVDYSHWTTNEYT
+                     IDEEGTKFWSQSAFDSPVRFAWKVIGAYNFAPIEHHAIGHFKRWSYTSNNIEAYLHEV
+                     YPQIKSIAEAQGAVAVWLMHQPEDKMIAIQLAYRKPAVGVSLNDYLVQVKQKSGFDRV
+                     LATKLTALVEFDRVSILLTIWLPLSLAKGGADHTVPNYSVVPAIQTGTA"
+     gene            <27766..>29185
+                     /locus_tag="FGSG_06433"
+                     /db_xref="GeneID:23553565"
+     mRNA            join(<27766..28098,28157..>29185)
+                     /locus_tag="FGSG_06433"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327729.1"
+                     /db_xref="GeneID:23553565"
+     CDS             join(27766..28098,28157..29185)
+                     /locus_tag="FGSG_06433"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326031.1"
+                     /db_xref="GeneID:23553565"
+                     /translation="MAETSDYQSSISTFIVEDVKIFDGHKFIANGFVYVRDGHIADVG
+                     SGKPDRIIGQHTLRISRPQHTLIPGLIDAHIHALAGNTNSVEQSLRFGVTTVCDMHNE
+                     VEDIMRLKQWVAEPQNKARYSDYKYAGIGAVIEGGWPLPVMKKELESVPQGEKVLDAI
+                     VSAWPKINTGHDAKPFVQQQVNQHGASYIKMFHELGDTLGMKLPSTSIDVQNAIVKAA
+                     HHAGVIAVGHALSYSGAMDLLEAGVDGFTHIFLDEPPNDHFIKIMKSRNVHCNPTLSL
+                     CASQTAERQEWQQTFRRDPFARSMLIEKTFEKPLGLAKAERPRAGVQHAYETTRKLYQ
+                     AGIPLIAGSDCAGQGFGVAYGLGVHIEMYLFAHEIGMSPEDVLKSATSTTAARFGFED
+                     RGEISVGKKADLALVEGDIADVLSDPKNRCLPIVGVWRDGVLASIYERGYPEFVQIFD
+                     TDI"
+     gene            complement(<29925..>31746)
+                     /locus_tag="FGSG_06434"
+                     /db_xref="GeneID:23553566"
+     mRNA            complement(join(<29925..29942,30235..30630,30688..>31746))
+                     /locus_tag="FGSG_06434"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327730.1"
+                     /db_xref="GeneID:23553566"
+     CDS             complement(join(29925..29942,30235..30630,30688..31746))
+                     /locus_tag="FGSG_06434"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326032.1"
+                     /db_xref="GeneID:23553566"
+                     /translation="MFRLTHHQILSSLKPASIRVRLYSSKASLNSNQGDPQLDFRSFV
+                     EVLRKDGDLADIDQEVDPNLEVGAVVRRVSETNAKAPLFHNVKGTRNGLWKMFGNAAS
+                     LRNDSKFRYGRIARSLGLPPDSNWKDILEKMRLATTRDPLPPNILSTGQCKQNKIFGD
+                     DIDLTNLPVPLLHQGDGGKYLQTWGVHILETPDKSWTNWSVFRGMVHDKRRLSCLVIP
+                     GQHNSMIRDQWLKLGKDEVPWALSLGAPPAATIAASIPIPPGVSERDYVSSLAGKPLD
+                     MVKCELSDLLVPANSEIILEGTFSLKDKALEGPFEDYIGMHFEGEAGNQPLFTVDAIT
+                     YRDGAILPVSVPGRLTDESHTTASMASVQLLEALQQHDLPIKDAVAPLETLATWCILQ
+                     VDSKKLAEMKTNPDELCTTIGNIAFNSKATMLINRILLIGDDVDIHDWADVIWAYTSR
+                     CRPGIDEYVFDEVMGLPLTPYRKYGRGSSVKGGKMETLNV"
+     gene            <32044..>32897
+                     /locus_tag="FGSG_06435"
+                     /db_xref="GeneID:23553567"
+     mRNA            join(<32044..32063,32240..>32897)
+                     /locus_tag="FGSG_06435"
+                     /product="phenylacrylic acid decarboxylase"
+                     /transcript_id="XM_011327731.1"
+                     /db_xref="GeneID:23553567"
+     CDS             join(32044..32063,32240..32897)
+                     /locus_tag="FGSG_06435"
+                     /codon_start=1
+                     /product="phenylacrylic acid decarboxylase"
+                     /protein_id="XP_011326033.1"
+                     /db_xref="GeneID:23553567"
+                     /translation="MKIGNRNQSYLSWGGARDQVYENALPSLESTRPTRIVVGITGAT
+                     GAPYAIRILTLLHHLGVETHLIISKWALATLKYETSMSEADIRGLASRSYTAKDLSAP
+                     IASGSFQHDGMMIVPCSMKTLAAVRSGYCDDLISRAADVTLKEDRILLLAIRETPLSS
+                     IHLENMLALRRANAIIFPPVPAFYTRPGGIDDIVDQSAGRMLDMMGIFTDGFERWEGF
+                     KKAQTEM"
+     gene            complement(<32998..>35463)
+                     /locus_tag="FGSG_06436"
+                     /db_xref="GeneID:23553568"
+     mRNA            complement(join(<32998..33936,34024..34275,34333..>35463))
+                     /locus_tag="FGSG_06436"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327732.1"
+                     /db_xref="GeneID:23553568"
+     CDS             complement(join(32998..33936,34024..34275,34333..35463))
+                     /locus_tag="FGSG_06436"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326034.1"
+                     /db_xref="GeneID:23553568"
+                     /translation="MISRATKRTGNSLPTVTSKRRAPYAARACIACRRRKGKCDGRQP
+                     CDYCENRGRTCLYDEETVSPGIETVTATASVTRAPAQPSAFQSDESNRSLSPPLTPAA
+                     ANGPPSPAILPNSSEAPDVPSNGCGSGNDSDLTSLVASLRTELQQVKAMVEAQSNGTH
+                     SLGSVASPHTLHAPGDHTSLSNRRPHATQTDTAPSYASHYFYGPTSPDYSMNLVQITL
+                     RQLGYLASSSHQPMLPSVNGNDAVLPPIPHWPSRRHFDRYQLLQFRSWLSLQEAKDAA
+                     DTYHRVIGELHPFVNIDRVRSQLESCYSSDTNQSLGGESNKPDDDDLIILVLMLAVVV
+                     QVSKGTLLATMASVLHSNFMPSANAAITSSTTSIKQVTIALLLGYYYFSHDLSRLALR
+                     LCGIAGRMLMELGFHNSDMLNHILKTDSQRREASAIMCSVIILDRQWSAMTGLPANFP
+                     NAAFSLTPTFIDDMPYAKAIYMLIHISDRFDEPISIAARGNTRIDDDVMELLVFQIQQ
+                     WQKKCVGDKDLSDMEVWFDEPSNLPPSWLFLLIYRAASIKSLLLRPYFFPTSDIEKSK
+                     LYLPQAMELAVRVTGSLFKLDNVTDMYRNQRPYYQHILASICALMFLVVGYIEKHRST
+                     MLPYLTPGYDDQIRECFVRARNLSQKYGDVSTAAKDLGKRIRELCHAMETYGKAQREA
+                     SEEAIPSTTVAFLSNTTFTGPSATSQDIGLNNEPREEAFVPMTDRTFEAEMNSFGANF
+                     GFELPMEGDHGPQDTPPWVLRGWPANSHSFLFQ"
+     gene            <35847..37610
+                     /locus_tag="FGSG_06437"
+                     /db_xref="GeneID:23553569"
+     mRNA            <35847..37610
+                     /locus_tag="FGSG_06437"
+                     /product="Lipase 2"
+                     /transcript_id="XM_011327733.1"
+                     /db_xref="GeneID:23553569"
+     CDS             35847..37442
+                     /locus_tag="FGSG_06437"
+                     /codon_start=1
+                     /product="Lipase 2"
+                     /protein_id="XP_011326035.1"
+                     /db_xref="GeneID:23553569"
+                     /translation="MFNFACFIAWLLLVFAVDAKSPSTSSLGPRGPPTVTIKNGTLSG
+                     IFNSHYDQEFFLGIPYAAPPVNDLRLRKPQPAQPWAGIRKSESYGARCLRNDIRLAGF
+                     SQNVTDPVSEDCLHINIIRPATQRSPLPVLVWIHGGAFQEGSASDGRTNGTFLVQTSV
+                     EMGTPIIFVSFNYRLGAFGFLGGLEIEAAGVSNIALYDQRQALHWIQENIGYFGGDAS
+                     QVTIMGQSAGAMSVGFHLLAFGGRNDGLFNAAIAQSGGPYTVPVLSREISDREADFNM
+                     VLNKTGCSDSKDSLNCLRAAPAELLQQAGSLLTPSFVVDGGIITAPSEELLHSGRFAK
+                     VPLLIGSTRNEGTSLLQQILGTTGSFETEEHFKSFIKTSWIRGPINDTVAQHWAQLYA
+                     QEINTPSTAGLGTVKPNPGPKYGNYYGQATLWLGDMTFTAGRRFATQAWARENMPSYS
+                     FLFDGVPANMDPDTLGAAHFSDVAYTFRDTEGFGWEINPFPAEPNLKEKHVKLAELMS
+                     RMWISFATKRNPNFHNGQLRVTL"
+     gene            <40165..>43962
+                     /locus_tag="FGSG_06438"
+                     /db_xref="GeneID:23553570"
+     mRNA            join(<40165..40239,40288..40706,40761..40784,40836..41016,
+                     41068..42019,42067..42240,42473..42498,42567..42625,
+                     42769..42773,43212..43214,43376..43385,43481..43484,
+                     43583..43589,43659..43690,43746..43754,43951..>43962)
+                     /locus_tag="FGSG_06438"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327734.1"
+                     /db_xref="GeneID:23553570"
+     CDS             join(40165..40239,40288..40706,40761..40784,40836..41016,
+                     41068..42019,42067..42240,42473..42498,42567..42625,
+                     42769..42773,43212..43214,43376..43385,43481..43484,
+                     43583..43589,43659..43690,43746..43754,43951..43962)
+                     /locus_tag="FGSG_06438"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326036.1"
+                     /db_xref="GeneID:23553570"
+                     /translation="MHPSYSLAIAGFFLSSALAKDQCRCTTDDSCWPSTKTWTALNST
+                     IDGHLIRYTPPGAVCYISHPNYDAEACDSVIKQWPESKFHSSDPASLHSEWSNAGCIP
+                     VYKNGTSIYGDPEAGERGCSNDVLPPYVVNATTTDHVVEALRFAAVKNIRLVIKNTGH
+                     AGDGRNLGSSSLSIWTHNLKGIELIENFNSTCPNSKDTPSPRMAATVGAGVQDGEMVE
+                     TLAARNALAVSGTSNDVGVAGWSTGGGHGFATGHYGQGADNILEAEIVTPSGKVVIAN
+                     ECQNEDLYWAIRGGGGGTFGVITSLTVKAYPAPQMVMVAFDTSIKNHTSEDEWYQFIA
+                     DAHALFPAMQDAGIHGYYTVEGPPSAEALTFSGSLMMFEASNKTYEDAIRPFAKLLRS
+                     SYATVAWSLNRLPVNNWQGLLKILPDIGSVSAGHSIRTSRLISRRTVIGKTDKFAAVY
+                     KKIGPTKKAPSVWMEDKLHSLSSLTNSVQNGLPNLSMSGTLTISPKSVNNSLHPSWRN
+                     ATVHLITSQAWTDSTNETEIRSMIHDMTYRKLGLLRDLDPVQGTLLTHENKASSIEPD
+                     WQSSFWGPNYARLREIKEKYDPDGLLWCPRCVGSEDWVQRHDSLLMQYYLKSIMERLS
+                     RDQSASGRRKIFGKARIKSELITQLGRSVNAGNNLQPFF"
+     gene            <44766..>46048
+                     /locus_tag="FGSG_06439"
+                     /db_xref="GeneID:23553571"
+     mRNA            join(<44766..44795,44872..45400,45451..45606,
+                     45669..>46048)
+                     /locus_tag="FGSG_06439"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327735.1"
+                     /db_xref="GeneID:23553571"
+     CDS             join(44766..44795,44872..45400,45451..45606,45669..46048)
+                     /locus_tag="FGSG_06439"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326037.1"
+                     /db_xref="GeneID:23553571"
+                     /translation="MPGVAKEAVVPIEAVLFGVASFLVLARLTLRTVRQRQSLTVSDW
+                     FLIASWFDAAALFGTDTASYNLGGMDEYDPEAPPRSIEDQVALAKISFAGNYFYDTGI
+                     YLPKLALLALYFKLIPQTLPMLRKALYASTALTGTFMVTTCFLDTFWCGANVAVNWDP
+                     EGGCSTFESKTVFRIDWGMNLVSDILVFLLPFPLLFGLQLSRRYMVGLIAIFASGIIT
+                     VGASIGRFITIDTIHAWTNVYVLSMTELAAAIVVVSLPALKSLLHGFGLRSTKQGTTQ
+                     TGSGYHKHSATVTSSSHFNMLSSGRDRNAEPYGTTARVAAIPEEDSGSEVELTNLQGI
+                     YKSARVSVTYQRRDDGDWLGTERQVGPGTK"
+     gene            <46911..>47971
+                     /locus_tag="FGSG_06440"
+                     /db_xref="GeneID:23553572"
+     mRNA            join(<46911..46943,47006..47573,47630..47782,
+                     47847..>47971)
+                     /locus_tag="FGSG_06440"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327736.1"
+                     /db_xref="GeneID:23553572"
+     CDS             join(46911..46943,47006..47573,47630..47782,47847..47971)
+                     /locus_tag="FGSG_06440"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326038.1"
+                     /db_xref="GeneID:23553572"
+                     /translation="MAFFIDGKDCMISEWILLAVSYLFVGLRIYARLFRARQKLDASD
+                     WLLVVSAFNALALIICDTLTYQMGVLDEYETSVKLSKVWWPRHNNDMGATNTDAQISF
+                     ASNYFYDFGMGFPKLSMLAFYWAYFLPSNGVSSAMRKTLYGITAFVCISYLVILFDDT
+                     FFCGKDVSVQWSQEEGACSVFYAPEPFILNFTLNLACYFAVYALPLILLVQGVLKTST
+                     GVMVTFVLGALTICTTMVRFITLKVGTGQENLVYPLSMLEMALAITVVALPGLRPLVS
+                     RPVKHETANESFYVKN"
+     gene            <49742..>51376
+                     /locus_tag="FGSG_06441"
+                     /db_xref="GeneID:23553573"
+     mRNA            join(<49742..49801,49891..49921,50300..50324,50504..50583,
+                     50643..50891,50949..>51376)
+                     /locus_tag="FGSG_06441"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327737.1"
+                     /db_xref="GeneID:23553573"
+     CDS             join(49742..49801,49891..49921,50300..50324,50504..50583,
+                     50643..50891,50949..51376)
+                     /locus_tag="FGSG_06441"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326039.1"
+                     /db_xref="GeneID:23553573"
+                     /translation="MMHSHGRGRAYIWQIIEAYRCTLSRGDRKQIPFKEKRKGLSLNL
+                     HVYQVVTTRVWFFLPFLLGSLFEATAFISRAISAKEAPNYTLGLCMVQDHLLLLGPTC
+                     YSAAIYMLLGRFIRYLDGDKFALIKPKWLTKIFLFGDITSIVLQAFDGGANDKTDSSH
+                     NLTATEDVVVAGLIVQLVFFSMFVIVAGCFHYRFSKNSVVQPPNWQKFMMVIYFASML
+                     ILIRSVFRMVEYVEGPQSKLQAVEVYVYAMDAIPMAIITISFHIIHPSNYMRGLGKTL
+                     SKTDSETSLASPHV"
+     gene            complement(<53503..>55090)
+                     /locus_tag="FGSG_06442"
+                     /db_xref="GeneID:23553574"
+     mRNA            complement(join(<53503..54043,54095..54387,54443..54958,
+                     55019..>55090))
+                     /locus_tag="FGSG_06442"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327738.1"
+                     /db_xref="GeneID:23553574"
+     CDS             complement(join(53503..54043,54095..54387,54443..54958,
+                     55019..55090))
+                     /locus_tag="FGSG_06442"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326040.1"
+                     /db_xref="GeneID:23553574"
+                     /translation="MPVGPFDGRKKRSRCVSCARSHLKCSGNYPCNNCQKKQIDCTFE
+                     AQKPMRIRIDYAQSAVRVDGRVARSKPCGSTSPQLGIGLSNNYVYYLSHYFNEFLRRN
+                     VVNPKTKGLTDVVSLMKNKVPFGFVHHAVLSVGAMQAFKLNASEGIDSSKAYSLAVGH
+                     YSKAVTGLRQTLDQFDQQPSSLHCVLWTTHLLGLFELMNDASGAGWVQHLVHGTSKAL
+                     VAAGPTACKSIPGQRFFAEIQAFEACRAIIFNEPTFLASPEWRLLVEEIQGKSQGDNG
+                     SLNELLSIVVSCATLRVRVRDFLYSSESQPSDQHGMSQDNSYGIISEGFRLRQALIDW
+                     EAGLSSTCPEEENIDLVAKSFFCLAQAYFAATSIYLSGVFDYEMQYWQDMEIVPPTLS
+                     EQEIQTHVNNILGTTTMLLENSPISPLLVLFPLRVAGARSWQKWQQDCIIQSLLAVEM
+                     SFPVAAAFRADLQELWIGRDHLS"
+     gene            <55699..>56839
+                     /locus_tag="FGSG_06443"
+                     /db_xref="GeneID:23553575"
+     mRNA            join(<55699..56256,56318..>56839)
+                     /locus_tag="FGSG_06443"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327739.1"
+                     /db_xref="GeneID:23553575"
+     CDS             join(55699..56256,56318..56839)
+                     /locus_tag="FGSG_06443"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326041.1"
+                     /db_xref="GeneID:23553575"
+                     /translation="MHLSILFLSLLGIGTAINLPDPTGPYGVALRPQGMTDTKRIDPY
+                     DPKKGHRQVLASIFWPIHSTVCSKEIVPYMPPAVAQFYGQQAQSMGLSNDTFAAFEYA
+                     VCKTPASAKGCDSQRSFPLAVFSPGAGNSRLLYSNMARSLASYGNIVVLIDHPYDADI
+                     VEFPDGQIIRSGNIPETTKSLIDLTKVRAMDISFVISKVLQPSFQRKVFKGLPGSVDS
+                     KKVFALGHSLGGASAAVASLSDVRLRGGMDLDGQIFEPALSKGLDKPFFLVGRPNHSK
+                     EDTTWKTFYAKLRGPKKEIAIKGTVHGSFTDYPQLIQALHLPASTQKAVQQLVGDIDA
+                     DYLQKFLSETTVRFMNISFGSEAKV"
+     gene            <59063..>60312
+                     /locus_tag="FGSG_06444"
+                     /db_xref="GeneID:23553576"
+     mRNA            join(<59063..59350,59406..59869,59924..60051,
+                     60188..>60312)
+                     /locus_tag="FGSG_06444"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327740.1"
+                     /db_xref="GeneID:23553576"
+     CDS             join(59063..59350,59406..59869,59924..60051,60188..60312)
+                     /locus_tag="FGSG_06444"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326042.1"
+                     /db_xref="GeneID:23553576"
+                     /translation="MGLWLSILPRLHRGIPSDKQQQTKKARATEDSEDLKSFIKPLIT
+                     SLASELEYSSLTPTDNSALWDAMCLYADKTGVQYDEGTHSGTCFKIGFTYPAVCFPHH
+                     PLEVQTFIGIYSWLGLLLDDEAVTYPDEFQMFHQRFCMGEKQPLPLLQGWADLMKMAF
+                     QYWDPLVANFIVTASLNFLNANALQARDDFTRVERTKAGHSWAWFIREKDGVGEAYAW
+                     FTFPKKLCEDKSRFLEVIPDLSMWIGLTNDILSFWKEEKAGEKHNYIHSRGWYEDKDI
+                     WSTFEDIVDDVKLKTRNMRLVLNGRDTYLQLLNSHLLGYIAFHKLNTRYRLWEVGLGE
+                     "
+     gene            <61557..>62839
+                     /locus_tag="FGSG_06445"
+                     /db_xref="GeneID:23553577"
+     mRNA            join(<61557..61588,61640..62049,62103..62563,62616..62736,
+                     62799..>62839)
+                     /locus_tag="FGSG_06445"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327741.1"
+                     /db_xref="GeneID:23553577"
+     CDS             join(61557..61588,61640..62049,62103..62563,62616..62736,
+                     62799..62839)
+                     /locus_tag="FGSG_06445"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326043.1"
+                     /db_xref="GeneID:23553577"
+                     /translation="MAWLQPTLCRKELESRQTSGLDAAMKAAGKKYFGTALTVRNDAG
+                     ETNVLNTKGEFGSITPENAMKWEAIQPNRGQFNWGPADQHANAATQRGMELRCHTLVW
+                     HSQLPSWVANGNWNNQTLQQVMKDHINAVMGRYKGKCTHWDVVNEALNEDGTYRDSVF
+                     YRVIGEAFIPIAFRMVLAADPTTKLYYNDYNLEYGGAKTAGAIRITKLIQSYGLRIDG
+                     VGLQAHMTSESTPTQSTVTPSRANLASVLNSFTKLNVDVAYTELDIRMNTPANQQKLQ
+                     ANAAAYARMVGSCMDVKRCVGVTVWGISDKYSWVPGTFPGEGSALLWDDNFNKKPSYT
+                     SSLNTIRACWKCHRLLVSIS"
+     gene            complement(<64629..>65079)
+                     /locus_tag="FGSG_06446"
+                     /db_xref="GeneID:23553578"
+     mRNA            complement(join(<64629..65006,65065..>65079))
+                     /locus_tag="FGSG_06446"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327742.1"
+                     /db_xref="GeneID:23553578"
+     CDS             complement(join(64629..65006,65065..65079))
+                     /locus_tag="FGSG_06446"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326044.1"
+                     /db_xref="GeneID:23553578"
+                     /translation="MVLNNSTLSRLSRTCKKYDLLITPLLYKRISVAAMFHAHIGKLI
+                     RTLEPHLSIQQRKQLKKEGTYKGQKDIYPSNLRPDEKPICVNHVRQLVIGSVQAGRNH
+                     DYIVHRYIEETLKNTDNIEILESCFVTE"
+     gene            complement(<65728..>67388)
+                     /locus_tag="FGSG_06447"
+                     /db_xref="GeneID:23553579"
+     mRNA            complement(join(<65728..66041,66091..66895,66990..>67388))
+                     /locus_tag="FGSG_06447"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327743.1"
+                     /db_xref="GeneID:23553579"
+     CDS             complement(join(65728..66041,66091..66895,66990..67388))
+                     /locus_tag="FGSG_06447"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326045.1"
+                     /db_xref="GeneID:23553579"
+                     /translation="MTIANILLSLNDKVQKNKGQSILITLFIAPLVYILVNELVRHNA
+                     RISNLDGPWGLPLIGNIRDIKVNASEKYREWAKKYGPVYQIQLGNIPIVVVNSAAAAR
+                     HIFGANAQALSSRPEFYTFHKVNHTTPNTCQGAASALNRPSVATYVDHLDVETRDFIK
+                     ELIEYGNNGKSPVDPMPMIQRLSLSLALTLNWGVRLKSQKDNLFAEITHVEEEISRFR
+                     STTGNLQDYIPLLRLNPFNFHSSKAREMRNRRDKYLTALNDGLDERIKNGTSKPCIQA
+                     NVIMDKEAKLNKDELTSISLTMLSGGLDTVTTLVAWFVAYLSQHPEIQDKAVSEIGKF
+                     FSQKEPMCDANDDQKCEYVVALVKESLRYYTVLRLALPRASIRDIIYEGVKIPKGTVV
+                     FLNAWACNMDEQVWSDPQEFRPERWLEQPEAPLFTYGVGYRMCAGSLLANRELYLLYM
+                     RLLNSVKIEQFDNVDCHPVRGNLDPTSLVAMPRRYKASFTPRSPDDLKKALVVSV"
+     gene            <67620..>70044
+                     /locus_tag="FGSG_06448"
+                     /db_xref="GeneID:23553580"
+     mRNA            join(<67620..67822,67998..68587,68629..68694,68770..68999,
+                     69061..>70044)
+                     /locus_tag="FGSG_06448"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327744.1"
+                     /db_xref="GeneID:23553580"
+     CDS             join(67620..67822,67998..68587,68629..68694,68770..68999,
+                     69061..70044)
+                     /locus_tag="FGSG_06448"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326046.1"
+                     /db_xref="GeneID:23553580"
+                     /translation="MAPQSPFFFFGTQSLHLTTDMDQQAASEKSPGQPAVKARKRNAA
+                     DAESIPETVATGRSKRGKYTTVAWSEKYNQSLVSEISQLRQQVSELIVVVHELKQQTQ
+                     RPQSQNPATVSPHTRDNIAIHSPASARSQVPRQPHFVGPTRSAFGILVGERSLNRIGV
+                     PKFDSMPPSGAQSPVGPTSDEPISDLDFWNCCTANDVTRYLVTFQEEVESVYPFIDIG
+                     DYIAQSKEILQIIQGASSITNDERLCSQDITLAKVAIATGLILDEPIESIEHTQSASR
+                     PQGNPITCNAGEELLAWRTIGIAAREALEMGLHRKRSLLDNFKDTDSRRLATRVFWCV
+                     YVLDRRWSFGTSLSFALVDKDIDPELPKPDEEYLYLQCMVGYGQLCSRIWEAIPPFGS
+                     ASQSIPDDTAAALDLQTQDWLESIPSHLRLRHPRLGLAPRAQPRLPHRLRALLYLRGN
+                     YVRILIYRHHLMSTDSIASNPQSAWLVVDIAQDTIQVLVHLHSTTDIYSRQQSAFNYF
+                     LLSALAVLFLAVCHAPETFSAPCRRTFSDGVDLVRGLSRHSMVSKRLWKSIRGVIPRI
+                     KSFGFPTTQNESQEQSEGDGEATGGANGQVGPTQLTAAVEEQMPVPTIDGEALPFGDI
+                     VMPEGDFLGSVPDMFQMRNDLLDLFDAIGQGQQFLQPVPGAFTHDTDFATTTEETHDI
+                     SMRFQGLI"
+     gene            complement(<70072..>70468)
+                     /locus_tag="FGSG_12920"
+                     /db_xref="GeneID:23559730"
+     mRNA            complement(join(<70072..70287,70367..>70468))
+                     /locus_tag="FGSG_12920"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327745.1"
+                     /db_xref="GeneID:23559730"
+     CDS             complement(join(70072..70287,70367..70468))
+                     /locus_tag="FGSG_12920"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326047.1"
+                     /db_xref="GeneID:23559730"
+                     /translation="MSPVTRVTLFKVASEKDQQHLVDLYKQMPQKAVKDGKPYISSVQ
+                     AGKANSDQRAQGFTVVAISTFASQEDFNYYDTECEAHLELRTFAKGVNQGFAMIYFEN
+                     EVV"
+     gene            complement(<70989..>72329)
+                     /locus_tag="FGSG_06449"
+                     /db_xref="GeneID:23553581"
+     mRNA            complement(join(<70989..71335,71387..>72329))
+                     /locus_tag="FGSG_06449"
+                     /product="fumarylacetoacetase"
+                     /transcript_id="XM_011327746.1"
+                     /db_xref="GeneID:23553581"
+     CDS             complement(join(70989..71335,71387..72329))
+                     /locus_tag="FGSG_06449"
+                     /codon_start=1
+                     /product="fumarylacetoacetase"
+                     /protein_id="XP_011326048.1"
+                     /db_xref="GeneID:23553581"
+                     /translation="MSSWLPIPTKSHFSLANLPFGIISTSTKPAPRPVVAIGEQALDL
+                     SVFAQNDGFSKLSEFPAEKIDVFSQSTLNDFAALGRQVHRTTRAYLQDVFRNDTPYPE
+                     ILKDNAPLREQALIPLAKVNSHLPLSIGDYTDFFAGRNHAQTVGALFRGPANALQPNY
+                     SHLPVAYHGRASSVVVSGTPLQRPWGQVLPNPQSQDPVFKPCARLDIELELGMFVSKG
+                     NKLGSSISVDDAEDYIFGYVLMNDWSARDIQQWEYVPLGPFNAKNFGTSISPWVVLAD
+                     ALEPFRGEGLPNETPLQKYLEEKRKDPILHINLEVSLTTNKGHTTKITKTSSKNLLWS
+                     WPQMLAHHSISGCNMRTGDLLGSGTISGLEPGTQGSLLEQTQGGKVFVQLDGGEERKF
+                     VQDGDTITITGWSGNADDGLVGFGECSGTILAAVSRD"
+     gene            <72677..>74210
+                     /locus_tag="FGSG_06450"
+                     /db_xref="GeneID:23553582"
+     mRNA            join(<72677..72795,72854..73606,73748..>74210)
+                     /locus_tag="FGSG_06450"
+                     /product="homogentisate 1,2-dioxygenase"
+                     /transcript_id="XM_011327747.1"
+                     /db_xref="GeneID:23553582"
+     CDS             join(72677..72795,72854..73606,73748..74210)
+                     /locus_tag="FGSG_06450"
+                     /codon_start=1
+                     /product="homogentisate 1,2-dioxygenase"
+                     /protein_id="XP_011326049.1"
+                     /db_xref="GeneID:23553582"
+                     /translation="MNWILFMLIAIATQLVTMPVTNFSTSEKYSYLNGFDSFHESEAI
+                     KGALPIGANSPQKPPYGLYAEKLSGTAFTAPRHENRQTWLYRVLPSASHSTYQRFSNA
+                     SEPILKAKLNYVPQQLRWDPFDIDEQVDWVTGIKLVSGAGDPTMKTGIGIYVFAAGKD
+                     MDEKTAMYSSDGEMLVVAQHGVLDIQTELGRLLVRPNEIAVLPRGIRYRVTLPEGPIR
+                     GYILELYQGHFQLPELGPIGSNCLANPRDFQIPVADFQEDTTSTWIILNKFNNELFVA
+                     QQGHTPFDVVSWHGNISFDHPDPSIYTVLTGPSDRPGTAIADFVIFPPRWLVQEDTFR
+                     PPWYHRNTMSEFMGLICGQYDAKTGGGFQPAGASLHNVMTAHGPDADSFEKASNSELK
+                     PMKVGEGSMAFMFESSLMLGITDWGLETCKKVQADYNKHSWEELKVHFKMPL"
+     gene            complement(<76156..>77775)
+                     /locus_tag="FGSG_06451"
+                     /db_xref="GeneID:23553583"
+     mRNA            complement(<76156..>77775)
+                     /locus_tag="FGSG_06451"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327748.1"
+                     /db_xref="GeneID:23553583"
+     CDS             complement(76156..77775)
+                     /locus_tag="FGSG_06451"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326050.1"
+                     /db_xref="GeneID:23553583"
+                     /translation="MGFLTLVLHKLSICPFSFLLFILYASAVPLATTNTRPSYHITPE
+                     KKWMNDPQRPFFLGDEWHLYYLYNSNFDSSNPGSGGTEWYHITSTDMVHWTRRGVVLE
+                     KYKPNPPSGIILGDIETGSAVVDINNTAGFGRSAVVAIVTQMADGVQQQSLFYSTDNG
+                     YSFIPYEGNPVMPNPSPSAKPAFRDPKIFWDDKEGRWVMSLAEGDKIGFYTSIDLKTW
+                     AYVSEFKPENAGVDLGILECPDLYQIDLDGDSTKRTWILALGANGYRYNRTTGTAYWT
+                     GKWDGNGFTATESFPQWMDDGPDFYATVSWENPDDRYGSRYAIAWMNSWDYAASLPYY
+                     ADFAGQDSLVREVKLKTINSSPTLVSIPIGGYGEIFASPKSVSGKTITTDPASASLPS
+                     GMEQGAYIIRATISKNDGDKGNEVRFVIKSDGTFSTTVGYDFVHSQAFLVRDSDGSAT
+                     DSMAAGPKQAYDTVRTAPDPTGGSTVKLVIYVDWNSVEIFVNDGEAVLSGLIYPNQEA
+                     NGIQVVSDIGSLTLVSFSYAACDSIDYLGKA"
+     gene            80315..>81170
+                     /locus_tag="FGSG_06452"
+                     /db_xref="GeneID:23553584"
+     mRNA            join(80315..81044,81097..>81170)
+                     /locus_tag="FGSG_06452"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327749.1"
+                     /db_xref="GeneID:23553584"
+     CDS             join(80351..81044,81097..81170)
+                     /locus_tag="FGSG_06452"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326051.1"
+                     /db_xref="GeneID:23553584"
+                     /translation="MKSFLATALSTLLLVNNVAAAAVEDPIEIFNRQAAGQVIRQCSK
+                     PGVLALAYDDGPGQYTNQLIDTLDRAGAKGTFFWTGKLYGCVYNNQAAVKKAYNSGHQ
+                     VASHTWTHPQNFGSLSTDQLKQEMQKFEQAMVNIIGKKPAYMRPPYLATGGNVLPTMQ
+                     QLGYKVITNDVDSGDWNGQSAQQSQQKFQQAGAGGNGHIPLMHETYASTVNTLTPWLL
+                     NWAKQNNLKIVTVAECLGNAAGAYQPGTFQGNGQNTC"
+     gene            complement(<81634..>83379)
+                     /locus_tag="FGSG_06453"
+                     /db_xref="GeneID:23553585"
+     mRNA            complement(join(<81634..82620,82689..82872,82927..83010,
+                     83075..>83379))
+                     /locus_tag="FGSG_06453"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327750.1"
+                     /db_xref="GeneID:23553585"
+     CDS             complement(join(81634..82620,82689..82872,82927..83010,
+                     83075..83379))
+                     /locus_tag="FGSG_06453"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326052.1"
+                     /db_xref="GeneID:23553585"
+                     /translation="MAPSSINPEMQPAVDLAPMGHGKTEVPNTDNVIHVEHDEEGSMK
+                     HADADSTPVSAREHAFAELGIPDWEELEKKVVRRLDMTLLPTLWLLYVFNYLDRASLG
+                     QARLSTLDEDLKLEGTQFGSAVSILSAGYVLGQVPSNMIIGKIRPSLYLPGMAILWSG
+                     VSAAIAGVKTYEGLLAVRFFLGLVEAPLFPGAIYVMSSWYTRREIAVRIAIMSTGVSL
+                     ANGLSGLIAAAVFTTLEGARGVAGWQWLFIVLALFGSAFAFAAVFLLPDYPQSKSGSA
+                     MWTMTEDMRKVAQVRIIADRVSEVEIQSTIWTGVKLTVIDYKFWLLTGVNIAISAAYG
+                     FSNFYPAIVRGLGYDRIVALLLTFPPYCVAAATSIAVAWNSDRVGERGWHFSTPIAVG
+                     LAGYVICMITTATVPRYSASYLFIGGLFGANPLIQTWLSTTLARTPEKKAVSVALCNV
+                     LSQIGNVIAPFFFVDSDEPRYRLAFILMFLMGSLCITFALTLKYCLWRENKRLYREAQ
+                     ENGTPYMPYLQ"
+     gene            <83913..>84953
+                     /locus_tag="FGSG_06454"
+                     /db_xref="GeneID:23553586"
+     mRNA            join(<83913..84021,84082..>84953)
+                     /locus_tag="FGSG_06454"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327751.1"
+                     /db_xref="GeneID:23553586"
+     CDS             join(83913..84021,84082..84953)
+                     /locus_tag="FGSG_06454"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326053.1"
+                     /db_xref="GeneID:23553586"
+                     /translation="MSSTSSVMPFGTATCVTKLNDNSWSANLHPDYCVGAVPNGGYVA
+                     SVMYQAVESHARNLGLRQQIISAQLQYVNRTQIGEAIITIEKVKIGRATSTFHATLLQ
+                     GPDTSELQSRKCVLGYYVCLAPATDGLTLATGWNLLPPVPSIDVELAPKGLDPNWSSE
+                     ASRIQIHHLASLGFVRAVEGAFESFYRRQPARKGLEDSWIRLTSGERFTNATLPLVAD
+                     AKPYVVEGWRPLPADESRAAVPFSRNDPFWYPTLVMNLDIKKGLPQEGEEWLFIRTEA
+                     RKIEQGRLDLQVSILDQQGNLVALASHINLVLSASRNLRTRDVNEDQGKL"
+     gene            complement(<85188..>86142)
+                     /locus_tag="FGSG_06455"
+                     /db_xref="GeneID:23553587"
+     mRNA            complement(join(<85188..85876,85977..>86142))
+                     /locus_tag="FGSG_06455"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327752.1"
+                     /db_xref="GeneID:23553587"
+     CDS             complement(join(85188..85876,85977..86142))
+                     /locus_tag="FGSG_06455"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326054.1"
+                     /db_xref="GeneID:23553587"
+                     /translation="MAERVAQIASHITYPRGLLAGQTAIITGSGQGIGSEAARLFAQE
+                     GAKVVVCDVDSAKAQGVVDRITSSGGQAIAVPGDITDQVYIDQLVKRAAEFGGGEIHI
+                     IVNNAGYTWDGVVHKMTDKQWAAMANIHGTAPFQLIRAAAPYFRIKDGKQRNIVGISS
+                     TSGVHGNAGQSNYAFFKAGVSGLMKTIAKEWGPAFNVRANTVAFGYIETRLTQAKEAG
+                     AFITGPGGEKIQLGVPGRDGKSSFEDIPLRRPGSAEDAAKVVLAVCSPLFSYVTGQVI
+                     SVTGGRNM"
+     gene            <86521..>89429
+                     /locus_tag="FGSG_06456"
+                     /db_xref="GeneID:23553588"
+     mRNA            join(<86521..86603,86792..86797,86894..87335,87391..87471,
+                     87531..88222,88288..88485,88550..>89429)
+                     /locus_tag="FGSG_06456"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327753.1"
+                     /db_xref="GeneID:23553588"
+     CDS             join(86521..86603,86792..86797,86894..87335,87391..87471,
+                     87531..88222,88288..88485,88550..89429)
+                     /locus_tag="FGSG_06456"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326055.1"
+                     /db_xref="GeneID:23553588"
+                     /translation="MPTTIEEHHGAPANSKSKRQETRRRSPNKKKHVGKHHASDAETE
+                     TATKTPTAPKEHEDLPAVLTDEFLETPNLADEKPRQTGQPEITFAYYPFLCINNLNSL
+                     NANDVKYLDSQGCLRVPESNCLDNLIRTFFRYAHPILPVINEAEFWSSYDPLTSDDNT
+                     SRVPVVLLSAMLFVACKYVDDSTIQSVQLDSAREARDRFFRKTKLLYDHETESSPVVL
+                     AQVALLLAHWTPQTTSSCGRQSTQWLSRAIHHCHDAISQAQLWSTLRVRYNESNLRRL
+                     VGCCKLSDCIHSLYNRRPLMVLPGMANTESDHLVLSRADLSHEIGRSRVYGVEAKHRL
+                     IDAQEQMSSLITILGRALALVYPQVGTTTRRATSTHDEDKYEFINCKNELRIWYSGSD
+                     VFPISGQDSALGSPVSPDGDSEYGSSQHDPVELLGSMMHLHYETAMLALCQSELLRLT
+                     VNPRTTYSTSRRQQPLLSEPERQYSSCILKMADQLSHSLQRQHLCRVPESMILCTVLP
+                     LLLHLPSSMSSGQQVIEAQSCYPDWVQKVMGCLRLYFRNEFEFILQAVKIFNNSIAQS
+                     SQEDDGPQPSEGQPHMSGWRELLDTRPELFARLIERLDTVICWGGDLPKTYTGILVDD
+                     SQARTSPTLTRQFRATGISPTLTPHVASTPSRRRMEKRSSPILCEDKPEAQLETGSAD
+                     SSLTSSGGLRESFSDVAYSYLDGVPEKTYSPTSLDTSQRYWTEETVDDGRRDQATTDG
+                     EIKPSAIDSIDVDNIMLEDGLSDDWIDALLEQDMSLQGDNAGRSVEDVDMAAT"
+     gene            complement(<89779..>90623)
+                     /locus_tag="FGSG_06457"
+                     /db_xref="GeneID:23553589"
+     mRNA            complement(join(<89779..90243,90317..90376,90429..>90623))
+                     /locus_tag="FGSG_06457"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327754.1"
+                     /db_xref="GeneID:23553589"
+     CDS             complement(join(89779..90243,90317..90376,90429..90623))
+                     /locus_tag="FGSG_06457"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326056.1"
+                     /db_xref="GeneID:23553589"
+                     /translation="MYENLQLERREDVFILTLQKPPENRLTSQFCQEIIRALNDVRKE
+                     LGPDAPGAVIIRGNDTKFFCTGLDLYERDTNPYASSEGFYPLVATLLDFPFPTICLIT
+                     GHTFGGASVMTLAHDYRIMNAARGYWCMPVAELGLHFDGMGALLRAKLRPQTARKVIL
+                     QGHKFTSSEALADGIVDEIAPPEEMLDRALELANTVKSKAKMGVYGLLRGELYGEALR
+                     AFQQISYVHSRLNSRQAKVKL"
+     gene            complement(<91745..>92539)
+                     /locus_tag="FGSG_12921"
+                     /db_xref="GeneID:23559731"
+     mRNA            complement(<91745..>92539)
+                     /locus_tag="FGSG_12921"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327755.1"
+                     /db_xref="GeneID:23559731"
+     CDS             complement(91745..92539)
+                     /locus_tag="FGSG_12921"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326057.1"
+                     /db_xref="GeneID:23559731"
+                     /translation="MTTSPSFTVTKGPITIETLDHGSGPVIVILPSLARGANDYDIVT
+                     QFLVEAGYRVIRPQPRGIGKSSGPMEKLTLHDFAADVAMVLDHIKCGPSVIVGHAWGS
+                     QPARMLAADRPDLVRGVVMAAASAGKLPPGSTEKPFSRLRTEIDGSGDMSLPESKRLE
+                     YLQAAFFGPEGNPRLWLDGWSEAAHKAQAHARIYTPVDEYFSAGETVPILDLQAEHDA
+                     VVVKDVMKPCLGDRVTVQVIKNAGHAMAPEQPEAMANAIIDFTKSL"
+     gene            complement(<92952..>94746)
+                     /locus_tag="FGSG_12922"
+                     /db_xref="GeneID:23559732"
+     mRNA            complement(join(<92952..93462,93511..94336,94395..>94746))
+                     /locus_tag="FGSG_12922"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327756.1"
+                     /db_xref="GeneID:23559732"
+     CDS             complement(join(92952..93462,93511..94336,94395..94746))
+                     /locus_tag="FGSG_12922"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326058.1"
+                     /db_xref="GeneID:23559732"
+                     /translation="MAIDASTANLDRTQIVPLHGGPHVLPNNPLFTRLLRHAHRNYLA
+                     IRDRELGVSKTYGELLDAVLGLRDVVRAALPSEVIEQLNNGNEVYVGVLAAGGYEFTV
+                     AVLAVLALGAAVVPMFPTAPVDEIVYYATKSQQVAILSSSATTQLAQESAQCCGIAQL
+                     NILPNLPRTPRFEPPDISLSSNPPQDPSAPGVVIFTSGTTGKPKGVVLRRTYTHEGAI
+                     TVGDSYGITHTDVLLHTLPVHHQTGLGTSFFPFLNAGACIEFHGKFDAATVMQRWLQG
+                     GLTVFSAVPTIYMRLKWFIEQLPAQEQAPYKQSATQFRAFLCGSSALQEHVQEFWAAE
+                     MGRPILARYGATEIPGCIRVSVELRDIPKGSVGQPLPGVEAKISPEGELLVKTPNMFA
+                     KYLMEPETTKNAHDADGWYKTGDIARREGNFYFIVGRASVDIIKSGGYKISALDIERA
+                     CLALPYVNEAMVVGVEDDEFGQRVGAVLALKNAKASDVTLAKVRSDLRGQLAGYKLPT
+                     LLRVVEGELPKGATGKVQKKILGPKLIPSPGYEKIPQVQVWKNPRQAGRVQARL"
+     gene            <95228..>96087
+                     /locus_tag="FGSG_06459"
+                     /db_xref="GeneID:23553590"
+     mRNA            join(<95228..95409,95472..>96087)
+                     /locus_tag="FGSG_06459"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327757.1"
+                     /db_xref="GeneID:23553590"
+     CDS             join(95228..95409,95472..96087)
+                     /locus_tag="FGSG_06459"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326059.1"
+                     /db_xref="GeneID:23553590"
+                     /translation="MAVIEVEYSGAIAVIVLNKPNKLNALTKDEFYELARTLQDVGNH
+                     DEVVATVLTGTGRFFSAGADVSVSRQTPEGTDLYRHNLTVTVASNMNLARAFYTHPKI
+                     LVVALNGPVVGMAAALIAFADFIYCTPETYLLTPFASLGLISEGVSSIAFAERMGISK
+                     ANEALILSKRISSKELLQAGFVNQIFDCPAQSFRTEVLKEVKERFHDGLNASSILQIK
+                     KMIRQRSRRELDAQNVDEVFGALERNVQGIPQKEFEKLRRGQKKHKL"
+     gene            complement(<96251..>98419)
+                     /locus_tag="FGSG_06460"
+                     /db_xref="GeneID:23553591"
+     mRNA            complement(join(<96251..96360,96423..97092,97158..97763,
+                     97919..98069,98208..>98419))
+                     /locus_tag="FGSG_06460"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327758.1"
+                     /db_xref="GeneID:23553591"
+     CDS             complement(join(96251..96360,96423..97092,97158..97763,
+                     97919..98069,98208..98419))
+                     /locus_tag="FGSG_06460"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326060.1"
+                     /db_xref="GeneID:23553591"
+                     /translation="MFKFQALLRHFSRPAQSSQQHRRFIQNACLYTLSQSQGQCMCPE
+                     GSVWMINTASVQSDLVMAWSEGLTSSRKRRRAGTAPSGRQPDDHGSQGYRDRQSVSQA
+                     SGVGVEISVEQPAYQTPSTSHATTYIGRGHYIDDDDEIDETSARAFEPAQIKVGPHAT
+                     TQKETLVLWKAFDVPPQAARQSLLSAFLDYCNLWTPVLEPKDIQELSCFDQEKSSMLV
+                     AQSLWLAGSRVTSAPSVVAFASSDDFYHRAKAVFWSGVETDGMSAIKASLMLQWYNPQ
+                     APEHISFDNSGFWLKIGVGIAHQIGLHKEPPPGPSKAIRRRLWWSLVVRDSLISVAHG
+                     RPRVINLDDSDVQPPMASDFPDSLFAFQLFSAWVNICQVLGDISSCCMRRHMSRTKRL
+                     YIVNALCCWTTSLPQELWVAPSNQPPHSYFANSHNLPARQLYLPYFTSLIVLSRMQHS
+                     AGSLSVVATLAASFVARIFEDFLARDEIKVLAPISTRYCLISSMALVSVMPDKRLWDA
+                     VQPDLEILQLALTELSKRWRSAIGASRALQNAIKKRQQHDRPQLLPYMEHFESTDIFK
+                     SGGYPRANACGNATTN"
+     gene            complement(<99197..>101149)
+                     /locus_tag="FGSG_06461"
+                     /db_xref="GeneID:23553592"
+     mRNA            complement(join(<99197..99214,99355..99373,99464..99633,
+                     99681..99797,99846..100094,100148..100422,
+                     100468..>101149))
+                     /locus_tag="FGSG_06461"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327759.1"
+                     /db_xref="GeneID:23553592"
+     CDS             complement(join(99197..99214,99355..99373,99464..99633,
+                     99681..99797,99846..100094,100148..100422,100468..101149))
+                     /locus_tag="FGSG_06461"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326061.1"
+                     /db_xref="GeneID:23553592"
+                     /translation="MTVQRTLSHASSMEKQSATHVEGQTVDDEYLILFPLLANKSLED
+                     RQRIEKQLKRKLDWVFLPVVTLMLLMGYLDRINVANARLAGMQDDLHMSDTMWSAGIS
+                     LFYVGYIITQLPATVYLAKGLPRWQMPAYVVAWSVITACMAAMTSGWSFLVCRFMVGV
+                     AEGPFLPMVSLMTSSWYTKEEAPLRMAIWHAGNIASNIFSGLLAAGVLENMNGVAGMR
+                     AWQWFVIIEALTGVVGLFVAVMGLWCIPNFPHNTGTYFMTPEMSEMAQYRMMVSAGGR
+                     SEDDEGGAWEGVKLACQDPFTWIYTVLHFGLIVALSFKDFFPSIVKTLGYSNLMTYLI
+                     QAPPYIFAYIATCAISWSSGRHMEHCWHIIGSTVACIVGVVVMISTLNPGARYFGMFL
+                     LCAGPFVGLNVHIPWETTNVARPRTKRGALVAITNCIASVSHWFTPYFFLRSQEPRYE
+                     NGGILIIAGCVLGIVGCLICKWYVKKLNKKMEAHEAANNLPKRWRYVELRRSSIHFIT
+                     L"
+     gene            <105398..>110424
+                     /locus_tag="FGSG_06462"
+                     /db_xref="GeneID:23553593"
+     mRNA            join(<105398..106344,106391..106690,106737..>110424)
+                     /locus_tag="FGSG_06462"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327760.1"
+                     /db_xref="GeneID:23553593"
+     CDS             join(105398..106344,106391..106690,106737..110424)
+                     /locus_tag="FGSG_06462"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326062.1"
+                     /db_xref="GeneID:23553593"
+                     /translation="MGLGVLMQELCDLPTGNIAQSPQFQSIHAMTLDKADLLASLPTT
+                     GEPSTSPLHLLYTLLKDISGPWPVFPLVKCLTRVYKHLPEDVKTGNDAESALLLKQTS
+                     DLVKASYTSLSQFISNENKPALRASSGGHVITHHELLQFVNNFQLPVESPGRKPIVSI
+                     ALPNGPLLAATCIAVTTYYTASPINPAAGPEQFRADILQARSNFILTTREEYTKLQLD
+                     ASWVSDNNIRVYVIDWVAGDGISVETLDGKSVPTGIVERVANTADDISLILFTSGTSG
+                     TKKVVPLTTHSIVTGVVAVIESWGLTSEDICLNMMPLYHVGGLVRNIFAPIFANGSTV
+                     CCPSFDANLFWDVAETIQPTWYYASPSMHSVIVAEAAARPEALQKSRIRLACNAAGGL
+                     LPSLAYQLRDTFNCVVLPSYGMTECMPISTPPLDYRLDREGTSGISTGPELTILDWSE
+                     DQVPINTVGRICVRGDPIFPGYLKADGSYDKSPFNASGWFDTGDLGYMDSDGYLYITG
+                     RSKEVINRGGELISPFEVENAIMTASKSEESPIYGRVSQTLAFSATHDVLQEVVGVIL
+                     VTPSGVPRVDLRTLHAALKASLQQAKWPVVIAYMDDVPKNNNKVLRINLGKRMDLPCL
+                     TDDTPHMGRHWDATCPPADTPLSASIGSSPCQVDYHILSTHIQGIVPDYVDVFCLQGS
+                     DGAPQVVLAPKTNDVAVEDTSLTTTIRHELGHLVDNYMVPSEIHIFDRPLPRSSSGEV
+                     DVDLLQAQLDELLTASMKQLEASTEGLVTKAFADVLSLPPADIPRDIDFFSLGGDSLR
+                     AGRLLAALRSEFSIHLPITIVFNEGTVSALATHIDKMLEGKREGHEEVDTVEGCTKTH
+                     SSTNPFLMLLQLVPLVIVYPLRRAFQWTCFFVALAYSQKLPTNRSVPGRFVNLVVSMI
+                     ISRVVTQFVSPFVGILAKWLIIGRYREGMYPMWGSYHTRWWLVQKIVAVCGRGFFETN
+                     DMTLRIYHRLMGASIGKNVKLNESFIGEWDLVKIGDDANITGCICRPFAAEGNTSMYL
+                     GRITIGEKCTVGFSSIVVPGTTMPANTCLGFNSSTWEMQDASEEYRDQLPSARKGPHW
+                     LLSILFTLPLMGLSHFVAALPWAGGLVGMVLKKASPRIEPLRSSVEWFCQPKRIGYHY
+                     LARVAGCVLGPFFLFAFIVLVKATLDCVFGKLRSGSKQETSTVAAWRAGLMRDIYPVK
+                     TLHRLTSLFGQHYEATSIALRALGAKVGQRVYWPGTGPSIGDYHLIEVGNDVVFGSRS
+                     HLVTSDGIGSEKVTIQDRAMIADRVTLLPGVSVGERVTMGSGALTRRRGNYSDGTYVG
+                     SKGGDAVCLTTSREGSRDGSAQSSMLDMSFDEKKFQSDTDPSQTSGSITGEGPDKDDL
+                     SPFGRAFYLKMAPYYVLGPFAIFCYSTFIAIFTSIYWDAPSISSIQLVRVVLIHVLGP
+                     GHPWWKDLAAIFCTMLVSIAVLTTIQSVLALAIIIMSKWVLMGRRQPGNYDWDKSSYC
+                     QRWQIFLGIERLRRGCYNGNGILNLLTGTSWIVLYFRLLGAKIGKDCALFANGTPSLM
+                     FTEPELISLGDRVVVDDASVVAHINTRGKFDLNRVDIGDRCVLRTGSRLLSGARMEND
+                     SCLLEHTLIMGGDVVEEKSTMQGWPAERFTRKRV"
+     gene            complement(<110892..>112923)
+                     /locus_tag="FGSG_06463"
+                     /db_xref="GeneID:23553594"
+     mRNA            complement(join(<110892..112751,112798..>112923))
+                     /locus_tag="FGSG_06463"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327761.1"
+                     /db_xref="GeneID:23553594"
+     CDS             complement(join(110892..112751,112798..112923))
+                     /locus_tag="FGSG_06463"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326063.1"
+                     /db_xref="GeneID:23553594"
+                     /translation="MVRFSSLLAAAACFVAAESVSITVGSKGGNATSGHQYGFLHEDI
+                     NNSGDGGIYAELIRNRAFQYSKKYPVSLSGWRSINGADLSLNRLDEPLSDVLPVSMKV
+                     EPGKKGKSNEIGFLNEGYWGMDVKKHKYTGSFWVKGSYKGHFTASLRSNLTDDVFGSV
+                     KVKSKAKKDKWVEHEFSLKPKMDAPNSNNTFAITFDPKGADGALDFNLISLFPPTYKG
+                     RKNGLRVDLAEALEGLHPSLLRFPGGNMLEGNTNKTWWDWKDTIGPLRYRPGFEGVWS
+                     YQQTHGLGILEYLQWAEDMNLEIIVGVYAGLSLDGGVTPKDQLQPLIDDALDEIEFIR
+                     GPVTSKWGKKRAELGHPKPFRLSYVEIGNEDWLAGYPTGWNSYKEYRFPMFLEAINKA
+                     HPDLTVISSGASIDPVGNKNAGFDIPAPGIGDYHPYREPDVLVEEFDLFDNNKYGHII
+                     GEVASTHPNGGIKWEGNLMPYPWWISGVGEAIALVGYERNADRIPGTFYAPILKNENR
+                     WQWAITMVQFAADAAMTTRSTSWYVWELFAGHPMTHTLPVKGDLDPLFYVAGKNEDKG
+                     TLIWKGAAYNTTKHADVPVSLSFEGVKAGTQAELTLLTNKEDTPFAFNDPHKGNNVVK
+                     STKTTLKADKKGAFKFTMPELSVAVLETVKKGKRYAS"
+     gene            complement(113678..115582)
+                     /locus_tag="FGSG_06464"
+                     /db_xref="GeneID:23553595"
+     mRNA            complement(join(113678..114080,114129..115582))
+                     /locus_tag="FGSG_06464"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327762.1"
+                     /db_xref="GeneID:23553595"
+     CDS             complement(join(113801..114080,114129..115402))
+                     /locus_tag="FGSG_06464"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326064.1"
+                     /db_xref="GeneID:23553595"
+                     /translation="MSVPTYLGASGKSLAILQIAAIVAPSFVLFGYNQAGIGGLLSEE
+                     DWVKTFPEIDTVNSEGAEKSRKSTLQGFVVATFVIGALIGSLSCSWTGDRFGRRNVIF
+                     AAAVCSLIGEILEASSFGLAQFIVGRVIIGLGIGQLSSIVPVWQSETSAAVNRGRQVV
+                     LTGLFICLGYVLESWINLGFFEFEHGSVTWRPPIAIAIFFSLILMASIYCFPESPRWL
+                     VLKNRSEEARHAVAALRGLPIDSTEVLAEVAGIEHSLEETSDKAARLGDMLKMGDDKL
+                     LYRFALCILLQFYQQMSGSNLVSVYANVLFQKNLGLDAQTSKALTGGALTWKFLASFV
+                     AFFTIDRFGRRAVFMISGAGMSACMIALAITTSFGSENEPAMIAAACFIYLYNTFVPI
+                     GFLGANFLYCTEVAPIRLRMAMSSISTANHWLWNFIVVMVTPVALNTIGWQYYIVYAV
+                     IAACVPISVFFFFPETMGRSLEEIELVFKESPSVFATVKFAKTRPRETPQQFLASKEK
+                     ADHLEQGEE"
+     gene            <118800..>119891
+                     /locus_tag="FGSG_06465"
+                     /db_xref="GeneID:23553596"
+     mRNA            join(<118800..119679,119734..>119891)
+                     /locus_tag="FGSG_06465"
+                     /product="uncharacterized protein"
+                     /transcript_id="XM_011327763.1"
+                     /db_xref="GeneID:23553596"
+     CDS             join(118800..119679,119734..119891)
+                     /locus_tag="FGSG_06465"
+                     /codon_start=1
+                     /product="hypothetical protein"
+                     /protein_id="XP_011326065.1"
+                     /db_xref="GeneID:23553596"
+                     /translation="MRFFNITLASLVSVVTALSSFDTWAHGRVALNDVSIHFRYAGSG
+                     PPLLLVHGNPQHSLTWQFIGPILAQNYTVIAPDNRGAGDSSIPPDGDYTAAASAQDLK
+                     GVLDFLNITSTYVFAHDKGVGMATALAIKHPDVVKRLSLAEYPLPGFGYEQAANPAAY
+                     WDLYQNWQLAFFQVTDLAEFLMSGKEKQFLQWYFYHSSYSGVESFSEETVNRYTSSIS
+                     KPGFLRAMLGPFSSTTVFKDAEFFKTSLNESKLSVPLLGMGGEASLGLKTLIQESYEP
+                     ISTNLEIDVIPKAGHWIADENPKWTAKRLAKFFQDDESPKEVDLAYLDDMVTLDVGYF
+                     GTRSNFKLGSQ"
+//

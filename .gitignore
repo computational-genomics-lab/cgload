@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+build/
+dist/
+*.egg-info/
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+# D-003: credentials never live in a tracked file
+cgload.toml
+*.secret.toml
+.env
+# Loaded genome data directories
+data/

@@ -1,0 +1,14 @@
+##gff-version 3
+demo_scaffold_1	funannotate	gene	1000	2400	.	+	.	ID=DEMO_000001;
+demo_scaffold_1	funannotate	mRNA	1000	2400	.	+	.	ID=DEMO_000001-T1;Parent=DEMO_000001;product=hypothetical protein;
+demo_scaffold_1	funannotate	exon	1000	1300	.	+	.	ID=DEMO_000001-T1.exon1;Parent=DEMO_000001-T1;
+demo_scaffold_1	funannotate	exon	1500	2400	.	+	.	ID=DEMO_000001-T1.exon2;Parent=DEMO_000001-T1;
+demo_scaffold_1	funannotate	CDS	1000	1300	.	+	0	ID=DEMO_000001-T1.cds;Parent=DEMO_000001-T1;
+demo_scaffold_1	funannotate	CDS	1500	2400	.	+	2	ID=DEMO_000001-T1.cds;Parent=DEMO_000001-T1;
+demo_scaffold_1	funannotate	gene	3000	3600	.	-	.	ID=DEMO_000002;
+demo_scaffold_1	funannotate	mRNA	3000	3600	.	-	.	ID=DEMO_000002-T1;Parent=DEMO_000002;product=hypothetical protein;
+demo_scaffold_1	funannotate	exon	3000	3600	.	-	.	ID=DEMO_000002-T1.exon1;Parent=DEMO_000002-T1;
+demo_scaffold_1	funannotate	CDS	3000	3600	.	-	0	ID=DEMO_000002-T1.cds;Parent=DEMO_000002-T1;
+demo_scaffold_1	funannotate	gene	4200	4290	.	+	.	ID=DEMO_000003;
+demo_scaffold_1	funannotate	tRNA	4200	4290	.	+	.	ID=DEMO_000003-T1;Parent=DEMO_000003;product=tRNA-Ala;
+demo_scaffold_1	funannotate	exon	4200	4290	.	+	.	ID=DEMO_000003-T1.exon1;Parent=DEMO_000003-T1;

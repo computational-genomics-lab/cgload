@@ -1,0 +1,25 @@
+## emapper-2.1.12
+## /opt/eggnog-mapper/emapper.py -i proteins.faa -o fgram --cpu 8
+#query	seed_ortholog	evalue	score	eggNOG_OGs	max_annot_lvl	COG_category	Description	Preferred_name	GOs	EC	KEGG_ko	KEGG_Pathway	KEGG_Module	KEGG_Reaction	KEGG_rclass	BRITE	KEGG_TC	CAZy	BiGG_Reaction	PFAMs
+XP_011326024.1	5518.FGSG_11579T0	3.4e-120	377	COG0642@1|root,3XYZ1@4751|Fungi	4751|Fungi	G	Glycoside hydrolase family 72	-	GO:0005515,GO:0016787	-	ko:K00799,ko:K01183	-	-	-	-	-	-	GH72	-	PF03198
+XP_011326026.1	5518.FGSG_11580T0	1.2e-40	762	1MRJ4@1|root,3XYZ1@4751|Fungi	4751|Fungi	EGP	Cytochrome P450	-	GO:0055085,GO:0022857	-	ko:K00799,ko:K01183	-	-	-	-	-	-	-	-	PF07983
+XP_011326027.1	5518.FGSG_11581T0	8.8e-15	271	1MRJ4@1|root,3XYZ1@4751|Fungi	4751|Fungi	K	Zinc finger transcription factor	-	-	-	ko:K00799,ko:K01183	-	-	-	-	-	-	GT2	-	PF00067
+XP_011326029.1	5518.FGSG_11582T0	1.2e-40	842	2QVKP@1|root,3XYZ1@4751|Fungi	4751|Fungi	-	Major facilitator superfamily transporter	-	GO:0003700,GO:0006355,GO:0043565	-	-	-	-	-	-	-	-	-	-	PF00096
+XP_011326036.1	5518.FGSG_11583T0	1.2e-40	780	COG0642@1|root,3XYZ1@4751|Fungi	4751|Fungi	S	Hypothetical protein	-	GO:0005515,GO:0016787	-	-	-	-	-	-	-	-	-	-	PF07690
+XP_011326037.1	5518.FGSG_11584T0	1.2e-40	166	2QVKP@1|root,4ABCD@4751|Fungi	4751|Fungi	G	Glycoside hydrolase family 72	-	GO:0055085,GO:0022857	-	ko:K00799,ko:K01183	-	-	-	-	-	-	GH72	-	-
+XP_011326038.1	5518.FGSG_11585T0	3.4e-120	222	2QVKP@1|root,4ABCD@4751|Fungi	4751|Fungi	EGP	Cytochrome P450	-	-	-	ko:K01183	-	-	-	-	-	-	-	-	PF03198
+XP_011326039.1	5518.FGSG_11586T0	3.4e-120	853	COG0642@1|root,4ABCD@4751|Fungi	4751|Fungi	K	Zinc finger transcription factor	-	GO:0003700,GO:0006355,GO:0043565	-	ko:K00799,ko:K01183	-	-	-	-	-	-	GT2	-	PF07983
+XP_011326040.1	5518.FGSG_11587T0	3.4e-120	520	COG0642@1|root,4ABCD@4751|Fungi	4751|Fungi	-	Major facilitator superfamily transporter	-	GO:0005515,GO:0016787	-	ko:K00799,ko:K01183	-	-	-	-	-	-	-	-	PF00067
+XP_011327209.1	5518.FGSG_11588T0	1.2e-40	434	COG0642@1|root,4ABCD@4751|Fungi	4751|Fungi	S	Hypothetical protein	-	GO:0055085,GO:0022857	-	ko:K00799,ko:K01183	-	-	-	-	-	-	-	-	PF00096
+gnl|WGS:AACM|FGSG_06429T0	5518.FGSG_11589T0	3.4e-120	647	COG0642@1|root,3XYZ1@4751|Fungi	4751|Fungi	G	Glycoside hydrolase family 72	-	-	-	-	-	-	-	-	-	-	GH72	-	PF07690
+gnl|WGS:AACM|FGSG_06431T0	5518.FGSG_11590T0	8.8e-15	826	2QVKP@1|root,3XYZ1@4751|Fungi	4751|Fungi	EGP	Cytochrome P450	-	GO:0003700,GO:0006355,GO:0043565	-	-	-	-	-	-	-	-	-	-	-
+gnl|WGS:AACM|FGSG_06438T0	5518.FGSG_11591T0	1.2e-40	263	COG0642@1|root,4ABCD@4751|Fungi	4751|Fungi	K	Zinc finger transcription factor	-	GO:0005515,GO:0016787	-	-	-	-	-	-	-	-	GT2	-	PF03198
+gnl|WGS:AACM|FGSG_06439T0	5518.FGSG_11592T0	3.4e-120	550	2QVKP@1|root,4ABCD@4751|Fungi	4751|Fungi	-	Major facilitator superfamily transporter	-	GO:0055085,GO:0022857	-	-	-	-	-	-	-	-	-	-	PF07983
+gnl|WGS:AACM|FGSG_06440T0	5518.FGSG_11593T0	1.2e-40	671	2QVKP@1|root,3XYZ1@4751|Fungi	4751|Fungi	S	Hypothetical protein	-	-	-	ko:K00799,ko:K01183	-	-	-	-	-	-	-	-	PF00067
+gnl|WGS:AACM|FGSG_06441T0	5518.FGSG_11594T0	1.2e-40	279	COG0642@1|root,4ABCD@4751|Fungi	4751|Fungi	G	Glycoside hydrolase family 72	-	GO:0003700,GO:0006355,GO:0043565	-	ko:K01183	-	-	-	-	-	-	GH72	-	PF00096
+gnl|WGS:AACM|FGSG_06442T0	5518.FGSG_11595T0	1.2e-40	520	COG0642@1|root,4ABCD@4751|Fungi	4751|Fungi	EGP	Cytochrome P450	-	GO:0005515,GO:0016787	-	-	-	-	-	-	-	-	-	-	PF07690
+gnl|WGS:AACM|FGSG_07437T0	5518.FGSG_11596T0	1.2e-40	816	2QVKP@1|root,3XYZ1@4751|Fungi	4751|Fungi	K	Zinc finger transcription factor	-	GO:0055085,GO:0022857	-	ko:K01183	-	-	-	-	-	-	GT2	-	-
+gnl|WGS:AACM|FGSG_11614T0	5518.FGSG_11597T0	1.2e-40	589	COG0642@1|root,4ABCD@4751|Fungi	4751|Fungi	-	Major facilitator superfamily transporter	-	-	-	ko:K00799,ko:K01183	-	-	-	-	-	-	-	-	PF03198
+gnl|WGS:AACM|FGSG_12918T0	5518.FGSG_11598T0	3.4e-120	243	COG0642@1|root,4ABCD@4751|Fungi	4751|Fungi	S	Hypothetical protein	-	GO:0003700,GO:0006355,GO:0043565	-	ko:K00799,ko:K01183	-	-	-	-	-	-	-	-	PF07983
+## 20 queries scanned
+## Total time: 41 seconds

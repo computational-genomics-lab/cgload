@@ -1,0 +1,10 @@
+##gff-version 3
+##sequence-region NC_007982.1 1 569630
+NC_007982.1	RefSeq	gene	691776	267232	.	?	.	ID=gene-ZeamMp017;gene=nad2;locus_tag=ZeamMp017
+NC_007982.1	RefSeq	mRNA	691776	267232	.	?	.	ID=rna-ZeamMp017;Parent=gene-ZeamMp017;exception=trans-splicing
+NC_007982.1	RefSeq	exon	122146	122400	.	-	.	ID=exon-17-1;Parent=rna-ZeamMp017
+NC_007982.1	RefSeq	exon	267000	267232	.	+	.	ID=exon-17-2;Parent=rna-ZeamMp017
+NC_007982.1	RefSeq	exon	548000	548772	.	-	.	ID=exon-17-3;Parent=rna-ZeamMp017
+NC_007982.1	RefSeq	gene	1000	2000	.	+	.	ID=gene-ok;locus_tag=OK1
+NC_007982.1	RefSeq	mRNA	1000	2000	.	+	.	ID=rna-ok;Parent=gene-ok
+NC_007982.1	RefSeq	exon	1000	2000	.	+	.	ID=exon-ok;Parent=rna-ok

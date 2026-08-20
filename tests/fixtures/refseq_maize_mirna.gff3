@@ -1,0 +1,14 @@
+##gff-version 3
+#!processor NCBI annotwriter
+#!genome-build-accession NCBI_Assembly:GCF_902167145.1
+# fixture: RefSeq miRNA shape, Zea mays B73 GCF_902167145.1
+# gene -> primary_transcript -> miRNA -> exon, two transcript tiers (D-062).
+# Measured on the full nuclear GFF3: 310 miRNA features under 164
+# primary_transcript rows -- the 5p/3p arm pattern -- every one carrying exons.
+# graph-closed.
+NC_050096.1	BestRefSeq	gene	5000	5200	.	+	.	ID=gene-MIR1;Name=MIR1;gbkey=Gene;gene_biotype=miRNA
+NC_050096.1	BestRefSeq	primary_transcript	5000	5200	.	+	.	ID=rna-MIR1;Parent=gene-MIR1;gbkey=precursor_RNA
+NC_050096.1	BestRefSeq	miRNA	5010	5031	.	+	.	ID=rna-MIR1-5p;Parent=rna-MIR1;product=zma-miR1-5p
+NC_050096.1	BestRefSeq	exon	5010	5031	.	+	.	ID=exon-MIR1-5p-1;Parent=rna-MIR1-5p
+NC_050096.1	BestRefSeq	miRNA	5170	5191	.	+	.	ID=rna-MIR1-3p;Parent=rna-MIR1;product=zma-miR1-3p
+NC_050096.1	BestRefSeq	exon	5170	5191	.	+	.	ID=exon-MIR1-3p-1;Parent=rna-MIR1-3p

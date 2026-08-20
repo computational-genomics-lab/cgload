@@ -1,0 +1,9 @@
+##gff-version 3
+##sequence-region NC_007982.1 1 569630
+NC_007982.1	RefSeq	gene	50490	50900	.	+	.	ID=gene-ZeamMp186;gene=nad1;exception=trans-splicing;locus_tag=ZeamMp186
+NC_007982.1	RefSeq	gene	266974	267232	.	-	.	ID=gene-ZeamMp186;gene=nad1;exception=trans-splicing;locus_tag=ZeamMp186
+NC_007982.1	RefSeq	mRNA	50490	267232	.	?	.	ID=rna-ZeamMp186;Parent=gene-ZeamMp186;exception=trans-splicing%2C RNA editing
+NC_007982.1	RefSeq	exon	50490	50900	.	+	.	ID=ex-1;Parent=rna-ZeamMp186
+NC_007982.1	RefSeq	exon	266974	267232	.	-	.	ID=ex-2;Parent=rna-ZeamMp186
+NC_007982.1	RefSeq	gene	400000	401000	.	+	.	ID=gene-bad;locus_tag=BAD
+NC_007982.1	RefSeq	gene	402000	403000	.	-	.	ID=gene-bad;locus_tag=BAD

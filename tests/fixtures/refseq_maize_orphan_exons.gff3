@@ -1,0 +1,18 @@
+##gff-version 3
+#!processor NCBI annotwriter
+#!genome-build-accession NCBI_Assembly:GCF_902167145.1
+##sequence-region NC_001666.2 1 140384
+# fixture: parentless exons, Zea mays B73 chloroplast NC_001666.2, verbatim.
+# The second exon block of a trans-spliced chloroplast gene whose first exon
+# lies elsewhere. NCBI's converter could not express the link, so it emitted
+# them with coordinate-derived IDs and no Parent. All three carry number=2.
+# Two such exons exist in the whole 1.2 M-feature annotation, both organellar.
+# GFF3 permits a top-level feature of any type, so these load as top-level
+# rather than being refused (D-069). graph-closed.
+NC_001666.2	RefSeq	gene	128423	128599	.	+	.	ID=gene-ZemaCp099;Dbxref=GeneID:1466383;Name=ZemaCp099;gbkey=Gene;gene_biotype=protein_coding;locus_tag=ZemaCp099
+NC_001666.2	RefSeq	mRNA	128423	128599	.	+	.	ID=rna-ZemaCp099;Parent=gene-ZemaCp099;Dbxref=GeneID:1466383;gbkey=mRNA;locus_tag=ZemaCp099
+NC_001666.2	RefSeq	exon	128423	128599	.	+	.	ID=exon-ZemaCp099-1;Parent=rna-ZemaCp099;Dbxref=GeneID:1466383;gbkey=mRNA;locus_tag=ZemaCp099
+NC_001666.2	RefSeq	CDS	128423	128599	.	+	0	ID=cds-NP_043100.1;Parent=rna-ZemaCp099;Name=NP_043100.1;Note=ORF58;gbkey=CDS;locus_tag=ZemaCp099
+NC_001666.2	RefSeq	exon	129636	129867	.	+	.	ID=id-NC_001666.2:129636..129867-2;exon_number=2;gbkey=exon;number=2
+NC_001666.2	RefSeq	intron	129868	130407	.	+	.	ID=id-NC_001666.2:129868..130407;exon_number=2;gbkey=intron;number=2
+NC_001666.2	RefSeq	exon	130408	130436	.	+	.	ID=id-NC_001666.2:130408..130436-2;exon_number=2;gbkey=exon;number=2

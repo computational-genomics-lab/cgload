@@ -1,0 +1,21 @@
+# Minimal working example. From this directory:
+#
+#     cgload init
+#     cgload load --config organism.toml
+#     cgload stats
+#
+[organism]
+genus = "Demonstratus"
+species = "minimalis"
+strain = "DEMO-1"
+# An opaque identifier. cgload stores it and resolves nothing (D-016).
+ncbi_taxon_id = 999999
+
+[assembly]
+name = "Demo_v1"
+version = "1.0"
+fasta = "assembly.fa"
+
+[[files.annotation]]
+path = "annotation.gff3"
+# dialect = "funannotate"   # optional; detection reports its verdict either way
