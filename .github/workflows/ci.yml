@@ -84,5 +84,11 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -e ".[test]"
-      - name: Ground-truth genomes (tier 4/5)
-        run: pytest -m slow -v
+              - name: Fetch F. graminearum
+        run: |
+          mkdir -p /tmp/real-genomes && cd /tmp/real-genomes
+          curl -sSL -o data.zip "https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCF_000240135.3/download?include_annotation_type=GENOME_GFF,GENOME_GBFF"
+          unzip -q data.zip
+          find . -name "*.gff" -exec mv {} fusarium_genomic.gff \;
+          find . -name "*.gbff" -exec mv {} fusarium_genomic.gbff \;
+      - run: pytest -m slow -v
