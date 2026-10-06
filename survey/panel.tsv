@@ -8,24 +8,24 @@ vertebrate	Canis lupus familiaris	ROS_Cfam_1.0	GCF_014441545.1	likely	MT	non-mod
 vertebrate	Xenopus tropicalis	UCB_Xtro_10.0	GCF_000004195.4	likely	MT	amphibian outgroup; older assembly
 vertebrate	Oryzias latipes	ASM223467v1	GCF_002234675.1	guess	MT	small vertebrate genome; Gnomon-dominated
 insect	Drosophila melanogaster	Release 6 plus ISO1 MT	GCF_000001215.4	certain	MT	FlyBase-derived; trans-spliced mod(mdg4) is the classic escapes-parent case
-insect	Anopheles gambiae	AgamP4	GCF_000005575.2	likely	MT	VectorBase-derived dialect
+insect	Anopheles gambiae	AgamP3	GCF_000005575.2	likely	MT	VectorBase-derived dialect
 insect	Aedes aegypti	AaegL5.0	GCF_002204515.2	likely	MT	large repeat-rich insect genome
 insect	Apis mellifera	Amel_HAv3.1	GCF_003254395.2	likely	MT	high-quality hymenopteran reference
 insect	Tribolium castaneum	Tcas5.2	GCF_000002335.3	likely	MT	older beetle reference
 insect	Nasonia vitripennis	Nvit_psr_1.1	GCF_009193385.2	guess	MT	reannotated after assembly correction
-insect	Bombyx mori	ASM3026992v2	GCF_030269925.2	guess	MT	lepidopteran; recently replaced assembly
+insect	Bombyx mori	ASM3026992v2	GCF_030269925.1	guess	MT	lepidopteran; recently replaced assembly
 plant	Zea mays	Zm-B73-REFERENCE-NAM-5.0	GCF_902167145.1	certain	MT+PT	index case; the 36 defects you already have
 plant	Arabidopsis thaliana	TAIR10.1	GCF_000001735.4	certain	MT+PT	most-curated plant; floor for plant defect rate
-plant	Oryza sativa Japonica Group	IRGSP-1.0	GCF_034140825.1	guess	MT+PT	monocot control for maize
+plant	Oryza sativa Japonica Group	AGIS1.0	GCF_034140825.1	guess	MT+PT	monocot control for maize
 plant	Sorghum bicolor	Sorghum_bicolor_NCBIv3	GCF_000003195.3	likely	MT+PT	closest large-genome relative of maize
 plant	Glycine max	Glycine_max_v4.0	GCF_000004515.6	likely	MT+PT	paleopolyploid; heavy paralogy
 plant	Solanum lycopersicum	SL3.1	GCF_000188115.5	guess	MT+PT	eudicot crop; community-submitted annotation lineage
-plant	Vitis vinifera	PN40024.v4	GCF_030704535.1	guess	MT+PT	recent reference replacement
+plant	Vitis vinifera	ASM3070453v1	GCF_030704535.1	guess	MT+PT	recent reference replacement
 fungus	Saccharomyces cerevisiae S288C	R64	GCF_000146045.2	certain	MT	best-curated eukaryotic genome of any kind
-fungus	Schizosaccharomyces pombe	ASM294v2	GCF_000002945.2	likely	MT	second reference yeast, independent curation
+fungus	Schizosaccharomyces pombe	ASM294v3	GCF_000002945.2	likely	MT	second reference yeast, independent curation
 fungus	Candida albicans SC5314	ASM18296v3	GCF_000182965.3	likely	MT	diploid, haplotype-collapsed
 fungus	Neurospora crassa OR74A	NC12	GCF_000182925.2	likely	MT	filamentous ascomycete reference
 fungus	Fusarium graminearum PH-1	ASM24013v3	GCF_000240135.3	likely	MT	already used as the cgload worked example
-fungus	Aspergillus nidulans FGSC A4	ASM1142v1	GCF_000149205.2	likely	MT	classical genetics reference
+fungus	Aspergillus nidulans FGSC A4	ASM14920v2	GCF_000149205.2	likely	MT	classical genetics reference
 fungus	Cryptococcus neoformans H99	CNA3	GCF_000149245.1	likely	MT	basidiomycete; different curation lineage
 fungus	Ustilago maydis 521	Umaydis521_2.0	GCF_000328475.2	guess	MT	basidiomycete maize pathogen; ties the index case to its host
