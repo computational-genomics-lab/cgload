@@ -1,0 +1,17 @@
+# Survey working data: large, re-downloadable, never committed.
+# GitHub rejects any file over 100 MB, and a genome annotation committed once
+# stays in the history even after it is deleted.
+downloads/
+pipeline/
+*.zip
+*.gff
+*.gff3
+*.gff.gz
+*.gbff
+*.fna
+*.fa
+*.fasta
+*.fai
+# Results are committed deliberately at the end, never swept in by `git add -A`:
+#   git add -f results/survey.tsv results/provenance.tsv
+results/

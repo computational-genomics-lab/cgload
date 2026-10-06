@@ -14,3 +14,6 @@ cgload.toml
 .env
 # Loaded genome data directories
 data/
+
+# cgload's default database (`cgload init` without --db-url)
+cgload.db

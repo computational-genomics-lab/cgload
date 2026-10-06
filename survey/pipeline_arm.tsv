@@ -1,0 +1,7 @@
+accession	species	dialects	note
+GCF_000146045.2	Saccharomyces cerevisiae S288C	funannotate,braker	12 Mb; hours on a workstation
+GCF_000002945.2	Schizosaccharomyces pombe	funannotate,braker	intron-rich yeast; different gene structure from S. cerevisiae
+GCF_000182925.2	Neurospora crassa OR74A	funannotate,braker	41 Mb filamentous ascomycete
+GCF_000240135.3	Fusarium graminearum PH-1	funannotate,braker	already the cgload worked example
+GCF_000149205.2	Aspergillus nidulans FGSC A4	funannotate,braker	classical reference, independent curation
+GCF_000149245.1	Cryptococcus neoformans H99	funannotate,braker	basidiomycete; intron-dense
