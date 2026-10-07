@@ -86,7 +86,18 @@ def main(path: str) -> int:
 
             found = ID.search(columns[8])
             if found:
-                features[found.group(1)] = (number, seqid, ftype, start, end, strand)
+                fid = found.group(1)
+                prev = features.get(fid)
+                if prev is None:
+                    features[fid] = (number, seqid, ftype, start, end, strand)
+                else:
+                    # GFF3 lets one feature span several rows that share an ID
+                    # (a trans-spliced gene, a CDS in pieces). Its span is the
+                    # union of those rows. Keeping only the last row made the
+                    # children of the earlier rows look like they escaped.
+                    pline, pseq, ptype, pstart, pend, pstrand = prev
+                    features[fid] = (pline, pseq, ptype, min(pstart, start),
+                                     max(pend, end), pstrand)
             parent = PARENT.search(columns[8])
             if parent:
                 for one in parent.group(1).split(","):
