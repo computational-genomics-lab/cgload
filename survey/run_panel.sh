@@ -15,6 +15,7 @@ PANEL=${1:-panel.tsv}
 CHECK_ONLY=${CHECK_ONLY:-0}
 OUT=${2:-results}
 STAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+here=$(cd "$(dirname "$0")" && pwd)
 if [ "$CHECK_ONLY" != "1" ]; then
 
   # --- provenance guard -------------------------------------------------------
@@ -36,6 +37,10 @@ if [ "$CHECK_ONLY" != "1" ]; then
   else
     commit="not-a-git-checkout"; dirty=""
   fi
+  if [ -e "$OUT/survey.tsv" ] || [ -e "$OUT/failures.tsv" ]; then
+    mv "$OUT" "$OUT.prev-$(date -u +%Y%m%dT%H%M%SZ)"
+    echo "# previous results kept in $OUT.prev-*" >&2
+  fi
   mkdir -p "$OUT"
   [ -f "$OUT/provenance.tsv" ] || printf 'started\tscript\tcommit\tuncommitted_inputs\tinput_md5\n' > "$OUT/provenance.tsv"
   md5s=$(cd "$here" && python3 -c 'import hashlib,sys,os; print(" ".join(f + ":" + hashlib.md5(open(f, "rb").read()).hexdigest()[:12] for f in sys.argv[1:] if os.path.exists(f)))' $INPUTS)
@@ -48,59 +53,78 @@ mkdir -p "$OUT" downloads
 
 echo "# panel run started $STAMP" | tee "$OUT/run.log"
 
+n_panel=$(tail -n +2 "$PANEL" | awk -F'\t' 'NF >= 4 && $4 != ""' | wc -l | tr -d ' ')
+
 tail -n +2 "$PANEL" | while IFS=$'\t' read -r clade species asm acc conf orgs why; do
   [ -z "${acc:-}" ] && continue
   echo "=== $species ($acc)" | tee -a "$OUT/run.log"
 
-  # 1. Resolve: confirm the accession really is the assembly we named.
-  #    A silent substitution here is the one error that would poison the panel.
-  real=$(datasets summary genome accession "$acc" --as-json-lines 2>/dev/null \
-         | python3 -c 'import sys,json
-for l in sys.stdin:
-    d=json.loads(l)
-    print(d.get("assembly_info",{}).get("assembly_name",""),
-          d.get("organism",{}).get("organism_name",""), sep="\t")
-    break' )
-  if [ -z "$real" ]; then
-    echo "  RESOLVE FAILED" | tee -a "$OUT/run.log"
-    printf '%s\t%s\t%s\tRESOLVE_FAILED\n' "$clade" "$species" "$acc" >> "$OUT/failures.tsv"
+  # 1. Resolve through NCBI's own formatter (no guessing at JSON field names).
+  info=$(datasets summary genome accession "$acc" --as-json-lines 2>>"$OUT/run.log" \
+         | dataformat tsv genome --elide-header \
+             --fields accession,assminfo-name,annotinfo-name,annotinfo-release-date,organism-name \
+             2>>"$OUT/run.log" | head -n 1)
+  if [ -z "$info" ]; then
+    echo "  !! RESOLVE FAILED: accession not found at NCBI" | tee -a "$OUT/run.log"
+    [ "$CHECK_ONLY" = "1" ] || printf '%s\t%s\t%s\tRESOLVE_FAILED\n' "$clade" "$species" "$acc" >> "$OUT/failures.tsv"
     continue
   fi
-  got_asm=$(printf '%s' "$real" | cut -f1)
-  echo "  declared=$asm resolved=$got_asm" | tee -a "$OUT/run.log"
+  got_asm=$(printf '%s' "$info" | cut -f2)
+  ann_name=$(printf '%s' "$info" | cut -f3)
+  ann_date=$(printf '%s' "$info" | cut -f4)
+  got_org=$(printf '%s' "$info" | cut -f5)
+  echo "  declared=$asm resolved=$got_asm | organism=$got_org | annotation=${ann_name:-NONE} $ann_date" \
+    | tee -a "$OUT/run.log"
+  problem=""
   if [ "$asm" != "$got_asm" ]; then
-    echo "  !! assembly name mismatch -- panel row needs correcting BEFORE the run" \
-      | tee -a "$OUT/run.log"
+    echo "  !! ASSEMBLY MISMATCH: fix this panel row" | tee -a "$OUT/run.log"; problem=ASSEMBLY_MISMATCH
+  fi
+  if [ -z "$ann_name" ]; then
+    echo "  !! NO ANNOTATION on this assembly: replace it in the panel" | tee -a "$OUT/run.log"; problem=NO_ANNOTATION
+  fi
+  [ "$CHECK_ONLY" = "1" ] && continue
+  if [ -n "$problem" ]; then
+    printf '%s\t%s\t%s\t%s\n' "$clade" "$species" "$acc" "$problem" >> "$OUT/failures.tsv"
+    continue
   fi
 
-  [ "$CHECK_ONLY" = "1" ] && continue
-
-  # 2. Download annotation only.
-  if [ ! -f "downloads/$acc/genomic.gff" ]; then
-    datasets download genome accession "$acc" --include gff3 \
-      --filename "downloads/$acc.zip" >>"$OUT/run.log" 2>&1 || {
-        printf '%s\t%s\t%s\tDOWNLOAD_FAILED\n' "$clade" "$species" "$acc" >> "$OUT/failures.tsv"
-        continue; }
+  # 2. Download annotation only (cached across runs).
+  if [ ! -s "downloads/$acc/genomic.gff" ]; then
+    if ! datasets download genome accession "$acc" --include gff3 --no-progressbar \
+         --filename "downloads/$acc.zip" >>"$OUT/run.log" 2>&1; then
+      printf '%s\t%s\t%s\tDOWNLOAD_FAILED\n' "$clade" "$species" "$acc" >> "$OUT/failures.tsv"
+      continue
+    fi
     mkdir -p "downloads/$acc"
     unzip -o -j "downloads/$acc.zip" "ncbi_dataset/data/$acc/genomic.gff" \
       -d "downloads/$acc" >>"$OUT/run.log" 2>&1
   fi
+  if [ ! -s "downloads/$acc/genomic.gff" ]; then
+    echo "  !! NO GFF in the download" | tee -a "$OUT/run.log"
+    printf '%s\t%s\t%s\tNO_GFF\n' "$clade" "$species" "$acc" >> "$OUT/failures.tsv"
+    continue
+  fi
 
-  # 3. Pin the annotation release from the GFF header, not from the website.
-  rel=$(grep -m1 -i 'annotation-source\|#!annotation-date\|Annotation Release' \
-        "downloads/$acc/genomic.gff" | tr -d '\r' | sed 's/^#*!* *//')
-
-  # 4. Survey.
-  python3 cgsurvey.py --gff "downloads/$acc/genomic.gff" \
-    --accession "$acc" --species "$species" --clade "$clade" \
-    --assembly-name "$got_asm" --annotation-release "$rel" \
-    --arm refseq --dialect refseq \
-    --downloaded "$STAMP" --out-dir "$OUT" 2>&1 | tee -a "$OUT/run.log"
+  # 3. Survey. A crash is recorded as a failure, never silently dropped.
+  if ! python3 "$here/cgsurvey.py" --gff "downloads/$acc/genomic.gff" \
+       --accession "$acc" --species "$species" --clade "$clade" \
+       --assembly-name "$got_asm" --annotation-release "$ann_name $ann_date" \
+       --arm refseq --dialect refseq \
+       --downloaded "$STAMP" --out-dir "$OUT" 2>&1 | tee -a "$OUT/run.log"; then
+    printf '%s\t%s\t%s\tSURVEY_FAILED\n' "$clade" "$species" "$acc" >> "$OUT/failures.tsv"
+  fi
 done
 
 if [ "$CHECK_ONLY" = "1" ]; then
-  echo "# check done. Fix every 'mismatch' and every RESOLVE FAILED in panel.tsv, then commit it."
-  echo "# mismatches: $(grep -c 'mismatch' "$OUT/run.log" || true)"
+  n_bad=$(grep -c '  !! ' "$OUT/run.log" || true)
+  echo "# check done: $n_panel panel rows, $n_bad problem(s)."
+  [ "$n_bad" -gt 0 ] && grep -B1 '  !! ' "$OUT/run.log" | grep -v '^--$'
+  [ "$n_bad" -eq 0 ] && echo "# panel is clean: commit and push panel.tsv now."
 else
-  echo "# done. rows in survey.tsv: $(( $(wc -l < "$OUT/survey.tsv") - 1 ))"
+  surveyed=0; failed=0
+  [ -f "$OUT/survey.tsv" ] && surveyed=$(( $(wc -l < "$OUT/survey.tsv") - 1 ))
+  [ -f "$OUT/failures.tsv" ] && failed=$(wc -l < "$OUT/failures.tsv" | tr -d ' ')
+  echo "# done: $n_panel panel rows = $surveyed surveyed + $failed failed"
+  [ "$failed" -gt 0 ] && { echo "# failures:"; cat "$OUT/failures.tsv"; }
+  [ $((surveyed + failed)) -ne "$n_panel" ] && echo "!! counts do not add up: read $OUT/run.log"
 fi

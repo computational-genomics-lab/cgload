@@ -149,7 +149,9 @@ def survey(path: str, lengths: dict[str, int] | None = None,
     col2_sources: dict[str, int] = defaultdict(int)
     features: dict[str, tuple] = {}       # ID -> (line, seqid, type, s, e, strand, attrs)
     children: dict[str, list] = defaultdict(list)
-    duplicate_ids = 0
+    multi_row_ids = 0                     # IDs spread over several rows (legal GFF3)
+    id_conflicts: set[str] = set()        # IDs reused for a different type or sequence
+    extra_seqids: dict[str, set] = {}     # multi-row IDs that span sequences
 
     n_rows = 0
     n_with_id = 0
@@ -235,9 +237,25 @@ def survey(path: str, lengths: dict[str, int] | None = None,
             fid = get(attrs, "ID")
             if fid:
                 n_with_id += 1
-                if fid in features:
-                    duplicate_ids += 1
-                features[fid] = (number, seqid, ftype, start, end, strand, flags)
+                prev = features.get(fid)
+                if prev is None:
+                    features[fid] = (number, seqid, ftype, start, end, strand, flags)
+                else:
+                    # A feature written on several rows: its envelope is the
+                    # union of the rows, not the last row read. Keeping only the
+                    # last row made children of the earlier rows look escaped.
+                    multi_row_ids += 1
+                    pl, ps, pt, pst, pen, pstr, pfl = prev
+                    if pt != ftype or ps != seqid:
+                        if fid not in id_conflicts:
+                            note("id-conflict", number, seqid,
+                                 f"ID {fid} is {pt} on {ps} (line {pl}) and {ftype} on {seqid}",
+                                 ftype=ftype, parent_line=pl, source=src_col)
+                        id_conflicts.add(fid)
+                    if ps != seqid:
+                        extra_seqids.setdefault(fid, {ps}).add(seqid)
+                    merged = (tuple(dict.fromkeys(pfl[0] + flags[0])), pfl[1] or flags[1])
+                    features[fid] = (pl, ps, pt, min(pst, start), max(pen, end), pstr, merged)
 
             parent = get(attrs, "Parent")
             if parent:
@@ -256,7 +274,7 @@ def survey(path: str, lengths: dict[str, int] | None = None,
             continue
         pline, pseq, ptype, pstart, pend, pstrand, pattrs = features[parent_id]
         for kline, ktype, kstart, kend, kseq, kstrand, kattrs, ksrc in kids:
-            cross_seq = kseq != pseq
+            cross_seq = kseq != pseq and kseq not in extra_seqids.get(parent_id, ())
             outside = kstart < pstart or kend > pend
             if not (outside or cross_seq):
                 continue
@@ -324,7 +342,8 @@ def survey(path: str, lengths: dict[str, int] | None = None,
             "parent_child_edges": n_edges,
             "resolvable_edges": n_edges - dangling,
             "dangling_edges": dangling,
-            "duplicate_IDs": duplicate_ids,
+            "multi_row_IDs": multi_row_ids,
+            "id_conflicts": len(id_conflicts),
             "sequences": len(seqids_seen),
             "sequences_with_sequence_region": len(seqids_seen & set(regions)),
             "organellar_sequences": sum(1 for v in molecule.values() if v in ORGANELLE),
@@ -356,43 +375,99 @@ def survey(path: str, lengths: dict[str, int] | None = None,
 
 
 TSV_COLUMNS = [
-    "arm", "dialect", "clade", "annotation_source", "top_col2_source", "species", "accession", "assembly_name", "annotation_release",
-    "downloaded", "file_md5", "rows", "parent_child_edges", "sequences",
-    "organellar_sequences",
+    "arm", "dialect", "clade", "annotation_source", "top_col2_source", "species",
+    "accession", "assembly_name", "annotation_release", "downloaded", "file_md5",
+    "rows", "parent_child_edges", "sequences", "organellar_sequences",
     "escapes_parent", "escapes_parent_organellar", "escapes_parent_excused",
-    "escapes_parent_seqid",
-    "inverted", "out_of_range", "origin_spanning_convention", "out_of_range_applicability",
-    "molecule_class_coverage", "strand_q", "strand_invalid", "non_numeric",
-    "pseudogene_gene_exons", "gene_level_exons",
-    "dangling_edges", "duplicate_ids", "any_defect",
+    "escapes_excused_by", "escapes_parent_seqid",
+    "inverted", "inverted_organellar",
+    "out_of_range", "out_of_range_organellar", "origin_spanning_convention",
+    "out_of_range_applicability", "molecule_class_coverage",
+    "strand_q", "strand_q_organellar", "strand_invalid", "non_numeric",
+    "id_conflicts", "multi_row_ids",
+    "pseudogene_gene_exons", "gene_level_exons", "dangling_edges",
+    "unexplained_defects", "unexplained_nuclear", "any_defect",
 ]
+
+HARD = ("escapes-parent", "escapes-parent-seqid", "inverted", "out-of-range",
+        "strand-invalid", "non-numeric", "id-conflict")
+CONVENTION = ("pseudogene-gene-exon", "origin-spanning")
+
+
+def unexplained(problems, nuclear_only=False):
+    """Hard defects that carry no documented-exception attribute."""
+    return sum(1 for p in problems
+               if p["kind"] in HARD and not p.get("excused_by")
+               and not (nuclear_only and p.get("molecule") in ORGANELLE))
+
+
+def excuse_summary(problems) -> str:
+    tally: dict[str, int] = defaultdict(int)
+    for p in problems:
+        if p["kind"].startswith("escapes-parent") and p.get("excused_by"):
+            for tag in sorted({e.split(":", 1)[1] for e in p["excused_by"]}):
+                tally[tag] += 1
+    return ";".join(f"{k}:{v}" for k, v in sorted(tally.items(), key=lambda x: -x[1])) or "NA"
 
 
 def row_for(meta: dict, r: dict) -> list[str]:
     c, o, x = r["counts"], r["counts_organellar"], r["counts_with_documented_exception"]
-    d = r["denominators"]
-    hard = sum(c.get(k, 0) for k in
-               ("escapes-parent", "escapes-parent-seqid", "inverted",
-                "out-of-range", "strand-invalid", "non-numeric"))
+    d, probs = r["denominators"], r["problems"]
+    n_unexplained = unexplained(probs)
     return [
         meta.get("arm", ""), meta.get("dialect", ""), meta.get("clade", ""),
         next((h for h in r["provenance"]["header"] if h.startswith("annotation-source")),
              "").replace("annotation-source", "").strip() or "NA",
-        next(iter(r["provenance"]["column2_sources"]), "NA"), meta.get("species", ""), meta.get("accession", ""),
+        next(iter(r["provenance"]["column2_sources"]), "NA"),
+        meta.get("species", ""), meta.get("accession", ""),
         meta.get("assembly_name", ""), meta.get("annotation_release", ""),
         meta.get("downloaded", ""), r["file_md5"],
         d["rows"], d["parent_child_edges"], d["sequences"], d["organellar_sequences"],
         c.get("escapes-parent", 0), o.get("escapes-parent", 0), x.get("escapes-parent", 0),
-        c.get("escapes-parent-seqid", 0),
-        c.get("inverted", 0), c.get("out-of-range", 0), c.get("origin-spanning", 0),
-        r["applicability"]["out-of-range"],
-        r["applicability"]["molecule_class_coverage"],
-        c.get("strand-?", 0), c.get("strand-invalid", 0), c.get("non-numeric", 0),
+        excuse_summary(probs), c.get("escapes-parent-seqid", 0),
+        c.get("inverted", 0), o.get("inverted", 0),
+        c.get("out-of-range", 0), o.get("out-of-range", 0), c.get("origin-spanning", 0),
+        r["applicability"]["out-of-range"], r["applicability"]["molecule_class_coverage"],
+        c.get("strand-?", 0), o.get("strand-?", 0), c.get("strand-invalid", 0),
+        c.get("non-numeric", 0),
+        d["id_conflicts"], d["multi_row_IDs"],
         r["convention_gene_level_exons"]["of_which_pseudogene"],
         r["convention_gene_level_exons"]["exons_parented_by_gene_level"],
-        d["dangling_edges"], d["duplicate_IDs"],
-        "yes" if hard else "no",
+        d["dangling_edges"],
+        n_unexplained, unexplained(probs, nuclear_only=True),
+        "yes" if n_unexplained else "no",
     ]
+
+
+HITS_COLUMNS = ["accession", "species", "kind", "molecule", "seqid", "excused_by",
+                "detail", "line", "gff_row", "parent_line", "parent_gff_row"]
+
+
+def write_hits(path: str, gff: str, meta: dict, problems: list[dict]) -> int:
+    """Every non-convention finding, with the raw GFF rows, for manual review."""
+    hits = [p for p in problems if p["kind"] not in CONVENTION]
+    if not hits:
+        return 0
+    wanted = {p["line"] for p in hits} | {p["parent_line"] for p in hits if p.get("parent_line")}
+    text: dict[int, str] = {}
+    with opener(gff) as fh:
+        for number, line in enumerate(fh, start=1):
+            if number in wanted:
+                text[number] = line.rstrip("\r\n").replace("\t", " | ")
+                if len(text) == len(wanted):
+                    break
+    new = not os.path.exists(path)
+    with open(path, "a") as out:
+        if new:
+            out.write("\t".join(HITS_COLUMNS) + "\n")
+        for p in hits:
+            pl = p.get("parent_line") or ""
+            out.write("\t".join(str(v) for v in (
+                meta.get("accession", ""), meta.get("species", ""), p["kind"],
+                p.get("molecule", ""), p["seqid"], ",".join(p.get("excused_by") or []) or "",
+                p["detail"], p["line"], text.get(p["line"], ""), pl,
+                text.get(pl, "") if pl else "")) + "\n")
+    return len(hits)
 
 
 def main() -> int:
@@ -440,6 +515,8 @@ def main() -> int:
         if new:
             fh.write("\t".join(TSV_COLUMNS) + "\n")
         fh.write("\t".join(str(v) for v in row_for(meta, result)) + "\n")
+    n_hits = write_hits(os.path.join(args.out_dir, "hits.tsv"), args.gff, meta,
+                        result["problems"])
 
     print(f"{args.species or args.gff}: "
           f"{sum(result['counts'].values()):,} flagged rows "
@@ -450,6 +527,9 @@ def main() -> int:
         org = result["counts_organellar"].get(k, 0)
         exc = result["counts_with_documented_exception"].get(k, 0)
         print(f"  {k:26s} {v:>8,}   organellar {org:>6,}   documented-exception {exc:>6,}")
+    print(f"  unexplained defects: {unexplained(result['problems'])} "
+          f"(nuclear {unexplained(result['problems'], nuclear_only=True)}); "
+          f"{n_hits} rows written to hits.tsv")
     return 0
 
 
@@ -464,12 +544,17 @@ SELFTEST_GFF = (
     "NC_1.1\tRefSeq\texon\t300\t350\t.\t+\t.\tID=e2;Parent=g1\n"
     "NC_1.1\tRefSeq\tgene\t500\t450\t.\t?\t.\tID=g2\n"
     "NC_1.1\tRefSeq\tgene\t900\t1200\t.\t+\t.\tID=g3\n"
+    "NC_1.1\tRefSeq\tgene\t600\t650\t.\t+\t.\tID=split\n"
+    "NC_1.1\tRefSeq\tgene\t700\t750\t.\t+\t.\tID=split\n"
+    "NC_1.1\tRefSeq\tmRNA\t600\t750\t.\t+\t.\tID=split.t;Parent=split\n"
+    "NC_1.1\tRefSeq\texon\t860\t870\t.\t+\t.\tID=g0\n"
     "NC_M.1\tRefSeq\tgene\t10\t490\t.\t+\t.\tID=mg;exception=trans-splicing\n"
     "NC_M.1\tRefSeq\tmRNA\t10\t495\t.\t+\t.\tID=mt;Parent=mg\n"
     "NC_M.1\tRefSeq\tgene\t480\t520\t.\t+\t.\tID=wrap\n"
 )
 EXPECTED = {"escapes-parent": 2, "inverted": 1, "strand-?": 1,
-            "out-of-range": 1, "origin-spanning": 1, "pseudogene-gene-exon": 1}
+            "out-of-range": 1, "origin-spanning": 1, "pseudogene-gene-exon": 1,
+            "id-conflict": 1}
 
 
 def selftest() -> int:
