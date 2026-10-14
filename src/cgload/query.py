@@ -178,8 +178,17 @@ def _rows_of_id(assembly_id: int, source_id: str):
     )
 
 
-def _with_descendants(rows):
-    tree = rows.cte("descendants", recursive=True)
+def _with_descendants(assembly_id: int, rows):
+    """``rows``, every other row of their features, and everything below them.
+
+    The walk starts from every row of each matched feature, not only the rows
+    that matched. A child's ``parent_id`` names its parent's first row, and a
+    region can overlap only a later row of a parent written on several rows,
+    as NCBI writes a trans-spliced mRNA. Starting from the matched rows alone
+    lost the children that hang from the first row.
+    """
+    start = select(feature.c.feature_id).where(_whole_features(assembly_id, rows))
+    tree = start.cte("descendants", recursive=True)
     walked = tree.alias()
     child = feature.alias("child")
     tree = tree.union(select(child.c.feature_id).where(child.c.parent_id == walked.c.feature_id))
@@ -202,10 +211,23 @@ def _with_ancestors(rows):
 
 
 def _rows_in_region(region: Region):
+    """Rows overlapping the region, including rows that wrap round a circle.
+
+    A row that crosses the origin of a circular sequence is stored as GFF3
+    writes it, ending past the sequence's length, and NCBI writes some rows
+    wholly past it (D-081). Such a row covers position p at p + length, so the
+    region is tried a second time, one length further on. On a linear sequence
+    the second test can never hold: the loader refuses any row that ends past
+    the end of a linear sequence.
+    """
+    shifted_start = region.start + region.length
+    shifted_end = region.end + region.length
     return select(feature.c.feature_id).where(
         feature.c.sequence_region_id == region.region_id,
-        feature.c.start <= region.end,
-        feature.c.end >= region.start,
+        or_(
+            and_(feature.c.start <= region.end, feature.c.end >= region.start),
+            and_(feature.c.start <= shifted_end, feature.c.end >= shifted_start),
+        ),
     )
 
 
@@ -290,7 +312,7 @@ def by_id(
     if connection.execute(rows.limit(1)).first() is None:
         raise LookupError(f"no feature with ID {source_id!r} in assembly {assembly_id}")
     if descendants:
-        rows = _with_descendants(rows)
+        rows = _with_descendants(assembly_id, rows)
     rows = _of_types(rows, types)
     label = f"ID {source_id}" + (" and its descendants" if descendants else "")
     return _finish(connection, assembly_id, rows, ancestors=ancestors, hits=[],
@@ -310,7 +332,7 @@ def in_region(
     region = resolve_region(connection, assembly_id, region_text)
     rows = _rows_in_region(region)
     if descendants:
-        rows = _with_descendants(rows)
+        rows = _with_descendants(assembly_id, rows)
     rows = _of_types(rows, types)
     return _finish(connection, assembly_id, rows, ancestors=ancestors, hits=[],
                    description=f"features overlapping {region}")
@@ -355,7 +377,7 @@ def with_term(
         annotation_run.c.annotation_run_id == protein_annotation.c.annotation_run_id,
     ).where(*conditions)
     if descendants:
-        rows = _with_descendants(rows)
+        rows = _with_descendants(assembly_id, rows)
     shown = term if not analysis else f"{analysis} {term}"
     return _finish(connection, assembly_id, rows, ancestors=ancestors, hits=hits,
                    description=f"features annotated with {shown}")

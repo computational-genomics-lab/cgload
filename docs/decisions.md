@@ -2308,6 +2308,16 @@ gene with its children, the features in a region, the genes carrying a domain.
   any row in the region comes back whole. A sequence name containing a colon
   is tried whole first, as samtools does. An end past the sequence is cut to
   its length; a start past it is an error.
+- On a circular sequence a region also matches rows that wrap round the
+  origin. Such a row is stored as GFF3 writes it, ending past the sequence's
+  length (D-081), so it covers position p at p + length, and the region is
+  tried a second time one length further on. On a linear sequence that second
+  test never holds, because the loader refuses rows past the end.
+- `--descendants` starts from every row of each matched feature, not only from
+  the rows that matched. A child's `parent_id` names its parent's first row,
+  and a region can overlap only a later row of a trans-spliced mRNA; starting
+  from the matched rows alone returned that gene model without the exons that
+  hang from the first row.
 - Accessions match exactly. The only rewrites are spellings of one identifier
   that the source formats are known to differ on: `K00799` and `ko:K00799`,
   KEGG `map` and `ko` pathways (D-032), and GO and EC prefixes. Nothing is

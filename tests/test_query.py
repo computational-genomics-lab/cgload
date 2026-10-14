@@ -261,6 +261,56 @@ def test_every_parent_in_gff3_output_resolves(fusarium, question):
     assert "##cgload-export" in result.stdout
 
 
+TRANS_SPLICED = """\
+##gff-version 3
+##sequence-region chr1 1 20000
+chr1\tRefSeq\tregion\t1\t20000\t.\t+\t.\tID=chr1:1..20000;genome=chromosome
+chr1\tRefSeq\tgene\t1000\t1500\t.\t+\t.\tID=gene-ts;exception=trans-splicing;part=1/2
+chr1\tRefSeq\tgene\t15000\t15600\t.\t+\t.\tID=gene-ts;exception=trans-splicing;part=2/2
+chr1\tRefSeq\tmRNA\t1000\t1500\t.\t+\t.\tID=rna-ts;Parent=gene-ts
+chr1\tRefSeq\tmRNA\t15000\t15600\t.\t+\t.\tID=rna-ts;Parent=gene-ts
+chr1\tRefSeq\texon\t1000\t1500\t.\t+\t.\tID=exon-ts-1;Parent=rna-ts
+chr1\tRefSeq\texon\t15000\t15600\t.\t+\t.\tID=exon-ts-2;Parent=rna-ts
+chr1\tRefSeq\tCDS\t1100\t1500\t.\t+\t0\tID=cds-ts;Parent=rna-ts
+chr1\tRefSeq\tCDS\t15000\t15500\t.\t+\t2\tID=cds-ts;Parent=rna-ts
+"""
+
+
+def test_descendants_of_a_later_row_include_the_whole_model(tmp_path):
+    """A trans-spliced gene and its mRNA are each written on two rows. The
+    region overlaps only the second ones; exon-ts-1 hangs from the mRNA's first
+    row, far outside the region, and must still come back with --descendants."""
+    gff = tmp_path / "ts.gff3"
+    gff.write_text(TRANS_SPLICED)
+    db = _load(tmp_path / "project", gff, [])
+    rows = _table(_query(db, "--region", "chr1:15100-15200", "--descendants").stdout)
+    assert {row["id"] for row in rows if row["type"] != "region"} == {
+        "gene-ts", "rna-ts", "exon-ts-1", "exon-ts-2", "cds-ts"}
+
+
+CIRCULAR = """\
+##gff-version 3
+##sequence-region chrM 1 16569
+chrM\tRefSeq\tregion\t1\t16569\t.\t+\t.\tID=chrM:1..16569;Is_circular=true;genome=mitochondrion
+chrM\tRefSeq\tgene\t16000\t16700\t.\t+\t.\tID=gene-across;gene_biotype=protein_coding
+chrM\tRefSeq\tgene\t5000\t6000\t.\t+\t.\tID=gene-inside;gene_biotype=protein_coding
+"""
+
+
+@pytest.mark.parametrize(("region", "expected"), [
+    ("chrM:50-60", {"gene-across"}),          # past the origin: 16,619-16,629 as stored
+    ("chrM:16100-16200", {"gene-across"}),
+    ("chrM:200-300", set()),                  # after the gene's end at 131
+    ("chrM:5500-5500", {"gene-inside"}),
+])
+def test_a_region_finds_a_feature_across_the_origin(tmp_path, region, expected):
+    gff = tmp_path / "mt.gff3"
+    gff.write_text(CIRCULAR)
+    db = _load(tmp_path / "project", gff, [])
+    rows = _table(_query(db, "--region", region).stdout)
+    assert {row["id"] for row in rows if row["type"] != "region"} == expected
+
+
 def test_anonymous_rows_come_with_their_gene(augustus):
     tsv = _table(_query(augustus, "--id", "g1", "--descendants").stdout)
     anonymous = [row for row in tsv if row["id"] == ""]
