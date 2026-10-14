@@ -126,3 +126,30 @@ def test_coordinates_past_2_1_gb_are_stored(pg_url):
         assert stored == 2500001000
     finally:
         engine.dispose()
+
+
+def test_force_replaces_and_remove_empties_on_postgresql(pg_url, tmp_path):
+    """D-083 and D-084 on a server: replacing an assembly, then removing it."""
+    assert _run("init", "--db-url", pg_url).exit_code == 0
+    config = str(_project(tmp_path))
+    data = str(tmp_path / "data")
+    assert _run("load", "--db-url", pg_url, "--config", config, "--data-dir", data).exit_code == 0
+    again = _run("load", "--db-url", pg_url, "--config", config, "--data-dir", data, "--force")
+    assert again.exit_code == 0, again.output
+
+    engine = create_engine(pg_url)
+    try:
+        with engine.connect() as connection:
+            assert connection.execute(text("SELECT count(*) FROM assembly")).scalar_one() == 1
+            assembly_id = connection.execute(text("SELECT assembly_id FROM assembly")).scalar_one()
+
+        removed = _run("remove", "--db-url", pg_url, "--assembly-id", str(assembly_id), "--yes")
+        assert removed.exit_code == 0, removed.output
+        with engine.connect() as connection:
+            for table in ("assembly", "feature", "feature_attribute", "sequence_region",
+                          "source_file", "strain", "organism"):
+                count = connection.execute(text(f"SELECT count(*) FROM {table}")).scalar_one()
+                assert count == 0, table
+    finally:
+        engine.dispose()
+    assert not any(path.name == "manifest.json" for path in (tmp_path / "data").rglob("*"))

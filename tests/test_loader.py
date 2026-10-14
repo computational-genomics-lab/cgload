@@ -467,7 +467,6 @@ def test_load_is_no_longer_pending():
     from cgload.cli.main import PENDING
 
     assert "load" not in PENDING
-    assert set(PENDING) == {"query", "remove"}
 
 
 # -- the bundled example (milestone 4 exit criterion) ---------------------

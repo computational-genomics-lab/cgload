@@ -205,13 +205,18 @@ cgload verify    completeness checks
 cgload explain   why one feature was linked the way it was
 cgload stats     counts per organism, assembly, feature type
 cgload export    write back out as GFF3
+cgload remove    remove an assembly, rows and files together; transactional
 
 cgload query     NOT YET IMPLEMENTED - genes by identifier, region, annotation
-cgload remove    NOT YET IMPLEMENTED - transactional removal
 ```
 
-The two unimplemented commands exist in the surface, exit non-zero, and name
-what is missing. They never return success.
+The unimplemented command exists in the surface, exits non-zero, and names
+what is missing. It never returns success.
+
+`remove` asks before it deletes anything; `--dry-run` shows what would go. It
+deletes the data directory only when that directory's `manifest.json` names
+the assembly and its FASTA checksum (D-084). `--keep-files` removes only the
+rows.
 
 ## Deliberately out of scope
 

@@ -484,7 +484,6 @@ def test_verify_and_explain_are_no_longer_pending():
 
     assert "verify" not in PENDING
     assert "explain" not in PENDING
-    assert set(PENDING) == {"query", "remove"}
 
 
 # ---------------------------------------------------------------------------

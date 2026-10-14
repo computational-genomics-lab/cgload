@@ -17,7 +17,7 @@ the previous one is green in CI.
 | 6 | GenBank parser + isoform containment algorithm + load path | Ambiguous isoform case raises, naming the gene; a `.gbff` loads end to end with its linkage method recorded | **done** |
 | 7 | eggNOG + InterProScan loading (D-038..D-045) | Real emapper-2.1.4 output loads against its own assembly; match rate enforced and stored | **done** (7b, 7c) |
 | 8 | `verify` + `explain` (D-033, D-034, D-046..D-051) | A parser made to drop one leaf feature fails the load and rolls it back; a matched GFF3/GenBank pair agrees | **done** (8b, 8c) |
-| 9 | `export` (D-035, D-052..D-054); `query` and `remove` still pending | Round trip through the database: export, re-import, identical counts, linkage provenance preserved | **export done** |
+| 9 | `export` (D-035, D-052..D-054), `remove` (D-083, D-084); `query` still pending | Round trip through the database: export, re-import, identical counts, linkage provenance preserved | **export and remove done** |
 | 10 | Large-genome demo, Docker, docs, tutorial | A stranger runs one command and sees a loaded genome; maize timings published | in progress — envelope check (D-046, D-055) added, scale run pending |
 | 11 | Zenodo archive, v2.0.0 tag, JOSS submission | | |
 

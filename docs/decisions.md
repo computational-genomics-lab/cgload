@@ -2260,3 +2260,33 @@ and `remove` all use it.
   outcome, not a cascade into someone else's data.
 - Every statement selects its rows with a subquery, not an IN list built in
   Python (AUDIT-8).
+
+## D-084 — `remove` takes the rows and the data directory together, and only a directory that proves it is the assembly's
+
+**The stub said** "transactional removal of an assembly". Rows alone would
+leave the copied FASTA, its index and the annotation behind, and files alone
+would leave rows pointing at nothing, which is the state AUDIT-4 was about.
+
+**Decided:**
+
+- One transaction for both, built like `staged_load` in reverse
+  (`storage.staged_removal`). The rows are deleted (D-083) and counted again;
+  anything left stops the removal. Then, inside the still-open transaction and
+  immediately before the commit, the data directory is renamed into `.staging`,
+  and it is renamed back if the commit fails. It is deleted only after the
+  commit. A process killed between the rename and the commit leaves the rows in
+  place and the files under `.staging`; `verify` then reports the stored
+  assembly as missing, so the failure is visible.
+- The directory is found from what the database recorded at load: the data
+  root (D-079) and the FASTA's relative path. `--data-dir` overrides the root
+  after a move, as it does for `verify`.
+- Nothing is deleted on a guess. The directory must lie inside the data root,
+  and its `manifest.json` must name the same organism, strain and assembly and
+  record the same FASTA checksum as the database. Otherwise `remove` stops and
+  changes nothing. A directory that is not where the database says also stops
+  it; `--keep-files` removes the rows alone, on purpose.
+- The strain and then the organism are deleted when no other assembly or
+  strain uses them, so removing an organism's only assembly leaves the database
+  as it was before the load. Empty organism and strain directories go too.
+- It asks before deleting unless `--yes` is given, and `--dry-run` prints the
+  counts and the directory without changing anything.

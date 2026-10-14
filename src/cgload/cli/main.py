@@ -18,6 +18,7 @@ from cgload.cli.commands.explain import explain_command
 from cgload.cli.commands.export import export_command
 from cgload.cli.commands.init import init_command
 from cgload.cli.commands.load import load_command
+from cgload.cli.commands.remove import remove_command
 from cgload.cli.commands.stats import stats_command
 from cgload.cli.commands.verify import verify_command
 
@@ -25,7 +26,6 @@ from cgload.cli.commands.verify import verify_command
 # from this table, in the same commit that implements the command.
 PENDING: dict[str, tuple[int, str]] = {
     "query": (9, "region, annotation and KO queries"),
-    "remove": (9, "transactional removal of an assembly"),
 }
 
 
@@ -70,6 +70,7 @@ cli.add_command(verify_command)
 cli.add_command(explain_command)
 cli.add_command(export_command)
 cli.add_command(stats_command)
+cli.add_command(remove_command)
 
 for _name, (_milestone, _summary) in PENDING.items():
     cli.add_command(PendingCommand(_name, _milestone, _summary))

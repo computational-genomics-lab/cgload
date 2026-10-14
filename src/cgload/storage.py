@@ -181,3 +181,61 @@ def staged_load(
         raise
     finally:
         connection.close()
+
+
+@contextmanager
+def staged_removal(
+    engine: Engine, directory: Path | None, *, data_root: Path | None = None
+) -> Iterator[Connection]:
+    """Remove rows and a data directory together, or neither (D-084).
+
+    The mirror of ``staged_load``. The caller deletes rows on the yielded
+    connection. The directory is moved aside under ``.staging`` only at the
+    end, inside the open transaction and immediately before the commit, and is
+    moved back if the commit fails. It is deleted only after the database has
+    committed. A process killed in between leaves the rows in place and the
+    files under ``.staging``, which ``verify`` reports as a missing assembly.
+    """
+    if directory is not None and data_root is None:
+        raise ValueError("removing a data directory needs the data root it lives in")
+    connection = engine.connect()
+    transaction = connection.begin()
+    held: Path | None = None
+    try:
+        yield connection
+        if directory is not None:
+            staging_root = Path(data_root) / ".staging"
+            staging_root.mkdir(parents=True, exist_ok=True)
+            # Same filesystem as the directory, so the move and its undo are
+            # atomic renames.
+            holding = Path(tempfile.mkdtemp(dir=staging_root))
+            try:
+                os.rename(directory, holding / "removed")
+            except BaseException:
+                shutil.rmtree(holding, ignore_errors=True)
+                raise
+            held = holding / "removed"
+        transaction.commit()
+    except BaseException:
+        if held is not None and directory is not None and not directory.exists():
+            os.rename(held, directory)
+            shutil.rmtree(held.parent, ignore_errors=True)
+        transaction.rollback()
+        raise
+    finally:
+        connection.close()
+
+    if held is not None and directory is not None:
+        shutil.rmtree(held.parent, ignore_errors=True)
+        # Leave no empty <organism>/<strain> directories behind. Only those two
+        # levels, only inside the data root, and only when empty.
+        if data_root is not None:
+            root = Path(data_root).resolve()
+            for parent in (directory.parent, directory.parent.parent):
+                resolved = parent.resolve()
+                if resolved == root or not resolved.is_relative_to(root):
+                    break
+                try:
+                    parent.rmdir()
+                except OSError:
+                    break

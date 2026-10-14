@@ -33,8 +33,11 @@ Python, for the reason given in AUDIT-8.
 
 from __future__ import annotations
 
-from sqlalchemy import Connection, delete, select, update
+from dataclasses import dataclass
 
+from sqlalchemy import Connection, delete, func, select, update
+
+from cgload.db.counts import feature_count_expression
 from cgload.db.schema import (
     annotation_run,
     assembly,
@@ -46,6 +49,64 @@ from cgload.db.schema import (
     source_file,
     strain,
 )
+
+
+@dataclass(frozen=True)
+class Footprint:
+    """What an assembly holds, counted before it is removed."""
+
+    features: int
+    rows: int
+    attributes: int
+    functional_assignments: int
+    annotation_runs: int
+    sequence_regions: int
+    source_files: int
+
+
+def _scalar(connection: Connection, statement) -> int:
+    return int(connection.execute(statement).scalar_one() or 0)
+
+
+def footprint(connection: Connection, assembly_id: int) -> Footprint:
+    owned = feature.c.assembly_id == assembly_id
+    runs = select(annotation_run.c.annotation_run_id).where(
+        annotation_run.c.assembly_id == assembly_id
+    )
+    return Footprint(
+        features=_scalar(connection, select(feature_count_expression()).where(owned)),
+        rows=_scalar(connection, select(func.count()).select_from(feature).where(owned)),
+        attributes=_scalar(
+            connection,
+            select(func.count())
+            .select_from(feature_attribute.join(feature))
+            .where(owned),
+        ),
+        functional_assignments=_scalar(
+            connection,
+            select(func.count())
+            .select_from(protein_annotation)
+            .where(protein_annotation.c.annotation_run_id.in_(runs)),
+        ),
+        annotation_runs=_scalar(
+            connection,
+            select(func.count())
+            .select_from(annotation_run)
+            .where(annotation_run.c.assembly_id == assembly_id),
+        ),
+        sequence_regions=_scalar(
+            connection,
+            select(func.count())
+            .select_from(sequence_region)
+            .where(sequence_region.c.assembly_id == assembly_id),
+        ),
+        source_files=_scalar(
+            connection,
+            select(func.count())
+            .select_from(source_file)
+            .where(source_file.c.assembly_id == assembly_id),
+        ),
+    )
 
 
 def delete_assembly_rows(

@@ -316,4 +316,3 @@ def test_export_is_no_longer_pending():
     from cgload.cli.main import PENDING
 
     assert "export" not in PENDING
-    assert set(PENDING) == {"query", "remove"}
