@@ -2202,3 +2202,32 @@ an mRNA on another.
 annotation said the sequence was: the *F. graminearum* fixture's `region` row
 declares the chromosome's full 8,033,942 bp. Those FASTAs now match the
 annotation, which is what a real download has.
+
+## D-082 — the data directory gets the annotation as BGZF plus a tabix index, written in Python
+
+**Found by audit (AUDIT-10).** The README promised `annotation.gff3.gz` and its
+`.tbi` beside the assembly, so that JBrowse 2 could read cgload's output with no
+code from us, and nothing wrote either file.
+
+**Decided:** every load writes the normalised annotation as cgload-dialect GFF3
+(D-035), its rows sorted for tabix, compressed as BGZF and indexed as `.tbi`,
+inside the staging directory so it lands with the rows or not at all. Both
+formats are written by `cgload.bgzf` with `zlib` and `struct`.
+
+**Rejected:**
+
+- *Calling `bgzip` and `tabix`.* Two more programs to install, and a
+  subprocess per load, which is where D-005 says genome tools acquire their
+  attack surface.
+- *pysam.* A compiled dependency with no Windows wheels, against the
+  dependency budget, for two short published formats.
+
+**Measured:** on 75,630 rows over three sequences of up to 400 Mb, 3,000 random
+region queries through htslib (pysam 0.24.1) using cgload's index returned
+exactly the rows a brute-force overlap scan returned, as did htslib's own index
+over the same file. The test suite repeats this with a reader written from the
+specification, and with htslib where pysam is installed.
+
+**Limit:** a `.tbi` index addresses positions below 2^29. Past that the file is
+still written, the index is not, and the load says so; `tabix --csi -p gff`
+indexes it. No sequence in the 30-genome RefSeq panel comes near that size.

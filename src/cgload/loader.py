@@ -43,6 +43,7 @@ from cgload.db.verification import (
     parent_edge_tier,
 )
 from cgload.envelope import apply_policy, format_report
+from cgload.export import INDEX_LIMIT, write_indexed_gff3
 from cgload.fasta import index_and_read
 from cgload.functional import FunctionalReport, attach_functional
 from cgload.parsers import profiles as dialects
@@ -60,6 +61,9 @@ from cgload.verify import Outcome, TierResult, count_source_naively
 
 ANNOTATION_DIRECTORY = "annotation"
 PROTEIN_FILENAME = "proteins.faa"
+#: The normalised annotation, bgzip-compressed and tabix-indexed beside the
+#: assembly, so a genome browser reads both straight from disk (AUDIT-10).
+ANNOTATION_FILENAME = "annotation.gff3.gz"
 
 #: Attribute keys not worth a row. Bulky, wholly redundant with a stored column,
 #: or pure prediction diagnostics (D-025). Everything else is kept, because
@@ -342,6 +346,35 @@ def load_organism(
                     f"is a bug in cgload, not in your file; please report it with the "
                     f"file that produced it."
                 )
+
+        # What the README promises JBrowse 2: the annotation, bgzipped and
+        # tabix-indexed beside the FASTA and its .fai. Written only after the
+        # checks pass, and inside the staging directory, so it lands with the
+        # rows or not at all (AUDIT-10).
+        annotation_path = load.staging / ANNOTATION_FILENAME
+        indexed = write_indexed_gff3(
+            [item for parse in parsed for item in parse.normalised.features],
+            annotation_path,
+            regions=[(region.source_id, region.length) for region in regions],
+            version=__version__,
+            vocabulary_hash=vocab.content_hash(),
+        )
+        entry = {
+            "role": "annotation_gff3",
+            "stored": load.relative(annotation_path),
+            "sha256": sha256_of(annotation_path),
+        }
+        if indexed:
+            entry["index"] = load.relative(
+                annotation_path.with_name(annotation_path.name + ".tbi")
+            )
+        else:
+            report.warnings.append(
+                f"{ANNOTATION_FILENAME} was written but not indexed: a coordinate lies "
+                f"beyond the {INDEX_LIMIT:,} positions a .tbi index can address. "
+                f"`tabix --csi -p gff` can index it."
+            )
+        load.manifest["files"].append(entry)
 
         # A repaired load is declared, not merely successful: the receipt records
         # every coordinate cgload changed and what it changed it from.

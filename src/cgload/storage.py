@@ -13,7 +13,9 @@ Layout, relative to the data directory root::
         assembly.fa.fai           the index (D-004)
         manifest.json             what was loaded, from where, under which
                                   vocabulary and cgload version
-        annotation/               normalised annotation, from milestone 3
+        annotation.gff3.gz        the normalised annotation, bgzipped (D-082)
+        annotation.gff3.gz.tbi    its tabix index, for JBrowse 2, IGV, tabix
+        annotation/               declared proteins, where the dialect has them
 
 **Ordering (amends D-006).** The decision as written stages files, commits the
 database, then renames. That leaves a window: a crash between commit and

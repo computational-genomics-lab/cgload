@@ -40,9 +40,12 @@ exists to prevent.
 from __future__ import annotations
 
 import re
-from collections import Counter
+from collections import Counter, defaultdict
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
+from pathlib import Path
+
+from cgload.bgzf import TBI_MAX_POSITION, BgzfWriter, IndexLimitError, TabixIndex
 
 #: Emitted as the first line after `##gff-version 3`. Detection keys on this,
 #: and it must outrank column 2: a file exported from an AUGUSTUS load still
@@ -142,6 +145,95 @@ def _attribute_column(feature, *, include_linkage: bool) -> str:
     )
 
 
+def _row(feature, segment, attributes: str) -> str:
+    return "\t".join(
+        (
+            feature.seqid,
+            feature.source_program,
+            feature.source_type,
+            str(segment.start),
+            str(segment.end),
+            _format_score(segment.score),
+            feature.strand,
+            "." if segment.phase is None else str(segment.phase),
+            attributes,
+        )
+    )
+
+
+def _header(version: str, vocabulary_hash: str) -> list[str]:
+    lines = ["##gff-version 3", f"{EXPORT_PRAGMA} {version}"]
+    if vocabulary_hash:
+        lines.append(f"##cgload-vocabulary {vocabulary_hash}")
+    return lines
+
+
+def write_indexed_gff3(
+    features: Sequence,
+    path: Path,
+    *,
+    regions: Sequence[tuple[str, int]],
+    version: str,
+    vocabulary_hash: str = "",
+    include_linkage: bool = True,
+) -> bool:
+    """Write cgload-dialect GFF3 as BGZF, sorted for tabix, with ``path``.tbi.
+
+    This is the annotation the data directory promises a genome browser
+    (AUDIT-10). Rows, not features, are sorted: tabix needs each sequence's rows
+    contiguous and in start order, and the segments of one CDS lie far apart.
+    Sequences follow the FASTA's order, and are processed one at a time so the
+    sort never holds more than one sequence's rows.
+
+    Returns False when a coordinate is beyond what a .tbi index can address
+    (2**29). The file is then still written, and only the index is not.
+    """
+    path = Path(path)
+    by_sequence: dict[str, list[int]] = defaultdict(list)
+    for number, feature in enumerate(features):
+        by_sequence[feature.seqid].append(number)
+
+    header = _header(version, vocabulary_hash)
+    header += [f"##sequence-region {name} 1 {length}" for name, length in regions]
+
+    index = TabixIndex()
+    indexable = True
+    with path.open("wb") as handle:
+        writer = BgzfWriter(handle)
+        writer.write(("\n".join(header) + "\n").encode())
+        for name, _length in regions:
+            rows = [
+                (segment.start, segment.end, number, position)
+                for number in by_sequence.get(name, [])
+                for position, segment in enumerate(features[number].segments)
+            ]
+            rows.sort()
+            attributes: dict[int, str] = {}
+            for start, end, number, position in rows:
+                feature = features[number]
+                if number not in attributes:
+                    attributes[number] = _attribute_column(
+                        feature, include_linkage=include_linkage
+                    )
+                line = _row(feature, feature.segments[position], attributes[number]) + "\n"
+                begin = writer.tell()
+                writer.write(line.encode())
+                if indexable:
+                    try:
+                        index.add(name, start, end, begin, writer.tell())
+                    except IndexLimitError:
+                        indexable = False
+        writer.close()
+
+    if indexable:
+        index.write(path.with_name(path.name + ".tbi"))
+    return indexable
+
+
+#: For callers that need to say why an index was not written.
+INDEX_LIMIT = TBI_MAX_POSITION
+
+
 def export_gff3(
     features: Sequence,
     *,
@@ -157,9 +249,7 @@ def export_gff3(
     through from the profile's ``provides`` declaration -- so the file records
     the difference between "the input had no exons" and "the exons were lost".
     """
-    lines: list[str] = ["##gff-version 3", f"{EXPORT_PRAGMA} {version}"]
-    if vocabulary_hash:
-        lines.append(f"##cgload-vocabulary {vocabulary_hash}")
+    lines: list[str] = _header(version, vocabulary_hash)
 
     for name, length in sorted((sequence_regions or {}).items()):
         lines.append(f"##sequence-region {name} 1 {length}")
@@ -193,21 +283,7 @@ def export_gff3(
         attributes = _attribute_column(feature, include_linkage=include_linkage)
         for segment in sorted(feature.segments, key=lambda s: s.start):
             rows += 1
-            lines.append(
-                "\t".join(
-                    (
-                        feature.seqid,
-                        feature.source_program,
-                        feature.source_type,
-                        str(segment.start),
-                        str(segment.end),
-                        _format_score(segment.score),
-                        feature.strand,
-                        "." if segment.phase is None else str(segment.phase),
-                        attributes,
-                    )
-                )
-            )
+            lines.append(_row(feature, segment, attributes))
 
     text = "\n".join(lines) + "\n"
     summary = ExportSummary(

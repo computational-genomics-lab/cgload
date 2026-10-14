@@ -16,11 +16,12 @@ database or data directory and still reports success. They matter most.
 
 from __future__ import annotations
 
+import gzip
+import json
 import random
 import sqlite3
 from pathlib import Path
 
-import pytest
 from cgload.cli.main import cli
 from cgload.db.engine import build_engine
 from cgload.db.export_source import load_features
@@ -451,8 +452,6 @@ def test_coordinates_hold_sequences_longer_than_2_1_gb():
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-10: README promises a bgzip'd, tabix-indexed "
-                   "annotation in the data directory for JBrowse; nothing writes it")
 def test_data_directory_holds_the_indexed_annotation_the_readme_promises(tmp_path):
     for name in ("assembly.fa", "annotation.gff3", "organism.toml"):
         (tmp_path / name).write_text((EXAMPLE / name).read_text())
@@ -460,6 +459,23 @@ def test_data_directory_holds_the_indexed_annotation_the_readme_promises(tmp_pat
     target = next(p for p in (tmp_path / "data").rglob("manifest.json")).parent
     assert (target / "annotation.gff3.gz").exists()
     assert (target / "annotation.gff3.gz.tbi").exists()
+
+
+def test_the_indexed_annotation_holds_every_stored_row(tmp_path):
+    from test_bgzf import _query
+
+    config = _project(tmp_path, fixture=FIXTURES / "refseq_mycmay_GCF_000328475.gff3")
+    assert _init_and_load(tmp_path, config).exit_code == 0
+    target = next(p for p in (tmp_path / "data").rglob("manifest.json")).parent
+    gz = target / "annotation.gff3.gz"
+    rows = [line for line in gzip.decompress(gz.read_bytes()).decode().splitlines()
+            if not line.startswith("#")]
+    assert len(rows) == _rows(tmp_path, "SELECT count(*) FROM feature")[0][0]
+    middle = rows[len(rows) // 2].split("\t")
+    assert "\t".join(middle) in _query(gz, middle[0], int(middle[3]) - 1, int(middle[4]))
+    manifest = json.loads((target / "manifest.json").read_text())
+    entry = next(item for item in manifest["files"] if item["role"] == "annotation_gff3")
+    assert entry["index"].endswith("annotation.gff3.gz.tbi")
 
 
 def test_verify_help_describes_what_happens_without_sequences_in_assembly(tmp_path):
