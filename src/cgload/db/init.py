@@ -33,6 +33,7 @@ class SchemaMissingError(RuntimeError):
 #: that names no cause, so every command checks for them first.
 REQUIRED_COLUMNS: tuple[tuple[str, str], ...] = (
     ("feature", "source_line"),
+    ("assembly", "data_root"),
 )
 
 

@@ -2124,3 +2124,26 @@ and a failure rolls the load back: a test that drops the anonymous rows'
 parents, the AUDIT-2 bug, now fails the load instead of storing an unlinked
 hierarchy. For GenBank the load leaves the tier to `verify`, because an
 unlinked GenBank feature need not be cgload's fault (D-033).
+
+## D-079 — `verify` checks the stored assembly; the assembly row records the data root
+
+**Found by audit (AUDIT-4).** `fasta_sha256` was recorded at load time (D-018)
+and never read again. Deleting or replacing the stored FASTA left a database
+whose every coordinate referred to a file that was gone or different, and
+`verify` still reported PASS.
+
+**Decided:** `verify` has a "stored assembly" tier. It fails when the stored
+FASTA or its `.fai` is missing, or when the FASTA's SHA-256 differs from the one
+recorded at load. To find the file, `assembly.data_root` records where the data
+directory was at load time, absolute. `--data-dir` overrides it after the
+directory moves, and `fasta_path` stays relative, so moving the directory still
+works.
+
+**This bends the comment on `fasta_path`** that the database should hold no
+absolute paths. `source_file.path` already held absolute input paths, which the
+source-count tier reads; the alternative, making the user always name the data
+directory, would have meant the tier silently skipped in every ordinary run,
+which is D-033's failure.
+
+**Cost:** hashing the stored FASTA. About as long as reading it once: a few
+seconds for a 2 Gb assembly, where the other tiers take under a second.

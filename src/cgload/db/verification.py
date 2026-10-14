@@ -14,11 +14,13 @@ which is the property D-008 is built on.
 from __future__ import annotations
 
 from collections import Counter
+from pathlib import Path
 
 from sqlalchemy import Connection, func, select
 
 from cgload.db.counts import feature_count_expression
-from cgload.db.schema import feature, sequence_region, source_file
+from cgload.db.schema import assembly, feature, sequence_region, source_file
+from cgload.storage import sha256_of
 from cgload.verify import LINKED_TYPES, Outcome, TierResult, check_parent_edges
 
 #: Types the naive pass counts but the loader deliberately does not store as
@@ -225,3 +227,52 @@ def parent_edge_tier(
     if top_level:
         detail += f"; {top_level:,} more named no parent and are top-level (D-069)"
     return TierResult(label, result.outcome, detail, result.expected, result.actual)
+
+
+def stored_assembly_tier(
+    connection: Connection, assembly_id: int, *, data_dir: Path | None = None
+) -> TierResult:
+    """Is the stored assembly still there, and still the file that was loaded?
+
+    Every coordinate in the database refers to it. Its SHA-256 was recorded at
+    load time and never checked again, so a deleted or replaced FASTA left a
+    database that verified PASS (AUDIT-4, D-079). This tier needs the data
+    directory: the one given with ``--data-dir``, or the one recorded at load.
+    """
+    name = "stored assembly"
+    row = connection.execute(
+        select(assembly.c.fasta_path, assembly.c.fasta_sha256, assembly.c.data_root).where(
+            assembly.c.assembly_id == assembly_id
+        )
+    ).one_or_none()
+    if row is None or row.fasta_path is None:
+        return TierResult(name, Outcome.SKIPPED, "no stored assembly is recorded")
+    root = data_dir if data_dir is not None else (Path(row.data_root) if row.data_root else None)
+    if root is None:
+        return TierResult(
+            name,
+            Outcome.SKIPPED,
+            "the database does not record where the data directory is; pass --data-dir",
+        )
+    stored = Path(root) / row.fasta_path
+    if not stored.is_file():
+        return TierResult(
+            name,
+            Outcome.FAIL,
+            f"the stored assembly is missing: {stored}. Every coordinate in the "
+            f"database refers to it. If the data directory moved, pass --data-dir.",
+        )
+    index = stored.with_name(stored.name + ".fai")
+    if not index.is_file():
+        return TierResult(name, Outcome.FAIL, f"the assembly index is missing: {index}")
+    digest = sha256_of(stored)
+    if row.fasta_sha256 and digest != row.fasta_sha256:
+        return TierResult(
+            name,
+            Outcome.FAIL,
+            f"{stored} has changed since it was loaded: SHA-256 {digest[:12]}..., "
+            f"recorded {row.fasta_sha256[:12]}...",
+        )
+    return TierResult(
+        name, Outcome.PASS, f"{stored} and its index are present; SHA-256 matches the load"
+    )

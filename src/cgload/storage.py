@@ -84,6 +84,9 @@ class StagedLoad:
     target: Path
     connection: Connection
     manifest: dict = field(default_factory=dict)
+    #: The data directory root, absolute. Recorded on the assembly row so that
+    #: `verify` can find the stored files (D-079).
+    data_root: Path | None = None
 
     def place(self, source: Path, name: str, *, copy: bool = True) -> tuple[Path, str]:
         """Copy (default) or hard-link a file into the staging directory.
@@ -145,7 +148,7 @@ def staged_load(
 
     connection = engine.connect()
     transaction = connection.begin()
-    load = StagedLoad(staging=staging, target=target, connection=connection)
+    load = StagedLoad(staging=staging, target=target, connection=connection, data_root=data_root)
     renamed = False
     try:
         yield load

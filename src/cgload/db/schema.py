@@ -103,6 +103,12 @@ assembly = Table(
     # an absolute path makes the database non-portable, which defeats D-002.
     Column("fasta_path", Text, nullable=True),
     Column("fasta_sha256", String(64), nullable=True),
+    # Where the data directory was when the assembly was loaded, absolute. A
+    # hint, not an authority: `verify` uses it to find the stored assembly and
+    # check it still exists and still has `fasta_sha256` (AUDIT-4), and
+    # `--data-dir` overrides it after the directory moves. `fasta_path` stays
+    # relative, so a moved directory still works (D-079).
+    Column("data_root", Text, nullable=True),
     # Which vocabulary this assembly's feature_type values were derived under.
     # A load against a different hash is refused until `cgload remap` runs.
     Column("vocabulary_version", Integer, nullable=False),

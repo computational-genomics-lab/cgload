@@ -20,6 +20,7 @@ from cgload.db.verification import (
     count_database_for_file,
     parent_edge_tier,
     sequences_loaded,
+    stored_assembly_tier,
 )
 from cgload.verify import (
     VerifyError,
@@ -74,6 +75,13 @@ ENV_DB_URL = "CGLOAD_DB_URL"
     "--reference-counts: without it the reference check cannot tell a partial load "
     "from a real discrepancy, so verify stops with an error rather than guess (D-067).",
 )
+@click.option(
+    "--data-dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=None,
+    help="Data directory holding the stored assembly. Defaults to where it was when "
+    "the assembly was loaded; pass this if the directory has moved since.",
+)
 def verify_command(
     assembly_id: int,
     db_url: str | None,
@@ -82,6 +90,7 @@ def verify_command(
     accession: str | None,
     assembly_unit: str | None,
     sequences_in_assembly: int | None,
+    data_dir: Path | None,
 ) -> None:
     """Count what was stored and compare it against what the files said."""
     from_environment = db_url is None and ENV_DB_URL in os.environ
@@ -98,6 +107,7 @@ def verify_command(
                 accession=accession,
                 assembly_unit=assembly_unit,
                 sequences_in_assembly=sequences_in_assembly,
+                data_dir=data_dir,
             )
     except (
         CredentialInArgumentError,
@@ -122,6 +132,7 @@ def run_verification(
     accession: str | None = None,
     assembly_unit: str | None = None,
     sequences_in_assembly: int | None = None,
+    data_dir: Path | None = None,
 ) -> list:
     """Run every applicable check and return one result per tier.
 
@@ -174,6 +185,8 @@ def run_verification(
                 label=label,
             )
         )
+
+    results.append(stored_assembly_tier(connection, assembly_id, data_dir=data_dir))
 
     if against is not None:
         primary = Path(files[0][1])

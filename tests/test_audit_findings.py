@@ -252,8 +252,6 @@ def test_force_leaves_the_previous_directory_in_place_until_commit(tmp_path):
         assert (target / "assembly.fa").exists()
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-4: fasta_sha256 is recorded but verify never "
-                   "checks the stored assembly still exists")
 def test_verify_fails_when_the_stored_assembly_is_missing(tmp_path):
     config = _project(tmp_path, fixture=FIXTURES / "refseq_mycmay_GCF_000328475.gff3")
     assert _init_and_load(tmp_path, config).exit_code == 0
@@ -261,6 +259,27 @@ def test_verify_fails_when_the_stored_assembly_is_missing(tmp_path):
         stored.unlink()
     result = _cli(tmp_path, "verify", "--assembly-id", "1")
     assert result.exit_code != 0, result.output
+
+
+def test_verify_fails_when_the_stored_assembly_was_replaced(tmp_path):
+    config = _project(tmp_path, fixture=FIXTURES / "refseq_mycmay_GCF_000328475.gff3")
+    assert _init_and_load(tmp_path, config).exit_code == 0
+    stored = next((tmp_path / "data").rglob("assembly.fa"))
+    stored.write_text(stored.read_text().replace("A", "C", 1))
+    result = _cli(tmp_path, "verify", "--assembly-id", "1")
+    assert result.exit_code != 0, result.output
+    assert "has changed since it was loaded" in result.output
+
+
+def test_verify_finds_a_moved_data_directory_with_data_dir(tmp_path):
+    config = _project(tmp_path, fixture=FIXTURES / "refseq_mycmay_GCF_000328475.gff3")
+    assert _init_and_load(tmp_path, config).exit_code == 0
+    (tmp_path / "data").rename(tmp_path / "moved")
+    lost = _cli(tmp_path, "verify", "--assembly-id", "1")
+    assert lost.exit_code != 0 and "pass --data-dir" in lost.output
+    found = _cli(tmp_path, "verify", "--assembly-id", "1", "--data-dir", str(tmp_path / "moved"))
+    assert found.exit_code == 0, found.output
+    assert "stored assembly" in found.output
 
 
 # ---------------------------------------------------------------------------

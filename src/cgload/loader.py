@@ -157,6 +157,7 @@ def load_organism(
                 version=config.assembly_version,
                 accession=config.accession,
                 fasta_path=load.relative(staged_fasta),
+                data_root=str(load.data_root),
                 fasta_sha256=fasta_hash,
                 vocabulary_version=vocab.VOCABULARY_VERSION,
                 vocabulary_hash=vocab.content_hash(),
