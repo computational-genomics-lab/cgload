@@ -29,17 +29,22 @@ Three things, together, that are not available elsewhere:
 3. **Functional annotation as queryable relations.** eggNOG output becomes one
    row per GO term, KO, PFAM domain or EC number — not a text blob to grep.
 
-## The three checks
+## The checks
 
 | tier | compares | what it can prove |
 |---|---|---|
 | source count | an independent pass over your file against the database | every feature in the file reached the database, and none was invented |
-| parent edges | the stored hierarchy against the features that require one | the parent–child structure exists, not merely the features |
+| parent edges | the stored hierarchy against the parents the file states | the parent–child structure exists, not merely the features |
+| stored assembly | the stored FASTA and its index against the checksum taken at load | the sequence every coordinate refers to is still there, unchanged |
 | cross-parser | the same assembly as GFF3 and as GenBank | the two files describe the same feature counts |
 | reference | the provider's published totals against the file | the file matches what the provider says it published |
 
-**What this does and does not establish.** Tiers 1 and 2 compare the database
-against the input, and a failure there means cgload is wrong. Tiers 3 and 4
+`load` runs the source count, and for GFF3 the parent-edge tier, itself, and
+rolls back if either fails. `verify` runs every tier again later.
+
+**What this does and does not establish.** The first three tiers compare the
+database against the input, and a failure there means cgload is wrong, or that
+something changed the database or the data directory afterwards. The last two
 compare two descriptions of an assembly to each other — they are consistency
 checks on the *provider's* outputs, which is useful and is how four defects in a
 published reference annotation were found, but a failure there is not
@@ -79,9 +84,14 @@ profiles that were considered.
 Python 3.11 or newer. Three runtime dependencies: `sqlalchemy`, `pyfaidx`,
 `click`.
 
+cgload is not on PyPI yet. Install it from GitHub:
+
 ```console
-pip install cgload
+pip install git+https://github.com/computational-genomics-lab/cgload
 ```
+
+For PostgreSQL or MySQL, add the driver: `pip install "cgload[postgres] @
+git+https://github.com/computational-genomics-lab/cgload"`, or `[mysql]`.
 
 From source:
 
@@ -152,16 +162,17 @@ database holds coordinates and a reference.
 
 ```
 data/<organism>/<strain>/<assembly>/
-    assembly.fa          your file, copied
-    assembly.fa.fai      faidx index
-    annotation.gff3.gz   normalised, bgzip'd
-    annotation.gff3.gz.tbi
-    manifest.json        checksums, provenance, any repairs made
+    assembly.fa             your file, copied
+    assembly.fa.fai         faidx index
+    annotation.gff3.gz      the normalised annotation, bgzip'd, sorted for tabix
+    annotation.gff3.gz.tbi  its tabix index
+    manifest.json           checksums, provenance, any repairs made
 ```
 
 This is what samtools, IGV, JBrowse and Ensembl all do. It gives O(1) access to
 any region, keeps the database small enough to attach to a paper, and makes the
-output directly usable by JBrowse 2 without any code from us.
+output directly usable by JBrowse 2 without any code from us. The BGZF file and
+its index are written by cgload itself, with no external tools (D-082).
 
 ## Scale
 
@@ -178,8 +189,12 @@ eggNOG functional annotation:
 | source count | **PASS**, exact |
 
 Memory scales with feature count, not genome size — sequence is never held in
-memory. Budget roughly 4.5 GB per million features. Protocol:
+memory. Budget roughly 7 GB per million features, plus about 200 MB. Protocol:
 [docs/scalability.md](docs/scalability.md).
+
+These numbers were measured before cgload wrote the indexed annotation itself
+(D-082). Writing it took 25 s per million rows on a test machine; the load
+times above will be measured again.
 
 ## Commands
 

@@ -35,6 +35,22 @@ is not a cgload defect and cannot be resolved in cgload.
 This is why the tiers are ranked as they are. The cross-parser check compares two
 *primary* representations of an assembly and is the stronger evidence.
 
+### Rows past the end of a sequence
+
+A row past the end of a linear sequence is refused. On a sequence whose `region`
+row says `Is_circular=true`, a row crossing the origin loads normally, and a row
+lying wholly past the end is stored as written and named in a warning (D-081).
+NCBI writes such rows for trans-spliced organelle genes, for example
+*Arabidopsis* *nad5* and rice *rps12*.
+
+### Organelle genes without a transcript layer
+
+A CDS attached directly to its gene is accepted on a sequence whose `region` row
+declares an organelle genome (`genome=mitochondrion`, `plastid`, ...), which is
+how NCBI annotates vertebrate mitochondria (D-080). A file with no `region` rows
+declares no organelles, so the transcript-layer rule then applies to every
+sequence in it.
+
 ## Format and scope
 
 - **Multi-parent features are refused.** GFF3 permits a feature to name several
@@ -65,13 +81,18 @@ This is why the tiers are ranked as they are. The cross-parser check compares tw
 
 ## Operational
 
-- **Peak memory is roughly 4.5 GB per million features.** Every feature is
+- **Peak memory is roughly 7 GB per million features, plus about 200 MB**
+  (docs/scalability.md). Every feature is
   parsed before any row is written, so that cross-file identifier collisions are
   detected before the database is touched. A machine with 8 GB completes a
   700,000-feature genome; one with 4 GB does not.
 - **Single-process only.** Concurrent loads against one database are untested.
-- **MySQL and PostgreSQL are untested at scale.** The code path is shared with
-  SQLite and covered by tests, but the large runs were SQLite.
+- **MySQL and PostgreSQL are untested at scale.** PostgreSQL 16 runs a small
+  end-to-end test in CI (`tests/test_postgresql.py`); MySQL has no test at all.
+  The large runs were SQLite.
+- **The tabix index covers positions below 2^29.** A longer sequence gets its
+  `annotation.gff3.gz` but no `.tbi`; the load says so, and
+  `tabix --csi -p gff` indexes it (D-082).
 - **Excluding sequences requires filtering the input.** There is no
   `--exclude-sequences` flag yet; to load part of an assembly, filter the GFF3
   and FASTA beforehand.
