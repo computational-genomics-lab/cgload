@@ -225,6 +225,6 @@ def _gff3(connection, assembly_id: int, result: QueryResult) -> tuple[str, str]:
         sequence_regions={
             name: length for name, length in context.sequence_regions.items() if name in present
         },
-        comments=[f"cgload query: {result.description}, with their ancestors"],
+        comments=[f"cgload query: {result.description}; ancestors included"],
     )
     return text, f"{written.features:,} feature(s) in {written.rows:,} row(s)"

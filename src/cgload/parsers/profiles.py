@@ -380,7 +380,9 @@ def detect(tokenized: TokenizedFile, *, override: str | None = None) -> Detectio
     if override is not None:
         for profile in REGISTERED:
             if profile.name == override:
-                return Detection(profile, Confidence.OVERRIDDEN, f"--dialect {override}")
+                return Detection(
+                    profile, Confidence.OVERRIDDEN, f'dialect = "{override}" in the config'
+                )
         names = ", ".join(p.name for p in REGISTERED)
         raise DetectionError(f"unknown dialect {override!r}; registered profiles: {names}")
 
@@ -407,7 +409,8 @@ def detect(tokenized: TokenizedFile, *, override: str | None = None) -> Detectio
         names = ", ".join(m.profile.name for m in matches)
         raise DetectionError(
             f"ambiguous: {names} all match (column 2 is "
-            f"{sorted(tokenized.sources)}). Pass --dialect to choose."
+            f"{sorted(tokenized.sources)}). Choose one with dialect = \"<name>\" under "
+            f"this file's [[files.annotation]] entry in the config."
         )
 
     for profile in KNOWN_UNREGISTERED:
@@ -423,8 +426,9 @@ def detect(tokenized: TokenizedFile, *, override: str | None = None) -> Detectio
     registered = ", ".join(p.name for p in REGISTERED)
     raise DetectionError(
         f"no confident match: column 2 is {sorted(tokenized.sources)}, and no "
-        f"registered profile claims it (registered: {registered}). Pass --dialect "
-        f"to force one."
+        f"registered profile claims it (registered: {registered}). To force one, set "
+        f"dialect = \"<name>\" under this file's [[files.annotation]] entry in the "
+        f"config."
     )
 
 

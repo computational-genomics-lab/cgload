@@ -99,3 +99,42 @@ def test_version_is_pep440_parsable():
     from importlib.metadata import version as installed_version
 
     assert installed_version("cgload") == __version__
+
+
+#: Flags of other programs that cgload's messages legitimately mention.
+OTHER_PROGRAMS_FLAGS = {
+    "--csi",  # tabix --csi, for a sequence too long for a .tbi index (D-082)
+}
+
+
+def test_every_flag_a_message_names_exists():
+    """A message must not send the user to a flag that does not exist.
+
+    Two did: a detection error said "Pass --dialect", a flag no command has
+    (the choice lives in the config file), and an earlier one pointed at
+    `cgload remap`. This reads every string literal in the package, f-strings
+    included, and checks each `--flag` in it against the options the commands
+    actually declare.
+    """
+    import ast
+    import re
+    from pathlib import Path
+
+    import cgload
+
+    declared = {"--help", "--version"}
+    for command in cli.commands.values():
+        for param in command.params:
+            declared.update(opt for opt in param.opts + param.secondary_opts
+                            if opt.startswith("--"))
+
+    named: dict[str, str] = {}
+    for path in Path(cgload.__file__).parent.rglob("*.py"):
+        for node in ast.walk(ast.parse(path.read_text())):
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                for flag in re.findall(r"(?<![\w-])--[a-z][a-z-]*[a-z]", node.value):
+                    named.setdefault(flag, path.name)
+
+    unknown = {flag: where for flag, where in named.items()
+               if flag not in declared | OTHER_PROGRAMS_FLAGS}
+    assert not unknown, f"messages name flags no command declares: {unknown}"

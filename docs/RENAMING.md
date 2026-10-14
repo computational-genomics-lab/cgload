@@ -79,7 +79,7 @@ well collided in succession.
 pip install -e ".[dev]"
 pytest
 cd examples/minimal && <name> init && <name> load --config organism.toml
-<name> export --assembly-id 1 --out /tmp/rt.gff3 && head -3 /tmp/rt.gff3
+<name> export --assembly-id 1 --output /tmp/rt.gff3 && head -3 /tmp/rt.gff3
 ```
 
 The last line is the one that catches a class-3 miss: the header must read

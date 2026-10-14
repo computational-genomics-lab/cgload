@@ -152,8 +152,9 @@ def _attach(
             f"proteins ({100 * (1 - report.match_rate):.1f}%) match no feature in "
             f"assembly {assembly_id}. First unmatched: {examples}. Either the file "
             f"was produced from a different annotation, or the FASTA headers were "
-            f"renamed; pass a lower minimum match rate to load the matching subset "
-            f"deliberately."
+            f"renamed. To load only the matching subset, on purpose, set "
+            f"minimum_match_rate below 1.0 under this file's [[files.functional]] "
+            f"entry in the config."
         )
 
     try:
