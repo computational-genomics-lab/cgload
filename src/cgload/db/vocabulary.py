@@ -8,8 +8,7 @@ Two properties this module exists to guarantee (docs/decisions.md D-017):
    sides of the primary completeness check therefore share no input.
 2. The mapping is data, but versioned data. Adding a row changes the meaning
    of linkage, so the seed carries a version and a content hash, the hash is
-   recorded on every assembly, and a load against a different hash is refused
-   until ``cgload remap`` has run.
+   recorded on every assembly, and a load against a different hash is refused.
 """
 
 from __future__ import annotations
@@ -157,6 +156,18 @@ TRANSCRIPT_TERMS: frozenset[str] = frozenset({"mRNA", "tRNA", "rRNA", "ncRNA"})
 # mRNA is missing, and that is unaffected by the miRNA widening.
 TRANSCRIPT_LAYER_REQUIRED: frozenset[str] = frozenset({"CDS", "exon"})
 
+#: `genome=` values (on RefSeq's `region` rows) that name an organelle. On such a
+#: sequence a CDS or exon may attach straight to its gene, because organelle
+#: genomes are annotated the prokaryotic way: NCBI writes a vertebrate
+#: mitochondrial CDS directly under its gene (AUDIT-5, D-080). A nucleomorph is
+#: a reduced nucleus with eukaryotic genes, so it is not listed. Hashed below:
+#: it decides whether a `gene`->`CDS` edge is accepted (D-061).
+ORGANELLE_GENOMES: tuple[str, ...] = (
+    "mitochondrion", "plastid", "chloroplast", "apicoplast", "chromoplast",
+    "cyanelle", "kinetoplast", "leucoplast", "proplastid", "chromatophore",
+    "hydrogenosome",
+)
+
 #: How a feature's parent was determined. NULL means the feature has no
 #: parent, which is correct for a top-level or an inert feature.
 #:
@@ -222,4 +233,5 @@ def content_hash() -> str:
     h.update(
         ("transcript_layer_required=" + ",".join(sorted(TRANSCRIPT_LAYER_REQUIRED)) + "\n").encode()
     )
+    h.update(("organelle_genomes=" + ",".join(sorted(ORGANELLE_GENOMES)) + "\n").encode())
     return h.hexdigest()

@@ -18,6 +18,7 @@ from cgload.db.vocabulary import (
     ALLOWED_PARENTS,
     HIERARCHY_TERMS,
     LINKAGE_METHODS,
+    ORGANELLE_GENOMES,
     SYNONYMS,
     TRANSCRIPT_LAYER_REQUIRED,
     TRANSCRIPT_TERMS,
@@ -376,6 +377,20 @@ def _resolve_parents(
             )
 
 
+def organellar_sequences(features: list[NormalisedFeature]) -> set[str]:
+    """Sequences whose `region` row declares an organelle genome."""
+    found: set[str] = set()
+    for feature in features:
+        if feature.source_type != "region":
+            continue
+        for key, values in feature.attributes.items():
+            if key.lower() == "genome" and any(
+                value.lower().startswith(ORGANELLE_GENOMES) for value in values
+            ):
+                found.add(feature.seqid)
+    return found
+
+
 def _check_hierarchy(features: list[NormalisedFeature]) -> None:
     """A Tier A feature's parent must also be Tier A, and a permitted one.
 
@@ -419,6 +434,11 @@ def _check_hierarchy(features: list[NormalisedFeature]) -> None:
         for feature in features
         if feature.feature_type in TRANSCRIPT_TERMS and feature.parent_source_id
     }
+
+    #: Mitochondria and plastids are annotated without a transcript layer
+    #: (D-080). The rule is scoped per sequence: on a nuclear sequence in the
+    #: same file, a gene missing its transcript is still refused.
+    organellar = organellar_sequences(features)
 
     for feature in features:
         if feature.feature_type not in HIERARCHY_TERMS:
@@ -471,6 +491,7 @@ def _check_hierarchy(features: list[NormalisedFeature]) -> None:
             and parent_type == "gene"
             and has_transcripts
             and parent not in genes_with_transcripts
+            and feature.seqid not in organellar
         ):
             line = feature.segments[0].line_number
             raise NormaliseError(
@@ -479,7 +500,9 @@ def _check_hierarchy(features: list[NormalisedFeature]) -> None:
                 f"own, while the rest of this file does have a transcript layer. "
                 f"Attaching past a missing transcript would make an incomplete "
                 f"hierarchy look valid. (A pseudogene parent is exempt: it has no "
-                f"functional transcript to model.)"
+                f"functional transcript to model. So is a gene on a sequence whose "
+                f"region row declares an organelle genome, such as "
+                f"genome=mitochondrion.)"
             )
 
         if parent_type not in permitted:

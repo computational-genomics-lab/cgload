@@ -26,7 +26,7 @@ cgload init
 
 ```
 Created 11 tables in sqlite:///cgload.db
-Seeded vocabulary version 1 (33 terms, c8c88be997de)
+Seeded vocabulary version 1 (33 terms, 555824924a2e)
 ```
 
 `cgload.db` is a single file in the current directory. That file *is* the

@@ -301,13 +301,25 @@ CHIMP_ND1 = (
 )
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-5: the file-wide transcript-layer rule "
-                   "refuses NCBI's standard mitochondrial representation")
 def test_vertebrate_refseq_file_with_its_mitochondrion_loads(tmp_path):
     text = REFSEQ_HEADER + "##sequence-region NC_001643.1 1 16554\n" + NUCLEAR_GENE + CHIMP_ND1
     config = _project(tmp_path, text)
     result = _init_and_load(tmp_path, config)
     assert result.exit_code == 0, result.output
+
+
+def test_a_nuclear_gene_missing_its_transcript_is_still_refused(tmp_path):
+    """The organelle exemption is per sequence, not per file."""
+    bypass = (
+        "NC_000001.1\tGnomon\tgene\t5000\t6000\t.\t+\t.\tID=gene-B;gene_biotype=protein_coding\n"
+        "NC_000001.1\tGnomon\tCDS\t5100\t5900\t.\t+\t0\tID=cds-B;Parent=gene-B\n"
+    )
+    text = (REFSEQ_HEADER + "##sequence-region NC_001643.1 1 16554\n" + NUCLEAR_GENE
+            + bypass + CHIMP_ND1)
+    config = _project(tmp_path, text)
+    result = _init_and_load(tmp_path, config)
+    assert result.exit_code != 0
+    assert "gene-B" in result.output
 
 
 # ---------------------------------------------------------------------------

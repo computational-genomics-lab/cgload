@@ -32,6 +32,15 @@ def test_hash_covers_transcript_layer_required(monkeypatch):
     assert content_hash() != before
 
 
+def test_hash_covers_the_organelle_genomes(monkeypatch):
+    """D-080. The list decides whether a `gene`->`CDS` edge is accepted."""
+    before = content_hash()
+    monkeypatch.setattr(
+        vocabulary, "ORGANELLE_GENOMES", (*vocabulary.ORGANELLE_GENOMES, "nucleomorph")
+    )
+    assert content_hash() != before
+
+
 def test_hash_covers_the_synonym_table(monkeypatch):
     """The sentinel must be a term not already mapped.
 

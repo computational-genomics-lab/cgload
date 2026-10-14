@@ -2147,3 +2147,30 @@ which is D-033's failure.
 
 **Cost:** hashing the stored FASTA. About as long as reading it once: a few
 seconds for a 2 Gb assembly, where the other tiers take under a second.
+
+## D-080 — on an organelle sequence a CDS may attach straight to its gene
+
+**Found by audit (AUDIT-5).** NCBI writes a vertebrate mitochondrial CDS
+directly under its gene, with no mRNA between: chimpanzee GCF_000001515.7, ND1,
+and every other vertebrate RefSeq assembly that includes its mitochondrion. The
+transcript-bypass rule (D-036, scoped per gene by D-043) refuses a gene with no
+transcript whose CDS attaches to it, in a file that has a transcript layer
+elsewhere. A vertebrate file has one in its nuclear genes, so the whole file was
+refused.
+
+**Decided:** the rule does not apply on a sequence whose `region` row declares an
+organelle genome (`genome=mitochondrion`, `plastid`, `chloroplast` and the other
+values in `ORGANELLE_GENOMES`). Organelle genomes are annotated the prokaryotic
+way. The exemption is per sequence: a nuclear gene missing its transcript in the
+same file is still refused, and a test pins that.
+
+**Not used: the `Is_circular` flag.** Some nuclear-like replicons are circular and
+some organelle assemblies are linear; `genome=` says what the sequence is.
+
+**Known gap:** a file with no `region` rows (funannotate, AUGUSTUS) declares no
+organelles, so the rule applies to all of its sequences, as before.
+
+`ORGANELLE_GENOMES` decides whether a `gene`->`CDS` edge is accepted, so it is
+part of the vocabulary hash (D-061), and the hash changed. Databases created
+before this change are already refused for lacking `feature.source_line`
+(D-077), so no further migration step is added.
