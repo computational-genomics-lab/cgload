@@ -180,9 +180,6 @@ def test_export_keeps_multi_valued_attributes_multi_valued(tmp_path):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-4: the superseded directory is moved aside "
-                   "when the load starts, so SIGTERM/SIGKILL/OOM mid-load leaves rows "
-                   "pointing at nothing")
 def test_force_leaves_the_previous_directory_in_place_until_commit(tmp_path):
     engine = build_engine(f"sqlite:///{tmp_path / 'g.db'}")
     create_schema(engine)

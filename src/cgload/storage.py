@@ -22,6 +22,15 @@ happens *inside* the open database transaction, immediately before commit, and
 is reversed if the commit fails. The remaining window is one rename plus one
 commit, and the failure it leaves -- a directory in place with no rows -- is
 detectable and harmless, where the reverse is not.
+
+**Under --force (AUDIT-4, amends D-073)** the directory being replaced stays
+where it is for the whole load and is moved aside only in that final step,
+next to the rename of the new one. Moving it aside when the load *started*
+meant a process killed mid-load (SIGTERM, SIGKILL, the OOM killer -- none of
+which run Python's exception handling) left the old rows pointing at a
+directory that was gone. The window that remains is the two renames plus the
+commit; `verify` checks the stored assembly's checksum, so a crash inside it is
+detected rather than silent, and the old directory is still under ``.staging``.
 """
 
 from __future__ import annotations
@@ -113,16 +122,15 @@ def staged_load(
     data_root = Path(data_root).resolve()
     target = data_root / slug(organism) / slug(strain) / slug(assembly)
 
-    # Under --force the existing directory is moved aside, not deleted, and is
-    # restored if anything fails.
+    # Under --force the existing directory is replaced, never deleted up front
+    # and never moved before the end of the load.
     #
-    # Deleting it here broke the atomicity guarantee outright (D-073): the
-    # rmtree ran before the transaction opened and no exception path undid it,
-    # so a load that failed for any reason left the previous assembly's rows in
-    # the database with `fasta_path` pointing at a directory that no longer
-    # existed. `fasta_sha256` is recorded but never re-checked, so nothing
-    # downstream could detect it. That is the "populated and wrong" failure this
-    # project exists to prevent, produced by the tool's own flag.
+    # Deleting it at the start broke the atomicity guarantee outright (D-073):
+    # the rmtree ran before the transaction opened and no exception path undid
+    # it. Moving it aside at the start was the next version, and it still left a
+    # killed process with the old rows pointing at a directory that was gone
+    # (AUDIT-4). It is now moved aside only immediately before the new
+    # directory is renamed into place, inside the open transaction.
     superseded: Path | None = None
     if target.exists() and not force:
         raise DataDirectoryConflictError(
@@ -135,11 +143,6 @@ def staged_load(
     # Same filesystem as the target, so the final rename is atomic.
     staging = Path(tempfile.mkdtemp(dir=staging_root))
 
-    if target.exists():
-        # Same filesystem as the target, so both this and the restore are atomic.
-        superseded = Path(tempfile.mkdtemp(dir=staging_root)) / "superseded"
-        os.rename(target, superseded)
-
     connection = engine.connect()
     transaction = connection.begin()
     load = StagedLoad(staging=staging, target=target, connection=connection)
@@ -149,6 +152,10 @@ def staged_load(
 
         (staging / "manifest.json").write_text(json.dumps(load.manifest, indent=2, default=str))
         target.parent.mkdir(parents=True, exist_ok=True)
+        if target.exists():
+            # Same filesystem as the target, so this and the restore are atomic.
+            superseded = Path(tempfile.mkdtemp(dir=staging_root)) / "superseded"
+            os.rename(target, superseded)
         os.rename(staging, target)
         renamed = True
         transaction.commit()

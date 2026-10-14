@@ -196,6 +196,37 @@ def test_commit_failure_puts_the_directory_back(engine, config, tmp_path):
     assert not target.exists()
 
 
+def test_force_restores_the_previous_directory_if_the_final_rename_fails(
+    engine, tmp_path, monkeypatch
+):
+    """AUDIT-4. Under --force the old directory is moved aside only at the very
+    end; if the new one then cannot be put in place, the old one comes back."""
+    import os
+
+    import cgload.storage as storage_module
+
+    data_root = tmp_path / "data"
+    target = data_root / "org" / "s1" / "asm1"
+    target.mkdir(parents=True)
+    (target / "assembly.fa").write_text(">old\nACGT\n")
+
+    real_rename = os.rename
+
+    def failing_rename(source, destination):
+        if Path(destination) == target and "superseded" not in str(source):
+            raise OSError("simulated failure renaming the new directory into place")
+        return real_rename(source, destination)
+
+    monkeypatch.setattr(storage_module.os, "rename", failing_rename)
+    with pytest.raises(OSError, match="simulated"), staged_load(
+        engine, data_root, organism="Org", strain="S1", assembly="asm1", force=True
+    ) as load:
+        assert (target / "assembly.fa").exists()
+        (load.staging / "assembly.fa").write_text(">new\nACGT\n")
+
+    assert (target / "assembly.fa").read_text() == ">old\nACGT\n"
+
+
 def test_partial_directory_is_not_visible_midway(engine, config, tmp_path):
     """A reader must never see a half-built assembly directory: work happens
     under .staging and appears only at the final rename."""
