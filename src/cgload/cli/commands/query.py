@@ -147,6 +147,37 @@ def _feature_row(item, result: QueryResult) -> list:
     ]
 
 
+def _in_hierarchy(features: list) -> list:
+    """Each top-level feature followed by its descendants, depth first.
+
+    ``features`` arrive sorted by position, and children keep that order, so a
+    gene model reads as it does in a GFF3 file: gene, mRNA, then exons and CDS.
+    """
+    present = {item.source_id for item in features if item.source_id is not None}
+    children: dict[str, list] = {}
+    roots = []
+    for item in features:
+        if item.parent_source_id is not None and item.parent_source_id in present:
+            children.setdefault(item.parent_source_id, []).append(item)
+        else:
+            roots.append(item)
+    ordered, seen = [], set()
+    for root in roots:
+        stack = [root]
+        while stack:
+            item = stack.pop()
+            if id(item) in seen:
+                continue
+            seen.add(id(item))
+            ordered.append(item)
+            if item.source_id is not None:
+                stack.extend(reversed(children.get(item.source_id, [])))
+    # Anything left over sits on a parent cycle, which the loader refuses; it
+    # is still written rather than silently dropped.
+    ordered.extend(item for item in features if id(item) not in seen)
+    return ordered
+
+
 def _tsv(result: QueryResult, *, term: bool) -> tuple[str, str]:
     buffer = StringIO()
     buffer.write(f"# cgload query: {result.description}\n")
@@ -160,7 +191,7 @@ def _tsv(result: QueryResult, *, term: bool) -> tuple[str, str]:
     for hit in result.hits:
         hits_by_row.setdefault(hit.row_id, []).append(hit)
 
-    for item in result.features:
+    for item in _in_hierarchy(result.features):
         base = _feature_row(item, result)
         if not term:
             writer.writerow(base)
