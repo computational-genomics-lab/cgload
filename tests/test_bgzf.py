@@ -223,6 +223,13 @@ def test_rows_must_arrive_sorted_and_contiguous():
         index.add("chr1", 300, 400, 30, 40)
 
 
+def test_a_feature_on_an_unnamed_sequence_is_refused_not_dropped(tmp_path):
+    features = [_Feature("chr1", "g1", [(10, 20)]), _Feature("chrX", "g2", [(10, 20)])]
+    gz = tmp_path / "a.gff3.gz"
+    with pytest.raises(ValueError, match="g2 is on chrX"):
+        write_indexed_gff3(features, gz, regions=[("chr1", 1000)], version="t")
+
+
 def test_a_coordinate_beyond_the_tbi_limit_writes_the_file_without_an_index(tmp_path):
     features = [_Feature("big", "g1", [(600_000_000, 600_000_100)])]
     gz = tmp_path / "big.gff3.gz"

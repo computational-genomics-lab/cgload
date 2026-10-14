@@ -187,10 +187,21 @@ def write_indexed_gff3(
 
     Returns False when a coordinate is beyond what a .tbi index can address
     (2**29). The file is then still written, and only the index is not.
+
+    Raises ValueError for a feature on a sequence ``regions`` does not name.
+    Rows are written sequence by sequence, so such a feature would otherwise be
+    left out of the file without a word. The loader refuses those features
+    earlier, with a better message; this is the backstop.
     """
     path = Path(path)
+    named = {name for name, _length in regions}
     by_sequence: dict[str, list[int]] = defaultdict(list)
     for number, feature in enumerate(features):
+        if feature.seqid not in named:
+            raise ValueError(
+                f"{feature.source_id or '(no ID)'} is on {feature.seqid}, which is not "
+                f"among the sequences given, so it would be missing from {path.name}"
+            )
         by_sequence[feature.seqid].append(number)
 
     header = _header(version, vocabulary_hash)
