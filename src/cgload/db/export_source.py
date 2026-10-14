@@ -169,14 +169,20 @@ def load_features(
     identifier_of = {row.feature_id: row.source_id for row in rows}
 
     attributes: dict[int, dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
+    # A join, not an IN list of every row id: one bound parameter per row broke
+    # export past the driver's limit -- SQLite's (999 / 32,766 / 250,000 by
+    # build) and PostgreSQL's 65,535 (AUDIT-8). Ordered, because multi-valued
+    # attributes such as start_range=.,3250 are order-sensitive and a server
+    # database returns unordered rows in any order it likes.
     for row in connection.execute(
         select(
             feature_attribute.c.feature_id,
             feature_attribute.c.key,
             feature_attribute.c.value,
-        ).where(
-            feature_attribute.c.feature_id.in_([row.feature_id for row in rows])
         )
+        .join(feature, feature.c.feature_id == feature_attribute.c.feature_id)
+        .where(*conditions)
+        .order_by(feature_attribute.c.feature_attribute_id)
     ).all():
         attributes[row.feature_id][row.key].append(row.value)
 

@@ -285,9 +285,6 @@ def test_embedded_fasta_section_is_accepted(tmp_path):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-8: load_features puts every row id into one "
-                   "IN list; exceeds SQLite's limit (250,000 here, 32,766 or 999 on other "
-                   "builds) and PostgreSQL's 65,535")
 def test_export_does_not_depend_on_the_bound_parameter_limit(tmp_path):
     config = _project(tmp_path, fixture=FIXTURES / "refseq_fgraminearum_NC_026477.gff3")
     assert _init_and_load(tmp_path, config).exit_code == 0
