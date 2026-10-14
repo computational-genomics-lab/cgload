@@ -20,6 +20,7 @@ Conventions that hold everywhere below:
 from __future__ import annotations
 
 from sqlalchemy import (
+    BigInteger,
     CheckConstraint,
     Column,
     DateTime,
@@ -134,7 +135,10 @@ sequence_region = Table(
     Column("sequence_region_id", Integer, primary_key=True),
     Column("assembly_id", Integer, ForeignKey("assembly.assembly_id"), nullable=False),
     Column("source_id", String(256), nullable=False),  # column 1 of GFF3, verbatim
-    Column("length", Integer, nullable=False),
+    # 64-bit: INTEGER stops at 2,147,483,647 and PostgreSQL then refuses a
+    # longer sequence with "integer out of range" (AUDIT-9). Single
+    # sequences that long exist, in lungfish and in some plants.
+    Column("length", BigInteger, nullable=False),
     Column("region_type", String(64), nullable=True),  # chromosome | scaffold | contig
     UniqueConstraint("assembly_id", "source_id", name="uq_sequence_region_assembly_source_id"),
     CheckConstraint("length > 0", name="length_positive"),
@@ -197,8 +201,9 @@ feature = Table(
     # After synonym mapping. Linkage and `query` use this. Equal to
     # source_type for any term absent from the vocabulary.
     Column("feature_type", String(128), nullable=False),
-    Column("start", Integer, nullable=False),  # 1-based inclusive
-    Column("end", Integer, nullable=False),  # 1-based inclusive
+    # 1-based inclusive. 64-bit for the same reason as sequence_region.length.
+    Column("start", BigInteger, nullable=False),
+    Column("end", BigInteger, nullable=False),
     Column("strand", String(1), nullable=False),
     Column("phase", Integer, nullable=True),
     Column("score", Float, nullable=True),

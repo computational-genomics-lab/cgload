@@ -310,8 +310,6 @@ def test_postgresql_ddl_quotes_the_end_column_in_its_check_constraint():
     assert "CHECK (end >= start)" not in ddl
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-9: INTEGER tops out at 2,147,483,647; "
-                   "PostgreSQL rejects a 2.2 Gb sequence with 'integer out of range'")
 def test_coordinates_hold_sequences_longer_than_2_1_gb():
     for column in (feature.c.start, feature.c.end, sequence_region.c.length):
         assert isinstance(column.type, BigInteger), column
