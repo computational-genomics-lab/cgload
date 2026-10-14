@@ -12,14 +12,17 @@ silent `else: pass`. Those are invisible to any check that parses the file the
 same way. So the "before" number here comes from a deliberately naive pass that
 knows nothing about profiles, dialects, linkage or segments (D-008).
 
-Three tiers, and they are not equally authoritative:
+Four tiers, and they are not equally authoritative:
 
 1. **Source count** — the naive pass versus the database. Disagreement always
    means cgload is wrong. Fails the command.
-2. **Cross-parser** — the same assembly read as GFF3 and as GenBank, by two
+2. **Parent edges** — the stored hierarchy, counted by the rule that made each
+   edge. A feature the file gave a parent, stored without one, means cgload is
+   wrong. Fails the command (D-074; wired in only after AUDIT-1).
+3. **Cross-parser** — the same assembly read as GFF3 and as GenBank, by two
    engines sharing no code. Disagreement means one parser dropped something.
    Fails the command.
-3. **Reference counts** — NCBI's published per-assembly totals. Disagreement can
+4. **Reference counts** — NCBI's published per-assembly totals. Disagreement can
    have innocent causes, so this fails only when the preconditions rule those
    causes out, and is otherwise skipped with the reason stated (D-033).
 

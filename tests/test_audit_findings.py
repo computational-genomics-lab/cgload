@@ -121,8 +121,6 @@ NUCLEAR_GENE = (
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-1: check_parent_edges is never called; "
-                   "verify prints three tiers where the README documents four")
 def test_verify_reports_the_parent_edge_tier(tmp_path):
     config = _project(tmp_path, fixture=FIXTURES / "refseq_fgraminearum_NC_026477.gff3")
     assert _init_and_load(tmp_path, config).exit_code == 0
@@ -130,8 +128,6 @@ def test_verify_reports_the_parent_edge_tier(tmp_path):
     assert "parent edges" in result.output
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-1: a database whose hierarchy is gone "
-                   "still verifies PASS (the D-074 failure, still reachable)")
 def test_verify_fails_when_every_parent_link_is_lost(tmp_path):
     config = _project(tmp_path, fixture=FIXTURES / "refseq_fgraminearum_NC_026477.gff3")
     assert _init_and_load(tmp_path, config).exit_code == 0
@@ -141,6 +137,32 @@ def test_verify_fails_when_every_parent_link_is_lost(tmp_path):
     connection.close()
     result = _cli(tmp_path, "verify", "--assembly-id", "1")
     assert result.exit_code != 0, result.output
+
+
+def test_a_load_that_drops_stated_parents_is_rolled_back(tmp_path, monkeypatch):
+    """The same check runs inside every GFF3 load (D-046), so the AUDIT-2 bug,
+    reintroduced, fails the load instead of storing an unlinked hierarchy."""
+    import cgload.loader as loader_module
+
+    real = loader_module._resolve_parent_ids
+
+    def drop_anonymous_parents(connection, assembly_id, file_id, parse):
+        anonymous = [item for item in parse.normalised.features if item.source_id is None]
+        saved = [(item, item.parent_source_id) for item in anonymous]
+        for item in anonymous:
+            item.parent_source_id = None
+        try:
+            real(connection, assembly_id, file_id, parse)
+        finally:
+            for item, parent in saved:
+                item.parent_source_id = parent
+
+    monkeypatch.setattr(loader_module, "_resolve_parent_ids", drop_anonymous_parents)
+    config = _project(tmp_path, fixture=FIXTURES / "augustus_aphaeospermum_pheo_arth1.gff3")
+    result = _init_and_load(tmp_path, config)
+    assert result.exit_code == 2, result.output
+    assert "did not store the parent links" in result.output
+    assert _rows(tmp_path, "SELECT count(*) FROM feature")[0][0] == 0
 
 
 # ---------------------------------------------------------------------------

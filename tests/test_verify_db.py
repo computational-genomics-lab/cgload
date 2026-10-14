@@ -254,7 +254,10 @@ def test_counts_are_scoped_to_one_file(engine, tmp_path):
         'id_prefix = "AUG_"\n'
     )
     report = load_organism(engine, load_config(config), tmp_path / "data")
-    assert len(report.verification) == 2
+    # One source count per file; each GFF3 file also gets its parent-edge tier.
+    assert [item.name.split(" [")[0] for item in report.verification] == [
+        "source count", "source count", "parent edges", "parent edges"
+    ]
     assert all(item.outcome is Outcome.PASS for item in report.verification)
 
     from cgload.db.verification import annotation_files

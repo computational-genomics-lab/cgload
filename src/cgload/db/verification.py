@@ -19,7 +19,7 @@ from sqlalchemy import Connection, func, select
 
 from cgload.db.counts import feature_count_expression
 from cgload.db.schema import feature, sequence_region, source_file
-from cgload.verify import Outcome, TierResult
+from cgload.verify import LINKED_TYPES, Outcome, TierResult, check_parent_edges
 
 #: Types the naive pass counts but the loader deliberately does not store as
 #: features. Empty today and kept as the place to record any such divergence,
@@ -126,3 +126,102 @@ def sequences_loaded(connection: Connection, assembly_id: int) -> int:
             sequence_region.c.assembly_id == assembly_id
         )
     ).scalar_one()
+
+
+def annotation_files_with_format(
+    connection: Connection, assembly_id: int
+) -> list[tuple[int, str, str, str | None]]:
+    """As ``annotation_files``, plus each file's format and detected dialect."""
+    rows = connection.execute(
+        select(
+            source_file.c.source_file_id,
+            source_file.c.path,
+            source_file.c.file_format,
+            source_file.c.detected_dialect,
+        ).where(
+            source_file.c.assembly_id == assembly_id,
+            source_file.c.file_format != "fasta",
+        )
+    ).all()
+    return [(row[0], row[1], row[2], row[3]) for row in rows]
+
+
+def count_parent_edges(
+    connection: Connection,
+    assembly_id: int,
+    source_file_id: int,
+    *,
+    computed_edges: bool,
+) -> tuple[dict[str | None, int], int]:
+    """Edges per linkage method for one file, and the features stating none.
+
+    Counts features, not rows: each feature has exactly one row with
+    ``segment_index`` 0.
+
+    Where the file states its own parents (GFF3), every feature the file gave a
+    parent must be linked, whatever its type; the loader records that statement
+    as ``linkage_method``. That includes the anonymous intron and codon rows
+    whose parents were silently dropped before AUDIT-2. A feature the file left
+    parentless is top-level by the file's own statement (D-069); those of a type
+    that usually takes a parent are returned separately, for the report.
+
+    Where every edge is computed (GenBank), every feature of a type in
+    ``LINKED_TYPES`` is expected to have one (D-074).
+
+    A feature that should be linked and is not is counted under ``None``; one
+    that is linked although the file named no parent, under ``"unrecorded"``.
+    """
+    conditions = [
+        feature.c.assembly_id == assembly_id,
+        feature.c.source_file_id == source_file_id,
+        feature.c.segment_index == 0,
+    ]
+    if computed_edges:
+        conditions.append(feature.c.feature_type.in_(sorted(LINKED_TYPES)))
+    rows = connection.execute(
+        select(feature.c.parent_id, feature.c.linkage_method, feature.c.feature_type)
+        .where(*conditions)
+    ).all()
+    per_method: Counter = Counter()
+    top_level = 0
+    for parent_id, method, feature_type in rows:
+        if not computed_edges and method is None:
+            if parent_id is not None:
+                per_method["unrecorded"] += 1
+            elif feature_type in LINKED_TYPES:
+                top_level += 1
+            continue
+        per_method[method if parent_id is not None else None] += 1
+    return dict(per_method), top_level
+
+
+def parent_edge_tier(
+    connection: Connection,
+    assembly_id: int,
+    source_file_id: int,
+    *,
+    file_format: str,
+    dialect: str | None,
+    label: str = "parent edges",
+) -> TierResult:
+    """The parent-edge tier for one stored file (AUDIT-1)."""
+    computed = file_format == "genbank"
+    per_method, top_level = count_parent_edges(
+        connection, assembly_id, source_file_id, computed_edges=computed
+    )
+    result = check_parent_edges(
+        per_method, dialect="genbank" if computed else (dialect or file_format)
+    )
+    if per_method.get("unrecorded"):
+        result = TierResult(
+            label,
+            Outcome.FAIL,
+            f"{per_method['unrecorded']:,} feature(s) are linked although the file "
+            "named no parent for them; an edge was invented during loading",
+            {"unrecorded": 0},
+            {"unrecorded": per_method["unrecorded"]},
+        )
+    detail = result.detail
+    if top_level:
+        detail += f"; {top_level:,} more named no parent and are top-level (D-069)"
+    return TierResult(label, result.outcome, detail, result.expected, result.actual)

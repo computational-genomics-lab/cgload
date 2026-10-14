@@ -37,7 +37,11 @@ from cgload.db.schema import (
     sequence_region,
     source_file,
 )
-from cgload.db.verification import compare_with_database, count_database_for_file
+from cgload.db.verification import (
+    compare_with_database,
+    count_database_for_file,
+    parent_edge_tier,
+)
 from cgload.envelope import apply_policy, format_report
 from cgload.fasta import index_and_read
 from cgload.functional import FunctionalReport, attach_functional
@@ -309,6 +313,32 @@ def load_organism(
                     f"contains, so it is being rolled back. {detail}. This is a bug "
                     f"in cgload, not in your file; please report it with the file "
                     f"that produced it."
+                )
+
+        # The same holds for the hierarchy. In a GFF3 file the parents are the
+        # file's own statements, so a stated parent missing from the database
+        # means cgload lost it; the AUGUSTUS anonymous rows of AUDIT-2 were
+        # exactly that, and loaded with a PASS. GenBank edges are computed, and an
+        # unlinked feature there need not be cgload's fault (D-033), so for
+        # GenBank the tier is left to `verify`.
+        for parse in parsed:
+            if parse.is_genbank:
+                continue
+            result = parent_edge_tier(
+                connection,
+                assembly_id,
+                file_ids[parse.path],
+                file_format="gff3",
+                dialect=parse.detection.profile.name,
+                label=f"parent edges [{parse.path.name}]",
+            )
+            report.verification.append(result)
+            if result.outcome is Outcome.FAIL:
+                raise LoadError(
+                    f"{parse.path.name}: the load did not store the parent links the "
+                    f"file states, so it is being rolled back: {result.detail}. This "
+                    f"is a bug in cgload, not in your file; please report it with the "
+                    f"file that produced it."
                 )
 
         # A repaired load is declared, not merely successful: the receipt records

@@ -2099,3 +2099,28 @@ parent silently.
 before it is refused by every command with a message naming the missing column
 (`REQUIRED_COLUMNS` in `cgload.db.init`), rather than failing on the first insert
 with a driver error that names no cause.
+
+## D-078 — the parent-edge tier runs, in `verify` and inside every GFF3 load
+
+**Found by audit (AUDIT-1).** `check_parent_edges` (D-074) was written and unit
+tested, and nothing called it. `verify` printed three tiers where the README
+listed four, and a database whose `parent_id` column had been set to NULL
+throughout still verified PASS.
+
+**Decided:** `verify` reports a parent-edge tier for every annotation file,
+computed from the database alone, so it runs even when the input file is gone.
+
+- **GFF3 states its own parents.** Every feature the file gave a parent must be
+  linked, whatever its type: the loader records the statement as
+  `linkage_method`, so a stated parent missing from the database is a loss by
+  cgload. Counting only `LINKED_TYPES` would have missed AUDIT-2, whose unlinked
+  rows were introns and codons. A feature the file left parentless is top-level
+  by its own statement (D-069) and is reported, not failed.
+- **GenBank edges are computed.** Every feature of a `LINKED_TYPES` type is
+  expected to have one, as D-074 decided.
+
+The tier also runs inside every GFF3 load, next to the source count (D-046),
+and a failure rolls the load back: a test that drops the anonymous rows'
+parents, the AUDIT-2 bug, now fails the load instead of storing an unlinked
+hierarchy. For GenBank the load leaves the tier to `verify`, because an
+unlinked GenBank feature need not be cgload's fault (D-033).

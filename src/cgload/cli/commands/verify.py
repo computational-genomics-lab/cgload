@@ -15,9 +15,10 @@ from cgload.db.engine import (
 )
 from cgload.db.init import SchemaMissingError, VocabularyMismatchError
 from cgload.db.verification import (
-    annotation_files,
+    annotation_files_with_format,
     compare_with_database,
     count_database_for_file,
+    parent_edge_tier,
     sequences_loaded,
 )
 from cgload.verify import (
@@ -127,12 +128,13 @@ def run_verification(
     Every tier is returned, including skipped ones. A check that vanishes when it
     cannot run is indistinguishable from one that passed (D-033).
     """
-    files = annotation_files(connection, assembly_id)
-    if not files:
+    described = annotation_files_with_format(connection, assembly_id)
+    if not described:
         raise VerifyError(
             f"assembly {assembly_id} has no annotation files recorded, so there is "
             f"nothing to check it against."
         )
+    files = [(source_file_id, path) for source_file_id, path, _format, _dialect in described]
 
     results = []
     combined = None
@@ -156,6 +158,22 @@ def run_verification(
         )
         results.append(compare_with_database(source_counts, stored, label=label))
         combined = source_counts if combined is None else combined + source_counts
+
+    # The stored hierarchy, from the database alone (D-074). Written and tested
+    # long before it was ever called: a database whose parent links had all been
+    # lost still verified PASS (AUDIT-1).
+    for source_file_id, path, file_format, dialect in described:
+        label = "parent edges" if len(files) == 1 else f"parent edges [{Path(path).name}]"
+        results.append(
+            parent_edge_tier(
+                connection,
+                assembly_id,
+                source_file_id,
+                file_format=file_format,
+                dialect=dialect,
+                label=label,
+            )
+        )
 
     if against is not None:
         primary = Path(files[0][1])
