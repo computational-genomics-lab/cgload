@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
-from sqlalchemy import Connection, Engine, bindparam, delete, insert, select
+from sqlalchemy import Connection, Engine, bindparam, insert, select
 from sqlalchemy.exc import IntegrityError
 
 from cgload import __version__
@@ -30,6 +30,7 @@ from cgload.assembly import (
 from cgload.config import AnnotationFile, OrganismConfig
 from cgload.db import vocabulary as vocab
 from cgload.db.init import assert_vocabulary_current
+from cgload.db.removal import delete_assembly_rows
 from cgload.db.schema import (
     assembly,
     feature,
@@ -638,7 +639,11 @@ def _reject_duplicate_assembly(
     #
     # The delete is transactional: if the load fails, the rollback restores the
     # old rows, and storage.staged_load restores the old directory.
-    connection.execute(delete(assembly).where(assembly.c.assembly_id == existing))
+    #
+    # Every row the old assembly owns goes, children first. Deleting only the
+    # assembly row stopped every replacement with "FOREIGN KEY constraint
+    # failed", so --force had never worked on an assembly with features (D-083).
+    delete_assembly_rows(connection, existing)
 
 
 def _check_declared_regions(parse: ParsedFile, regions, config: OrganismConfig) -> list[str]:

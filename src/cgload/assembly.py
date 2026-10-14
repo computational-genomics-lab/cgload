@@ -19,6 +19,7 @@ from cgload import __version__
 from cgload.config import OrganismConfig
 from cgload.db import vocabulary as vocab
 from cgload.db.init import assert_vocabulary_current
+from cgload.db.removal import delete_assembly_rows
 from cgload.db.schema import assembly, organism, sequence_region, source_file, strain
 from cgload.fasta import index_and_read
 from cgload.storage import staged_load
@@ -84,6 +85,12 @@ def register_assembly(
                 f"already loaded (assembly_id={existing}). Use `cgload remove`, or "
                 f"load it under a different version."
             )
+        if existing is not None:
+            # Replaced inside this transaction, as `load --force` does (D-083).
+            # Inserting beside it left two assembly rows sharing one data
+            # directory when the version was unset, and a unique-constraint
+            # error when it was set.
+            delete_assembly_rows(conn, existing)
 
         assembly_id = conn.execute(
             insert(assembly).values(

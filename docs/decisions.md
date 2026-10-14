@@ -2231,3 +2231,32 @@ specification, and with htslib where pysam is installed.
 **Limit:** a `.tbi` index addresses positions below 2^29. Past that the file is
 still written, the index is not, and the load says so; `tabix --csi -p gff`
 indexes it. No sequence in the 30-genome RefSeq panel comes near that size.
+
+## D-083 — deleting an assembly deletes every row it owns, children first
+
+**Found while building `remove` (Phase 2).** `load --force` replaced an
+assembly by deleting its `assembly` row and nothing else. Foreign keys are
+enforced, on SQLite too (`build_engine` turns them on), so with any features
+stored that delete was refused with "FOREIGN KEY constraint failed" and the load
+stopped with a traceback. The transaction rolled back, so nothing was damaged,
+but `--force` had never replaced an assembly that had features. No test loaded
+the same assembly twice through the loader. The older `register_assembly` path
+did not delete the old row at all, so with no version set it left two assembly
+rows sharing one data directory.
+
+**Decided:** one function, `cgload.db.removal.delete_assembly_rows`, deletes
+everything an assembly owns, inside the caller's transaction, in dependency
+order: functional annotation and its runs, feature attributes, the parent links
+among the assembly's own features, the features, sequence regions and source
+files, then the assembly row. `load --force`, `register_assembly(force=True)`
+and `remove` all use it.
+
+- Parent links are cleared before the features are deleted. SQLite and
+  PostgreSQL check a foreign key at the end of a statement, so deleting parents
+  and children in one statement would pass there, but MySQL's InnoDB checks row
+  by row and refuses to delete a parent before its children.
+- Only rows the assembly owns are touched. A row of another assembly pointing
+  at this one should not exist; if one did, the foreign key error is the right
+  outcome, not a cascade into someone else's data.
+- Every statement selects its rows with a subquery, not an IN list built in
+  Python (AUDIT-8).
