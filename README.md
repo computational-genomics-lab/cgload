@@ -4,9 +4,8 @@
 database, reconcile the incompatible formats different pipelines produce, and
 check that every feature in the file reached the database.**
 
-A cgload fixes your position by measuring against an independent fixed
-reference. That is what this tool does with a genome annotation: it counts what
-it stored, and checks that count against sources it does not control.
+cgload counts what it stored and checks that count against the file it read,
+using code that shares nothing with its parser.
 
 ## Why
 
@@ -15,19 +14,22 @@ answers queries, and is wrong. Nothing downstream can tell. cgload is built
 around one property — **a load either completes in full or changes nothing** —
 and completeness is checked rather than assumed.
 
-Three things, together, that are not available elsewhere:
+What it does:
 
 1. **Dialect reconciliation.** RefSeq, funannotate, AUGUSTUS/BRAKER and GenBank
    disagree about feature types, parent–child linkage and identifier
    conventions, and GenBank carries no parent pointers at all. Every input is
    normalised to one representation before it reaches the database, with a
    documented resolution rule and a test per dialect.
-2. **Completeness verification.** After every load, cgload counts what it
-   stored and compares it against the source and against the provider's own
-   published totals. A mismatch fails the command, whether or not an exception
-   was raised.
-3. **Functional annotation as queryable relations.** eggNOG output becomes one
-   row per GO term, KO, PFAM domain or EC number — not a text blob to grep.
+2. **Completeness verification.** After every load, cgload recounts the
+   source file with code that shares nothing with the parser, compares the
+   counts with what it stored, and checks that every parent the file names is
+   stored as a link. A mismatch rolls the load back, whether or not an
+   exception was raised. `verify` runs these checks again later, and can also
+   compare the file with the provider's own published totals.
+3. **Functional annotation as queryable relations.** eggNOG-mapper and
+   InterProScan output becomes one row per GO term, KO, Pfam domain or EC
+   number, not a text blob to grep.
 
 ## The checks
 
