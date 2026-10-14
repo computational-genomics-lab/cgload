@@ -128,6 +128,6 @@ def assert_vocabulary_current(engine: Engine) -> None:
             f"this database was created under vocabulary version {row.version} "
             f"({row.content_hash[:12]}), and cgload {__version__} would apply "
             f"version {vocab.VOCABULARY_VERSION} ({vocab.content_hash()[:12]}). "
-            f"Run `cgload remap` to rewrite feature_type across affected rows, "
-            f"or use a cgload whose vocabulary matches."
+            f"Load into a new database created with this cgload's `cgload init`, "
+            f"or use the cgload version that created this one."
         )

@@ -229,7 +229,8 @@ def test_hash_covers_linkage_methods(monkeypatch):
 def test_stored_hash_guards_later_commands(engine, monkeypatch):
     assert_vocabulary_current(engine)  # seeded database agrees with itself
     monkeypatch.setitem(vocab.SYNONYMS, "novel_transcript_term", "mRNA")
-    with pytest.raises(VocabularyMismatchError, match="remap"):
+    # The remedy it names must exist: `cgload remap` never did.
+    with pytest.raises(VocabularyMismatchError, match="cgload init"):
         assert_vocabulary_current(engine)
 
 

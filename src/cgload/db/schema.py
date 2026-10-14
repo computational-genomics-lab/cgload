@@ -110,7 +110,7 @@ assembly = Table(
     # relative, so a moved directory still works (D-079).
     Column("data_root", Text, nullable=True),
     # Which vocabulary this assembly's feature_type values were derived under.
-    # A load against a different hash is refused until `cgload remap` runs.
+    # A load against a different hash is refused.
     Column("vocabulary_version", Integer, nullable=False),
     Column("vocabulary_hash", String(64), nullable=False),
     Column("cgload_version", String(64), nullable=False),
