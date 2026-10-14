@@ -303,7 +303,6 @@ def test_partial_features_are_flagged_not_silently_trimmed():
 # =========================================================================
 
 import sqlalchemy as _sa  # noqa: E402
-from click.testing import CliRunner  # noqa: E402
 from cgload.cli.main import cli  # noqa: E402
 from cgload.config import load_config  # noqa: E402
 from cgload.db.engine import build_engine  # noqa: E402
@@ -313,6 +312,7 @@ from cgload.db.vocabulary import COMPUTED_LINKAGE, LINKAGE_METHODS  # noqa: E402
 from cgload.loader import LoadError, load_organism  # noqa: E402
 from cgload.parsers import profiles as _P  # noqa: E402
 from cgload.parsers.normalise import normalise as _normalise  # noqa: E402
+from click.testing import CliRunner  # noqa: E402
 
 
 def _normalised(path):

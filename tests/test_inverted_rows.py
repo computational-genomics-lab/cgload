@@ -175,7 +175,6 @@ def test_an_inverted_row_with_no_children_cannot_be_repaired():
 import json  # noqa: E402
 from pathlib import Path as _Path  # noqa: E402
 
-from click.testing import CliRunner  # noqa: E402
 from cgload.cli.main import cli  # noqa: E402
 from cgload.config import load_config  # noqa: E402
 from cgload.db.engine import build_engine  # noqa: E402
@@ -183,6 +182,7 @@ from cgload.db.init import create_schema  # noqa: E402
 from cgload.db.schema import assembly as assembly_table  # noqa: E402
 from cgload.db.schema import feature as feature_table  # noqa: E402
 from cgload.loader import LoadError, load_organism  # noqa: E402
+from click.testing import CliRunner  # noqa: E402
 from sqlalchemy import select  # noqa: E402
 
 WIRED_FIXTURES = _Path(__file__).parent / "fixtures"

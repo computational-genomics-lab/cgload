@@ -209,7 +209,6 @@ def test_clean_input_needs_no_policy():
 import json  # noqa: E402
 from pathlib import Path as _Path  # noqa: E402
 
-from click.testing import CliRunner  # noqa: E402
 from cgload.cli.main import cli  # noqa: E402
 from cgload.config import load_config  # noqa: E402
 from cgload.db.engine import build_engine  # noqa: E402
@@ -220,6 +219,7 @@ from cgload.loader import LoadError, load_organism  # noqa: E402
 from cgload.parsers import profiles as profile_table  # noqa: E402
 from cgload.parsers.normalise import normalise  # noqa: E402
 from cgload.parsers.tokenizer import tokenize  # noqa: E402
+from click.testing import CliRunner  # noqa: E402
 from sqlalchemy import select  # noqa: E402
 
 FIXTURES = _Path(__file__).parent / "fixtures"

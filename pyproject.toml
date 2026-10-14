@@ -44,7 +44,7 @@ dependencies = [
 mysql = ["pymysql>=1.1"]
 postgres = ["psycopg[binary]>=3.1"]
 test = ["pytest>=7.4", "pytest-cov>=4.1"]
-dev = ["cgload[test]", "ruff>=0.6", "build>=1.2"]
+dev = ["cgload[test]", "ruff==0.17.0", "build>=1.2"]
 docs = ["mkdocs>=1.6", "mkdocs-material>=9.5"]
 
 [project.urls]
@@ -74,6 +74,9 @@ markers = [
 line-length = 100
 target-version = "py311"
 src = ["cgload", "tests"]
+# The survey scripts are frozen at tag survey-v1 and must stay byte-identical
+# to the run the survey reports (provenance.tsv records their MD5).
+extend-exclude = ["survey"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "S", "C4", "SIM", "RET", "ARG"]

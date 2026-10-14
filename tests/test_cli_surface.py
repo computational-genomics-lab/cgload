@@ -9,9 +9,9 @@ import subprocess
 import sys
 
 import pytest
-from click.testing import CliRunner
 from cgload import __version__
 from cgload.cli.main import PENDING, cli
+from click.testing import CliRunner
 
 
 @pytest.fixture

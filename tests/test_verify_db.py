@@ -22,7 +22,6 @@ from collections import Counter
 from pathlib import Path
 
 import pytest
-from click.testing import CliRunner
 from cgload.cli.main import cli
 from cgload.config import load_config
 from cgload.db.engine import build_engine
@@ -35,6 +34,7 @@ from cgload.db.verification import (
 )
 from cgload.loader import LoadError, load_organism
 from cgload.verify import Outcome, count_source_naively
+from click.testing import CliRunner
 from sqlalchemy import func, select
 
 FIXTURES = Path(__file__).parent / "fixtures"

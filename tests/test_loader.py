@@ -20,7 +20,6 @@ import random
 from pathlib import Path
 
 import pytest
-from click.testing import CliRunner
 from cgload.cli.main import cli
 from cgload.config import load_config
 from cgload.db.counts import feature_count_expression
@@ -28,6 +27,7 @@ from cgload.db.engine import build_engine
 from cgload.db.init import create_schema
 from cgload.db.schema import assembly, feature, feature_attribute, source_file
 from cgload.loader import LoadError, load_organism
+from click.testing import CliRunner
 from sqlalchemy import func, select
 
 FIXTURES = Path(__file__).parent / "fixtures"

@@ -9,7 +9,6 @@ import os
 from pathlib import Path
 
 import pytest
-
 from cgload.verify import Outcome, compare_across_formats
 
 GENOMES = Path(os.environ.get("CGLOAD_REAL_GENOMES", "/tmp/real-genomes"))

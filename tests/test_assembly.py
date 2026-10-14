@@ -19,7 +19,6 @@ import json
 from pathlib import Path
 
 import pytest
-from click.testing import CliRunner
 from cgload.assembly import AssemblyExistsError, register_assembly
 from cgload.cli.main import cli
 from cgload.config import ConfigError, load_config
@@ -28,6 +27,7 @@ from cgload.db.init import create_schema
 from cgload.db.schema import assembly, organism, sequence_region, source_file, strain
 from cgload.fasta import AssemblyReadError, index_and_read
 from cgload.storage import DataDirectoryConflictError, slug, staged_load
+from click.testing import CliRunner
 from sqlalchemy import func, select
 
 REGIONS = [("scaffold_1", 400), ("scaffold_2", 150), ("mito", 60)]

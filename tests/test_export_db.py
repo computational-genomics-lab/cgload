@@ -23,7 +23,6 @@ from collections import Counter
 from pathlib import Path
 
 import pytest
-from click.testing import CliRunner
 from cgload.cli.main import cli
 from cgload.config import load_config
 from cgload.db.engine import build_engine
@@ -37,6 +36,7 @@ from cgload.parsers import profiles as profile_table
 from cgload.parsers.normalise import counts_by_source_type, normalise
 from cgload.parsers.tokenizer import tokenize
 from cgload.verify import count_source_naively
+from click.testing import CliRunner
 from sqlalchemy import select
 
 FIXTURES = Path(__file__).parent / "fixtures"
