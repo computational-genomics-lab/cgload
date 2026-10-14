@@ -205,13 +205,24 @@ cgload verify    completeness checks
 cgload explain   why one feature was linked the way it was
 cgload stats     counts per organism, assembly, feature type
 cgload export    write back out as GFF3
+cgload query     features by identifier, region or functional term; read-only
 cgload remove    remove an assembly, rows and files together; transactional
-
-cgload query     NOT YET IMPLEMENTED - genes by identifier, region, annotation
 ```
 
-The unimplemented command exists in the surface, exits non-zero, and names
-what is missing. It never returns success.
+`query` answers with whole features, as TSV or as GFF3:
+
+```console
+cgload query --assembly-id 1 --id gene-FGSG_11614 --descendants        # a gene model
+cgload query --assembly-id 1 --region NC_026477.1:1-20000 --type gene   # genes in a region
+cgload query --assembly-id 1 --term PF03198                             # proteins with a Pfam hit
+cgload query --assembly-id 1 --term K00799 --format gff3                # GFF3, with ancestors
+```
+
+The TSV has one row per feature, with its parent and the top of its parent
+chain (`top_level`, usually the gene). With `--term` there is one row per
+functional assignment. The GFF3 adds every ancestor, so each `Parent` resolves
+inside the file. Accessions match exactly, apart from a few listed spellings
+(`K00799` finds eggNOG's `ko:K00799`; D-085).
 
 `remove` asks before it deletes anything; `--dry-run` shows what would go. It
 deletes the data directory only when that directory's `manifest.json` names

@@ -93,6 +93,15 @@ sequence in it.
 - **The tabix index covers positions below 2^29.** A longer sequence gets its
   `annotation.gff3.gz` but no `.tbi`; the load says so, and
   `tabix --csi -p gff` indexes it (D-082).
+- **`query` needs recursive common table expressions**: SQLite 3.8.3 or
+  newer (released in 2014), PostgreSQL, or MySQL 8.0 or newer.
+- **Region queries read the index from the start of the sequence.** The index
+  is a B-tree on (sequence, start, end), so a query near the end of a long
+  sequence reads index entries for most of that sequence. How much that costs
+  on a large genome is not measured yet.
+- **A Pfam domain has two spellings.** eggNOG-mapper reports it by name
+  (`Pkinase`), InterProScan by accession (`PF00069`). `query --term` matches
+  the string given, and cgload holds no table that maps one to the other.
 - **Excluding sequences requires filtering the input.** There is no
   `--exclude-sequences` flag yet; to load part of an assembly, filter the GFF3
   and FASTA beforehand.

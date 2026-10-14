@@ -347,6 +347,9 @@ Index(
     protein_annotation.c.analysis,
     protein_annotation.c.accession,
 )
+# `query --term` without --analysis looks an accession up across every
+# analysis; the index above leads with the analysis and cannot serve that.
+Index("ix_protein_annotation_accession", protein_annotation.c.accession)
 Index("ix_protein_annotation_feature", protein_annotation.c.feature_id)
 
 

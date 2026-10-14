@@ -2290,3 +2290,48 @@ would leave rows pointing at nothing, which is the state AUDIT-4 was about.
   as it was before the load. Empty organism and strain directories go too.
 - It asks before deleting unless `--yes` is given, and `--dry-run` prints the
   counts and the directory without changing anything.
+
+## D-085 — `query` answers three questions with whole features, through bound parameters only
+
+**The stub promised** "region, annotation and KO queries". The paper's timing
+comparison (Phase 7) needs the everyday questions answered by cgload itself: a
+gene with its children, the features in a region, the genes carrying a domain.
+
+**Decided:**
+
+- Three questions, exactly one per call: `--id` (with `--descendants` for
+  everything below it), `--region` in samtools notation, and `--term` for an
+  accession from eggNOG-mapper or InterProScan. Answers are whole features,
+  every segment included.
+- A region matches rows, not envelopes. A position inside an intron returns
+  the gene and the mRNA, not the CDS whose rows all lie elsewhere; a CDS with
+  any row in the region comes back whole. A sequence name containing a colon
+  is tried whole first, as samtools does. An end past the sequence is cut to
+  its length; a start past it is an error.
+- Accessions match exactly. The only rewrites are spellings of one identifier
+  that the source formats are known to differ on: `K00799` and `ko:K00799`,
+  KEGG `map` and `ko` pathways (D-032), and GO and EC prefixes. Nothing is
+  matched by prefix or similarity. GO matches include the ancestor terms
+  eggNOG-mapper adds (D-045), and the TSV says so when GO rows are present.
+- `--type` keeps only features of the given canonical types. It is refused with
+  `--term`, where the annotated feature is the CDS or mRNA the functional file
+  named; the `top_level` column names its gene instead.
+- TSV has one row per feature (one per assignment with `--term`), with the
+  parent and the identifier at the top of the parent chain. GFF3 adds every
+  ancestor, so each `Parent` resolves inside the file, and it carries the
+  `##cgload-export` header (D-035) plus a comment naming the question.
+- Every value the user types is a bound parameter. Sets of rows pass between
+  steps as subqueries, never as IN lists built in Python (AUDIT-8); a test runs
+  a whole-sequence query under a parameter limit of 10. The parent chain is
+  walked with recursive CTEs using UNION, not UNION ALL, so a cycle in the
+  parent links cannot make a query run forever.
+- Read-only: nothing is committed, and a test checks that the database file is
+  byte-identical after queries.
+- Exit codes: 0 for an answer, including an empty one; 1 when the ID asked for
+  does not exist, since that is usually a typo; 2 for a malformed question.
+- `protein_annotation` gains an index on `accession` alone. The existing index
+  leads with `analysis`, so it cannot serve a term asked without `--analysis`.
+
+**Not done:** no server and no web layer (roadmap). Query speed on large
+genomes is measured in Phase 7, against gffutils and against tabix on cgload's
+own files, before anything is claimed about it.

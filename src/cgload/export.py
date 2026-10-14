@@ -253,17 +253,21 @@ def export_gff3(
     declared_absent: Iterable[str] = (),
     sequence_regions: dict[str, int] | None = None,
     include_linkage: bool = True,
+    comments: Iterable[str] = (),
 ) -> tuple[str, ExportSummary]:
     """Serialise features to cgload-dialect GFF3.
 
     ``declared_absent`` names types the source dialect never provides -- passed
     through from the profile's ``provides`` declaration -- so the file records
     the difference between "the input had no exons" and "the exons were lost".
+    ``comments`` are written as ``#`` lines after the directives; ``query``
+    uses one to say which question the file answers.
     """
     lines: list[str] = _header(version, vocabulary_hash)
 
     for name, length in sorted((sequence_regions or {}).items()):
         lines.append(f"##sequence-region {name} 1 {length}")
+    lines.extend(f"# {comment}" for comment in comments)
 
     absent = tuple(sorted(set(declared_absent)))
     if absent:

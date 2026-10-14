@@ -8,9 +8,10 @@ that an unbuilt command fails loudly instead of appearing to succeed.
 import subprocess
 import sys
 
+import click
 import pytest
 from cgload import __version__
-from cgload.cli.main import PENDING, cli
+from cgload.cli.main import PENDING, PendingCommand, cli
 from click.testing import CliRunner
 
 
@@ -48,29 +49,34 @@ def test_help_lists_every_v1_command(run):
         assert name in result.output
 
 
-@pytest.mark.parametrize("name", sorted(PENDING))
-def test_unimplemented_commands_exit_nonzero(run, name):
+@pytest.fixture
+def pending():
+    """A group holding one stub. Every published command is built now, so the
+    stub mechanism (P1) is exercised on a command made for the test."""
+    group = click.Group()
+    group.add_command(PendingCommand("someday", 12, "not built yet"))
+    return group
+
+
+def test_every_published_command_is_built():
+    assert PENDING == {}
+
+
+def test_unimplemented_commands_exit_nonzero(run, pending):
     """P1: a command that does not work must not return success."""
-    result = run.invoke(cli, [name])
+    result = run.invoke(pending, ["someday"])
     assert result.exit_code == 2
 
 
-@pytest.mark.parametrize("name", sorted(PENDING))
-def test_unimplemented_commands_name_their_milestone(run, name):
-    result = run.invoke(cli, [name])
-    milestone = PENDING[name][0]
+def test_unimplemented_commands_name_their_milestone(run, pending):
+    result = run.invoke(pending, ["someday"])
     assert "not implemented" in result.output
-    assert f"milestone {milestone}" in result.output
+    assert "milestone 12" in result.output
 
 
-def test_unimplemented_commands_ignore_arguments(run):
-    """Stubs must not mask a real failure as an argument-parsing error.
-
-    Uses a still-pending command. `load` was a stub at milestone 0, `verify` at
-    milestone 3; both are real now, so pinning this on either would make the test
-    drift into checking Click's own option validation instead.
-    """
-    result = run.invoke(cli, ["query", "--config", "nonexistent.toml", "--force"])
+def test_unimplemented_commands_ignore_arguments(run, pending):
+    """Stubs must not mask a real failure as an argument-parsing error."""
+    result = run.invoke(pending, ["someday", "--config", "nonexistent.toml", "--force"])
     assert result.exit_code == 2
     assert "not implemented" in result.output
 

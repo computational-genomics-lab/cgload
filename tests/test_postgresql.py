@@ -153,3 +153,36 @@ def test_force_replaces_and_remove_empties_on_postgresql(pg_url, tmp_path):
     finally:
         engine.dispose()
     assert not any(path.name == "manifest.json" for path in (tmp_path / "data").rglob("*"))
+
+
+def test_query_on_postgresql(pg_url, tmp_path):
+    """The recursive CTEs and subqueries behind `query` (D-085), on a server."""
+    assert _run("init", "--db-url", pg_url).exit_code == 0
+    loaded = _run("load", "--db-url", pg_url, "--config", str(_project(tmp_path)),
+                  "--data-dir", str(tmp_path / "data"))
+    assert loaded.exit_code == 0, loaded.output
+
+    def query(*args: str):
+        return _run("query", "--db-url", pg_url, "--assembly-id", "1", *args)
+
+    model = query("--id", "gene-UMAG_00002", "--descendants")
+    assert model.exit_code == 0, model.output
+    rows = [line.split("\t") for line in model.stdout.splitlines()
+            if line and not line.startswith("#")][1:]
+    assert {row[1] for row in rows} >= {"gene", "mRNA", "CDS"}
+    assert {row[9] for row in rows} == {"gene-UMAG_00002"}
+
+    gff3 = query("--region", "NC_026478.1:12235-13887", "--format", "gff3")
+    assert gff3.exit_code == 0, gff3.output
+    identifiers, parents = set(), set()
+    for line in gff3.stdout.splitlines():
+        if line and not line.startswith("#"):
+            attributes = dict(pair.split("=", 1) for pair in line.split("\t")[8].split(";"))
+            identifiers.add(attributes.get("ID"))
+            if "Parent" in attributes:
+                parents.add(attributes["Parent"])
+    assert parents and parents <= identifiers
+
+    nothing = query("--term", "GO:0005524")
+    assert nothing.exit_code == 0
+    assert "No functional annotation is loaded" in nothing.stderr

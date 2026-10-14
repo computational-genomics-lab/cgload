@@ -44,15 +44,19 @@ OWNED_TABLES = ("feature", "sequence_region", "source_file", "annotation_run")
 
 
 def _lengths(gff: Path) -> dict[str, int]:
-    lengths: dict[str, int] = {}
+    """The declared length of each sequence, or 500 bp past its last row."""
+    declared: dict[str, int] = {}
+    furthest: dict[str, int] = {}
     for line in gff.read_text().splitlines():
         if line.startswith("##sequence-region"):
             parts = line.split()
-            lengths[parts[1]] = max(lengths.get(parts[1], 0), int(parts[3]))
+            declared[parts[1]] = int(parts[3])
         elif line and not line.startswith("#"):
             columns = line.split("\t")
-            lengths[columns[0]] = max(lengths.get(columns[0], 0), int(columns[4]) + 500)
-    return lengths
+            furthest[columns[0]] = max(furthest.get(columns[0], 0), int(columns[4]))
+    for name, end in furthest.items():
+        declared.setdefault(name, end + 500)
+    return declared
 
 
 def _fasta(path: Path, lengths: dict[str, int]) -> None:

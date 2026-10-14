@@ -16,7 +16,7 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass, field
 
-from sqlalchemy import Connection, select
+from sqlalchemy import Connection, and_, select
 
 from cgload.db.schema import (
     assembly,
@@ -60,6 +60,9 @@ class StoredFeature:
     parent_source_id: str | None = None
     linkage_method: str | None = None
     attributes: dict[str, list[str]] = field(default_factory=dict)
+    #: The database row of the first segment: the row that attributes, parent
+    #: links and functional annotation point at.
+    row_id: int | None = None
 
     @property
     def start(self) -> int:
@@ -136,37 +139,43 @@ def load_context(connection: Connection, assembly_id: int) -> AssemblyContext:
 def load_features(
     connection: Connection, assembly_id: int, *, source_file_id: int | None = None
 ) -> list[StoredFeature]:
-    """Rebuild features from rows, grouping segments back together.
+    """Every feature of an assembly, or of one of its source files."""
+    conditions = [feature.c.assembly_id == assembly_id]
+    if source_file_id is not None:
+        conditions.append(feature.c.source_file_id == source_file_id)
+    return features_where(connection, and_(*conditions))
+
+
+def features_where(connection: Connection, condition) -> list[StoredFeature]:
+    """Rebuild features from the rows matching ``condition``, segments regrouped.
+
+    ``condition`` is a SQL expression over the ``feature`` table. ``query``
+    passes one that selects whole features; a condition that selects only some
+    segments of a feature yields those segments only.
 
     Anonymous rows (D-024) cannot be grouped by identifier and are each their own
     feature, which is exactly how they were stored — so the count that comes out
     equals the count that went in without any special case.
+
+    The parent's identifier comes from a join on ``parent_id``, so it is right
+    even when the parent itself is not among the rows selected.
     """
-    conditions = [feature.c.assembly_id == assembly_id]
-    if source_file_id is not None:
-        conditions.append(feature.c.source_file_id == source_file_id)
-
-    regions = dict(
-        connection.execute(
-            select(sequence_region.c.sequence_region_id, sequence_region.c.source_id)
-        ).all()
-    )
-    programs_by_file = dict(
-        connection.execute(
-            select(source_file.c.source_file_id, source_file.c.detected_dialect)
-        ).all()
-    )
-
+    parent = feature.alias("parent")
     rows = connection.execute(
-        select(feature)
-        .where(*conditions)
+        select(
+            feature,
+            sequence_region.c.source_id.label("seqid"),
+            source_file.c.detected_dialect.label("dialect"),
+            parent.c.source_id.label("parent_source_id"),
+        )
+        .join(sequence_region, sequence_region.c.sequence_region_id == feature.c.sequence_region_id)
+        .join(source_file, source_file.c.source_file_id == feature.c.source_file_id)
+        .outerjoin(parent, parent.c.feature_id == feature.c.parent_id)
+        .where(condition)
         .order_by(feature.c.feature_id, feature.c.segment_index)
     ).all()
     if not rows:
         return []
-
-    parent_of = {row.feature_id: row.parent_id for row in rows}
-    identifier_of = {row.feature_id: row.source_id for row in rows}
 
     attributes: dict[int, dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
     # A join, not an IN list of every row id: one bound parameter per row broke
@@ -181,7 +190,7 @@ def load_features(
             feature_attribute.c.value,
         )
         .join(feature, feature.c.feature_id == feature_attribute.c.feature_id)
-        .where(*conditions)
+        .where(condition)
         .order_by(feature_attribute.c.feature_attribute_id)
     ).all():
         attributes[row.feature_id][row.key].append(row.value)
@@ -199,23 +208,28 @@ def load_features(
             segment_index=row.segment_index,
         )
         if row.source_id is not None and row.source_id in named:
-            named[row.source_id].segments.append(segment)
+            item = named[row.source_id]
+            item.segments.append(segment)
+            if row.segment_index == 0:
+                item.row_id = row.feature_id
+            for key, values in attributes.get(row.feature_id, {}).items():
+                item.attributes.setdefault(key, list(values))
             continue
 
-        parent_id = parent_of.get(row.feature_id)
         item = StoredFeature(
             source_id=row.source_id,
             source_type=row.source_type,
             feature_type=row.feature_type,
-            seqid=regions[row.sequence_region_id],
+            seqid=row.seqid,
             strand=row.strand,
-            source_program=row.source_program
-            or programs_by_file.get(row.source_file_id)
-            or "cgload",
+            source_program=row.source_program or row.dialect or "cgload",
             segments=[segment],
-            parent_source_id=identifier_of.get(parent_id) if parent_id else None,
+            parent_source_id=row.parent_source_id,
             linkage_method=row.linkage_method,
-            attributes={key: list(values) for key, values in attributes[row.feature_id].items()},
+            attributes={
+                key: list(values) for key, values in attributes.get(row.feature_id, {}).items()
+            },
+            row_id=row.feature_id,
         )
         if row.source_id is not None:
             named[row.source_id] = item
