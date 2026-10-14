@@ -109,8 +109,9 @@ it is the one command where the two genuinely differ; `--by={source,canonical}`
 collapses to one.
 
 For a term absent from the vocabulary, the two columns are equal. Nothing is
-rejected; unknown terms are named in the load summary, and
-`--strict-vocabulary` turns them into an error.
+rejected. A type that the file's dialect profile does not declare is named in
+the load summary, and `load --strict-vocabulary` refuses such a file, listing
+every such type at once (D-087).
 
 ## 2. One row per segment, one feature per `source_id`
 

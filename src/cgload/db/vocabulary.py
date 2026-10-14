@@ -195,8 +195,9 @@ def seed_rows() -> list[dict[str, str]]:
     """Every row written to the ``vocabulary`` table at ``init``.
 
     Terms absent from this list are not rejected: they load verbatim with
-    ``source_type == feature_type``, are counted normally, and are named in
-    the load summary. ``--strict-vocabulary`` turns that into an error.
+    ``source_type == feature_type`` and are counted normally. A type the
+    file's dialect profile does not declare is named in the load summary, and
+    ``load --strict-vocabulary`` refuses it (D-087).
     """
     rows = [{"term": t, "canonical_term": t, "tier": "A"} for t in HIERARCHY_TERMS]
     rows += [

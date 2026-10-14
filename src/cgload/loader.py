@@ -114,6 +114,7 @@ def load_organism(
     copy: bool = True,
     force: bool = False,
     repair_envelopes: bool = False,
+    strict_vocabulary: bool = False,
 ) -> LoadReport:
     """Load one organism: assembly, then every annotation file.
 
@@ -137,6 +138,8 @@ def load_organism(
     parsed = [_parse(annotation, repair_envelopes=repair_envelopes)
               for annotation in config.annotation]
     _reject_cross_file_collisions(parsed)
+    if strict_vocabulary:
+        _reject_undeclared_types(parsed)
 
     with staged_load(
         engine,
@@ -464,6 +467,28 @@ def _is_genbank(path: Path) -> bool:
             handle.seek(0)
             first = handle.readline().decode("utf-8", errors="replace")
     return first.startswith("LOCUS")
+
+
+def _reject_undeclared_types(parsed: list[ParsedFile]) -> None:
+    """``--strict-vocabulary``: refuse types the file's profile does not declare.
+
+    Without the flag such types load verbatim and are named in a warning. With
+    it, every one in every file is listed in a single refusal, so that a user
+    adding a new dialect learns the whole gap in one run (D-087).
+    """
+    problems = [
+        f"{parse.path.name}: {len(parse.normalised.unexpected_types)} feature type(s) "
+        f"not declared by the {parse.detection.profile.name} profile: "
+        f"{', '.join(sorted(parse.normalised.unexpected_types))}"
+        for parse in parsed
+        if parse.normalised.unexpected_types
+    ]
+    if problems:
+        raise LoadError(
+            "--strict-vocabulary refuses feature types the dialect profile does not "
+            "declare; without it they are stored verbatim with a warning.\n  "
+            + "\n  ".join(problems)
+        )
 
 
 def _parse(annotation: AnnotationFile, *, repair_envelopes: bool = False) -> ParsedFile:

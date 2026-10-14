@@ -489,3 +489,48 @@ def test_the_bundled_example_loads(engine, tmp_path):
     assert report.files[0].counts_by_type == {
         "gene": 3, "mRNA": 2, "tRNA": 1, "exon": 4, "CDS": 2
     }
+
+
+# -- --strict-vocabulary (D-087) --------------------------------------------
+
+UNDECLARED = (
+    "##gff-version 3\n"
+    "NC_000001.1\tRefSeq\tregion\t1\t20000\t.\t+\t.\tID=NC_000001.1:1..20000\n"
+    "NC_000001.1\tGnomon\tgene\t1000\t3000\t.\t+\t.\tID=gene-A\n"
+    "NC_000001.1\tGnomon\tmRNA\t1000\t3000\t.\t+\t.\tID=rna-A;Parent=gene-A\n"
+    "NC_000001.1\tGnomon\texon\t1000\t3000\t.\t+\t.\tID=exon-A;Parent=rna-A\n"
+    "NC_000001.1\tRefSeq\tsequence_feature\t5000\t5100\t.\t+\t.\tID=sf-1\n"
+    "NC_000001.1\tRefSeq\tenhancer\t6000\t6100\t.\t+\t.\tID=enh-1\n"
+)
+
+
+def _undeclared_project(tmp_path: Path) -> Path:
+    gff = tmp_path / "undeclared.gff3"
+    gff.write_text(UNDECLARED)
+    return config_for(tmp_path, "NC_000001.1", [(gff, None)])
+
+
+def test_undeclared_types_load_with_a_warning_by_default(engine, tmp_path):
+    report = load_organism(engine, load_config(_undeclared_project(tmp_path)), tmp_path / "data")
+    assert report.files[0].counts_by_type["sequence_feature"] == 1
+    assert any("not declared by the refseq profile: enhancer, sequence_feature" in warning
+               for warning in report.warnings)
+
+
+def test_strict_vocabulary_refuses_listing_every_undeclared_type(engine, tmp_path):
+    config = load_config(_undeclared_project(tmp_path))
+    with pytest.raises(LoadError, match="2 feature type.*: enhancer, sequence_feature"):
+        load_organism(engine, config, tmp_path / "data", strict_vocabulary=True)
+    with engine.connect() as connection:
+        assert connection.execute(select(func.count()).select_from(feature)).scalar_one() == 0
+    assert not (tmp_path / "data").exists() or not any((tmp_path / "data").iterdir())
+
+
+def test_strict_vocabulary_on_the_command_line(tmp_path):
+    config = _undeclared_project(tmp_path)
+    url = f"sqlite:///{tmp_path / 'cli.db'}"
+    assert CliRunner().invoke(cli, ["init", "--db-url", url]).exit_code == 0
+    result = CliRunner().invoke(cli, ["load", "--db-url", url, "--config", str(config),
+                                      "--data-dir", str(tmp_path / "d"), "--strict-vocabulary"])
+    assert result.exit_code == 2
+    assert "enhancer, sequence_feature" in result.output

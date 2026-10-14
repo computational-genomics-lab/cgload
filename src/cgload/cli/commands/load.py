@@ -75,6 +75,12 @@ INPUT_ERRORS = (
     "genes; every change is printed and written into the manifest (D-055).",
 )
 @click.option(
+    "--strict-vocabulary",
+    is_flag=True,
+    help="Refuse a file that contains feature types its dialect profile does not "
+    "declare, listing them all, instead of storing them verbatim with a warning.",
+)
+@click.option(
     "--force",
     is_flag=True,
     help="Replace an assembly already loaded under this name. Destroys its features.",
@@ -85,6 +91,7 @@ def load_command(
     db_url: str | None,
     link: bool,
     repair_envelopes: bool,
+    strict_vocabulary: bool,
     force: bool,
 ) -> None:
     """Load one organism: assembly and annotation, together or not at all."""
@@ -101,6 +108,7 @@ def load_command(
             copy=not link,
             force=force,
             repair_envelopes=repair_envelopes,
+            strict_vocabulary=strict_vocabulary,
         )
     except INPUT_ERRORS as exc:
         click.echo(f"cgload load: {exc}", err=True)

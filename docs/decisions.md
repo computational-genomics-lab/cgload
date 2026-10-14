@@ -2360,3 +2360,24 @@ recorded at load. If they differ, the tier is skipped with a reason that names
 the file and says how to recover: restore the original, or reload with
 `--force`. A skipped tier is reported, never hidden (D-033). The cost is one
 extra read of each input file, next to the read the count already makes.
+
+## D-087 — `load --strict-vocabulary` refuses the types the load summary names
+
+**Found while checking messages against the commands.** `docs/schema.md`, the
+vocabulary module and D-017 all describe a `--strict-vocabulary` flag that turns
+unknown feature types into an error. No command had it. A test now reads every
+string in the package and fails if one names a flag that no command declares.
+
+**Decided:** `load --strict-vocabulary` refuses a file containing feature types
+that its dialect profile does not declare: the types the load summary already
+names in its "not declared by the ... profile" warning. Every such type in every
+file is listed in one refusal, as item 5 of the D-060 audit asked, and
+the database is not touched. Without the flag nothing changes: such types load
+verbatim with a warning.
+
+**Rejected:** refusing every term absent from the vocabulary table, as D-017
+first described. `region`, `intron`, `start_codon` and `stop_codon` are kept
+out of the vocabulary on purpose (`NOT_CANONICALISED`), so that rule would
+refuse every RefSeq and every AUGUSTUS file, and the flag would be switched
+off after the first try. The profile already records which types each producer
+is expected to write, so a type outside it is the one worth stopping for.
