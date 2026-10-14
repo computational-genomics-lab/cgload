@@ -18,6 +18,7 @@ What these assert, stated before they were written:
 from __future__ import annotations
 
 import re
+import sqlite3
 from pathlib import Path
 
 import pytest
@@ -34,7 +35,7 @@ from cgload.parsers.functional import (
     parse_functional,
     parse_interproscan,
 )
-from sqlalchemy import func, select
+from sqlalchemy import event, func, select
 
 FIXTURES = Path(__file__).parent / "fixtures"
 REFSEQ_GFF = FIXTURES / "refseq_fgraminearum_NC_026477.gff3"
@@ -224,6 +225,22 @@ def test_the_join_goes_through_protein_id(loaded):
         ).all()
     assert pairs
     assert all(pair.query_id != pair.source_id for pair in pairs)
+
+
+def test_attaching_does_not_depend_on_the_bound_parameter_limit(loaded):
+    """The lookup used to put every annotatable feature into one IN list, which
+    fails past the driver's parameter limit on a large genome (the AUDIT-8
+    defect, in the functional loader). A limit of 20 against this fixture's
+    annotatable features stands in for 32,766 against a maize-sized genome."""
+    _, assembly_id, tmp_path = loaded
+    limited = build_engine(f"sqlite:///{tmp_path / 'g.db'}")
+
+    @event.listens_for(limited, "connect")
+    def _small_limit(dbapi_connection, _record):
+        dbapi_connection.setlimit(sqlite3.SQLITE_LIMIT_VARIABLE_NUMBER, 20)
+
+    report = load_functional(limited, assembly_id, EGGNOG)
+    assert report.matched_count == 20
 
 
 def test_loading_functional_annotation_changes_no_feature_count(loaded):

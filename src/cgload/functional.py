@@ -232,30 +232,35 @@ def _build_index(connection: Connection, assembly_id: int) -> dict[str, set[int]
     """
     index: dict[str, set[int]] = defaultdict(set)
 
+    annotatable = (
+        feature.c.assembly_id == assembly_id,
+        feature.c.segment_index == 0,
+        feature.c.feature_type.in_(sorted(ANNOTATABLE_TYPES)),
+    )
     rows = connection.execute(
         select(feature.c.feature_id, feature.c.source_id, feature.c.feature_type).where(
-            feature.c.assembly_id == assembly_id,
-            feature.c.segment_index == 0,
-            feature.c.feature_type.in_(ANNOTATABLE_TYPES),
+            *annotatable
         )
     ).all()
-    identifiers = {row.feature_id: row.source_id for row in rows}
     for row in rows:
         if row.source_id:
             index[row.source_id].add(row.feature_id)
 
-    if not identifiers:
+    if not rows:
         return index
 
+    # A join, not an IN list of every annotatable feature: one bound parameter
+    # per feature fails past the driver's limit, which a large genome reaches
+    # (SQLite's 32,766 on common builds, PostgreSQL's 65,535). The same defect
+    # as AUDIT-8, in the functional loader.
     attributes = connection.execute(
         select(
             feature_attribute.c.feature_id,
             feature_attribute.c.key,
             feature_attribute.c.value,
-        ).where(
-            feature_attribute.c.feature_id.in_(identifiers),
-            feature_attribute.c.key.in_(LOOKUP_ATTRIBUTES),
         )
+        .join(feature, feature.c.feature_id == feature_attribute.c.feature_id)
+        .where(*annotatable, feature_attribute.c.key.in_(LOOKUP_ATTRIBUTES))
     ).all()
     for row in attributes:
         value = row.value.strip()
