@@ -206,6 +206,7 @@ def load_organism(
             report.warnings.extend(
                 _check_declared_regions(parse, regions, config)
             )
+            report.warnings.extend(_check_sequence_bounds(parse, regions))
             try:
                 file_id = connection.execute(
                     insert(source_file).values(
@@ -637,6 +638,76 @@ def _check_declared_regions(parse: ParsedFile, regions, config: OrganismConfig) 
                 f"{end - start + 1} bp but the assembly has {actual} bp."
             )
     return warnings
+
+
+def _circular_sequences(parse: ParsedFile) -> set[str]:
+    """Sequences whose `region` row says `Is_circular=true` (RefSeq)."""
+    found: set[str] = set()
+    for item in parse.normalised.features:
+        if item.source_type != "region":
+            continue
+        for key, values in item.attributes.items():
+            if key.lower() == "is_circular" and any(v.lower() == "true" for v in values):
+                found.add(item.seqid)
+    return found
+
+
+def _check_sequence_bounds(parse: ParsedFile, regions) -> list[str]:
+    """Every row must lie within its sequence (AUDIT-6, D-081).
+
+    The FASTA is authoritative for length (D-004). A row past the end of a
+    linear sequence has a coordinate that is simply wrong, and storing it put
+    a wrong number in the database with no message at all; such a file is
+    refused. On a circular sequence GFF3 lets a feature that crosses the origin
+    end past the sequence length, by less than one length; that loads silently.
+    A row lying wholly past the end of a circular sequence is not GFF3-legal
+    either, but NCBI writes them for trans-spliced organelle genes (Arabidopsis
+    nad5, rice rps12) and on a circle the position is still readable, so it is
+    stored as written and named in a warning.
+    """
+    lengths = {region.source_id: region.length for region in regions}
+    circular = _circular_sequences(parse)
+    refused: list[str] = []
+    wrapped: list[str] = []
+    for item in parse.normalised.features:
+        length = lengths.get(item.seqid)
+        if length is None:
+            continue  # unknown sequences are refused, with a better message, at insert
+        for segment in item.segments:
+            if segment.end <= length and segment.start <= length:
+                continue
+            where = (
+                f"{item.source_type} {item.source_id or '(no ID)'} at line "
+                f"{segment.line_number}: {segment.start:,}-{segment.end:,} on "
+                f"{item.seqid} ({length:,} bp"
+            )
+            if item.seqid not in circular:
+                refused.append(where + ")")
+            elif segment.start <= length and segment.end <= 2 * length:
+                continue  # crosses the origin, which GFF3 allows
+            elif segment.start > length and segment.end <= 2 * length:
+                wrapped.append(where + ", circular)")
+            else:
+                refused.append(where + ", circular)")
+    if refused:
+        listed = "\n  ".join(refused[:5])
+        more = f"\n  ... and {len(refused) - 5} more" if len(refused) > 5 else ""
+        raise LoadError(
+            f"{parse.path.name}: {len(refused)} row(s) extend past the end of their "
+            f"sequence, so their coordinates are wrong:\n  {listed}{more}\n"
+            f"Only a feature that crosses the origin of a circular sequence may end "
+            f"past its length. If the sequence is circular, its region row should "
+            f"carry Is_circular=true."
+        )
+    if not wrapped:
+        return []
+    listed = "; ".join(wrapped[:3])
+    more = f"; and {len(wrapped) - 3} more" if len(wrapped) > 3 else ""
+    return [
+        f"{parse.path.name}: {len(wrapped)} row(s) lie wholly past the end of a "
+        f"circular sequence and are stored as written, though GFF3 allows only a "
+        f"feature that crosses the origin to pass the end: {listed}{more}."
+    ]
 
 
 # --------------------------------------------------------------------------

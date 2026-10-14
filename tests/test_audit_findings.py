@@ -327,8 +327,6 @@ def test_a_nuclear_gene_missing_its_transcript_is_still_refused(tmp_path):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-6: features past the end of a linear "
-                   "sequence load silently")
 def test_feature_past_the_end_of_a_linear_sequence_is_not_silent(tmp_path):
     text = REFSEQ_HEADER + (
         "NC_000001.1\tGnomon\tgene\t19500\t20800\t.\t+\t.\tID=gene-Z;gene_biotype=protein_coding\n"
@@ -343,14 +341,43 @@ def test_feature_past_the_end_of_a_linear_sequence_is_not_silent(tmp_path):
         "a feature ending at 20,800 on a 20,000 bp sequence loaded without comment")
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-6: the envelope check compares numbers, "
-                   "not sequences; a child on another sequence is linked anyway")
 def test_child_on_a_different_sequence_from_its_parent_is_refused(tmp_path):
     text = REFSEQ_HEADER + "##sequence-region NC_000002.1 1 20000\n" + NUCLEAR_GENE.replace(
         "NC_000001.1\tGnomon\texon", "NC_000002.1\tGnomon\texon")
     config = _project(tmp_path, text)
     result = _init_and_load(tmp_path, config)
     assert result.exit_code != 0, result.output
+
+
+CIRCULAR_MT = (
+    "##sequence-region NC_001643.1 1 16554\n"
+    "NC_001643.1\tRefSeq\tregion\t1\t16554\t.\t+\t.\tID=NC_001643.1:1..16554;"
+    "Is_circular=true;genome=mitochondrion\n"
+)
+
+
+def test_a_feature_crossing_the_origin_of_a_circular_sequence_loads(tmp_path):
+    """GFF3 lets it end past the sequence length, by less than one length."""
+    gene = ("NC_001643.1\tRefSeq\tgene\t16000\t16800\t.\t+\t.\tID=gene-D;"
+            "gene_biotype=misc_RNA\n")
+    config = _project(tmp_path, REFSEQ_HEADER + CIRCULAR_MT + NUCLEAR_GENE + gene,
+                      lengths={"NC_000001.1": 20000, "NC_001643.1": 16554})
+    result = _init_and_load(tmp_path, config)
+    assert result.exit_code == 0, result.output
+    assert "gene-D" not in result.output
+
+
+def test_a_row_wholly_past_the_end_of_a_circular_sequence_is_named(tmp_path):
+    """Not GFF3-legal, but NCBI writes them for trans-spliced organelle genes,
+    and on a circle the position is still readable: stored, and named."""
+    gene = ("NC_001643.1\tRefSeq\tgene\t17000\t17300\t.\t+\t.\tID=gene-W;"
+            "gene_biotype=misc_RNA\n")
+    config = _project(tmp_path, REFSEQ_HEADER + CIRCULAR_MT + NUCLEAR_GENE + gene,
+                      lengths={"NC_000001.1": 20000, "NC_001643.1": 16554})
+    result = _init_and_load(tmp_path, config)
+    assert result.exit_code == 0, result.output
+    assert "wholly past the end of a circular sequence" in result.output
+    assert "gene-W" in result.output
 
 
 # ---------------------------------------------------------------------------

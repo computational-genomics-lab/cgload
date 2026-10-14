@@ -37,8 +37,12 @@ AUGUSTUS_GFF = FIXTURES / "augustus_aphaeospermum_pheo_arth1.gff3"
 
 
 def write_fasta(path: Path, name: str, length: int = 60000) -> Path:
+    # A seeded random block, repeated: the RefSeq fixture's region row declares
+    # the chromosome's full 8 Mb, and generating that one base at a time
+    # dominated the run.
     random.seed(11)
-    sequence = "".join(random.choice("ACGT") for _ in range(length))
+    block = "".join(random.choice("ACGT") for _ in range(6000))
+    sequence = (block * (length // len(block) + 1))[:length]
     with path.open("w") as handle:
         handle.write(f">{name}\n")
         for index in range(0, length, 60):
@@ -46,9 +50,28 @@ def write_fasta(path: Path, name: str, length: int = 60000) -> Path:
     return path
 
 
+def length_needed(annotations: list[Path], seqid: str) -> int:
+    """The longest coordinate any annotation gives for ``seqid``.
+
+    The loader refuses a row past the end of a linear sequence (AUDIT-6), so a
+    test FASTA must be at least as long as the annotation says the sequence is.
+    """
+    longest = 0
+    for path in annotations:
+        for line in path.read_text().splitlines():
+            if line.startswith("##sequence-region") and line.split()[1] == seqid:
+                longest = max(longest, int(line.split()[3]))
+            elif line and not line.startswith("#"):
+                columns = line.split("\t")
+                if len(columns) >= 9 and columns[0] == seqid:
+                    longest = max(longest, int(columns[3]), int(columns[4]))
+    return longest
+
+
 def config_for(tmp_path: Path, seqid: str, annotations: list[tuple[Path, str | None]],
                *, name: str = "asm1", strain: str = "S1") -> Path:
-    fasta = write_fasta(tmp_path / f"{seqid}.fa", seqid)
+    needed = length_needed([source for source, _prefix in annotations], seqid)
+    fasta = write_fasta(tmp_path / f"{seqid}.fa", seqid, max(60000, needed + 1000))
     lines = [
         "[organism]",
         'genus = "Testus"',

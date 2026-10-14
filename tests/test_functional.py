@@ -372,7 +372,9 @@ def test_functional_files_load_in_the_same_transaction_as_the_genome(tmp_path):
     create_schema(engine)
 
     fasta = tmp_path / "NC_026477.1.fa"
-    length = 6_100_000
+    # The fixture's region row declares the chromosome's full 8,033,942 bp, and
+    # a row past the end of a linear sequence is refused (AUDIT-6).
+    length = 8_040_000
     with fasta.open("w") as handle:
         handle.write(">NC_026477.1\n")
         handle.write((("ACGT" * 15) + "\n") * (length // 60))

@@ -403,6 +403,26 @@ def _check_hierarchy(features: list[NormalisedFeature]) -> None:
         for feature in features
         if feature.source_id is not None
     }
+    sequences = {
+        feature.source_id: feature.seqid
+        for feature in features
+        if feature.source_id is not None
+    }
+
+    # A child on a different sequence from its parent cannot be stored
+    # meaningfully: its coordinates and its parent's refer to two different
+    # sequences, and the envelope check, which compares numbers, linked it
+    # anyway (AUDIT-6). The survey of 30 RefSeq annotations found no such edge
+    # in 25.5 million, so refusing it costs no real file.
+    for feature in features:
+        parent = feature.parent_source_id
+        if parent is not None and parent in sequences and sequences[parent] != feature.seqid:
+            raise NormaliseError(
+                f"line {feature.segments[0].line_number}: {feature.source_type} "
+                f"{feature.source_id or '(no ID)'!s} lies on {feature.seqid} but its "
+                f"parent {parent!r} lies on {sequences[parent]}. A child must lie on "
+                f"its parent's sequence."
+            )
     #: Whether this file has a transcript layer at all. A prokaryotic GenBank
     #: record has none, and its CDS rows attach straight to their genes.
     #:

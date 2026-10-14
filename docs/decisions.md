@@ -2174,3 +2174,31 @@ organelles, so the rule applies to all of its sequences, as before.
 part of the vocabulary hash (D-061), and the hash changed. Databases created
 before this change are already refused for lacking `feature.source_line`
 (D-077), so no further migration step is added.
+
+## D-081 — a row must lie within its sequence, and a child on its parent's sequence
+
+**Found by audit (AUDIT-6).** Two coordinate checks were never made. A row
+ending at 20,800 on a 20,000 bp sequence loaded without a word, so the database
+held a coordinate that pointed past the end of the stored FASTA. And the
+envelope check compared numbers only, so an exon on one sequence was linked to
+an mRNA on another.
+
+**Decided:**
+
+- The FASTA is authoritative for length (D-004). A row past the end of a linear
+  sequence is refused, naming the rows.
+- On a sequence whose `region` row says `Is_circular=true`, a row that starts
+  inside the sequence and ends past it, by less than one length, crosses the
+  origin. GFF3 allows that and it loads silently.
+- A row lying wholly past the end of a circular sequence is not GFF3-legal
+  either. NCBI writes them for trans-spliced organelle genes (Arabidopsis
+  *nad5*, rice *rps12*; the RefSeq survey's class C rows), and on a circle the
+  position is still readable, so they are stored as written and named in a
+  warning. Refusing them would refuse those two reference genomes outright.
+- A child on a different sequence from its parent is refused. The RefSeq survey
+  found none in 25.5 million parent links, so this costs no real file.
+
+**Test fixtures changed with it.** Several tests built FASTAs shorter than their
+annotation said the sequence was: the *F. graminearum* fixture's `region` row
+declares the chromosome's full 8,033,942 bp. Those FASTAs now match the
+annotation, which is what a real download has.
