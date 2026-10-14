@@ -305,8 +305,6 @@ def test_export_does_not_depend_on_the_bound_parameter_limit(tmp_path):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-9: CheckConstraint('end >= start') is raw SQL; "
-                   "END is reserved in PostgreSQL, so `cgload init` fails there")
 def test_postgresql_ddl_quotes_the_end_column_in_its_check_constraint():
     ddl = str(CreateTable(feature).compile(dialect=postgresql.dialect()))
     assert "CHECK (end >= start)" not in ddl

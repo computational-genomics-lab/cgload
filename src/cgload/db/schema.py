@@ -32,6 +32,7 @@ from sqlalchemy import (
     Table,
     Text,
     UniqueConstraint,
+    column,
     func,
 )
 
@@ -215,7 +216,7 @@ feature = Table(
         name="uq_feature_region_source_id_span",
     ),
     CheckConstraint("start >= 1", name="start_positive"),
-    CheckConstraint("end >= start", name="span_ordered"),
+    CheckConstraint(column("end") >= column("start"), name="span_ordered"),
     CheckConstraint("strand IN ('+', '-', '.', '?')", name="strand_known"),
     CheckConstraint("phase IS NULL OR phase IN (0, 1, 2)", name="phase_known"),
     CheckConstraint("segment_index >= 0", name="segment_index_non_negative"),
