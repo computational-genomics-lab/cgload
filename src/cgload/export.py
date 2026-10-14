@@ -105,11 +105,11 @@ def _attribute_column(feature, *, include_linkage: bool) -> str:
     Deterministic ordering matters: exporting twice must give the same bytes, or
     a diff between two exports shows spurious changes and nobody trusts it.
     """
-    pairs: list[tuple[str, str]] = []
+    pairs: list[tuple[str, list[str]]] = []
     if feature.source_id is not None:
-        pairs.append(("ID", feature.source_id))
+        pairs.append(("ID", [feature.source_id]))
     if feature.parent_source_id is not None:
-        pairs.append(("Parent", feature.parent_source_id))
+        pairs.append(("Parent", [feature.parent_source_id]))
 
     extra = {
         key: values
@@ -118,9 +118,9 @@ def _attribute_column(feature, *, include_linkage: bool) -> str:
     }
     for key in _RESERVED_ORDER:
         if key in extra:
-            pairs.append((key, ",".join(extra.pop(key))))
+            pairs.append((key, list(extra.pop(key))))
     for key in sorted(extra):
-        pairs.append((key, ",".join(extra[key])))
+        pairs.append((key, list(extra[key])))
 
     if include_linkage and feature.linkage_method:
         # Not from the source file, so it is namespaced. A consumer can tell
@@ -131,9 +131,15 @@ def _attribute_column(feature, *, include_linkage: bool) -> str:
         # spelling silently discards the provenance on re-import: a containment
         # edge comes back as `explicit_parent`, which is the false claim D-032
         # was written to prevent, arriving by the export path instead.
-        pairs.append((LINKAGE_ATTRIBUTE, feature.linkage_method))
+        pairs.append((LINKAGE_ATTRIBUTE, [feature.linkage_method]))
 
-    return ";".join(f"{key}={escape_attribute(value)}" for key, value in pairs)
+    # Escape each value, then join with a literal comma. Escaping the joined
+    # string turned every separator into %2C, which GFF3 defines as a comma
+    # *inside* one value: Dbxref=a,b came back as a single Dbxref (AUDIT-3).
+    return ";".join(
+        f"{key}={','.join(escape_attribute(value) for value in values)}"
+        for key, values in pairs
+    )
 
 
 def export_gff3(

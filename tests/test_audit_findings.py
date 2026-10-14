@@ -165,8 +165,6 @@ def test_augustus_rows_without_an_id_keep_their_stated_parent(tmp_path):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-3: export writes Dbxref=a%2Cb, which GFF3 "
-                   "reads as one value; a round trip loses attribute rows")
 def test_export_keeps_multi_valued_attributes_multi_valued(tmp_path):
     config = _project(tmp_path, fixture=FIXTURES / "refseq_mycmay_GCF_000328475.gff3")
     assert _init_and_load(tmp_path, config).exit_code == 0
