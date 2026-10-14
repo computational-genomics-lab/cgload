@@ -2074,3 +2074,28 @@ rename rather than trusting the script's output.
 Related: the substitution also produced `Cgload` wherever the old name had been
 capitalised mid-sentence. Harmless, but it is the same class — a rename knows
 about strings, not about the language around them.
+
+## D-077 — every row records its input line, so anonymous rows keep their parent
+
+**Found by audit (AUDIT-2).** `_resolve_parent_ids` and `_insert_attributes`
+found the rows they had just bulk-inserted by `source_id`, and skipped any
+feature that had none. An anonymous row (D-024) therefore lost the parent its
+`Parent=` attribute stated, while still being stored with
+`linkage_method = 'explicit_parent'`: 175 of 322 features in the AUGUSTUS
+fixture. Its attributes were dropped the same way. No tier counted edges, so the
+load reported success (D-074 covered the counting; nothing wired it in).
+
+**Decided:** `feature.source_line` records the input line each row came from.
+The loader maps rows back by `(source_line, segment_index, start, end)`, the
+span included because the segments of an anonymous GenBank `join()` share one
+line, and links and annotates named and anonymous features the same way.
+
+**Rejected: relying on insertion order** to pair anonymous rows with their
+generated keys. It holds on SQLite and in practice on PostgreSQL and MySQL, but
+no backend promises it, and a wrong pairing would attach rows to the wrong
+parent silently.
+
+**Cost:** one nullable integer per row, and a schema change. A database created
+before it is refused by every command with a message naming the missing column
+(`REQUIRED_COLUMNS` in `cgload.db.init`), rather than failing on the first insert
+with a driver error that names no cause.

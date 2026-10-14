@@ -213,6 +213,11 @@ feature = Table(
     Column("parent_id", Integer, ForeignKey("feature.feature_id"), nullable=True),
     Column("linkage_method", String(32), nullable=True),
     Column("source_program", String(128), nullable=True),  # column 2, verbatim
+    # The input line this row was read from. For GenBank, the feature's first
+    # line, shared by its segments. An anonymous row has no ID to find it by
+    # after a bulk insert, so without this the loader could not attach its
+    # parent and silently stored it unlinked (AUDIT-2, D-077).
+    Column("source_line", Integer, nullable=True),
     UniqueConstraint(
         "sequence_region_id",
         "source_id",

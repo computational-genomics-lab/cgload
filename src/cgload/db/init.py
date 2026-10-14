@@ -28,6 +28,14 @@ class SchemaMissingError(RuntimeError):
     """
 
 
+#: Columns added after the first release of the schema. A database created by
+#: an earlier cgload lacks them, and inserting into it fails with a driver error
+#: that names no cause, so every command checks for them first.
+REQUIRED_COLUMNS: tuple[tuple[str, str], ...] = (
+    ("feature", "source_line"),
+)
+
+
 @dataclass(frozen=True)
 class InitResult:
     tables: tuple[str, ...]
@@ -90,6 +98,19 @@ def assert_vocabulary_current(engine: Engine) -> None:
             f"{where} has no cgload schema. Run `cgload init` first -- and check "
             f"you are in the directory where you ran it, since the default database "
             f"is ./cgload.db."
+        )
+
+    inspector = inspect(engine)
+    missing = [
+        f"{table}.{column}"
+        for table, column in REQUIRED_COLUMNS
+        if column not in {item["name"] for item in inspector.get_columns(table)}
+    ]
+    if missing:
+        raise SchemaMissingError(
+            f"this database was created by an earlier cgload and lacks "
+            f"{', '.join(missing)}. Create a new database with `cgload init` and "
+            f"load again (`cgload init --force` recreates this one and drops its data)."
         )
 
     with engine.connect() as conn:

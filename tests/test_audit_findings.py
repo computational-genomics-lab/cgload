@@ -148,9 +148,6 @@ def test_verify_fails_when_every_parent_link_is_lost(tmp_path):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-2: _resolve_parent_ids skips rows with no "
-                   "ID; 175 of 322 AUGUSTUS features stored unlinked yet marked "
-                   "explicit_parent")
 def test_augustus_rows_without_an_id_keep_their_stated_parent(tmp_path):
     config = _project(tmp_path, fixture=FIXTURES / "augustus_aphaeospermum_pheo_arth1.gff3")
     assert _init_and_load(tmp_path, config).exit_code == 0
@@ -158,6 +155,46 @@ def test_augustus_rows_without_an_id_keep_their_stated_parent(tmp_path):
         SELECT count(*) FROM feature
         WHERE parent_id IS NULL AND linkage_method = 'explicit_parent'""")[0][0]
     assert unlinked == 0, f"{unlinked} rows claim an explicit parent but have none"
+
+
+def test_anonymous_rows_keep_their_attributes(tmp_path):
+    """Dropped for the same reason as the parent: no ID to find the row by."""
+    text = (FIXTURES / "augustus_aphaeospermum_pheo_arth1.gff3").read_text().replace(
+        "intron\t740\t800\t1\t-\t.\tParent=g1.t1",
+        "intron\t740\t800\t1\t-\t.\tParent=g1.t1;Note=checked by hand",
+    )
+    assert "Note=checked by hand" in text
+    config = _project(tmp_path, text)
+    assert _init_and_load(tmp_path, config).exit_code == 0, "load failed"
+    rows = _rows(tmp_path, """
+        SELECT feature.source_type, feature_attribute.value FROM feature_attribute
+        JOIN feature ON feature.feature_id = feature_attribute.feature_id
+        WHERE feature.source_id IS NULL AND feature_attribute.key = 'Note'""")
+    assert rows == [("intron", "checked by hand")]
+
+
+def test_export_writes_the_parent_of_anonymous_rows(tmp_path):
+    config = _project(tmp_path, fixture=FIXTURES / "augustus_aphaeospermum_pheo_arth1.gff3")
+    assert _init_and_load(tmp_path, config).exit_code == 0
+    out = tmp_path / "export.gff3"
+    assert _cli(tmp_path, "export", "--assembly-id", "1", "--output", str(out)).exit_code == 0
+    introns = [line for line in out.read_text().splitlines() if "\tintron\t" in line]
+    assert introns
+    assert all("Parent=" in line for line in introns)
+
+
+def test_a_database_from_before_source_line_is_refused_with_a_reason(tmp_path):
+    assert _cli(tmp_path, "init").exit_code == 0
+    connection = sqlite3.connect(tmp_path / "g.db")
+    connection.execute("ALTER TABLE feature DROP COLUMN source_line")
+    connection.commit()
+    connection.close()
+    config = _project(tmp_path, fixture=FIXTURES / "refseq_mycmay_GCF_000328475.gff3")
+    result = _cli(tmp_path, "load", "--config", str(config),
+                  "--data-dir", str(tmp_path / "data"))
+    assert result.exit_code == 2
+    assert "earlier cgload" in result.output
+    assert "feature.source_line" in result.output
 
 
 # ---------------------------------------------------------------------------

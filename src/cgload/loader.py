@@ -13,7 +13,6 @@ against the loader's own beliefs.
 
 from __future__ import annotations
 
-from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -657,6 +656,7 @@ def _insert_features(
                     "parent_id": None,
                     "linkage_method": item.linkage_method,
                     "source_program": item.source_program,
+                    "source_line": segment.line_number,
                 }
             )
 
@@ -673,6 +673,52 @@ def _insert_features(
     _insert_attributes(connection, assembly_id, file_id, parse)
 
 
+def _stored_rows(
+    connection: Connection, assembly_id: int, file_id: int, parse: ParsedFile
+) -> dict[tuple[int, int, int, int], int]:
+    """Map each inserted segment back to its row id.
+
+    Keyed by input line, segment index and span. An anonymous row has no ID to
+    look it up by, and looking rows up by ID alone is why the parent of every
+    anonymous AUGUSTUS row was dropped: 175 of 322 features in the fixture were
+    stored unlinked while still marked `explicit_parent` (AUDIT-2). The span is
+    part of the key because the segments of an anonymous GenBank join() share
+    one line.
+    """
+    rows = connection.execute(
+        select(
+            feature.c.feature_id,
+            feature.c.source_line,
+            feature.c.segment_index,
+            feature.c.start,
+            feature.c.end,
+        ).where(feature.c.assembly_id == assembly_id, feature.c.source_file_id == file_id)
+    ).all()
+    found: dict[tuple[int, int, int, int], int] = {}
+    for row in rows:
+        key = (row.source_line, row.segment_index, row.start, row.end)
+        if key in found:
+            raise LoadError(
+                f"{parse.path.name}: two stored rows share line {row.source_line}, "
+                f"segment {row.segment_index} and span {row.start}-{row.end}, so "
+                f"cgload cannot tell which is which. This is an internal "
+                f"inconsistency, not a problem with the file."
+            )
+        found[key] = row.feature_id
+    return found
+
+
+def _row_id(rows: dict, parse: ParsedFile, segment) -> int:
+    key = (segment.line_number, segment.segment_index, segment.start, segment.end)
+    row_id = rows.get(key)
+    if row_id is None:
+        raise LoadError(
+            f"{parse.path.name}: the row read from line {segment.line_number} was not "
+            f"stored. This is an internal inconsistency, not a problem with the file."
+        )
+    return row_id
+
+
 def _resolve_parent_ids(
     connection: Connection, assembly_id: int, file_id: int, parse: ParsedFile
 ) -> None:
@@ -682,40 +728,29 @@ def _resolve_parent_ids(
     ``parent_id`` is single-valued and a walk up the graph is unambiguous. The
     full parent span is reachable through ``source_id``, which is why the
     choice of segment costs nothing.
+
+    Every feature with a stated parent is linked, named or anonymous.
     """
-    stored = connection.execute(
-        select(
-            feature.c.feature_id,
-            feature.c.source_id,
-            feature.c.segment_index,
-        ).where(feature.c.assembly_id == assembly_id, feature.c.source_file_id == file_id)
-    ).all()
-
-    first_segment: dict[str, int] = {}
-    for row in stored:
-        if row.source_id is None:
-            continue
-        if row.segment_index == 0:
-            first_segment[row.source_id] = row.feature_id
-
-    by_source_id: dict[str, list[int]] = defaultdict(list)
-    for row in stored:
-        if row.source_id is not None:
-            by_source_id[row.source_id].append(row.feature_id)
+    rows = _stored_rows(connection, assembly_id, file_id, parse)
+    first_segment = {
+        item.source_id: _row_id(rows, parse, item.segments[0])
+        for item in parse.normalised.features
+        if item.source_id is not None
+    }
 
     updates = []
     for item in parse.normalised.features:
-        if item.parent_source_id is None or item.source_id is None:
+        if item.parent_source_id is None:
             continue
         parent_id = first_segment.get(item.parent_source_id)
         if parent_id is None:
             raise LoadError(
                 f"{parse.path.name}: parent {item.parent_source_id!r} of "
-                f"{item.source_id!r} was not stored. This is an internal inconsistency, "
-                f"not a problem with the file."
+                f"{item.source_id or item.source_type!r} was not stored. This is an "
+                f"internal inconsistency, not a problem with the file."
             )
-        for feature_id in by_source_id[item.source_id]:
-            updates.append({"row_id": feature_id, "parent": parent_id})
+        for segment in item.segments:
+            updates.append({"row_id": _row_id(rows, parse, segment), "parent": parent_id})
 
     if updates:
         connection.execute(
@@ -733,25 +768,15 @@ def _insert_attributes(
 
     Attributes describe the feature, not the segment, and RefSeq repeats them on
     every row — so storing them per segment would multiply the table that
-    ``explain`` reads by the segment count for no gain.
+    ``explain`` reads by the segment count for no gain. An anonymous feature's
+    attributes are stored too; they were dropped for the same reason its parent
+    was (AUDIT-2).
     """
-    first_segment = dict(
-        connection.execute(
-            select(feature.c.source_id, feature.c.feature_id).where(
-                feature.c.assembly_id == assembly_id,
-                feature.c.source_file_id == file_id,
-                feature.c.segment_index == 0,
-            )
-        ).all()
-    )
+    stored = _stored_rows(connection, assembly_id, file_id, parse)
 
     rows = []
     for item in parse.normalised.features:
-        if item.source_id is None:
-            continue
-        feature_id = first_segment.get(item.source_id)
-        if feature_id is None:
-            continue
+        feature_id = _row_id(stored, parse, item.segments[0])
         for key, values in item.attributes.items():
             if key in SKIPPED_ATTRIBUTES:
                 continue
