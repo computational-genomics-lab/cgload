@@ -68,7 +68,17 @@ def stats_command(db_url: str | None, by: str) -> None:
                     sequence_region, sequence_region.c.assembly_id == assembly.c.assembly_id
                 )
             )
-            .group_by(assembly.c.assembly_id)
+            # Every selected column is grouped. SQLite accepts grouping by the
+            # assembly key alone; PostgreSQL refuses it ("column organism.genus
+            # must appear in the GROUP BY clause"), so `stats` failed there.
+            .group_by(
+                organism.c.genus,
+                organism.c.species,
+                strain.c.name,
+                assembly.c.assembly_id,
+                assembly.c.name,
+                assembly.c.version,
+            )
             .order_by(organism.c.genus, organism.c.species, strain.c.name)
         ).all()
 
