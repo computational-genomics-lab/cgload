@@ -106,6 +106,9 @@ class TokenizedFile:
     #: Distinct column-2 values. Detection reads this (D-013).
     sources: set[str] = field(default_factory=set)
     data_line_count: int = 0
+    #: Line number of a `##FASTA` directive, if the file has one. Everything
+    #: after it is sequence, not features (GFF3 specification, AUDIT-7).
+    fasta_section_line: int | None = None
 
 
 def _open(path: Path):
@@ -200,6 +203,14 @@ def tokenize(path: Path, *, tolerate_inverted: bool = False) -> TokenizedFile:
             line = line.rstrip("\n").rstrip("\r")
             if not line.strip():
                 continue
+            if line.startswith("##FASTA"):
+                # The specification ends the feature section here: the lines
+                # that follow are FASTA records, and reading them as rows made
+                # a spec-legal file fail with "expected 9 columns" (AUDIT-7).
+                # The sequence itself is ignored; cgload reads the assembly from
+                # the FASTA named in the config, as it always has.
+                result.fasta_section_line = line_number
+                break
             if line.startswith("#"):
                 result.comments.append((line_number, line))
                 match = SEQUENCE_REGION.match(line)
@@ -287,6 +298,8 @@ def iter_data_lines(path: Path) -> Iterator[tuple[int, list[str]]]:
     with _open(Path(path)) as handle:
         for line_number, line in enumerate(handle, start=1):
             stripped = line.rstrip("\n")
+            if stripped.startswith("##FASTA"):
+                break
             if not stripped.strip() or stripped.startswith("#"):
                 continue
             yield line_number, stripped.split("\t")

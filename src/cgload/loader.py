@@ -422,6 +422,7 @@ def _parse(annotation: AnnotationFile, *, repair_envelopes: bool = False) -> Par
         # envelope logic runs, so without this the flag cannot help the one
         # maize row that needs it (D-056).
         tokenized = tokenize(annotation.path, tolerate_inverted=repair_envelopes)
+    embedded_fasta = getattr(tokenized, "fasta_section_line", None)
 
     try:
         detection = dialects.detect(tokenized, override=annotation.dialect)
@@ -480,6 +481,11 @@ def _parse(annotation: AnnotationFile, *, repair_envelopes: bool = False) -> Par
             f"read wrongly or a segment was dropped, so the load is stopping:\n  {listed}"
         )
 
+    if embedded_fasta is not None:
+        parsed.warnings.append(
+            f"{annotation.path.name}: ignored the ##FASTA section that starts at line "
+            f"{embedded_fasta}. The assembly comes from the FASTA named in the config."
+        )
     if normalised.unexpected_types:
         parsed.warnings.append(
             f"{annotation.path.name}: loaded {len(normalised.unexpected_types)} feature "

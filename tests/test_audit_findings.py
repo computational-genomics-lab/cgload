@@ -271,13 +271,30 @@ def test_child_on_a_different_sequence_from_its_parent_is_refused(tmp_path):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-7: ##FASTA ends the feature section per the "
-                   "GFF3 spec; the tokenizer reads the sequence lines as rows")
 def test_embedded_fasta_section_is_accepted(tmp_path):
     text = REFSEQ_HEADER + NUCLEAR_GENE + "##FASTA\n>NC_000001.1\nACGTACGTACGT\n"
     config = _project(tmp_path, text, lengths={"NC_000001.1": 20000})
     result = _init_and_load(tmp_path, config)
     assert result.exit_code == 0, result.output
+
+
+def test_the_ignored_fasta_section_is_reported(tmp_path):
+    """The embedded sequence is not used, and the load says so rather than
+    leaving the user to wonder which sequence the coordinates refer to."""
+    text = REFSEQ_HEADER + NUCLEAR_GENE + "##FASTA\n>NC_000001.1\nACGTACGTACGT\n"
+    config = _project(tmp_path, text, lengths={"NC_000001.1": 20000})
+    result = _init_and_load(tmp_path, config)
+    assert result.exit_code == 0, result.output
+    assert "ignored the ##FASTA section that starts at line 7" in result.output
+
+
+def test_the_naive_pass_stops_at_the_fasta_section(tmp_path):
+    from cgload.verify import count_source_naively
+
+    gff = tmp_path / "a.gff3"
+    gff.write_text(REFSEQ_HEADER + NUCLEAR_GENE + "##FASTA\n>x\n"
+                   "NC_000001.1\tGnomon\tgene\t1\t2\t.\t+\t.\tID=not-a-feature\n")
+    assert count_source_naively(gff)["gene"] == 1
 
 
 # ---------------------------------------------------------------------------

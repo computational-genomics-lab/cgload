@@ -122,6 +122,9 @@ def _count_gff_naively(path: Path) -> Counter:
     anonymous: Counter = Counter()
     with _open(path) as handle:
         for line in handle:
+            if line.startswith("##FASTA"):
+                # GFF3 ends the feature section here; what follows is sequence.
+                break
             if line.startswith("#"):
                 continue
             columns = line.rstrip("\n").split("\t")
