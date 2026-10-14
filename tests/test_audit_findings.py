@@ -348,8 +348,6 @@ def test_data_directory_holds_the_indexed_annotation_the_readme_promises(tmp_pat
     assert (target / "annotation.gff3.gz.tbi").exists()
 
 
-@pytest.mark.xfail(strict=True, reason="AUDIT-10: --help says the reference tier is skipped "
-                   "without --sequences-in-assembly; the command errors instead")
 def test_verify_help_describes_what_happens_without_sequences_in_assembly(tmp_path):
     config = _project(tmp_path, fixture=FIXTURES / "refseq_mycmay_GCF_000328475.gff3")
     assert _init_and_load(tmp_path, config).exit_code == 0

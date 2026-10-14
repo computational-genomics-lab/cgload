@@ -69,8 +69,9 @@ ENV_DB_URL = "CGLOAD_DB_URL"
     "--sequences-in-assembly",
     type=int,
     default=None,
-    help="How many sequences the published assembly has. Without it the reference "
-    "check cannot tell a partial load from a real discrepancy, and is skipped.",
+    help="How many sequences the published assembly has. Required with "
+    "--reference-counts: without it the reference check cannot tell a partial load "
+    "from a real discrepancy, so verify stops with an error rather than guess (D-067).",
 )
 def verify_command(
     assembly_id: int,
