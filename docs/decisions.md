@@ -2335,3 +2335,18 @@ gene with its children, the features in a region, the genes carrying a domain.
 **Not done:** no server and no web layer (roadmap). Query speed on large
 genomes is measured in Phase 7, against gffutils and against tabix on cgload's
 own files, before anything is claimed about it.
+
+## D-086 — `verify` recounts the input only if it is still the file that was loaded
+
+**Found while checking the tutorial.** The source-count tier recounts the
+original input file at the path recorded at load. It never checked that the
+file there was still the one loaded, although its SHA-256 is stored. A gene
+appended to the file after the load was reported as a feature "lost or invented
+during loading", which blames the loader for an edit, and an edit that kept
+every count the same, such as a moved coordinate, passed.
+
+**Decided:** before counting, `verify` compares the file's SHA-256 with the one
+recorded at load. If they differ, the tier is skipped with a reason that names
+the file and says how to recover: restore the original, or reload with
+`--force`. A skipped tier is reported, never hidden (D-033). The cost is one
+extra read of each input file, next to the read the count already makes.

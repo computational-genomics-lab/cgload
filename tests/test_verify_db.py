@@ -610,3 +610,26 @@ def test_stating_the_loaded_count_deliberately_lets_the_tier_run(engine, tmp_pat
         "the precondition passed, so the tier must report a comparison outcome "
         "rather than a skip"
     )
+
+
+def test_an_input_edited_after_the_load_is_not_blamed_on_the_load(engine, tmp_path):
+    """verify recounts the original file. An edited one used to be counted
+    anyway: an added gene read as features "lost or invented during loading",
+    and an edit that kept every count passed. Now the tier says the file
+    changed, and does not run."""
+    config = _prepare(tmp_path, MYCMAY_GFF)
+    report = load_organism(engine, load_config(config), tmp_path / "data")
+    gff = tmp_path / MYCMAY_GFF.name
+
+    def verify():
+        return CliRunner().invoke(
+            cli, ["verify", "--assembly-id", str(report.assembly_id), "--db-url",
+                  str(engine.url)],
+        )
+
+    assert "source count      PASS" in verify().output
+    gff.write_text(gff.read_text().replace("\t12235\t", "\t12236\t", 1))
+    edited = verify()
+    assert edited.exit_code == 0
+    assert "has changed since it was loaded" in edited.output
+    assert "lost or invented" not in edited.output

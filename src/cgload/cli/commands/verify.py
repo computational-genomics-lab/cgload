@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 import click
+from sqlalchemy import select
 
 from cgload.db.engine import (
     CredentialInArgumentError,
@@ -14,6 +15,7 @@ from cgload.db.engine import (
     build_engine,
 )
 from cgload.db.init import SchemaMissingError, VocabularyMismatchError
+from cgload.db.schema import source_file
 from cgload.db.verification import (
     annotation_files_with_format,
     compare_with_database,
@@ -22,6 +24,7 @@ from cgload.db.verification import (
     sequences_loaded,
     stored_assembly_tier,
 )
+from cgload.storage import sha256_of
 from cgload.verify import (
     VerifyError,
     compare_across_formats,
@@ -147,6 +150,14 @@ def run_verification(
         )
     files = [(source_file_id, path) for source_file_id, path, _format, _dialect in described]
 
+    recorded = dict(
+        connection.execute(
+            select(source_file.c.source_file_id, source_file.c.sha256).where(
+                source_file.c.assembly_id == assembly_id
+            )
+        ).all()
+    )
+
     results = []
     combined = None
     for source_file_id, path in files:
@@ -160,13 +171,27 @@ def run_verification(
                 )
             )
             continue
-        source_counts = count_source_naively(source_path)
-        stored = count_database_for_file(connection, assembly_id, source_file_id)
         label = (
             "source count"
             if len(files) == 1
             else f"source count [{source_path.name}]"
         )
+        # The count is only meaningful against the file that was loaded. An
+        # edited file used to be counted anyway: an added row was reported as
+        # features "lost or invented during loading", and an edit that kept
+        # every count passed.
+        if recorded.get(source_file_id) and sha256_of(source_path) != recorded[source_file_id]:
+            results.append(
+                _skipped(
+                    label,
+                    f"{path} has changed since it was loaded (its SHA-256 differs), so "
+                    f"counting it would compare the database with a different file. "
+                    f"Restore the original, or reload with --force",
+                )
+            )
+            continue
+        source_counts = count_source_naively(source_path)
+        stored = count_database_for_file(connection, assembly_id, source_file_id)
         results.append(compare_with_database(source_counts, stored, label=label))
         combined = source_counts if combined is None else combined + source_counts
 
