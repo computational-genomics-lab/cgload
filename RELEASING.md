@@ -26,10 +26,10 @@ by hand from the Actions tab.
 
 ## Each release
 
-1. On a branch, set `__version__` in `src/cgload/__init__.py`, move the
-   *Unreleased* notes in `CHANGELOG.md` under the new version and date, and
-   merge to `main` once CI passes. For the first release, also change the
-   README's install section to `pip install cgload`.
+1. Set `__version__` in `src/cgload/__init__.py`, move the *Unreleased*
+   notes in `CHANGELOG.md` under the new version and date, commit to `main`
+   and push. For the first release, also change the README's install section
+   to `pip install cgload`. Wait until CI passes on that commit.
 2. On GitHub, *Releases → Draft a new release*. Create the tag `vX.Y.Z` on
    `main`, matching `__version__` exactly; the workflow stops if they differ.
    Paste the changelog section as the notes, and publish.

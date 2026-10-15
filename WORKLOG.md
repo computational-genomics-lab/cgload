@@ -159,6 +159,10 @@ the ONOS APC list (checked by Aditya Upadhyay on the ONOS site, 15 October).
 Pushing from this session is still refused (HTTP 403, 15 October): the org has
 not installed the Claude GitHub App. Pushes go from the lab server.
 
+How the work lands, decided 15 October: no other branches and no pull
+requests. When the fixes are done and the server run passes, the commits go
+straight onto `main` in one push. Then the paper.
+
 ## Open
 
 - Memory: about 7 GB per million features plus 200 MB, from two loads made
