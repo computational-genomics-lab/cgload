@@ -278,6 +278,25 @@ def test_the_refusal_names_the_features_and_the_flag(tmp_path):
     )
 
 
+def test_a_refusal_after_repair_does_not_suggest_the_flag_again(tmp_path):
+    """A gene written backwards with no children cannot be recomputed. With
+    --repair-envelopes already given, telling the user to pass it is wrong."""
+    engine = _engine(tmp_path)
+    gff = tmp_path / "inverted.gff3"
+    gff.write_text(
+        "##gff-version 3\n"
+        "NC_007982.1\tRefSeq\tregion\t1\t600000\t.\t+\t.\tID=r1;genome=mitochondrion\n"
+        "NC_007982.1\tRefSeq\tgene\t9000\t8000\t.\t+\t.\tID=gene-inv\n"
+    )
+    config = _prepare(tmp_path)
+    config.write_text(config.read_text().replace(BROKEN.name, gff.name))
+    with pytest.raises(LoadError) as raised:
+        load_organism(engine, load_config(config), tmp_path / "data", repair_envelopes=True)
+    message = str(raised.value)
+    assert "--repair-envelopes was given" in message
+    assert "recomputes each parent" not in message
+
+
 def test_repair_stores_the_span_genbank_agrees_with(tmp_path):
     """The whole point, end to end. The repaired gene must match the GenBank
     release of the same assembly exactly -- if it matched the transcript's own

@@ -544,11 +544,21 @@ def _parse(annotation: AnnotationFile, *, repair_envelopes: bool = False) -> Par
             )
         if backwards:
             parts.append(f"{backwards} row(s) are written back to front")
+        if repair_envelopes:
+            advice = (
+                "--repair-envelopes was given, and these remain after it. It "
+                "recomputes a parent from the features it contains, so it cannot fix "
+                "a feature that contains none. Correct these rows in the file."
+            )
+        else:
+            advice = (
+                "If these are the known NCBI trans-splicing envelopes, "
+                "--repair-envelopes recomputes each parent from what it contains."
+            )
         raise LoadError(
             f"{annotation.path.name}: {' and '.join(parts)}, so at least one "
             f"coordinate in each case is wrong.\n{format_report([], remaining)}\n"
-            f"If these are the known NCBI trans-splicing envelopes, "
-            f"--repair-envelopes recomputes each parent from what it contains."
+            f"{advice}"
         )
     normalised.features = kept
 
