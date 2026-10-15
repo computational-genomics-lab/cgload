@@ -58,7 +58,7 @@ from cgload.parsers.normalise import (
 )
 from cgload.parsers.tokenizer import tokenize
 from cgload.storage import sha256_of, staged_load
-from cgload.verify import Outcome, TierResult, count_source_naively
+from cgload.verify import Outcome, TierResult, naive_counts
 
 ANNOTATION_DIRECTORY = "annotation"
 PROTEIN_FILENAME = "proteins.faa"
@@ -309,12 +309,14 @@ def load_organism(
         # the user to remember (D-046). A load that silently lost features is the
         # failure this project exists to prevent, so the check that catches it is
         # not optional and not a separate step.
+        stated_parents = {}
         for parse in parsed:
             source_file_id = file_ids[parse.path]
-            naive = count_source_naively(parse.path)
+            naive = naive_counts(parse.path)
+            stated_parents[parse.path] = naive.with_parent
             stored = count_database_for_file(connection, assembly_id, source_file_id)
             result = compare_with_database(
-                naive, stored, label=f"source count [{parse.path.name}]"
+                naive.features, stored, label=f"source count [{parse.path.name}]"
             )
             report.verification.append(result)
             if result.outcome is Outcome.FAIL:
@@ -332,8 +334,10 @@ def load_organism(
         # The same holds for the hierarchy. In a GFF3 file the parents are the
         # file's own statements, so a stated parent missing from the database
         # means cgload lost it; the AUGUSTUS anonymous rows of AUDIT-2 were
-        # exactly that, and loaded with a PASS. GenBank edges are computed, and an
-        # unlinked feature there need not be cgload's fault (D-033), so for
+        # exactly that, and loaded with a PASS. The statements are counted by the
+        # naive pass above, not taken from the parser, so a parser that dropped a
+        # Parent attribute is caught too (D-092). GenBank edges are computed, and
+        # an unlinked feature there need not be cgload's fault (D-033), so for
         # GenBank the tier is left to `verify`.
         for parse in parsed:
             if parse.is_genbank:
@@ -344,6 +348,7 @@ def load_organism(
                 file_ids[parse.path],
                 file_format="gff3",
                 dialect=parse.detection.profile.name,
+                stated=stated_parents[parse.path],
                 label=f"parent edges [{parse.path.name}]",
             )
             report.verification.append(result)

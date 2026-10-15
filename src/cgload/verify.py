@@ -85,8 +85,24 @@ def _open(path: Path):
 
 #: Column 3 of a GFF3 data line.
 _GFF_ID = re.compile(r"(?:^|;)ID=([^;]*)")
+#: Whether a GFF3 row names a parent at all. Which parent is not read: this pass
+#: counts statements and resolves nothing. Space after the `;` is allowed, as it
+#: is when attributes are read for loading.
+_GFF_PARENT = re.compile(r"(?:^|;)\s*Parent=")
 #: A GenBank feature-table record begins at column 5.
 _GB_FEATURE = re.compile(r"^ {5}(\S+)\s")
+
+
+@dataclass(frozen=True)
+class NaiveCounts:
+    """What the naive pass found in one file."""
+
+    #: Features per column-3 type: distinct (type, ID), rows with no ID singly.
+    features: Counter
+    #: Of those, the features the file gives a parent, counted the same way. A
+    #: feature counts once however many of its rows say `Parent=`. None for
+    #: GenBank, which states no parents; every edge there is computed (D-092).
+    with_parent: Counter | None
 
 
 def count_source_naively(path: Path) -> Counter:
@@ -101,8 +117,19 @@ def count_source_naively(path: Path) -> Counter:
     assumptions with the parser, and a check that shares the parser's
     assumptions cannot catch the parser's mistakes.
     """
+    return naive_counts(path).features
+
+
+def naive_counts(path: Path) -> NaiveCounts:
+    """The naive pass: features per type and, for GFF3, how many state a parent.
+
+    One read of the file serves both the source-count tier and the parent-edge
+    tier. The second count is what makes that tier independent of the parser: a
+    parser that dropped a `Parent` attribute used to store the feature as
+    top-level, and the tier, reading only the database, agreed (D-092).
+    """
     if _looks_like_genbank(path):
-        return _count_genbank_naively(path)
+        return NaiveCounts(_count_genbank_naively(path), None)
     return _count_gff_naively(path)
 
 
@@ -114,7 +141,7 @@ def _looks_like_genbank(path: Path) -> bool:
     return False
 
 
-def _count_gff_naively(path: Path) -> Counter:
+def _count_gff_naively(path: Path) -> NaiveCounts:
     """Distinct (type, ID) pairs; rows with no ID count individually.
 
     Counting rows would overcount every multi-segment CDS -- 9,739 rows for
@@ -122,7 +149,9 @@ def _count_gff_naively(path: Path) -> Counter:
     database and NCBI's published totals.
     """
     seen: set[tuple[str, str]] = set()
+    parented: set[tuple[str, str]] = set()
     anonymous: Counter = Counter()
+    anonymous_parented: Counter = Counter()
     with _open(path) as handle:
         for line in handle:
             if line.startswith("##FASTA"):
@@ -134,14 +163,22 @@ def _count_gff_naively(path: Path) -> Counter:
             if len(columns) < 9:
                 continue
             feature_type = columns[2]
+            names_parent = _GFF_PARENT.search(columns[8]) is not None
             found = _GFF_ID.search(columns[8])
             if found:
-                seen.add((feature_type, found.group(1)))
+                key = (feature_type, found.group(1))
+                seen.add(key)
+                if names_parent:
+                    parented.add(key)
             else:
                 anonymous[feature_type] += 1
+                if names_parent:
+                    anonymous_parented[feature_type] += 1
     counts = Counter(feature_type for feature_type, _identifier in seen)
     counts.update(anonymous)
-    return counts
+    with_parent = Counter(feature_type for feature_type, _identifier in parented)
+    with_parent.update(anonymous_parented)
+    return NaiveCounts(counts, with_parent)
 
 
 def _count_genbank_naively(path: Path) -> Counter:

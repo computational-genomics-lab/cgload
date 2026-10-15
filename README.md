@@ -36,7 +36,7 @@ What it does:
 | tier | compares | what it can prove |
 |---|---|---|
 | source count | an independent pass over your file against the database | every feature in the file reached the database, and none was invented |
-| parent edges | the stored hierarchy against the parents the file states | the parent–child structure exists, not merely the features |
+| parent edges | the stored links against the `Parent=` statements the same independent pass counts in your file | every parent the file names is stored as a link, not merely the features |
 | stored assembly | the stored FASTA and its index against the checksum taken at load | the sequence every coordinate refers to is still there, unchanged |
 | cross-parser | the same assembly as GFF3 and as GenBank | the two files describe the same feature counts |
 | reference | the provider's published totals against the file | the file matches what the provider says it published |

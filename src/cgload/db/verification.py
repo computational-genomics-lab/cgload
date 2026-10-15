@@ -197,6 +197,28 @@ def count_parent_edges(
     return dict(per_method), top_level
 
 
+def count_stated_links(
+    connection: Connection, assembly_id: int, source_file_id: int
+) -> Counter:
+    """Features per verbatim source type that are linked to a parent the file stated.
+
+    The database side of D-092, counted the way the naive pass counts the file:
+    one per feature (its row with ``segment_index`` 0), grouped by ``source_type``.
+    """
+    rows = connection.execute(
+        select(feature.c.source_type, func.count())
+        .where(
+            feature.c.assembly_id == assembly_id,
+            feature.c.source_file_id == source_file_id,
+            feature.c.segment_index == 0,
+            feature.c.linkage_method == "explicit_parent",
+            feature.c.parent_id.is_not(None),
+        )
+        .group_by(feature.c.source_type)
+    ).all()
+    return Counter({row[0]: row[1] for row in rows})
+
+
 def parent_edge_tier(
     connection: Connection,
     assembly_id: int,
@@ -204,9 +226,17 @@ def parent_edge_tier(
     *,
     file_format: str,
     dialect: str | None,
+    stated: Counter | None = None,
     label: str = "parent edges",
 ) -> TierResult:
-    """The parent-edge tier for one stored file (AUDIT-1)."""
+    """The parent-edge tier for one stored file (AUDIT-1).
+
+    ``stated`` is the naive pass's count of features per type that the file gives
+    a parent. With it, the stored links are compared with the file itself rather
+    than with what the parser recorded about the file (D-092). Without it (a
+    GenBank file, or a GFF3 file that is missing or has changed), only the
+    database's own consistency is checked, and the detail says so.
+    """
     computed = file_format == "genbank"
     per_method, top_level = count_parent_edges(
         connection, assembly_id, source_file_id, computed_edges=computed
@@ -222,6 +252,35 @@ def parent_edge_tier(
             "named no parent for them; an edge was invented during loading",
             {"unrecorded": 0},
             {"unrecorded": per_method["unrecorded"]},
+        )
+    if result.outcome is not Outcome.FAIL and stated is not None and not computed:
+        linked = count_stated_links(connection, assembly_id, source_file_id)
+        differing = sorted(
+            name
+            for name in set(stated) | set(linked)
+            if stated.get(name, 0) != linked.get(name, 0)
+        )
+        if differing:
+            shown = "; ".join(
+                f"{name}: the file gives {stated.get(name, 0):,} a parent, the "
+                f"database links {linked.get(name, 0):,}"
+                for name in differing[:5]
+            )
+            more = f"; and {len(differing) - 5} more type(s)" if len(differing) > 5 else ""
+            return TierResult(
+                label,
+                Outcome.FAIL,
+                f"the parents the file states and the links stored differ for "
+                f"{len(differing)} feature type(s): {shown}{more}",
+                dict(stated),
+                dict(linked),
+            )
+        result = TierResult(
+            result.name,
+            result.outcome,
+            result.detail + f"; the file states {sum(stated.values()):,}",
+            result.expected,
+            result.actual,
         )
     detail = result.detail
     if top_level:

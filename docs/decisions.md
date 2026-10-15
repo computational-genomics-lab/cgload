@@ -2463,3 +2463,30 @@ length. A parent and a child written in different conventions can describe
 different arcs of the circle (rna-DA397_mgp31 is written the long way round,
 161,832..460,814), so arithmetic alone does not settle containment, and
 choosing the arc is another guess.
+
+## D-092 — the parent-edge tier counts the file's `Parent=` statements itself
+
+**Found while writing the fault-injection protocol, 15 October 2026.** The
+tier read only the database. Whether a feature had a parent "in the file" was
+taken from `linkage_method`, which the parser writes. A parser that dropped a
+`Parent` attribute therefore stored the feature as top-level, and the tier
+reported it as top-level by the file's own statement (D-069). Checked on the
+code before this change: removing one exon's link and its `linkage_method` from
+a loaded database left `verify` at PASS, with "1 more named no parent and are
+top-level". The source count could not see it either, because the exon was
+still there. D-008's rule, that a check must not share the parser's view of the
+file, held for the source count and not for this tier.
+
+**Decided:** the naive pass, in the same single read, also counts per column-3
+type the features whose rows say `Parent=`, by the same rule as the feature
+count: distinct (type, ID), rows with no ID one by one. It reads no parent
+names and resolves nothing. For a GFF3 file the tier compares those counts with
+the features stored with an explicit parent link, per type, and fails on any
+difference. `load` runs it inside the transaction, as before. `verify` runs it
+when the file is still the one loaded; when the file is missing or has changed,
+the tier checks the database alone and says so. GenBank states no parents, so
+nothing changes there.
+
+**Still not detected, by design (D-075):** a link moved to the wrong parent of
+the same type, which keeps every count. The tier shows that every stated
+parent is stored as a link, not that each link points where the file says.

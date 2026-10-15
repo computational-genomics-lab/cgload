@@ -26,11 +26,13 @@ from cgload.db.verification import (
 )
 from cgload.storage import sha256_of
 from cgload.verify import (
+    Outcome,
+    TierResult,
     VerifyError,
     compare_across_formats,
     compare_with_reference,
-    count_source_naively,
     exit_code,
+    naive_counts,
     parse_ncbi_feature_counts,
     render,
 )
@@ -160,6 +162,10 @@ def run_verification(
 
     results = []
     combined = None
+    # What the naive pass found each file gives a parent; absent where the file
+    # could not be counted, so the parent-edge tier says it checked only the
+    # database (D-092).
+    stated_parents: dict[int, object] = {}
     for source_file_id, path in files:
         source_path = Path(path)
         if not source_path.exists():
@@ -190,7 +196,9 @@ def run_verification(
                 )
             )
             continue
-        source_counts = count_source_naively(source_path)
+        counted = naive_counts(source_path)
+        source_counts = counted.features
+        stated_parents[source_file_id] = counted.with_parent
         stored = count_database_for_file(connection, assembly_id, source_file_id)
         results.append(compare_with_database(source_counts, stored, label=label))
         combined = source_counts if combined is None else combined + source_counts
@@ -200,16 +208,26 @@ def run_verification(
     # lost still verified PASS (AUDIT-1).
     for source_file_id, path, file_format, dialect in described:
         label = "parent edges" if len(files) == 1 else f"parent edges [{Path(path).name}]"
-        results.append(
-            parent_edge_tier(
-                connection,
-                assembly_id,
-                source_file_id,
-                file_format=file_format,
-                dialect=dialect,
-                label=label,
-            )
+        stated = stated_parents.get(source_file_id)
+        result = parent_edge_tier(
+            connection,
+            assembly_id,
+            source_file_id,
+            file_format=file_format,
+            dialect=dialect,
+            stated=stated,
+            label=label,
         )
+        if file_format != "genbank" and stated is None and result.outcome is not Outcome.FAIL:
+            result = TierResult(
+                result.name,
+                result.outcome,
+                result.detail + "; links checked within the database only, because the "
+                "file could not be counted (see the source count)",
+                result.expected,
+                result.actual,
+            )
+        results.append(result)
 
     results.append(stored_assembly_tier(connection, assembly_id, data_dir=data_dir))
 
@@ -276,6 +294,4 @@ def run_verification(
 
 
 def _skipped(name: str, detail: str):
-    from cgload.verify import Outcome, TierResult
-
     return TierResult(name=name, outcome=Outcome.SKIPPED, detail=detail)

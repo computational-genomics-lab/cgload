@@ -45,6 +45,11 @@ The refusal says so. Load into a new database made with `cgload init`.
 - Messages named a `--dialect` flag and a `cgload remap` command, neither of
   which exists.
 - The CI workflow file was not valid YAML, so CI did not run.
+- The parent-edge tier took the file's parents from the parser's own record.
+  A parser that dropped a `Parent` attribute stored the feature as
+  top-level and the tier passed. The independent pass now counts the
+  file's `Parent=` statements per type, and the tier compares those with
+  the links stored (D-092).
 
 ## 0.1.0
 

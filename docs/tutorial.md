@@ -149,7 +149,7 @@ cgload verify --assembly-id 1
 
 ```
   source count      PASS  12 features in the file, 12 in the database, across 5 type(s)
-  parent edges      PASS  9 edge(s), all accounted for (explicit_parent 9)
+  parent edges      PASS  9 edge(s), all accounted for (explicit_parent 9); the file states 9
   stored assembly   PASS  ./data/demonstratus_minimalis/demo-1/demo_v1/assembly.fa and its index are present; SHA-256 matches the load
   cross-parser      ----  no second format supplied; pass --against with a GenBank or GFF3 file describing the same assembly
   reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
@@ -161,7 +161,9 @@ same number. A checker built from the parser would read the file the same wrong
 way and report everything fine.
 
 The second line says every parent the file names is stored as a link. The
-third says the DNA in the data directory is the DNA that was loaded.
+same simple counter counted the `Parent=` statements in your file, so this too
+is checked against the file rather than against the parser. The third line says
+the DNA in the data directory is the DNA that was loaded.
 
 The last two tiers say why they did not run. A check that disappears when it
 cannot run looks exactly like one that passed.
@@ -189,14 +191,15 @@ cgload verify --assembly-id 1
 ```
   source count      FAIL  1 feature type(s) differ between the file and the database; features were lost or invented during loading
       exon                 expected        4   found        3   (-1)
-  parent edges      PASS  8 edge(s), all accounted for (explicit_parent 8)
+  parent edges      FAIL  the parents the file states and the links stored differ for 1 feature type(s): exon: the file gives 4 a parent, the database links 3
+      exon                 expected        4   found        3   (-1)
   stored assembly   PASS  ./data/demonstratus_minimalis/demo-1/demo_v1/assembly.fa and its index are present; SHA-256 matches the load
   cross-parser      ----  no second format supplied; pass --against with a GenBank or GFF3 file describing the same assembly
   reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
 ```
 
-`verify` exits with status 2. The parent-edge tier still passes, because the
-exon took its own link with it. Only the count against the file shows the loss.
+`verify` exits with status 2. Both tiers that count against the file see the
+loss: an exon is missing, and so is the link the file gave it.
 
 Replace the damaged assembly with a fresh load:
 
