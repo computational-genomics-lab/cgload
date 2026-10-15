@@ -109,6 +109,56 @@ CI selection; 4 PostgreSQL tests pass against PostgreSQL 16.15.
 which is what the maize numbers in the docs need. Its timings are a check that
 the code works, not benchmark results.
 
+## Checkpoint B2: four real genomes, 15 October 2026
+
+Only the summary came back so far:
+
+| Step | Result |
+|---|---|
+| Python 3.11, branch, install, lint, tests | ok |
+| *F. graminearum*: download, load, verify against GenBank, stats | ok |
+| *F. graminearum*: queries | FAILED (1) |
+| *F. graminearum*: remove, dry run and real | FAILED (2) each |
+| *Arabidopsis*: download, envelope census | ok |
+| *Arabidopsis*: load, plain and with `--repair-envelopes` | FAILED (2) |
+| maize: download, census, load with `--repair-envelopes`, verify, stats | ok |
+| maize: queries | FAILED (1) |
+| human: download | ok |
+| human: load, plain and with `--repair-envelopes` | FAILED (2) |
+
+Reading of it, pending the full log:
+
+- `query` and `remove` failed on both genomes they were asked about, and exit
+  code 2 is what the Phase 1 stubs return. The run probably used the Phase 1
+  bundle, which has the same file name. `checkpoint_b2.sh` now stops at once
+  on a bundle without `query.py`, and prints the last lines of every failed
+  step under the summary.
+- *Arabidopsis*: the survey lists an mRNA on the mitochondrion written across
+  the origin (234,352..396,144 on a 367,808 bp sequence) under a gene written
+  on several rows (26,817..360,128). `--repair-envelopes` never widens a parent
+  written on several rows (D-046), so that violation stays and the load is
+  refused. Both describe the same pieces of a circular molecule in different
+  coordinates. To be confirmed from the census in the log before changing the
+  rule.
+- Human: the survey found no structural problem in this file, so a cgload rule
+  refused it. One candidate is fixed: the INSDC ncRNA classes such as Y_RNA,
+  whose exons were refused (D-088). Not confirmed until the log is read.
+
+## Since Phase 2
+
+| Commit subject | What it does |
+|---|---|
+| vocabulary: map the rest of the INSDC ncRNA classes to ncRNA | D-088 |
+| loader: after --repair-envelopes, stop suggesting --repair-envelopes | the refusal named the flag the user had already given |
+| release: write down how to release, and stop a mismatched tag | `RELEASING.md`, `CHANGELOG.md`, a tag check in `release.yml` |
+
+Target journal, decided 15 October: *Briefings in Bioinformatics*, as a
+Problem Solving Protocol; *Bioinformatics* if it is refused there. Both are on
+the ONOS APC list (checked by Aditya Upadhyay on the ONOS site, 15 October).
+
+Pushing from this session is still refused (HTTP 403, 15 October): the org has
+not installed the Claude GitHub App. Pushes go from the lab server.
+
 ## Open
 
 - Memory: about 7 GB per million features plus 200 MB, from two loads made
@@ -132,9 +182,5 @@ the code works, not benchmark results.
 - The system Python of Ubuntu 22.04 is 3.10, which cgload does not support.
   The README and tutorial say how to get 3.11 or newer; a bioconda package
   would make it one command (release phase).
-- Target journal: the mentor ruled out Database (impact factor, and no ONOS
-  support). ONOS pays APCs only for fully open-access journals on its list
-  (top 5% by CiteScore, SNIP or SJR, per onos.gov.in in October 2026).
-  Decision pending a check of that list.
 - Changing the vocabulary hash and the schema means databases made before this
   branch are refused, with a message saying why. Reload into a new database.
