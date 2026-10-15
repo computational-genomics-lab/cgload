@@ -116,7 +116,7 @@ cgload verify --assembly-id 1
 
 ```
 Created 11 tables in sqlite:///cgload.db
-Seeded vocabulary version 1 (33 terms, 555824924a2e)
+Seeded vocabulary version 1 (43 terms, d5fa82cadbce)
 Loaded Demonstratus minimalis / DEMO-1 / Demo_v1 (assembly_id=1)
   1 sequence regions, 5,000 bp
   annotation.gff3: funannotate (high) -- 12 features

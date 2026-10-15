@@ -534,3 +534,47 @@ def test_strict_vocabulary_on_the_command_line(tmp_path):
                                       "--data-dir", str(tmp_path / "d"), "--strict-vocabulary"])
     assert result.exit_code == 2
     assert "enhancer, sequence_feature" in result.output
+
+
+# -- ncRNA classes from the INSDC vocabulary (D-088) ------------------------
+
+VERTEBRATE_NCRNA = (
+    "##gff-version 3\n"
+    "NC_000007.14\tRefSeq\tregion\t1\t60000\t.\t+\t.\tID=NC_000007.14:1..60000;genome=chromosome\n"
+    "NC_000007.14\tBestRefSeq\tgene\t1000\t1200\t.\t-\t.\tID=gene-RNY1;gene_biotype=Y_RNA\n"
+    "NC_000007.14\tBestRefSeq\tY_RNA\t1000\t1200\t.\t-\t.\tID=rna-NR_004391.1;Parent=gene-RNY1\n"
+    "NC_000007.14\tBestRefSeq\texon\t1000\t1200\t.\t-\t.\tID=exon-NR_004391.1-1;Parent=rna-NR_004391.1\n"
+    "NC_000007.14\tBestRefSeq\tgene\t3000\t3100\t.\t+\t.\tID=gene-VTRNA1-1;gene_biotype=vault_RNA\n"
+    "NC_000007.14\tBestRefSeq\tvault_RNA\t3000\t3100\t.\t+\t.\tID=rna-NR_026703.1;Parent=gene-VTRNA1-1\n"
+    "NC_000007.14\tBestRefSeq\texon\t3000\t3100\t.\t+\t.\tID=exon-NR_026703.1-1;Parent=rna-NR_026703.1\n"
+    "NC_000007.14\tBestRefSeq\tgene\t5000\t5300\t.\t-\t.\tID=gene-RMRP;gene_biotype=RNase_MRP_RNA\n"
+    "NC_000007.14\tBestRefSeq\tRNase_MRP_RNA\t5000\t5300\t.\t-\t.\tID=rna-NR_003051.3;Parent=gene-RMRP\n"
+    "NC_000007.14\tBestRefSeq\texon\t5000\t5300\t.\t-\t.\tID=exon-NR_003051.3-1;Parent=rna-NR_003051.3\n"
+    "NC_000007.14\tBestRefSeq\tgene\t8000\t9000\t.\t+\t.\tID=gene-A;gene_biotype=protein_coding\n"
+    "NC_000007.14\tBestRefSeq\tmRNA\t8000\t9000\t.\t+\t.\tID=rna-A;Parent=gene-A\n"
+    "NC_000007.14\tBestRefSeq\texon\t8000\t9000\t.\t+\t.\tID=exon-A-1;Parent=rna-A\n"
+    "NC_000007.14\tBestRefSeq\tCDS\t8100\t8900\t.\t+\t0\tID=cds-A;Parent=rna-A\n"
+)
+
+
+def test_vertebrate_ncrna_classes_load_with_their_exons(engine, tmp_path):
+    """Y_RNA, vault_RNA and RNase_MRP_RNA loaded inert, so their exons were
+    refused ("a exon may only attach to ..."), and with them every vertebrate
+    RefSeq file. They are ncRNA transcripts, as snRNA is."""
+    gff = tmp_path / "vertebrate.gff3"
+    gff.write_text(VERTEBRATE_NCRNA)
+    config = load_config(config_for(tmp_path, "NC_000007.14", [(gff, None)]))
+    report = load_organism(engine, config, tmp_path / "data")
+    counts = report.files[0].counts_by_type
+    assert counts["Y_RNA"] == counts["vault_RNA"] == counts["RNase_MRP_RNA"] == 1
+    assert counts["exon"] == 4
+    with engine.connect() as connection:
+        canonical = connection.execute(
+            select(feature.c.feature_type).where(feature.c.source_type == "Y_RNA")
+        ).scalar_one()
+        unlinked = connection.execute(
+            select(func.count()).select_from(feature).where(
+                feature.c.source_type == "exon", feature.c.parent_id.is_(None))
+        ).scalar_one()
+    assert canonical == "ncRNA"
+    assert unlinked == 0

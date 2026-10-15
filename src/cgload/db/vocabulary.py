@@ -81,6 +81,23 @@ SYNONYMS: dict[str, str] = {
     "antisense_RNA": "ncRNA",
     "guide_RNA": "ncRNA",
     "telomerase_RNA": "ncRNA",
+    # The rest of the INSDC /ncRNA_class vocabulary, as NCBI's GFF3 writes it in
+    # column 3. Each is a transcript that carries exons, like snRNA above. Left
+    # unmapped, each loaded inert and its exons were refused, the same failure
+    # D-062 fixed for miRNA one class at a time. Vertebrate RefSeq files carry
+    # Y_RNA (the RNY genes), vault_RNA (VTRNA) and RNase_MRP_RNA (RMRP) (D-088).
+    # `pre_miRNA` is left out: it would put a miRNA under an ncRNA, which the
+    # hierarchy does not permit, and RefSeq writes `primary_transcript` instead.
+    "Y_RNA": "ncRNA",
+    "vault_RNA": "ncRNA",
+    "RNase_MRP_RNA": "ncRNA",
+    "scRNA": "ncRNA",
+    "scaRNA": "ncRNA",
+    "piRNA": "ncRNA",
+    "siRNA": "ncRNA",
+    "rasiRNA": "ncRNA",
+    "ribozyme": "ncRNA",
+    "hammerhead_ribozyme": "ncRNA",
     # Transcript-level, not gene-level. Measured on RefSeq human GRCh38.p14
     # NC_000014.9, the IGH locus: all 175 segment rows carry a `Parent`, that
     # parent is a `gene`, and 164 CDS plus 162 exon rows hang beneath them. They

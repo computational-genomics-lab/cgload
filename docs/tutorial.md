@@ -32,7 +32,7 @@ cgload init
 
 ```
 Created 11 tables in sqlite:///cgload.db
-Seeded vocabulary version 1 (33 terms, 555824924a2e)
+Seeded vocabulary version 1 (43 terms, d5fa82cadbce)
 ```
 
 `cgload.db` is a single file in the current directory. That file *is* the
@@ -337,7 +337,7 @@ head -8 roundtrip.gff3
 ```
 ##gff-version 3
 ##cgload-export 0.1.0
-##cgload-vocabulary 555824924a2e29cce830498aae3d15d12756e705ad1df759a828a222b0152556
+##cgload-vocabulary d5fa82cadbce07c9f15895aad21658c1e83705c0b902f49e867f9c39818edea5
 ##sequence-region demo_scaffold_1 1 5000
 # The source dialect does not emit these types, so their absence is a property of the input and not a loss during loading:
 #   intron, start_codon, stop_codon

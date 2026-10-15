@@ -2381,3 +2381,26 @@ out of the vocabulary on purpose (`NOT_CANONICALISED`), so that rule would
 refuse every RefSeq and every AUGUSTUS file, and the flag would be switched
 off after the first try. The profile already records which types each producer
 is expected to write, so a type outside it is the one worth stopping for.
+
+## D-088 — the INSDC ncRNA classes map to `ncRNA`
+
+**Found while reading why the human load could fail.** A Tier A feature whose
+parent loads inert is refused (D-062), and an `exon` may attach only to a
+transcript, a gene or a pseudogene. NCBI writes each ncRNA class from the
+INSDC `/ncRNA_class` vocabulary as its own column-3 term. cgload mapped some of
+them (snRNA, snoRNA, lnc_RNA, SRP_RNA, RNase_P_RNA, antisense_RNA, guide_RNA,
+telomerase_RNA) but not the rest, so a file containing them was refused at
+the first such exon: "a exon may only attach to ['gene', 'mRNA', 'ncRNA',
+...]". The human RNY, VTRNA and RMRP genes belong to the Y_RNA, vault_RNA and
+RNase_MRP_RNA classes. Whether this is what stopped the human load on the lab
+server on 15 October is not yet confirmed. D-062 fixed miRNA the same way, one
+class at a time; this adds the rest at once.
+
+**Decided:** `Y_RNA`, `vault_RNA`, `RNase_MRP_RNA`, `scRNA`, `scaRNA`, `piRNA`,
+`siRNA`, `rasiRNA`, `ribozyme` and `hammerhead_ribozyme` are synonyms of
+`ncRNA`. The vocabulary hash changes, so databases made before this are refused
+with a message saying why.
+
+**Left out:** `pre_miRNA`, which would put a miRNA under an ncRNA, which the
+hierarchy does not permit (RefSeq writes `primary_transcript` there instead),
+and `autocatalytically_spliced_intron`, an intron rather than a transcript.
