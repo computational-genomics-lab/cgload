@@ -2438,3 +2438,28 @@ every problem they found: the first ten in full and a count of the rest. A
 single problem reads exactly as before. The passes still run in order, because
 each assumes the one before it succeeded, so a file with problems in two passes
 needs two runs.
+
+## D-091 — an envelope disagreement that exists only across a circle's origin is stored as written
+
+**Found on the lab server, 15 October 2026.** *Arabidopsis thaliana*
+(GCF_000001735.4) was refused even with `--repair-envelopes`. On its
+mitochondrion (NC_037304.1, 367,808 bp, `Is_circular=true`), NCBI writes two
+trans-spliced genes in plain coordinates, each on several rows, and their
+mRNAs past the origin with the sequence length added: rna-DA397_mgp37 is
+234,352..396,144 under a gene spanning 26,817..360,128. Both describe the same
+bases, but compared as numbers the mRNA lies outside its gene, and a parent
+written on several rows is never recomputed (D-046).
+
+**Decided:** with `--repair-envelopes`, a disagreement that remains after
+repair is stored as written when the sequence's region row says
+`Is_circular=true`, the parent or the child runs past the sequence's length,
+and one of them carries `exception=trans-splicing`. Each one is named in a
+warning and recorded in `manifest.json` under `envelope_exceptions`. Anything
+else still refuses, and without the flag nothing changes.
+
+**Rejected:** recomputing the gene, which means choosing which of its rows to
+widen, the guess D-046 forbids; and comparing positions modulo the sequence
+length. A parent and a child written in different conventions can describe
+different arcs of the circle (rna-DA397_mgp31 is written the long way round,
+161,832..460,814), so arithmetic alone does not settle containment, and
+choosing the arc is another guess.

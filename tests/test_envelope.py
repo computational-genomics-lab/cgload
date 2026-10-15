@@ -415,3 +415,61 @@ def test_no_correct_fixture_reports_a_violation():
             tokenized.features, detection.profile, comments=tokenized.comments
         )
         assert find_violations(result.features) == [], path.name
+
+
+# ---------------------------------------------------------------------------
+# Disagreements that exist only across a circle's origin (D-091)
+# ---------------------------------------------------------------------------
+
+
+def _across_origin(tmp_path, *, circular=True, exception=";exception=trans-splicing"):
+    """Arabidopsis nad5 in miniature: the gene in plain coordinates on two rows,
+    the mRNA and its second exon past the origin of a 20,000 bp circle."""
+    flag = ";Is_circular=true" if circular else ""
+    gff = tmp_path / "mito.gff3"
+    gff.write_text(
+        "##gff-version 3\n"
+        f"chrM\tRefSeq\tregion\t1\t20000\t.\t+\t.\tID=chrM:1..20000{flag};genome=mitochondrion\n"
+        f"chrM\tRefSeq\tgene\t1000\t1500\t.\t+\t.\tID=gene-ts;part=1/2{exception}\n"
+        f"chrM\tRefSeq\tgene\t15000\t18000\t.\t+\t.\tID=gene-ts;part=2/2{exception}\n"
+        "chrM\tRefSeq\tmRNA\t15000\t21500\t.\t+\t.\tID=rna-ts;Parent=gene-ts\n"
+        "chrM\tRefSeq\texon\t15000\t15600\t.\t+\t.\tID=exon-ts-1;Parent=rna-ts\n"
+        "chrM\tRefSeq\texon\t21000\t21500\t.\t+\t.\tID=exon-ts-2;Parent=rna-ts\n"
+    )
+    fasta = tmp_path / "mito.fa"
+    fasta.write_text(">chrM\n" + ("ACGT" * 15 + "\n") * (20000 // 60) + "ACGTACGTACGTACGTACGT\n")
+    config = tmp_path / "organism.toml"
+    config.write_text(
+        '[organism]\ngenus = "Arabis"\nspecies = "circularis"\nstrain = "C1"\n\n'
+        '[assembly]\nname = "mt"\nfasta = "mito.fa"\n\n'
+        '[[files.annotation]]\npath = "mito.gff3"\n'
+    )
+    return load_config(config)
+
+
+def test_a_trans_spliced_gene_across_the_origin_loads_as_written(tmp_path):
+    engine = _engine(tmp_path)
+    report = load_organism(engine, _across_origin(tmp_path), tmp_path / "data",
+                           repair_envelopes=True)
+    assert [item["child"] for item in report.envelope_exceptions] == ["rna-ts"]
+    assert any("D-091" in warning and "rna-ts" in warning for warning in report.warnings)
+    manifest = json.loads(next((tmp_path / "data").rglob("manifest.json")).read_text())
+    assert manifest["envelope_exceptions"][0]["child_span"] == [15000, 21500]
+    with engine.connect() as connection:
+        stored = connection.execute(
+            select(feature_table.c.start, feature_table.c.end).where(
+                feature_table.c.source_id == "rna-ts")
+        ).one()
+    assert tuple(stored) == (15000, 21500), "stored as written, not recomputed"
+
+
+def test_without_the_repair_flag_it_is_still_refused(tmp_path):
+    with pytest.raises(LoadError, match="lie outside the parent"):
+        load_organism(_engine(tmp_path), _across_origin(tmp_path), tmp_path / "data")
+
+
+@pytest.mark.parametrize("variant", [{"circular": False}, {"exception": ""}])
+def test_only_a_flagged_feature_on_a_circle_is_excused(tmp_path, variant):
+    with pytest.raises(LoadError, match="lie outside the parent"):
+        load_organism(_engine(tmp_path), _across_origin(tmp_path, **variant),
+                      tmp_path / "data", repair_envelopes=True)

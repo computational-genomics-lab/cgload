@@ -99,6 +99,9 @@ class LoadReport:
     functional: list[FunctionalReport] = field(default_factory=list)
     verification: list[TierResult] = field(default_factory=list)
     envelope_repairs: list = field(default_factory=list)
+    #: Envelope disagreements stored as written, because they arise only from
+    #: the origin of a circular sequence (D-091).
+    envelope_exceptions: list[dict] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
 
     @property
@@ -241,6 +244,7 @@ def load_organism(
             _insert_features(connection, assembly_id, file_id, region_ids, parse)
             report.files.append(parse.as_report())
             report.envelope_repairs.extend(parse.envelope_repairs)
+            report.envelope_exceptions.extend(parse.envelope_exceptions)
             report.warnings.extend(parse.warnings)
 
         proteins = {
@@ -392,6 +396,7 @@ def load_organism(
             }
             for item in report.envelope_repairs
         ]
+        load.manifest["envelope_exceptions"] = report.envelope_exceptions
 
         load.manifest["verification"] = [
             {"check": item.name, "outcome": item.outcome.value, "detail": item.detail}
@@ -432,6 +437,8 @@ class ParsedFile:
     #: Parent envelopes recomputed from their contents (D-055). Empty unless
     #: --repair-envelopes was passed, and always reported and manifested.
     envelope_repairs: list = field(default_factory=list)
+    #: See LoadReport.envelope_exceptions (D-091).
+    envelope_exceptions: list[dict] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
 
     def as_report(self) -> FileReport:
@@ -534,6 +541,9 @@ def _parse(annotation: AnnotationFile, *, repair_envelopes: bool = False) -> Par
     # A parent must be at least as wide as what it contains (D-055). Every other
     # rule cgload has looks at one row in isolation and cannot see this.
     kept, repairs, remaining = apply_policy(normalised.features, repair=repair_envelopes)
+    across_origin: list = []
+    if remaining and repair_envelopes:
+        across_origin, remaining = _split_origin_artefacts(kept, remaining)
     if remaining:
         backwards = sum(1 for item in remaining if item.is_self_contradiction)
         contained = len(remaining) - backwards
@@ -570,7 +580,16 @@ def _parse(annotation: AnnotationFile, *, repair_envelopes: bool = False) -> Par
         is_genbank=is_genbank,
         declared_regions=tokenized.declared_regions,
         envelope_repairs=repairs,
+        envelope_exceptions=across_origin,
     )
+    if across_origin:
+        listed = "; ".join(item["described"] for item in across_origin[:3])
+        more = f"; and {len(across_origin) - 3} more" if len(across_origin) > 3 else ""
+        parsed.warnings.append(
+            f"{annotation.path.name}: {len(across_origin)} trans-spliced feature(s) on a "
+            f"circular sequence lie outside their parent only across the origin, and are "
+            f"stored as written (D-091): {listed}{more}."
+        )
 
     problems = check_declared_proteins(normalised)
     if problems:
@@ -715,14 +734,78 @@ def _check_declared_regions(parse: ParsedFile, regions, config: OrganismConfig) 
 
 def _circular_sequences(parse: ParsedFile) -> set[str]:
     """Sequences whose `region` row says `Is_circular=true` (RefSeq)."""
-    found: set[str] = set()
-    for item in parse.normalised.features:
+    return set(_circular_lengths(parse.normalised.features))
+
+
+def _circular_lengths(features) -> dict[str, int]:
+    """Circular sequences and their lengths, from their RefSeq `region` rows."""
+    found: dict[str, int] = {}
+    for item in features:
         if item.source_type != "region":
             continue
         for key, values in item.attributes.items():
             if key.lower() == "is_circular" and any(v.lower() == "true" for v in values):
-                found.add(item.seqid)
+                found[item.seqid] = max(found.get(item.seqid, 0), item.end)
     return found
+
+
+def _trans_spliced(item) -> bool:
+    return any(
+        "trans-splicing" in value
+        for key, values in item.attributes.items()
+        if key.lower() == "exception"
+        for value in values
+    )
+
+
+def _split_origin_artefacts(features, violations) -> tuple[list[dict], list]:
+    """Separate envelope disagreements caused only by a circle's origin (D-091).
+
+    On a circular mitochondrion NCBI may write a trans-spliced gene in plain
+    coordinates, as several rows, and its mRNA and exons past the origin, with
+    the sequence length added. *Arabidopsis* nad5 is written that way. The two
+    describe the same bases, but a comparison of numbers says the mRNA lies
+    outside its gene, and --repair-envelopes never widens a parent written on
+    several rows (D-046).
+
+    Such a disagreement is stored as written, named in a warning and recorded
+    in the manifest, when all of these hold: the sequence's region row says
+    `Is_circular=true`; the parent or the child runs past the sequence's length;
+    and one of them carries `exception=trans-splicing`. Anything else still
+    refuses the load.
+    """
+    lengths = _circular_lengths(features)
+    by_id = {item.source_id: item for item in features if item.source_id}
+    explained: list[dict] = []
+    rest = []
+    for violation in violations:
+        parent = by_id.get(violation.parent_id)
+        child = by_id.get(violation.child_id) if violation.child_id else None
+        length = lengths.get(parent.seqid) if parent is not None else None
+        if (
+            not violation.is_self_contradiction
+            and parent is not None
+            and child is not None
+            and length is not None
+            and max(parent.end, child.end) > length
+            and (_trans_spliced(parent) or _trans_spliced(child))
+        ):
+            explained.append(
+                {
+                    "seqid": parent.seqid,
+                    "parent": parent.source_id,
+                    "parent_type": parent.source_type,
+                    "parent_span": [parent.start, parent.end],
+                    "child": child.source_id,
+                    "child_type": child.source_type,
+                    "child_span": [child.start, child.end],
+                    "sequence_length": length,
+                    "described": violation.describe(),
+                }
+            )
+        else:
+            rest.append(violation)
+    return explained, rest
 
 
 def _check_sequence_bounds(parse: ParsedFile, regions) -> list[str]:
