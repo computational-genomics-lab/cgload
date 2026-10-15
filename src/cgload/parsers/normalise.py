@@ -31,6 +31,36 @@ class NormaliseError(ValueError):
     """A file that cannot be loaded without guessing. Always names the evidence."""
 
 
+#: How many problems one refusal lists before it summarises the rest.
+SHOWN_PROBLEMS = 10
+
+
+class _Problems:
+    """Every problem one pass over the file finds, refused together (D-090).
+
+    Stopping at the first problem meant one server run per problem on a large
+    genome: the human RefSeq file takes two minutes to reach line 1,838,264.
+    Each pass now finishes, and the refusal lists what it found. Passes still
+    run in order, because a later pass assumes the earlier one succeeded.
+    """
+
+    def __init__(self) -> None:
+        self.messages: list[str] = []
+
+    def add(self, message: str) -> None:
+        self.messages.append(message)
+
+    def raise_if_any(self) -> None:
+        if not self.messages:
+            return
+        if len(self.messages) == 1:
+            raise NormaliseError(self.messages[0])
+        shown = "\n  ".join(self.messages[:SHOWN_PROBLEMS])
+        rest = len(self.messages) - SHOWN_PROBLEMS
+        more = f"\n  ... and {rest:,} more" if rest > 0 else ""
+        raise NormaliseError(f"{len(self.messages):,} problems:\n  {shown}{more}")
+
+
 @dataclass
 class Segment:
     """One row. A feature is one or more segments sharing an ID."""
@@ -158,47 +188,63 @@ def _group_segments(
     by_id: dict[str, NormalisedFeature] = {}
     ordered: list[NormalisedFeature] = []
     first_line: dict[str, int] = {}
+    problems = _Problems()
 
     for raw in features:
-        identifier = _prefixed(raw.id, id_prefix)
-        segment = Segment(
-            line_number=raw.line_number,
-            start=raw.start,
-            end=raw.end,
-            phase=raw.phase,
-            score=raw.score,
-            inverted=getattr(raw, "inverted", False),
-        )
-
-        if identifier is None:
-            if not profile.permits_anonymous_rows:
-                raise NormaliseError(
-                    f"line {raw.line_number}: {raw.type} row has no ID, but the "
-                    f"{profile.name} profile does not permit anonymous rows. Either the "
-                    f"dialect was detected wrongly or the file is truncated."
-                )
-            ordered.append(_new_feature(raw, identifier, segment))
-            continue
-
-        if identifier not in by_id:
-            feature = _new_feature(raw, identifier, segment)
-            by_id[identifier] = feature
-            first_line[identifier] = raw.line_number
-            ordered.append(feature)
-            continue
-
-        existing = by_id[identifier]
-        if raw.type in profile.unique_id_types:
-            raise NormaliseError(
-                f"line {raw.line_number}: ID {identifier!r} repeats on a {raw.type} row "
-                f"(first seen at line {first_line[identifier]}). In the "
-                f"{profile.name} dialect every {raw.type} carries its own ID, so a "
-                f"repeat is a duplicate rather than a discontinuous feature."
-            )
-        _assert_same_feature(existing, raw, identifier, first_line[identifier], profile)
-        existing.segments.append(segment)
-
+        try:
+            _group_row(raw, profile, id_prefix, by_id, ordered, first_line)
+        except NormaliseError as exc:
+            problems.add(str(exc))
+    problems.raise_if_any()
     return ordered
+
+
+def _group_row(
+    raw: RawFeature,
+    profile: Profile,
+    id_prefix: str | None,
+    by_id: dict[str, NormalisedFeature],
+    ordered: list[NormalisedFeature],
+    first_line: dict[str, int],
+) -> None:
+    """Add one row to the features grouped so far, or raise why it cannot be."""
+    identifier = _prefixed(raw.id, id_prefix)
+    segment = Segment(
+        line_number=raw.line_number,
+        start=raw.start,
+        end=raw.end,
+        phase=raw.phase,
+        score=raw.score,
+        inverted=getattr(raw, "inverted", False),
+    )
+
+    if identifier is None:
+        if not profile.permits_anonymous_rows:
+            raise NormaliseError(
+                f"line {raw.line_number}: {raw.type} row has no ID, but the "
+                f"{profile.name} profile does not permit anonymous rows. Either the "
+                f"dialect was detected wrongly or the file is truncated."
+            )
+        ordered.append(_new_feature(raw, identifier, segment))
+        return
+
+    if identifier not in by_id:
+        feature = _new_feature(raw, identifier, segment)
+        by_id[identifier] = feature
+        first_line[identifier] = raw.line_number
+        ordered.append(feature)
+        return
+
+    existing = by_id[identifier]
+    if raw.type in profile.unique_id_types:
+        raise NormaliseError(
+            f"line {raw.line_number}: ID {identifier!r} repeats on a {raw.type} row "
+            f"(first seen at line {first_line[identifier]}). In the "
+            f"{profile.name} dialect every {raw.type} carries its own ID, so a "
+            f"repeat is a duplicate rather than a discontinuous feature."
+        )
+    _assert_same_feature(existing, raw, identifier, first_line[identifier], profile)
+    existing.segments.append(segment)
 
 
 def _new_feature(
@@ -342,6 +388,7 @@ def _resolve_parents(
         )
 
     known = {feature.source_id for feature in features if feature.source_id is not None}
+    problems = _Problems()
     for feature in features:
         if feature.parent_source_id is None:
             continue
@@ -349,12 +396,13 @@ def _resolve_parents(
         feature.parent_source_id = parent
         if parent not in known:
             line = feature.segments[0].line_number
-            raise NormaliseError(
+            problems.add(
                 f"line {line}: {feature.source_type} references Parent {parent!r}, "
                 f"which is not defined anywhere in this file. A dangling parent means "
                 f"the file is incomplete or was sliced badly; loading it would store an "
                 f"orphan that no query would ever find."
             )
+            continue
 
         # D-032. Where the format states its own parents, the edge came from the
         # file and `explicit_parent` is the truth. Where it does not -- GenBank
@@ -368,18 +416,20 @@ def _resolve_parents(
             continue
 
         if feature.linkage_method is None:
-            raise NormaliseError(
+            problems.add(
                 f"line {feature.segments[0].line_number}: the {profile.name} profile "
                 f"does not state its own parents, so every computed edge must carry the "
                 f"rule that produced it. {feature.source_id!r} has a parent and no "
                 f"linkage method, which means the tokenizer failed to record how it was "
                 f"resolved."
             )
+            continue
         if feature.linkage_method not in LINKAGE_METHODS:
-            raise NormaliseError(
+            problems.add(
                 f"line {feature.segments[0].line_number}: unknown linkage method "
                 f"{feature.linkage_method!r}. Permitted: {', '.join(LINKAGE_METHODS)}."
             )
+    problems.raise_if_any()
 
 
 def organellar_sequences(features: list[NormalisedFeature]) -> set[str]:
@@ -419,10 +469,11 @@ def _check_hierarchy(features: list[NormalisedFeature]) -> None:
     # sequences, and the envelope check, which compares numbers, linked it
     # anyway (AUDIT-6). The survey of 30 RefSeq annotations found no such edge
     # in 25.5 million, so refusing it costs no real file.
+    problems = _Problems()
     for feature in features:
         parent = feature.parent_source_id
         if parent is not None and parent in sequences and sequences[parent] != feature.seqid:
-            raise NormaliseError(
+            problems.add(
                 f"line {feature.segments[0].line_number}: {feature.source_type} "
                 f"{feature.source_id or '(no ID)'!s} lies on {feature.seqid} but its "
                 f"parent {parent!r} lies on {sequences[parent]}. A child must lie on "
@@ -519,7 +570,7 @@ def _check_hierarchy(features: list[NormalisedFeature]) -> None:
             and feature.seqid not in organellar
         ):
             line = feature.segments[0].line_number
-            raise NormaliseError(
+            problems.add(
                 f"line {line}: {feature.source_type} {feature.source_id!r} attaches "
                 f"directly to gene {parent!r}, which has no transcript of its "
                 f"own, while the rest of this file does have a transcript layer. "
@@ -529,14 +580,16 @@ def _check_hierarchy(features: list[NormalisedFeature]) -> None:
                 f"region row declares an organelle genome, such as "
                 f"genome=mitochondrion.)"
             )
+            continue
 
         if parent_type not in permitted:
             line = feature.segments[0].line_number
-            raise NormaliseError(
+            problems.add(
                 f"line {line}: {feature.source_type} {feature.source_id!r} has parent "
                 f"{parent!r} of type {parent_type!r}, but a {feature.feature_type} may "
                 f"only attach to {sorted(permitted) or 'nothing'}."
             )
+    problems.raise_if_any()
 
 
 def counts_by_source_type(normalised: NormalisedFile) -> dict[str, int]:

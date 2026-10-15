@@ -519,3 +519,45 @@ def test_a_gzipped_gff3_is_read(tmp_path):
     result = tokenize(path)
     assert result.data_line_count == 1
     assert result.features[0].id == "g1"
+
+
+# -- every problem in a pass, refused together (D-090) ----------------------
+
+
+def test_one_refusal_lists_every_grouping_problem(tmp_path):
+    """Stopping at the first problem cost a server run per problem on a human
+    genome. The pass now finishes and names each one."""
+    body = (
+        row("c", "RefSeq", "gene", "100", "900", ".", "+", ".", "ID=g1")
+        + row("c", "RefSeq", "CDS", "100", "300", ".", "+", "0", "ID=x1;Parent=g1")
+        + row("c", "RefSeq", "CDS", "250", "400", ".", "+", "0", "ID=x1;Parent=g1")
+        + row("c", "RefSeq", "gene", "1000", "1900", ".", "+", ".", "ID=g2")
+        + row("c", "RefSeq", "CDS", "1000", "1300", ".", "+", "0", "ID=x2;Parent=g2")
+        + row("c", "RefSeq", "CDS", "1250", "1400", ".", "+", "0", "ID=x2;Parent=g2")
+    )
+    with pytest.raises(NormaliseError) as raised:
+        normalised_from(gff3(tmp_path, body), P.REFSEQ)
+    message = str(raised.value)
+    assert message.startswith("2 problems:")
+    assert "line 4:" in message and "line 7:" in message
+
+
+def test_a_long_list_of_problems_is_cut_short(tmp_path):
+    body = row("c", "RefSeq", "gene", "1", "100000", ".", "+", ".", "ID=g")
+    for number in range(12):
+        body += row("c", "RefSeq", "exon", str(100 + number), "200", ".", "+", ".",
+                    f"ID=e{number};Parent=p{number}")
+    with pytest.raises(NormaliseError) as raised:
+        normalised_from(gff3(tmp_path, body), P.REFSEQ)
+    message = str(raised.value)
+    assert message.startswith("12 problems:")
+    assert "... and 2 more" in message
+
+
+def test_a_single_problem_reads_as_before(tmp_path):
+    body = (
+        row("c", "RefSeq", "gene", "100", "900", ".", "+", ".", "ID=g1")
+        + row("c", "RefSeq", "exon", "100", "300", ".", "+", ".", "ID=e1;Parent=missing")
+    )
+    with pytest.raises(NormaliseError, match=r"^line 3: exon references Parent 'missing'"):
+        normalised_from(gff3(tmp_path, body), P.REFSEQ)

@@ -2425,3 +2425,16 @@ it is still refused.
 **To confirm on the next server run:** that the human rows carry this
 `exception` value. If they do not, the load is still refused, and the run
 prints the refused rows so the next change can be made from them.
+
+## D-090 — a refusal lists every problem its pass found
+
+**Found on the lab server, 15 October 2026.** Normalisation stopped at the
+first problem. On the human RefSeq file that meant two minutes of parsing per
+problem, and a server run, and a message back, for each one.
+
+**Decided:** the three normalisation passes (grouping rows into features,
+resolving parents, checking the hierarchy) each finish and then refuse with
+every problem they found: the first ten in full and a count of the rest. A
+single problem reads exactly as before. The passes still run in order, because
+each assumes the one before it succeeded, so a file with problems in two passes
+needs two runs.
