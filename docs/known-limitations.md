@@ -10,14 +10,28 @@ A gene assembled from segments on both strands cannot be represented in GFF3,
 which allows one strand per row. Producers work around this in ways that are
 individually reasonable and collectively inconsistent, and every one of the
 following was found on a single reference assembly (*Zea mays* B73,
-GCF_902167145.1), confined to seven genes on the two organellar sequences:
+GCF_902167145.1), on its organellar sequences:
 
 | symptom | cgload's response |
 |---|---|
-| parent extent excludes its own children (34 rows) | refuses; `--repair-envelopes` recomputes from children |
+| parent extent excludes its own children | refuses; `--repair-envelopes` recomputes from children |
 | a row where start exceeds end | refuses; repaired from children under the same flag |
 | one gene emitted twice, on opposite strands | merged when `exception=trans-splicing` is present |
 | exons with no parent at all | loaded as top-level features |
+
+cgload's own count on maize, from the load of 15 October 2026
+(`envelope_census.py`): 11 envelope problems in two mitochondrial mRNAs,
+rna-ZeamMp017 and rna-ZeamMp186. Ten are children lying outside their mRNA;
+the eleventh is rna-ZeamMp017, written backwards. `--repair-envelopes`
+recomputes both mRNAs and leaves no problem; the larger change widens
+rna-ZeamMp186 by 281,540 bp.
+
+*Arabidopsis thaliana* (GCF_000001735.4) has 13 such problems on its
+mitochondrion, in three genes. Repair clears 11. The other two are mRNAs that
+NCBI writes past the origin of the circular sequence, with its length added,
+under genes written in plain coordinates on several rows. A parent written on
+several rows is never recomputed (D-046), so these two are stored as written,
+named in a warning and recorded in the manifest (D-091).
 
 `--repair-envelopes` is off by default. Every repair is printed at load time and
 recorded in `manifest.json`, so a repaired load is declared rather than merely

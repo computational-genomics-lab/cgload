@@ -194,9 +194,12 @@ Memory scales with feature count, not genome size — sequence is never held in
 memory. Budget roughly 7 GB per million features, plus about 200 MB. Protocol:
 [docs/scalability.md](docs/scalability.md).
 
-These numbers were measured before cgload wrote the indexed annotation itself
-(D-082). Writing it took 25 s per million rows on a test machine; the load
-times above will be measured again.
+The table was measured before cgload wrote the indexed annotation itself
+(D-082). Measured again on 15 October 2026 on a lab server (80 cores, 125 GB
+RAM), with the indexed annotation and without eggNOG-mapper output: the load
+took 2 min 18 s (with `--repair-envelopes`) at a peak of 5.4 GB, and `verify`
+5.5 s, since it now also checksums the 2.1 GB FASTA. The database was 697 MB
+without the functional annotation.
 
 ## Commands
 

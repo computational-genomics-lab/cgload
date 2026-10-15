@@ -8,25 +8,22 @@ parent envelope is derived.
 **Why this check exists.** Every other structural rule in cgload is per-row:
 start before end, strand in the vocabulary, coordinates inside the sequence.
 A row can satisfy all of them and still be wrong, and nothing downstream can
-tell. Measured on *Zea mays* B73 (GCF_902167145.1, 1.2 M features): 36
-structural problems, of which **1 fails a per-row check and 34 do not**. The 34
-load cleanly with envelopes wrong by up to 281 kb. Only the parent-child
-relationship exposes them.
+tell. On *Zea mays* B73 (GCF_902167145.1: 696,928 features in 990,782 rows),
+cgload's census of 15 October 2026 (`envelope_census.py`) found 11 envelope
+problems, all on the mitochondrion: one mRNA row written backwards, which the
+tokenizer refuses on its own, and 10 children lying outside their mRNA, which
+pass every per-row check. Only the parent-child relationship exposes them. The
+largest repair widens an mRNA by 281,540 bp.
 
-**The provider bug.** All 34 are organellar -- mitochondrial (`ZeamMp*`) and
-chloroplast (`ZemaCp*`) -- across seven trans-spliced genes. NCBI's GFF3
-converter emits the parent envelope from **one segment** of the trans-spliced
-set rather than from their union, and which segment varies: for
-`gene-ZeamMp186` it is the last, for `gene-ZeamMp016` the first, for
-`gene-ZeamMp071` a middle one. The same assembly's GenBank file has the
-coordinates right, which is how we know the children are correct.
+**The provider bug.** Both mRNAs, rna-ZeamMp017 and rna-ZeamMp186, belong to
+trans-spliced genes and carry strand `?`. NCBI's GFF3 converter wrote the
+extent of rna-ZeamMp186 from part of the trans-spliced set rather than from
+all of it, and wrote rna-ZeamMp017 backwards. The same assembly's GenBank file
+has the coordinates right, which is how we know the children are correct.
 
-Note that the affected parents carry strand `-` (six), `?` (two) and `+` (one).
-An early hypothesis that `?` marked the affected rows was wrong and would have
-scoped a fix to a third of the cases.
-
-**Repair runs bottom-up, and this is not optional.** For `ZeamMp186` both the
-mRNA and the gene envelope are wrong. Repairing the gene from its immediate
+**Repair runs bottom-up, and this is not optional.** In the reduced fixture
+`tests/fixtures/broken/trans_spliced_envelope.gff3`, both the mRNA and the
+gene envelope of `ZeamMp186` are wrong. Repairing the gene from its immediate
 child -- the still-broken mRNA -- yields `50,490..267,232`, which is plausible
 and wrong. Repairing leaves-upward yields `50,490..548,772`, which matches the
 GenBank join exactly. A single top-down pass produces a number that looks fixed
