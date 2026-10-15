@@ -15,6 +15,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # A version on PyPI can never be replaced, so a release whose tag and
+      # package version disagree must stop here, before anything is uploaded.
+      - name: The tag matches the package version
+        run: |
+          version=$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' src/cgload/__init__.py)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "release tag $GITHUB_REF_NAME does not match __version__ $version"
+            exit 1
+          fi
       - run: pip install build twine
       - run: python -m build
       - run: twine check dist/*
