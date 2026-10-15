@@ -292,6 +292,11 @@ def _assert_same_feature(
     # error in every format.
     if profile.overlap_qualifier and raw.first(profile.overlap_qualifier) is not None:
         return
+    if profile.overlap_exception_value and any(
+        profile.overlap_exception_value in value.lower().replace("_", " ")
+        for value in raw.all("exception")
+    ):
+        return
 
     for segment in existing.segments:
         if raw.start <= segment.end and segment.start <= raw.end:

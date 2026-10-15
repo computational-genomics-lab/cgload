@@ -578,3 +578,44 @@ def test_vertebrate_ncrna_classes_load_with_their_exons(engine, tmp_path):
         ).scalar_one()
     assert canonical == "ncRNA"
     assert unlinked == 0
+
+
+# -- programmed frameshifts in RefSeq GFF3 (D-089) --------------------------
+
+FRAMESHIFT = (
+    "##gff-version 3\n"
+    "NC_000007.14\tRefSeq\tregion\t1\t60000\t.\t+\t.\tID=NC_000007.14:1..60000;genome=chromosome\n"
+    "NC_000007.14\tBestRefSeq\tgene\t1000\t5000\t.\t+\t.\tID=gene-FS;gene_biotype=protein_coding\n"
+    "NC_000007.14\tBestRefSeq\tmRNA\t1000\t5000\t.\t+\t.\tID=rna-FS;Parent=gene-FS\n"
+    "NC_000007.14\tBestRefSeq\texon\t1000\t5000\t.\t+\t.\tID=exon-FS-1;Parent=rna-FS\n"
+    "NC_000007.14\tBestRefSeq\tCDS\t1100\t2279\t.\t+\t0\tID=cds-FS;Parent=rna-FS{extra}\n"
+    "NC_000007.14\tBestRefSeq\tCDS\t2279\t3448\t.\t+\t0\tID=cds-FS;Parent=rna-FS{extra}\n"
+)
+
+
+def _frameshift_config(tmp_path: Path, extra: str) -> Path:
+    gff = tmp_path / "frameshift.gff3"
+    gff.write_text(FRAMESHIFT.format(extra=extra))
+    return config_for(tmp_path, "NC_000007.14", [(gff, None)])
+
+
+def test_a_ribosomal_slippage_cds_may_share_a_base(engine, tmp_path):
+    """The two rows share base 2279, read twice by the ribosome. NCBI writes
+    GenBank's /ribosomal_slippage as exception=ribosomal slippage."""
+    config = load_config(_frameshift_config(tmp_path, ";exception=ribosomal slippage"))
+    report = load_organism(engine, config, tmp_path / "data")
+    assert report.files[0].counts_by_type["CDS"] == 1
+    with engine.connect() as connection:
+        rows = connection.execute(
+            select(feature.c.start, feature.c.end)
+            .where(feature.c.source_id == "cds-FS")
+            .order_by(feature.c.segment_index)
+        ).all()
+    assert [tuple(row) for row in rows] == [(1100, 2279), (2279, 3448)]
+
+
+def test_an_unexplained_overlap_is_still_refused(engine, tmp_path):
+    for extra in ("", ";exception=trans-splicing"):
+        config = load_config(_frameshift_config(tmp_path, extra))
+        with pytest.raises(LoadError, match="cannot overlap"):
+            load_organism(engine, config, tmp_path / f"data{len(extra)}")

@@ -2404,3 +2404,24 @@ with a message saying why.
 **Left out:** `pre_miRNA`, which would put a miRNA under an ncRNA, which the
 hierarchy does not permit (RefSeq writes `primary_transcript` there instead),
 and `autocatalytically_spliced_intron`, an intron rather than a transcript.
+
+## D-089 — RefSeq GFF3 may overlap a CDS where it says `ribosomal slippage`
+
+**Found on the lab server, 15 October 2026.** The human RefSeq file
+(GCF_000001405.40) was refused at line 1,838,264: `cds-NP_001165908.1` is
+written as two rows, 94,663,334-94,664,513 and 94,664,513-94,665,682, which
+share one base. D-033 had permitted overlapping segments only for GenBank's
+`/ribosomal_slippage`, and declared overlap "always an error, which is correct
+for GFF3". It is not: NCBI writes the same frameshift in GFF3, the base read
+twice appearing in both rows.
+
+**Decided:** `Profile.overlap_exception_value`. The RefSeq and cgload profiles
+permit the segments of one feature to overlap when the row's `exception`
+attribute says `ribosomal slippage`. Matched on the value, as D-068 matches
+`trans-splicing`, because `exception` also carries RNA editing, trans-splicing
+and other annotations that explain nothing about an overlap. An overlap without
+it is still refused.
+
+**To confirm on the next server run:** that the human rows carry this
+`exception` value. If they do not, the load is still refused, and the run
+prints the refused rows so the next change can be made from them.

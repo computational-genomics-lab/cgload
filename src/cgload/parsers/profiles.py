@@ -125,6 +125,12 @@ class Profile:
     #: None means overlap is always an error, which is correct for GFF3
     #: (D-033).
     overlap_qualifier: str | None = None
+    #: The same permission in GFF3, where NCBI writes GenBank's
+    #: /ribosomal_slippage as the value `exception=ribosomal slippage` on every
+    #: row of the CDS. Matched on the value, because `exception` also carries
+    #: trans-splicing, RNA editing and other annotations that explain nothing
+    #: about an overlap (D-089).
+    overlap_exception_value: str | None = None
     #: A qualifier whose presence permits the segments of one feature to sit on
     #: *different strands*. NCBI's `exception=trans-splicing` is the only known
     #: case: a trans-spliced gene is assembled from segments on opposite strands,
@@ -220,6 +226,9 @@ REFSEQ = Profile(
     permits_anonymous_rows=False,
     comment_extraction=None,
     overlap_qualifier=None,
+    # A programmed frameshift: the two CDS rows share the base read twice. Human
+    # RefSeq writes cds-NP_001165908.1 this way, sharing base 94,664,513 (D-089).
+    overlap_exception_value="ribosomal slippage",
     # RefSeq writes trans-spliced organellar genes as several rows sharing one ID
     # with differing strands, flagged `exception=trans-splicing` (D-068).
     strand_exception_qualifier="exception",
@@ -338,6 +347,8 @@ CGLOAD = Profile(
     permits_anonymous_rows=True,
     comment_extraction=None,
     overlap_qualifier="ribosomal_slippage",
+    # An export of a RefSeq load keeps `exception=ribosomal slippage` (D-089).
+    overlap_exception_value="ribosomal slippage",
     # False, even though every exported feature does carry a `Parent`. The export
     # writes the *recorded* linkage method per feature, and that stamp is the
     # truth: an export of a GenBank load has Parent attributes whose edges were
