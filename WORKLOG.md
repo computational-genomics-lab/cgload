@@ -111,38 +111,35 @@ the code works, not benchmark results.
 
 ## Checkpoint B2: four real genomes, 15 October 2026
 
-Only the summary came back so far:
+The full log came back. The run used the Phase 1 bundle ("commits on top of
+main: 21"), in which `query` and `remove` are stubs ("not implemented in
+0.1.0"); that explains every query and remove failure. The script now refuses a
+bundle without Phase 2. The loads themselves do not depend on Phase 2.
 
-| Step | Result |
+| Genome | Result |
 |---|---|
-| Python 3.11, branch, install, lint, tests | ok |
-| *F. graminearum*: download, load, verify against GenBank, stats | ok |
-| *F. graminearum*: queries | FAILED (1) |
-| *F. graminearum*: remove, dry run and real | FAILED (2) each |
-| *Arabidopsis*: download, envelope census | ok |
-| *Arabidopsis*: load, plain and with `--repair-envelopes` | FAILED (2) |
-| maize: download, census, load with `--repair-envelopes`, verify, stats | ok |
-| maize: queries | FAILED (1) |
-| human: download | ok |
-| human: load, plain and with `--repair-envelopes` | FAILED (2) |
+| *F. graminearum* GCF_000240135.3 | loaded: 78,715 features; 14.8 s; peak RSS 790 MB; every verify tier passes, cross-parser included |
+| *Arabidopsis* GCF_000001735.4 | refused, with and without `--repair-envelopes` |
+| maize GCF_902167145.1 | refused without the flag (a row written backwards, line 990,621); loaded with it: 696,928 features in 21 types, 138.1 s, peak RSS 5,397 MB; verify passes (source count 696,928; 644,997 parent edges; 2 parentless features, D-069) in 5.5 s; database 697 MB, data directory 2.1 GB |
+| human GCF_000001405.40 | refused at line 1,838,264 after 131.4 s, peak RSS 14,997 MB |
 
-Reading of it, pending the full log:
+`envelope_census.py`, cgload's own count:
 
-- `query` and `remove` failed on both genomes they were asked about, and exit
-  code 2 is what the Phase 1 stubs return. The run probably used the Phase 1
-  bundle, which has the same file name. `checkpoint_b2.sh` now stops at once
-  on a bundle without `query.py`, and prints the last lines of every failed
-  step under the summary.
-- *Arabidopsis*: the survey lists an mRNA on the mitochondrion written across
-  the origin (234,352..396,144 on a 367,808 bp sequence) under a gene written
-  on several rows (26,817..360,128). `--repair-envelopes` never widens a parent
-  written on several rows (D-046), so that violation stays and the load is
-  refused. Both describe the same pieces of a circular molecule in different
-  coordinates. To be confirmed from the census in the log before changing the
-  rule.
-- Human: the survey found no structural problem in this file, so a cgload rule
-  refused it. One candidate is fixed: the INSDC ncRNA classes such as Y_RNA,
-  whose exons were refused (D-088). Not confirmed until the log is read.
+- maize: 11 envelope problems on the mitochondrion, in two mRNAs: 10 children
+  outside their mRNA (6 under rna-ZeamMp017, 4 under rna-ZeamMp186) and
+  rna-ZeamMp017 written backwards. Repair recomputes both mRNAs and leaves
+  none; the larger change widens rna-ZeamMp186 by 281,540 bp. The docs said 36
+  problems in seven genes; corrected, except in `paper/paper.md`.
+- *Arabidopsis*: 13 problems on the mitochondrion in three genes (12 children
+  outside, 1 row backwards). Repair clears 11. Two mRNAs written past the origin
+  stay outside genes written on several rows, and refused the load. D-091
+  stores them as written.
+
+Human: `cds-NP_001165908.1` is written as two rows sharing base 94,664,513, a
+programmed frameshift. D-089 permits it where the rows say `ribosomal
+slippage`. The load stopped there, so the rest of the file is unchecked; D-090
+makes the next run list every problem in a pass at once, and D-088 has already
+removed one likely problem further on.
 
 ## Since Phase 2
 
@@ -151,6 +148,10 @@ Reading of it, pending the full log:
 | vocabulary: map the rest of the INSDC ncRNA classes to ncRNA | D-088 |
 | loader: after --repair-envelopes, stop suggesting --repair-envelopes | the refusal named the flag the user had already given |
 | release: write down how to release, and stop a mismatched tag | `RELEASING.md`, `CHANGELOG.md`, a tag check in `release.yml` |
+| refseq: let the CDS rows of a programmed frameshift share a base | D-089, the human refusal |
+| normalise: refuse with every problem a pass finds, not only the first | D-090 |
+| loader: store an envelope disagreement that exists only across the origin | D-091, the *Arabidopsis* refusal |
+| docs: the maize numbers from cgload's own census, and the server run | envelope module, known limitations, README |
 
 Target journal, decided 15 October: *Briefings in Bioinformatics*, as a
 Problem Solving Protocol; *Bioinformatics* if it is refused there. Both are on
@@ -171,11 +172,10 @@ straight onto `main` in one push. Then the paper.
   mitochondrial mRNA row whose start is after its end (survey `hits.tsv`).
   cgload refuses such a file unless `--repair-envelopes` is given (D-056), so
   the Phase 4 loads of those three need it, and the paper must say so.
-- The maize numbers in `src/cgload/envelope.py`, `docs/known-limitations.md`
-  and `paper/paper.md` (36 problems, 34 children outside their parents, seven
-  genes, 281 kb, 1.2 M features) disagree with the survey (16 children outside
-  their parents in two mitochondrial mRNAs, plus one row written backwards).
-  Correct them from the census in `checkpoint_b2.log`.
+- `paper/paper.md` still has the old maize numbers (36 problems in seven
+  genes). The rest of the docs now use the census.
+- Human and *Arabidopsis* have not yet loaded with the fixes; the next server
+  run tests D-088 to D-091 on them.
 - Novelty: check Ensembl's datachecks and InterMine's acceptance tests before
   the paper claims that no other loader recounts against the source.
 - `paper/paper.md` says the name cgload is taken on PyPI. PyPI has no project
