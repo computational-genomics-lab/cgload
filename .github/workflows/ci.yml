@@ -57,6 +57,17 @@ jobs:
       - name: Test suite
         run: pytest --cov=cgload --cov-report=term-missing -m "not slow and not requires_server"
 
+  benchmark:
+    name: benchmark scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[test]"
+      - run: pytest benchmark/tests -v
+
   build:
     name: package builds and installs clean
     runs-on: ubuntu-latest

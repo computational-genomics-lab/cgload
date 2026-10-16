@@ -1,0 +1,15 @@
+# python-chado for the loader comparison. Its own environment, because
+# python-chado 2.3.9 needs SQLAlchemy 1.4 (cgload needs 2) and Biopython 1.81
+# (later releases removed the location attributes it reads).
+name: cgload-benchmark-chado
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - chado==2.3.9
+      - sqlalchemy==1.4.54
+      - biopython==1.81
+      - psycopg2-binary==2.9.13
+      - bcbio-gff==0.7.1

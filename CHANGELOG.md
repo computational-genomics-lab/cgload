@@ -27,6 +27,8 @@ The refusal says so. Load into a new database made with `cgload init`.
 - Region queries use genomic bins, and a PostgreSQL load collects planner
   statistics before it commits; a gene lookup no longer scans the table
   (D-094).
+- `benchmark/`: the protocol (`benchmark/PROTOCOL.md`) and the scripts of the
+  benchmark the paper reports. Not part of the installed package.
 
 ### Fixed
 

@@ -84,6 +84,9 @@ ignore = ["S101"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S", "ARG"]
+# The benchmark runs external programs and samples at random by design.
+"benchmark/**" = ["S603", "S607", "S311", "S108"]
+"benchmark/tests/**" = ["S", "ARG", "E501"]
 
 [tool.coverage.run]
 source = ["cgload"]

@@ -1,0 +1,18 @@
+# The benchmark's main environment: cgload itself, gffutils, PostgreSQL and
+# htslib. run.sh creates it with micromamba (or conda/mamba) and installs cgload
+# into it from this checkout. What was actually installed, with exact builds,
+# is written to results/environment/ by every run.
+name: cgload-benchmark
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.12
+  - pip
+  - postgresql=16
+  - htslib
+  - nodejs=22
+  - pip:
+      - gffutils==0.14
+      - pysam==0.24.1
+      - psycopg[binary]==3.3.6

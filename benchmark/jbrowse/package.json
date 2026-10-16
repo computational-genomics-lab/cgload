@@ -1,0 +1,7 @@
+{
+  "name": "cgload-benchmark-jbrowse-figure",
+  "private": true,
+  "description": "JBrowse 2's command-line image export, to draw cgload's indexed files for the paper.",
+  "dependencies": {"@jbrowse/img": "3.7.0"},
+  "overrides": {"yargs": "17.7.2", "node-fetch": "file:./fetch-shim"}
+}

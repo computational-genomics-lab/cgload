@@ -1,0 +1,33 @@
+# The 30 genomes of the survey panel (survey/panel.tsv, tag survey-panel-v1), with the
+# parts of the benchmark each one takes part in. Fixed before any benchmark run; see PROTOCOL.md.
+accession	clade	organism	genus	species	strain	assembly_name	roles
+GCF_000001405.40	vertebrate	Homo sapiens	Homo	sapiens	reference	GRCh38.p14	scale,compare,agreement,timing,faults
+GCF_000001635.27	vertebrate	Mus musculus	Mus	musculus	reference	GRCm39	scale,compare,agreement
+GCF_015227675.2	vertebrate	Rattus norvegicus	Rattus	norvegicus	reference	mRatBN7.2	scale,compare,agreement
+GCF_000002035.6	vertebrate	Danio rerio	Danio	rerio	reference	GRCz11	scale,compare,agreement
+GCF_016699485.2	vertebrate	Gallus gallus	Gallus	gallus	reference	bGalGal1.mat.broiler.GRCg7b	scale,compare,agreement
+GCF_014441545.1	vertebrate	Canis lupus familiaris	Canis	lupus	familiaris	ROS_Cfam_1.0	scale,compare,agreement
+GCF_000004195.4	vertebrate	Xenopus tropicalis	Xenopus	tropicalis	reference	UCB_Xtro_10.0	scale,compare,agreement
+GCF_002234675.1	vertebrate	Oryzias latipes	Oryzias	latipes	reference	ASM223467v1	scale,compare,agreement
+GCF_000001215.4	insect	Drosophila melanogaster	Drosophila	melanogaster	reference	Release 6 plus ISO1 MT	scale,compare,agreement
+GCF_000005575.2	insect	Anopheles gambiae	Anopheles	gambiae	reference	AgamP3	scale,compare,agreement
+GCF_002204515.2	insect	Aedes aegypti	Aedes	aegypti	reference	AaegL5.0	scale,compare,agreement
+GCF_003254395.2	insect	Apis mellifera	Apis	mellifera	reference	Amel_HAv3.1	scale,compare,agreement
+GCF_000002335.3	insect	Tribolium castaneum	Tribolium	castaneum	reference	Tcas5.2	scale,compare,agreement
+GCF_009193385.2	insect	Nasonia vitripennis	Nasonia	vitripennis	reference	Nvit_psr_1.1	scale,compare,agreement
+GCF_030269925.1	insect	Bombyx mori	Bombyx	mori	reference	ASM3026992v2	scale,compare,agreement
+GCF_902167145.1	plant	Zea mays	Zea	mays	reference	Zm-B73-REFERENCE-NAM-5.0	scale,compare,agreement,timing
+GCF_000001735.4	plant	Arabidopsis thaliana	Arabidopsis	thaliana	reference	TAIR10.1	scale,compare,agreement,timing,faults,kills
+GCF_034140825.1	plant	Oryza sativa Japonica Group	Oryza	sativa	Japonica Group	AGIS1.0	scale,compare,agreement
+GCF_000003195.3	plant	Sorghum bicolor	Sorghum	bicolor	reference	Sorghum_bicolor_NCBIv3	scale,compare,agreement
+GCF_000004515.6	plant	Glycine max	Glycine	max	reference	Glycine_max_v4.0	scale,compare,agreement
+GCF_000188115.5	plant	Solanum lycopersicum	Solanum	lycopersicum	reference	SL3.1	scale,compare,agreement
+GCF_030704535.1	plant	Vitis vinifera	Vitis	vinifera	reference	ASM3070453v1	scale,compare,agreement
+GCF_000146045.2	fungus	Saccharomyces cerevisiae S288C	Saccharomyces	cerevisiae	S288C	R64	scale,compare,agreement,crossparser
+GCF_000002945.2	fungus	Schizosaccharomyces pombe	Schizosaccharomyces	pombe	reference	ASM294v3	scale,compare,agreement,crossparser
+GCF_000182965.3	fungus	Candida albicans SC5314	Candida	albicans	SC5314	ASM18296v3	scale,compare,agreement,crossparser
+GCF_000182925.2	fungus	Neurospora crassa OR74A	Neurospora	crassa	OR74A	NC12	scale,compare,agreement,crossparser
+GCF_000240135.3	fungus	Fusarium graminearum PH-1	Fusarium	graminearum	PH-1	ASM24013v3	scale,compare,agreement,crossparser,timing,faults,kills
+GCF_000149205.2	fungus	Aspergillus nidulans FGSC A4	Aspergillus	nidulans	FGSC A4	ASM14920v2	scale,compare,agreement,crossparser
+GCF_000149245.1	fungus	Cryptococcus neoformans H99	Cryptococcus	neoformans	H99	CNA3	scale,compare,agreement,crossparser
+GCF_000328475.2	fungus	Ustilago maydis 521	Ustilago	maydis	521	Umaydis521_2.0	scale,compare,agreement,crossparser

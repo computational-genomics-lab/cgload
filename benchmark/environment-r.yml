@@ -1,0 +1,11 @@
+# txdbmaker (Bioconductor) for the loader comparison. Kept apart from the main
+# environment so that an R stack that fails to solve costs only this one tool.
+name: cgload-benchmark-r
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base>=4.4
+  - bioconductor-txdbmaker
+  - bioconductor-genomicfeatures
+  - bioconductor-rtracklayer

@@ -17,3 +17,7 @@ data/
 
 # cgload's default database (`cgload init` without --db-url)
 cgload.db
+
+# The benchmark: its JBrowse figure dependencies, and default run folder
+benchmark/jbrowse/node_modules/
+benchmark-run/
