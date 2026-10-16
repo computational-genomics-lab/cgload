@@ -34,6 +34,8 @@ class SchemaMissingError(RuntimeError):
 REQUIRED_COLUMNS: tuple[tuple[str, str], ...] = (
     ("feature", "source_line"),
     ("assembly", "data_root"),
+    ("sequence_region", "circular"),
+    ("feature", "bin"),
 )
 
 

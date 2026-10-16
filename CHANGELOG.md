@@ -24,6 +24,9 @@ The refusal says so. Load into a new database made with `cgload init`.
 - The INSDC ncRNA classes (Y_RNA, vault_RNA, RNase_MRP_RNA and others) are
   read as ncRNA, so their exons load (D-088).
 - PostgreSQL is tested in CI.
+- Region queries use genomic bins, and a PostgreSQL load collects planner
+  statistics before it commits; a gene lookup no longer scans the table
+  (D-094).
 
 ### Fixed
 

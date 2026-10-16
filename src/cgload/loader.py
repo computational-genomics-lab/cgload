@@ -29,6 +29,7 @@ from cgload.assembly import (
 )
 from cgload.config import AnnotationFile, OrganismConfig
 from cgload.db import vocabulary as vocab
+from cgload.db.bins import bin_of
 from cgload.db.init import assert_vocabulary_current
 from cgload.db.removal import delete_assembly_rows
 from cgload.db.schema import (
@@ -187,6 +188,9 @@ def load_organism(
             )
         )
 
+        circular = set().union(
+            *(_circular_sequences(parse) for parse in parsed if not parse.is_genbank)
+        )
         connection.execute(
             insert(sequence_region),
             [
@@ -194,6 +198,7 @@ def load_organism(
                     "assembly_id": assembly_id,
                     "source_id": region.source_id,
                     "length": region.length,
+                    "circular": region.source_id in circular,
                 }
                 for region in regions
             ],
@@ -368,6 +373,14 @@ def load_organism(
                     f"is a bug in cgload, not in your file; please report it with the "
                     f"file that produced it."
                 )
+
+        # A PostgreSQL table just filled has no statistics until autovacuum
+        # reaches it, and until then the planner takes a gene lookup for a scan
+        # of the whole table. Collected here, inside the transaction, so they
+        # arrive with the rows (D-094). SQLite plans well enough without them.
+        if connection.dialect.name == "postgresql":
+            for table_name in ("feature", "feature_attribute", "protein_annotation"):
+                connection.exec_driver_sql(f"ANALYZE {table_name}")
 
         # What the README promises JBrowse 2: the annotation, bgzipped and
         # tabix-indexed beside the FASTA and its .fai. Written only after the
@@ -930,6 +943,7 @@ def _insert_features(
                     "linkage_method": item.linkage_method,
                     "source_program": item.source_program,
                     "source_line": segment.line_number,
+                    "bin": bin_of(segment.start, segment.end),
                 }
             )
 

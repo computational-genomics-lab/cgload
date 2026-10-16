@@ -2510,3 +2510,39 @@ real fixture included, agrees. A difference fails the tier and, inside a
 load, rolls it back. GenBank is unchanged: a GenBank record is one feature
 however many segments its location joins, and its rows are not lines of the
 file.
+
+## D-094 — region and gene queries read only the rows they need
+
+**Found while testing the query-timing script, 16 October 2026.** On a
+synthetic genome of 120,018 features, one gene and its descendants took 0.28 s
+on SQLite and 3.7 s on PostgreSQL; a 1 Mb window took 0.5 s and 1.8 s. The
+plans showed four causes:
+
+1. "Every row of the matched features" was an OR of two IN tests. No planner
+   turns that into index lookups; PostgreSQL scanned the feature table.
+2. The top of each feature's parent chain was found with a recursive CTE that
+   PostgreSQL planned as a hash join over the whole table at every step.
+3. A region on a linear sequence was also tested one sequence length further
+   on, for rows crossing a circular origin. That second test,
+   `start <= end + length`, is true of every row, so the query read the whole
+   sequence. The index on (sequence, start, end) bounded a region only from
+   above in any case, and PostgreSQL, unable to estimate how few rows overlap,
+   chose table scans.
+4. Right after a load, PostgreSQL had no statistics for the new rows.
+
+**Decided:** whole features are selected by one IN over a UNION. The top of
+each chain is walked in Python over the rows already fetched, looking up only
+ancestors outside them, 500 at a time (AUDIT-8's bound). `sequence_region` records
+whether the file marks a sequence circular, and only those get the second test.
+Each row stores the smallest genomic bin that holds it, in the hierarchical
+scheme of the SAM and CSI indexes (16 kb leaves, eight-fold steps, coordinates
+up to 2^38), indexed with its sequence; a region query matches the few dozen
+bins that overlap it, or reads the whole sequence when it would need more than
+500. A PostgreSQL load runs ANALYZE on its tables before it commits.
+
+On the same genome: a gene with its descendants 0.006 s on SQLite and 0.08 s
+on PostgreSQL; the 1 Mb window, 3,005 features, 0.19 s and 0.30 s, most of it
+now spent building the answer in Python.
+
+**Cost:** two columns and an index, so databases made before this are refused
+with the message REQUIRED_COLUMNS gives.

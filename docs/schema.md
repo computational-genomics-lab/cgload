@@ -66,6 +66,7 @@ erDiagram
         int assembly_id FK
         string source_id "column 1, verbatim"
         int length
+        bool circular "region row says Is_circular=true"
     }
     feature {
         int feature_id PK
@@ -84,6 +85,8 @@ erDiagram
         int parent_id FK
         string linkage_method
         string source_program "column 2, verbatim"
+        int source_line "input line of the row"
+        int bin "smallest genomic bin holding the row"
     }
     vocabulary {
         string term PK
@@ -136,11 +139,19 @@ per assembly, because IDs are only required to be unique within a region.
 ## 3. Indexes are portable by construction
 
 `(assembly_id, source_type)` for `verify`, `(assembly_id, feature_type)` for
-`query`, `(sequence_region_id, start, end)` for region overlap. The last one is
-a plain B-tree: SQLite's RTREE is a compile-time-optional module with no MySQL
-or PostgreSQL equivalent, and using it would quietly void D-002's claim that
-all three backends run through one code path. A test asserts no virtual table
-exists.
+`query`, `(sequence_region_id, start, end)` and `(sequence_region_id, bin)` for
+region overlap. All are plain B-trees: SQLite's RTREE is a compile-time-optional
+module with no MySQL or PostgreSQL equivalent, and using it would quietly void
+D-002's claim that all three backends run through one code path. A test asserts
+no virtual table exists.
+
+`bin` is the smallest genomic bin that holds the row whole, in the
+hierarchical scheme of the SAM and CSI indexes (`cgload.db.bins`). A region
+query matches rows by bin first, so it reads only rows near the region; on its
+own the (sequence, start, end) index bounded a region only from above
+(D-094). `sequence_region.circular` records a sequence whose region row says
+`Is_circular=true`; only there does a region query also look one sequence
+length further on, for rows that cross the origin.
 
 ## 4. The vocabulary is versioned data, not free-form data
 

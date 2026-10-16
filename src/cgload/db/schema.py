@@ -21,6 +21,7 @@ from __future__ import annotations
 
 from sqlalchemy import (
     BigInteger,
+    Boolean,
     CheckConstraint,
     Column,
     DateTime,
@@ -34,6 +35,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
     column,
+    false,
     func,
 )
 
@@ -146,6 +148,11 @@ sequence_region = Table(
     # sequences that long exist, in lungfish and in some plants.
     Column("length", BigInteger, nullable=False),
     Column("region_type", String(64), nullable=True),  # chromosome | scaffold | contig
+    # The file's region row says Is_circular=true (RefSeq). Only on such a
+    # sequence can a row end past its length, so only there does a region query
+    # look a second time, one length further on; on every other sequence that
+    # second look would read the whole sequence's index for nothing.
+    Column("circular", Boolean, nullable=False, server_default=false()),
     UniqueConstraint("assembly_id", "source_id", name="uq_sequence_region_assembly_source_id"),
     CheckConstraint("length > 0", name="length_positive"),
 )
@@ -224,6 +231,10 @@ feature = Table(
     # after a bulk insert, so without this the loader could not attach its
     # parent and silently stored it unlinked (AUDIT-2, D-077).
     Column("source_line", Integer, nullable=True),
+    # The smallest genomic bin that holds the row whole (cgload.db.bins). A
+    # region query reads only the rows in the few dozen bins that overlap the
+    # region, instead of every row that starts before the region ends (D-094).
+    Column("bin", Integer, nullable=False, server_default="0"),
     UniqueConstraint(
         "sequence_region_id",
         "source_id",
@@ -252,6 +263,7 @@ Index("ix_feature_parent", feature.c.parent_id)
 # option with no MySQL/PostgreSQL equivalent, and using it would void the
 # single-code-path claim in D-002.
 Index("ix_feature_region_span", feature.c.sequence_region_id, feature.c.start, feature.c.end)
+Index("ix_feature_region_bin", feature.c.sequence_region_id, feature.c.bin)
 
 # Arbitrary column-9 attributes and GenBank qualifiers, kept so `explain` can
 # show what the input actually said. Not a substitute for a modelled column.

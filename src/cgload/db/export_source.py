@@ -63,6 +63,8 @@ class StoredFeature:
     #: The database row of the first segment: the row that attributes, parent
     #: links and functional annotation point at.
     row_id: int | None = None
+    #: The parent's first-segment row, as stored in ``parent_id``.
+    parent_row_id: int | None = None
 
     @property
     def start(self) -> int:
@@ -212,6 +214,7 @@ def features_where(connection: Connection, condition) -> list[StoredFeature]:
             item.segments.append(segment)
             if row.segment_index == 0:
                 item.row_id = row.feature_id
+                item.parent_row_id = row.parent_id
             for key, values in attributes.get(row.feature_id, {}).items():
                 item.attributes.setdefault(key, list(values))
             continue
@@ -230,6 +233,7 @@ def features_where(connection: Connection, condition) -> list[StoredFeature]:
                 key: list(values) for key, values in attributes.get(row.feature_id, {}).items()
             },
             row_id=row.feature_id,
+            parent_row_id=row.parent_id,
         )
         if row.source_id is not None:
             named[row.source_id] = item

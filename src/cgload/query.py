@@ -23,8 +23,9 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from sqlalchemy import Connection, and_, func, or_, select
+from sqlalchemy import Connection, and_, func, or_, select, union
 
+from cgload.db.bins import MAX_QUERY_BINS, bins_overlapping
 from cgload.db.export_source import StoredFeature, features_where
 from cgload.db.schema import annotation_run, assembly, feature, protein_annotation, sequence_region
 from cgload.parsers.functional import canonical_kegg_pathway
@@ -44,6 +45,7 @@ class Region:
     end: int
     region_id: int
     length: int
+    circular: bool = False
 
     def __str__(self) -> str:
         return f"{self.seqid}:{self.start:,}-{self.end:,}"
@@ -102,7 +104,11 @@ def resolve_region(connection: Connection, assembly_id: int, text: str) -> Regio
 
     def lookup(name: str):
         return connection.execute(
-            select(sequence_region.c.sequence_region_id, sequence_region.c.length).where(
+            select(
+                sequence_region.c.sequence_region_id,
+                sequence_region.c.length,
+                sequence_region.c.circular,
+            ).where(
                 sequence_region.c.assembly_id == assembly_id,
                 sequence_region.c.source_id == name,
             )
@@ -110,7 +116,9 @@ def resolve_region(connection: Connection, assembly_id: int, text: str) -> Regio
 
     whole = lookup(text)
     if whole is not None:
-        return Region(text, 1, whole.length, whole.sequence_region_id, whole.length)
+        return Region(
+            text, 1, whole.length, whole.sequence_region_id, whole.length, bool(whole.circular)
+        )
 
     name, _, span = text.rpartition(":")
     found = lookup(name) if name else None
@@ -135,7 +143,14 @@ def resolve_region(connection: Connection, assembly_id: int, text: str) -> Regio
         raise QueryError(f"{text!r}: the start must be at least 1 and not after the end")
     if start > found.length:
         raise QueryError(f"{text!r}: {name} is only {found.length:,} bp long")
-    return Region(name, start, min(end, found.length), found.sequence_region_id, found.length)
+    return Region(
+        name,
+        start,
+        min(end, found.length),
+        found.sequence_region_id,
+        found.length,
+        bool(found.circular),
+    )
 
 
 def term_variants(term: str) -> list[str]:
@@ -215,20 +230,26 @@ def _rows_in_region(region: Region):
 
     A row that crosses the origin of a circular sequence is stored as GFF3
     writes it, ending past the sequence's length, and NCBI writes some rows
-    wholly past it (D-081). Such a row covers position p at p + length, so the
-    region is tried a second time, one length further on. On a linear sequence
-    the second test can never hold: the loader refuses any row that ends past
-    the end of a linear sequence.
+    wholly past it (D-081). Such a row covers position p at p + length, so on a
+    circular sequence the region is tried a second time, one length further on.
+    Only there: the loader refuses any row that ends past the end of a linear
+    sequence, and the second test, ``start <= end + length``, holds for every
+    row of the sequence, so it would read the sequence's whole index (D-094).
     """
-    shifted_start = region.start + region.length
-    shifted_end = region.end + region.length
-    return select(feature.c.feature_id).where(
-        feature.c.sequence_region_id == region.region_id,
-        or_(
-            and_(feature.c.start <= region.end, feature.c.end >= region.start),
-            and_(feature.c.start <= shifted_end, feature.c.end >= shifted_start),
-        ),
-    )
+    spans = [(region.start, region.end)]
+    if region.circular:
+        spans.append((region.start + region.length, region.end + region.length))
+    tests = []
+    bins: list[int] = []
+    for start, end in spans:
+        tests.append(and_(feature.c.start <= end, feature.c.end >= start))
+        bins.extend(bins_overlapping(start, end))
+    conditions = [feature.c.sequence_region_id == region.region_id, or_(*tests)]
+    # The bins bound the rows read (D-094). A region covering much of its
+    # sequence would need thousands of them, and reads most rows anyway.
+    if len(bins) <= MAX_QUERY_BINS:
+        conditions.append(feature.c.bin.in_(sorted(set(bins))))
+    return select(feature.c.feature_id).where(*conditions)
 
 
 def _of_types(rows, types: tuple[str, ...]):
@@ -240,40 +261,69 @@ def _of_types(rows, types: tuple[str, ...]):
 
 
 def _whole_features(assembly_id: int, rows):
-    """Every row of every feature that has a row in ``rows``."""
+    """Every row of every feature that has a row in ``rows``.
+
+    Written as one IN over a UNION, not as an OR of two IN tests: a planner can
+    turn ``feature_id IN (subquery)`` into an index lookup, but faced with the
+    OR, PostgreSQL scanned the whole feature table and SQLite most of it, so a
+    single gene took 0.6 s on 120,000 features (D-094).
+    """
     named = select(feature.c.source_id).where(
         feature.c.feature_id.in_(rows), feature.c.source_id.is_not(None)
     )
-    return and_(
-        feature.c.assembly_id == assembly_id,
-        or_(
-            feature.c.source_id.in_(named),
-            and_(feature.c.source_id.is_(None), feature.c.feature_id.in_(rows)),
-        ),
+    by_name = select(feature.c.feature_id).where(
+        feature.c.assembly_id == assembly_id, feature.c.source_id.in_(named)
     )
+    anonymous = select(feature.c.feature_id).where(
+        feature.c.feature_id.in_(rows), feature.c.source_id.is_(None)
+    )
+    return feature.c.feature_id.in_(union(by_name, anonymous))
 
 
-def _top_level(connection: Connection, rows) -> dict[int, str | None]:
-    """First-segment row id -> identifier at the top of its parent chain."""
-    start = select(
-        feature.c.feature_id.label("origin"),
-        feature.c.feature_id.label("node"),
-        feature.c.parent_id.label("up"),
-    ).where(feature.c.feature_id.in_(rows), feature.c.segment_index == 0)
-    chain = start.cte("lineage", recursive=True)
-    walked = chain.alias()
-    above = feature.alias("above")
-    chain = chain.union(
-        select(walked.c.origin, above.c.feature_id, above.c.parent_id).where(
-            above.c.feature_id == walked.c.up
-        )
-    )
-    tops = connection.execute(
-        select(chain.c.origin, feature.c.source_id)
-        .join(feature, feature.c.feature_id == chain.c.node)
-        .where(chain.c.up.is_(None))
-    ).all()
-    return {row.origin: row.source_id for row in tops}
+#: Ancestors looked up per statement in ``_top_level``: well under every
+#: driver's parameter limit (AUDIT-8), whatever the size of the answer.
+_ANCESTOR_BATCH = 500
+
+
+def _top_level(connection: Connection, features: list[StoredFeature]) -> dict[int, str | None]:
+    """First-segment row id -> identifier at the top of its parent chain.
+
+    Walked in Python over the rows the query has already fetched; only the
+    ancestors outside them are read, in bounded batches. A recursive CTE did
+    this before, and PostgreSQL planned it with a scan of the whole feature
+    table at every step of the walk (D-094).
+    """
+    parent_of: dict[int, int | None] = {}
+    name_of: dict[int, str | None] = {}
+    for item in features:
+        parent_of[item.row_id] = item.parent_row_id
+        name_of[item.row_id] = item.source_id
+    missing = {p for p in parent_of.values() if p is not None and p not in parent_of}
+    while missing:
+        wanted = sorted(missing)
+        for begin in range(0, len(wanted), _ANCESTOR_BATCH):
+            batch = wanted[begin : begin + _ANCESTOR_BATCH]
+            for row in connection.execute(
+                select(feature.c.feature_id, feature.c.parent_id, feature.c.source_id).where(
+                    feature.c.feature_id.in_(batch)
+                )
+            ).all():
+                parent_of[row.feature_id] = row.parent_id
+                name_of[row.feature_id] = row.source_id
+        for row_id in wanted:
+            # A parent row that does not exist ends the chain where it is.
+            parent_of.setdefault(row_id, None)
+            name_of.setdefault(row_id, None)
+        missing = {p for p in parent_of.values() if p is not None and p not in parent_of}
+
+    tops: dict[int, str | None] = {}
+    for item in features:
+        node, seen = item.row_id, set()
+        while parent_of.get(node) is not None and node not in seen:
+            seen.add(node)
+            node = parent_of[node]
+        tops[item.row_id] = name_of.get(node)
+    return tops
 
 
 # --------------------------------------------------------------------------
@@ -292,10 +342,7 @@ def _finish(
 ) -> QueryResult:
     selected = _with_ancestors(rows) if ancestors else rows
     features = features_where(connection, _whole_features(assembly_id, selected))
-    top = _top_level(connection, select(feature.c.feature_id).where(
-        _whole_features(assembly_id, selected)
-    ))
-    return QueryResult(features, top, hits, description)
+    return QueryResult(features, _top_level(connection, features), hits, description)
 
 
 def by_id(

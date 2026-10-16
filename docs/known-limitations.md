@@ -109,10 +109,13 @@ sequence in it.
   `tabix --csi -p gff` indexes it (D-082).
 - **`query` needs recursive common table expressions**: SQLite 3.8.3 or
   newer (released in 2014), PostgreSQL, or MySQL 8.0 or newer.
-- **Region queries read the index from the start of the sequence.** The index
-  is a B-tree on (sequence, start, end), so a query near the end of a long
-  sequence reads index entries for most of that sequence. How much that costs
-  on a large genome is not measured yet.
+- **Region queries read whole bins.** Each row is stored with the smallest
+  genomic bin that holds it (the scheme of the SAM and CSI indexes, D-094), and
+  a region query reads the rows of the few dozen bins that overlap the region.
+  A region covering more than about 500 of those bins reads the whole
+  sequence's rows instead. A killed or failed load leaves its staging directory
+  under `<data-dir>/.staging`; it belongs to no assembly and can be deleted when
+  no load is running.
 - **A Pfam domain has two spellings.** eggNOG-mapper reports it by name
   (`Pkinase`), InterProScan by accession (`PF00069`). `query --term` matches
   the string given, and cgload holds no table that maps one to the other.
