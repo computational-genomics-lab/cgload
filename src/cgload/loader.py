@@ -41,6 +41,7 @@ from cgload.db.schema import (
 from cgload.db.verification import (
     compare_with_database,
     count_database_for_file,
+    count_database_rows_for_file,
     parent_edge_tier,
 )
 from cgload.envelope import apply_policy, format_report
@@ -316,7 +317,15 @@ def load_organism(
             stated_parents[parse.path] = naive.with_parent
             stored = count_database_for_file(connection, assembly_id, source_file_id)
             result = compare_with_database(
-                naive.features, stored, label=f"source count [{parse.path.name}]"
+                naive.features,
+                stored,
+                label=f"source count [{parse.path.name}]",
+                source_rows=naive.rows,
+                database_rows=(
+                    None
+                    if naive.rows is None
+                    else count_database_rows_for_file(connection, assembly_id, source_file_id)
+                ),
             )
             report.verification.append(result)
             if result.outcome is Outcome.FAIL:

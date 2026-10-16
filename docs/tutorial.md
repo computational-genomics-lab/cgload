@@ -148,7 +148,7 @@ cgload verify --assembly-id 1
 ```
 
 ```
-  source count      PASS  12 features in the file, 12 in the database, across 5 type(s)
+  source count      PASS  12 features in the file, 12 in the database, across 5 type(s); 13 rows in each
   parent edges      PASS  9 edge(s), all accounted for (explicit_parent 9); the file states 9
   stored assembly   PASS  ./data/demonstratus_minimalis/demo-1/demo_v1/assembly.fa and its index are present; SHA-256 matches the load
   cross-parser      ----  no second format supplied; pass --against with a GenBank or GFF3 file describing the same assembly
@@ -157,7 +157,9 @@ cgload verify --assembly-id 1
 
 The first line is the guarantee. cgload read your file a second time, with a
 deliberately simple counter that shares no code with the parser, and got the
-same number. A checker built from the parser would read the file the same wrong
+same numbers: the same features, and the same rows. The rows matter because a
+CDS written on several rows is one feature, so a lost row would not change the
+feature count. A checker built from the parser would read the file the same wrong
 way and report everything fine.
 
 The second line says every parent the file names is stored as a link. The

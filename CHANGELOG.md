@@ -50,6 +50,9 @@ The refusal says so. Load into a new database made with `cgload init`.
   top-level and the tier passed. The independent pass now counts the
   file's `Parent=` statements per type, and the tier compares those with
   the links stored (D-092).
+- A feature written on several rows could lose one of them without any check
+  noticing, because the source count counted features only. It now counts
+  rows too (D-093).
 
 ## 0.1.0
 

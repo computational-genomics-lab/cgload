@@ -20,6 +20,7 @@ from cgload.db.verification import (
     annotation_files_with_format,
     compare_with_database,
     count_database_for_file,
+    count_database_rows_for_file,
     parent_edge_tier,
     sequences_loaded,
     stored_assembly_tier,
@@ -200,7 +201,20 @@ def run_verification(
         source_counts = counted.features
         stated_parents[source_file_id] = counted.with_parent
         stored = count_database_for_file(connection, assembly_id, source_file_id)
-        results.append(compare_with_database(source_counts, stored, label=label))
+        stored_rows = (
+            None
+            if counted.rows is None
+            else count_database_rows_for_file(connection, assembly_id, source_file_id)
+        )
+        results.append(
+            compare_with_database(
+                source_counts,
+                stored,
+                label=label,
+                source_rows=counted.rows,
+                database_rows=stored_rows,
+            )
+        )
         combined = source_counts if combined is None else combined + source_counts
 
     # The stored hierarchy, from the database alone (D-074). Written and tested

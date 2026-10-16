@@ -145,3 +145,70 @@ def test_verify_says_when_it_could_check_links_only_inside_the_database(tmp_path
     verified = _cli(tmp_path, "verify", "--assembly-id", "1")
     line = next(row for row in verified.output.splitlines() if "parent edges" in row)
     assert "within the database only" in line
+
+
+# ---------------------------------------------------------------------------
+# D-093: rows are counted too, so part of a feature written on several rows
+# cannot go missing behind a correct feature count.
+# ---------------------------------------------------------------------------
+
+
+def test_the_naive_pass_counts_every_row(tmp_path):
+    gff = tmp_path / "a.gff3"
+    gff.write_text(
+        "##gff-version 3\n"
+        "chr1\t.\tgene\t1\t900\t.\t+\t.\tID=g1\n"
+        "chr1\t.\tmRNA\t1\t900\t.\t+\t.\tID=t1;Parent=g1\n"
+        "chr1\t.\tCDS\t1\t100\t.\t+\t0\tID=c1;Parent=t1\n"
+        "chr1\t.\tCDS\t200\t300\t.\t+\t2\tID=c1;Parent=t1\n"
+        "chr1\t.\tCDS\t400\t500\t.\t+\t1\tID=c1;Parent=t1\n"
+        "chr1\t.\tintron\t101\t199\t.\t+\t.\tParent=t1\n"
+    )
+    counted = naive_counts(gff)
+    assert counted.features == {"gene": 1, "mRNA": 1, "CDS": 1, "intron": 1}
+    assert counted.rows == {"gene": 1, "mRNA": 1, "CDS": 3, "intron": 1}
+
+
+def test_verify_fails_when_one_row_of_a_feature_is_gone(tmp_path):
+    config = _project(tmp_path, FUSARIUM)
+    assert _load(tmp_path, config).exit_code == 0
+    connection = sqlite3.connect(tmp_path / "g.db")
+    (cds,) = connection.execute(
+        "SELECT source_id FROM feature WHERE source_type = 'CDS' "
+        "GROUP BY source_id HAVING count(*) > 1 ORDER BY source_id LIMIT 1"
+    ).fetchone()
+    connection.execute(
+        "DELETE FROM feature WHERE source_id = ? AND segment_index = "
+        "(SELECT max(segment_index) FROM feature WHERE source_id = ?)", (cds, cds))
+    connection.commit()
+    connection.close()
+    verified = _cli(tmp_path, "verify", "--assembly-id", "1")
+    assert verified.exit_code != 0, verified.output
+    assert "CDS (rows)" in verified.output
+
+
+def test_a_parser_that_drops_one_row_of_a_feature_is_rolled_back(tmp_path, monkeypatch):
+    import cgload.loader as loader_module
+
+    real = loader_module.tokenize
+
+    def lose_a_segment(path, *, tolerate_inverted=False):
+        result = real(path, tolerate_inverted=tolerate_inverted)
+        counts = {}
+        for row in result.features:
+            if row.id:
+                counts[row.id] = counts.get(row.id, 0) + 1
+        victim = next(row.id for row in result.features if row.id and counts[row.id] > 1)
+        last = max(i for i, row in enumerate(result.features) if row.id == victim)
+        del result.features[last]
+        return result
+
+    monkeypatch.setattr(loader_module, "tokenize", lose_a_segment)
+    config = _project(tmp_path, FUSARIUM)
+    result = _load(tmp_path, config)
+    assert result.exit_code == 2, result.output
+    assert "CDS (rows)" in result.output or "CDS: file has" in result.output
+    connection = sqlite3.connect(tmp_path / "g.db")
+    stored = connection.execute("SELECT count(*) FROM feature").fetchone()[0]
+    connection.close()
+    assert stored == 0

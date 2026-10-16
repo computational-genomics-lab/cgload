@@ -103,6 +103,11 @@ class NaiveCounts:
     #: feature counts once however many of its rows say `Parent=`. None for
     #: GenBank, which states no parents; every edge there is computed (D-092).
     with_parent: Counter | None
+    #: Data rows per type, every one counted: a feature written on three rows
+    #: counts three. cgload stores one row per segment and refuses a file whose
+    #: rows repeat a span under one ID, so for any file it accepts the two counts
+    #: must agree. None for GenBank (D-093).
+    rows: Counter | None = None
 
 
 def count_source_naively(path: Path) -> Counter:
@@ -150,6 +155,7 @@ def _count_gff_naively(path: Path) -> NaiveCounts:
     """
     seen: set[tuple[str, str]] = set()
     parented: set[tuple[str, str]] = set()
+    rows: Counter = Counter()
     anonymous: Counter = Counter()
     anonymous_parented: Counter = Counter()
     with _open(path) as handle:
@@ -163,6 +169,7 @@ def _count_gff_naively(path: Path) -> NaiveCounts:
             if len(columns) < 9:
                 continue
             feature_type = columns[2]
+            rows[feature_type] += 1
             names_parent = _GFF_PARENT.search(columns[8]) is not None
             found = _GFF_ID.search(columns[8])
             if found:
@@ -178,7 +185,7 @@ def _count_gff_naively(path: Path) -> NaiveCounts:
     counts.update(anonymous)
     with_parent = Counter(feature_type for feature_type, _identifier in parented)
     with_parent.update(anonymous_parented)
-    return NaiveCounts(counts, with_parent)
+    return NaiveCounts(counts, with_parent, rows)
 
 
 def _count_genbank_naively(path: Path) -> Counter:

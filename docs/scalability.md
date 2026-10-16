@@ -147,6 +147,10 @@ Elapsed (wall clock) time: 0:12.93
 Maximum resident set size: 797,976 kbytes
 ```
 
+The outputs on this page are as cgload printed them on the dates given. Since
+D-092 and D-093 the source-count line also reports rows, and the parent-edge
+line the parent statements counted in the file.
+
 The completeness check runs as part of the load and is not optional (D-046): a
 load that stored fewer features than the file contains fails and rolls back.
 

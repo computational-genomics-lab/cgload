@@ -65,8 +65,28 @@ def count_database_for_file(
     return Counter({row[0]: row[1] for row in rows})
 
 
+def count_database_rows_for_file(
+    connection: Connection, assembly_id: int, source_file_id: int
+) -> Counter:
+    """Stored rows per verbatim source type for one file: one per segment (D-093)."""
+    rows = connection.execute(
+        select(feature.c.source_type, func.count())
+        .where(
+            feature.c.assembly_id == assembly_id,
+            feature.c.source_file_id == source_file_id,
+        )
+        .group_by(feature.c.source_type)
+    ).all()
+    return Counter({row[0]: row[1] for row in rows})
+
+
 def compare_with_database(
-    source_counts: Counter, database_counts: Counter, *, label: str = "source count"
+    source_counts: Counter,
+    database_counts: Counter,
+    *,
+    label: str = "source count",
+    source_rows: Counter | None = None,
+    database_rows: Counter | None = None,
 ) -> TierResult:
     """The primary check: what the file says against what was stored.
 
@@ -99,6 +119,36 @@ def compare_with_database(
             ),
             expected=expected,
             actual=actual,
+        )
+
+    # Every feature is there; are all of its rows? A CDS written on six rows that
+    # lost one is still one CDS, so only a count of rows can see it (D-093).
+    if source_rows is not None and database_rows is not None:
+        wanted = {name: count for name, count in source_rows.items() if name not in NOT_STORED}
+        found = dict(database_rows)
+        short = sorted(
+            name for name in set(wanted) | set(found) if wanted.get(name, 0) != found.get(name, 0)
+        )
+        if short:
+            return TierResult(
+                name=label,
+                outcome=Outcome.FAIL,
+                detail=(
+                    f"every feature is stored, but the rows of {len(short)} feature "
+                    f"type(s) differ between the file and the database; part of a "
+                    f"feature written on several rows was lost or invented during loading"
+                ),
+                expected={f"{name} (rows)": wanted.get(name, 0) for name in short},
+                actual={f"{name} (rows)": found.get(name, 0) for name in short},
+            )
+        return TierResult(
+            name=label,
+            outcome=Outcome.PASS,
+            detail=(
+                f"{total_source:,} features in the file, {total_database:,} in the "
+                f"database, across {len(source_counts)} type(s); "
+                f"{sum(wanted.values()):,} rows in each"
+            ),
         )
 
     return TierResult(

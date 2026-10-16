@@ -2035,6 +2035,7 @@ dropped or invented** — cardinality.
 
 They cannot see a count-preserving corruption: a wrong strand, a swapped
 coordinate, a mangled identifier, a dropped segment of a multi-segment feature.
+(The last is caught since D-093, which counts rows as well as features.)
 `check_declared_proteins` catches the last of these only where the source
 declares a protein length, which is AUGUSTUS and funannotate, not RefSeq.
 
@@ -2490,3 +2491,22 @@ nothing changes there.
 **Still not detected, by design (D-075):** a link moved to the wrong parent of
 the same type, which keeps every count. The tier shows that every stated
 parent is stored as a link, not that each link points where the file says.
+
+## D-093 — the source count counts rows as well as features
+
+**Found while testing the fault-injection scripts, 16 October 2026.** The
+naive pass counts features: rows sharing an ID are one. A CDS written on six
+rows that lost one row during parsing is still one CDS, so the source count
+passed, and so did every other tier. On the synthetic test genome a parser
+that dropped one row of a multi-row CDS loaded with a PASS. For a protein-coding
+gene that is a missing exon's worth of coding sequence, and nothing said so.
+
+**Decided:** the same single read also counts data rows per column-3 type,
+every row counted, and the source-count tier compares them with the rows
+stored for that type, after the feature counts agree. cgload stores one row
+per segment and refuses a file in which rows repeat a span under one ID, so
+for any file it accepts the two numbers must be equal; the full suite, every
+real fixture included, agrees. A difference fails the tier and, inside a
+load, rolls it back. GenBank is unchanged: a GenBank record is one feature
+however many segments its location joins, and its rows are not lines of the
+file.

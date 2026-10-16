@@ -35,7 +35,7 @@ What it does:
 
 | tier | compares | what it can prove |
 |---|---|---|
-| source count | an independent pass over your file against the database | every feature in the file reached the database, and none was invented |
+| source count | an independent pass over your file against the database | every feature, and every row of a feature written on several rows, reached the database, and none was invented |
 | parent edges | the stored links against the `Parent=` statements the same independent pass counts in your file | every parent the file names is stored as a link, not merely the features |
 | stored assembly | the stored FASTA and its index against the checksum taken at load | the sequence every coordinate refers to is still there, unchanged |
 | cross-parser | the same assembly as GFF3 and as GenBank | the two files describe the same feature counts |
@@ -122,7 +122,7 @@ Loaded Demonstratus minimalis / DEMO-1 / Demo_v1 (assembly_id=1)
   annotation.gff3: funannotate (high) -- 12 features
     CDS 2, exon 4, gene 3, mRNA 2, tRNA 1
 
-  source count      PASS  12 features in the file, 12 in the database, across 5 type(s)
+  source count      PASS  12 features in the file, 12 in the database, across 5 type(s); 13 rows in each
 ```
 
 The database is a single SQLite file — no server, no credentials, nothing
