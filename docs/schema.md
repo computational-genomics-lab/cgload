@@ -7,7 +7,7 @@ eight-table design, and each has to be justified in the paper:
 |---|---|
 | `source_file` | D-014: provenance is per input file, because one assembly's annotation may arrive as several files of different origin |
 | `vocabulary` | D-017: the type map is versioned data, so extending it is a row rather than a release |
-| `vocabulary_meta` | D-017: the version and content hash that every assembly records, so a changed vocabulary cannot silently alter the meaning of rows loaded earlier |
+| `vocabulary_meta` | D-017: the version and content hash that every assembly records, so a changed vocabulary cannot silently alter the meaning of rows loaded earlier; also the database's identity (D-095) |
 
 Functional annotation (eggNOG, InterProScan) has **no table yet** — it arrives
 at milestone 7 and is deliberately outside the feature-graph engine (D-013).
@@ -163,6 +163,11 @@ method vocabulary, since any of the three changes linkage semantics — and ever
 assembly records the hash it was loaded under. `load`, `verify`, `query` and
 `export` call `assert_vocabulary_current()` first and refuse a mismatch,
 directing the user to `cgload remap`.
+
+The same single row carries `database_id`, a UUID written by `init`. Every
+assembly directory's `manifest.json` records it, so a directory that a load
+into this database put in place but never committed can be told from one that
+another database owns (D-095).
 
 ## Conventions
 

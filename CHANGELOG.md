@@ -30,6 +30,11 @@ The refusal says so. Load into a new database made with `cgload init`.
 
 ### Fixed
 
+- A load killed after putting its data directory in place but before
+  committing left a directory that made the repeated load fail. The next load
+  into the same database now recognises such a directory by the database ID in
+  its manifest and replaces it, saying so (D-095).
+
 - Rows without an ID (AUGUSTUS introns and codons) lost their stated parent
   and their attributes (D-077).
 - Export wrote a multi-valued attribute such as `Dbxref=a,b` as one value, and

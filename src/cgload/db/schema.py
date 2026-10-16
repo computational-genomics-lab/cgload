@@ -179,6 +179,10 @@ vocabulary_meta = Table(
     Column("version", Integer, nullable=False),
     Column("content_hash", String(64), nullable=False),
     Column("seeded_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+    # This database's identity, a UUID written once by `init` (D-095). Every
+    # assembly directory's manifest records it, so a directory left in place by
+    # a load that never committed can be told from one another database owns.
+    Column("database_id", String(36), nullable=False),
     CheckConstraint("vocabulary_meta_id = 1", name="singleton"),
 )
 

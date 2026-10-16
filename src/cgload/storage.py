@@ -25,6 +25,14 @@ is reversed if the commit fails. The remaining window is one rename plus one
 commit, and the failure it leaves -- a directory in place with no rows -- is
 detectable and harmless, where the reverse is not.
 
+**A load killed inside that window (D-095)** leaves its directory in place and
+no rows. The next load of the same assembly into the same database recognises
+it: the manifest names this database (``vocabulary_meta.database_id``) and no
+assembly row of this database lies in the directory, so no committed load put
+it there. It is replaced as ``--force`` would replace it, and the load says
+so. A directory whose manifest names another database, or none, still stops
+the load: it may hold an assembly that another database uses.
+
 **Under --force (AUDIT-4, amends D-073)** the directory being replaced stays
 where it is for the whole load and is moved aside only in that final step,
 next to the rename of the new one. Moving it aside when the load *started*
@@ -48,7 +56,9 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from sqlalchemy import Connection, Engine
+from sqlalchemy import Connection, Engine, func, select
+
+from cgload.db.schema import assembly, vocabulary_meta
 
 CHUNK = 1024 * 1024
 
@@ -89,6 +99,9 @@ class StagedLoad:
     #: The data directory root, absolute. Recorded on the assembly row so that
     #: `verify` can find the stored files (D-079).
     data_root: Path | None = None
+    #: The directory this load replaces because an interrupted load into this
+    #: database left it there (D-095), or None.
+    replaces_interrupted: Path | None = None
 
     def place(self, source: Path, name: str, *, copy: bool = True) -> tuple[Path, str]:
         """Copy (default) or hard-link a file into the staging directory.
@@ -137,11 +150,21 @@ def staged_load(
     # (AUDIT-4). It is now moved aside only immediately before the new
     # directory is renamed into place, inside the open transaction.
     superseded: Path | None = None
+    database_id = _database_id(engine)
+    interrupted = False
     if target.exists() and not force:
-        raise DataDirectoryConflictError(
-            f"{target} already exists. Use a different assembly name, or "
-            f"--force to replace it."
-        )
+        owner = _manifest_database(target)
+        if owner is not None and owner == database_id and not _in_use(engine, target, data_root):
+            interrupted = True
+        else:
+            elsewhere = (
+                " Its manifest says another cgload database loaded it."
+                if owner is not None and owner != database_id else ""
+            )
+            raise DataDirectoryConflictError(
+                f"{target} already exists.{elsewhere} Use a different assembly name, or "
+                f"--force to replace it."
+            )
 
     staging_root = data_root / ".staging"
     staging_root.mkdir(parents=True, exist_ok=True)
@@ -150,11 +173,13 @@ def staged_load(
 
     connection = engine.connect()
     transaction = connection.begin()
-    load = StagedLoad(staging=staging, target=target, connection=connection, data_root=data_root)
+    load = StagedLoad(staging=staging, target=target, connection=connection, data_root=data_root,
+                      replaces_interrupted=target if interrupted else None)
     renamed = False
     try:
         yield load
 
+        load.manifest["database_id"] = database_id
         (staging / "manifest.json").write_text(json.dumps(load.manifest, indent=2, default=str))
         target.parent.mkdir(parents=True, exist_ok=True)
         if target.exists():
@@ -181,6 +206,33 @@ def staged_load(
         raise
     finally:
         connection.close()
+
+
+def _database_id(engine: Engine) -> str | None:
+    with engine.connect() as connection:
+        return connection.execute(select(vocabulary_meta.c.database_id)).scalar_one_or_none()
+
+
+def _manifest_database(directory: Path) -> str | None:
+    """The database a directory's manifest says it was loaded into, if any."""
+    try:
+        manifest = json.loads((directory / "manifest.json").read_text())
+    except (OSError, ValueError):
+        return None
+    owner = manifest.get("database_id") if isinstance(manifest, dict) else None
+    return owner if isinstance(owner, str) else None
+
+
+def _in_use(engine: Engine, directory: Path, data_root: Path) -> bool:
+    """Whether any assembly of this database keeps its files in ``directory``."""
+    prefix = directory.relative_to(data_root).as_posix() + "/"
+    with engine.connect() as connection:
+        count = connection.execute(
+            select(func.count())
+            .select_from(assembly)
+            .where(assembly.c.fasta_path.startswith(prefix, autoescape=True))
+        ).scalar_one()
+    return count > 0
 
 
 @contextmanager

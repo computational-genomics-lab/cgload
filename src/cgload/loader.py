@@ -218,6 +218,12 @@ def load_organism(
             region_count=len(regions),
             total_length=sum(region.length for region in regions),
         )
+        if load.replaces_interrupted is not None:
+            report.warnings.append(
+                f"{load.replaces_interrupted} was left by a load into this database "
+                f"that was interrupted before it committed; no assembly uses it, so "
+                f"this load replaces it (D-095)."
+            )
 
         for parse in parsed:
             report.warnings.extend(

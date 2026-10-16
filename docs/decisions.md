@@ -309,7 +309,7 @@ does not exist — a database that looks loaded and is not. The ordering here
 narrows the window to a single rename plus a single commit, and the residual
 failure is the harmless direction: a directory in place with no rows
 referencing it, which is detectable, removable, and never misreports data as
-present.
+present. (Since D-095 the next load into the same database replaces it.)
 
 ---
 
@@ -2546,3 +2546,28 @@ now spent building the answer in Python.
 
 **Cost:** two columns and an index, so databases made before this are refused
 with the message REQUIRED_COLUMNS gives.
+
+## D-095 — a directory left by an interrupted load does not block the next load
+
+**Found by the benchmark's kill trials, 16 October 2026.** A load renames its
+directory into place inside the open transaction and then commits (D-019's
+ordering). One trial in ten on a small genome was killed between the two. The
+database was empty, as designed, but the directory stayed, and the repeated
+load was refused: "already exists. Use a different assembly name, or --force
+to replace it." D-019 called this the harmless direction, and it is harmless
+to the data, but a user who reruns a killed load gets a refusal that names
+neither the cause nor the fact that nothing uses the directory.
+
+**Decided:** `init` gives each database an identity, a UUID in
+`vocabulary_meta.database_id`, and every load records it in the directory's
+`manifest.json`. When a load finds its directory already there, it replaces
+it, as `--force` would, only if both hold: the manifest names this database,
+and no assembly row of this database keeps its files in that directory. Then
+no committed load of this database put it there, and no other database claims
+it. The load says what it replaced. A directory whose manifest names another
+database, or none, still stops the load, and the refusal says when it is
+another database's: two databases may share a data directory, and replacing
+another database's assembly would break it.
+
+**Cost:** one column, so databases made before this are refused with the
+message REQUIRED_COLUMNS gives.

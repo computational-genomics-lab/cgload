@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass
 
 from sqlalchemy import Engine, insert, inspect, select
@@ -36,6 +37,7 @@ REQUIRED_COLUMNS: tuple[tuple[str, str], ...] = (
     ("assembly", "data_root"),
     ("sequence_region", "circular"),
     ("feature", "bin"),
+    ("vocabulary_meta", "database_id"),
 )
 
 
@@ -77,6 +79,7 @@ def create_schema(engine: Engine, *, force: bool = False) -> InitResult:
                 vocabulary_meta_id=1,
                 version=vocab.VOCABULARY_VERSION,
                 content_hash=vocab.content_hash(),
+                database_id=str(uuid.uuid4()),
             )
         )
 
