@@ -192,6 +192,16 @@ def test_report_names_every_change(zeam_mp186):
     assert "recomputed from children" in text
 
 
+def test_a_refusal_without_repair_does_not_call_violations_unrepairable(zeam_mp186):
+    """Before, a plain load said the violations 'could not be repaired', although
+    no repair had been asked for."""
+    _features, repairs, remaining = apply_policy(zeam_mp186, repair=False)
+    text = format_report(repairs, remaining, attempted=False)
+    assert remaining
+    assert "could not be repaired" not in text
+    assert f"{len(remaining)} envelope violation(s):" in text
+
+
 def test_clean_input_needs_no_policy():
     features = [
         feature("gene-ok", "gene", 100, 900),

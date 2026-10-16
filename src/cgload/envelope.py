@@ -296,7 +296,11 @@ def apply_policy(
     return repaired, repairs, remaining
 
 
-def format_report(repairs: Iterable[Repair], remaining: Iterable[Violation]) -> str:
+def format_report(
+    repairs: Iterable[Repair], remaining: Iterable[Violation], *, attempted: bool = True
+) -> str:
+    """The repairs made and the violations left. ``attempted=False`` when no
+    repair was asked for, so the violations are not described as unrepairable."""
     lines: list[str] = []
     repairs = list(repairs)
     remaining = list(remaining)
@@ -304,6 +308,9 @@ def format_report(repairs: Iterable[Repair], remaining: Iterable[Violation]) -> 
         lines.append(f"{len(repairs)} envelope(s) recomputed from their children:")
         lines.extend(f"    {repair.describe()}" for repair in repairs)
     if remaining:
-        lines.append(f"{len(remaining)} envelope violation(s) could not be repaired:")
+        if attempted:
+            lines.append(f"{len(remaining)} envelope violation(s) could not be repaired:")
+        else:
+            lines.append(f"{len(remaining)} envelope violation(s):")
         lines.extend(f"    {violation.describe()}" for violation in remaining)
     return "\n".join(lines)

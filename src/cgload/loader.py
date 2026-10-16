@@ -572,7 +572,8 @@ def _parse(annotation: AnnotationFile, *, repair_envelopes: bool = False) -> Par
             )
         raise LoadError(
             f"{annotation.path.name}: {' and '.join(parts)}, so at least one "
-            f"coordinate in each case is wrong.\n{format_report([], remaining)}\n"
+            f"coordinate in each case is wrong.\n"
+            f"{format_report([], remaining, attempted=repair_envelopes)}\n"
             f"{advice}"
         )
     normalised.features = kept
