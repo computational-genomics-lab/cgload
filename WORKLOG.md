@@ -164,6 +164,89 @@ How the work lands, decided 15 October: no other branches and no pull
 requests. When the fixes are done and the server run passes, the commits go
 straight onto `main` in one push. Then the paper.
 
+## Checkpoint B2 rerun, 15 October 2026
+
+Run on the server with the bundle of `main` (43 commits). Aditya reported that
+every step passed and pushed `main`; the log was not sent back, so the numbers
+of that run are not recorded here. The commits were then re-authored (author
+Aditya Upadhyay, committer Claude, same trees and dates; GitHub's `main` ends
+at `119dbad`), because they had been made under the account owner's name.
+
+## Phase 3: the benchmark protocol and its scripts, 16 October 2026
+
+`benchmark/PROTOCOL.md` fixes the questions, genomes, software, hardware,
+definitions, procedures, failure criteria and analysis before any run.
+`benchmark/run.sh` runs all of it and resumes after a stop. The scripts:
+
+| Script | Does |
+|---|---|
+| `truth.py`, `gffmodel.py` | the reference count: what a GFF3 file holds, standard library only, no loader code |
+| `compare.py`, `compare_txdb.py` | a loader's store against the reference count: kept, changed, lost; declared, announced, silent |
+| `run_cgload.py` | Q1 and Q2: load, refuse-then-repair, verify, sizes, export round trip |
+| `run_compare.py`, `run_gffutils.py`, `run_txdb.R`, `run_chado.py` | Q3: gffutils (default and create_unique), txdbmaker, python-chado into Chado 1.31 |
+| `faults.py` | Q4: 19 database and data-directory faults, 8 parser faults, each with its expected outcome |
+| `kills.py` | Q5: loads killed at seeded random moments |
+| `query_timing.py`, `gffutils_query.py` | Q6: four tasks, four tools, command and library views |
+| `agreement.py` | Q7: cgload's checks against the survey's rows |
+| `case_study.py`, `jbrowse/render.sh` | Q8: a lab genome with eggNOG and InterProScan; a JBrowse 2 drawing of cgload's files |
+| `summarise.py` | the paper's tables, `headline.json` |
+
+Writing and testing these found five problems in cgload, each fixed with tests
+before the protocol was tagged:
+
+| Commit subject | What it fixes |
+|---|---|
+| verify: count the file's Parent statements independently (D-092) | the parent-edge tier took the file's parents from the parser's own record; a dropped `Parent` passed |
+| load: do not call violations unrepairable when no repair was asked for | the plain-load refusal said "could not be repaired" |
+| verify: count rows as well as features (D-093) | a dropped row of a multi-row feature passed every tier |
+| query: read only the rows a gene or region needs (D-094) | a gene took 3.7 s on PostgreSQL and a 1 Mb window 1.8 s on 120,018 features; now 0.08 s and 0.30 s |
+| load: replace a directory an interrupted load left behind (D-095) | a load killed between putting its directory in place and committing (1 kill trial in 10) left a directory that made the repeated load fail |
+
+Measured here, on synthetic genomes made by `benchmark/tests/make_synthetic.py`
+(they carry every hard case of the protocol) and on the real-data fixtures,
+not on real genomes:
+
+- All 27 faults behave as `faults.py` expects them to.
+- A killed cgload load left either nothing, after which the repeated load
+  succeeded, or, when the kill came after the commit, the whole genome,
+  passing `verify`. Before D-095, one kill in ten landed between the rename
+  and the commit and the repeated load was refused. A killed `--force` reload left the earlier load intact and
+  passing `verify` in every trial. A killed load leaves its staging copy of the
+  FASTA under `<data-dir>/.staging/`; now in known limitations.
+- A killed gffutils load left no file, an empty file, or every record; once,
+  every record in a file gffutils could not open. python-chado commits once,
+  at the end of `load_gff`, so a killed Chado load left nothing in every trial.
+- python-chado 2.3.9 loads about 88 rows a second (160,019 rows in 30 min),
+  so human (4.9 million rows) should take about 15 hours. It needs SQLAlchemy
+  1.4 and Biopython 1.81, hence its own environment. Chado 1.31's schema loads
+  on PostgreSQL 16 with 9 errors, all in interval-overlap helper functions that
+  use the `box @ box` operator PostgreSQL no longer has; GMOD's Docker image
+  gets the same.
+- txdbmaker ran here as GenomicFeatures 1.54.3 under R 4.3.3 from Ubuntu
+  (`makeTxDbFromGFF` lived there until Bioconductor 3.19; Ubuntu does not
+  package txdbmaker). On both synthetic genomes and six real fixtures the
+  comparison paired every transcript. It drops a trans-spliced transcript
+  whose exons it cannot order and names it; keeps only the first CDS in an
+  exon that has two (a frameshift) and names it; and drops exons that have no
+  Parent without a word (the maize chloroplast fixture).
+- gffutils 0.14's own command, `gffutils-cli`, cannot do the timing tasks: its
+  `region` raises NotImplementedError and its `children` prints grandchildren
+  twice. The timing calls gffutils' documented API instead.
+- A cgload command takes about 0.5 s on a small genome, 0.38 s of it importing
+  Python packages (SQLAlchemy alone 0.25 s); the gffutils script about 0.15 s.
+  Called from Python, gffutils answered faster than cgload on these small
+  genomes (a gene in 1 ms against 4 to 5 ms; a 1 Mb window in 88 ms against
+  175 ms on SQLite). Real genomes are Phase 7.
+- JBrowse 2's command-line export (`@jbrowse/img` 3.7.0) draws cgload's
+  bgzipped annotation through cgload's own .tbi index; two of its dependencies
+  needed pinning (`jbrowse/package.json`).
+- `run.sh` ran start to finish on the two synthetic genomes, every step
+  passing (the case study was not set).
+
+Expected on the lab server: about 1.5 to 2 days, most of it Chado (27.1
+million rows over the 30 genomes; human alone about 15 hours), and about
+200 GB of disk.
+
 ## Open
 
 - Memory: about 7 GB per million features plus 200 MB, from two loads made
@@ -174,8 +257,9 @@ straight onto `main` in one push. Then the paper.
   the Phase 4 loads of those three need it, and the paper must say so.
 - `paper/paper.md` still has the old maize numbers (36 problems in seven
   genes). The rest of the docs now use the census.
-- Human and *Arabidopsis* have not yet loaded with the fixes; the next server
-  run tests D-088 to D-091 on them.
+- The case-study genome (Q8) is not named yet.
+- `run_txdb.R` has run with GenomicFeatures 1.54.3 only; the server run uses
+  txdbmaker from conda.
 - Novelty: check Ensembl's datachecks and InterMine's acceptance tests before
   the paper claims that no other loader recounts against the source.
 - `paper/paper.md` says the name cgload is taken on PyPI. PyPI has no project

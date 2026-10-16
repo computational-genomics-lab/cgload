@@ -113,9 +113,11 @@ sequence in it.
   genomic bin that holds it (the scheme of the SAM and CSI indexes, D-094), and
   a region query reads the rows of the few dozen bins that overlap the region.
   A region covering more than about 500 of those bins reads the whole
-  sequence's rows instead. A killed or failed load leaves its staging directory
-  under `<data-dir>/.staging`; it belongs to no assembly and can be deleted when
-  no load is running.
+  sequence's rows instead.
+- **An interrupted load leaves its staging directory behind.** A load killed
+  part-way changes nothing in the database or the stored assemblies, but the
+  copy of the FASTA it was making stays under `<data-dir>/.staging/`. It
+  belongs to no assembly and can be deleted when no load is running.
 - **A Pfam domain has two spellings.** eggNOG-mapper reports it by name
   (`Pkinase`), InterProScan by accession (`PF00069`). `query --term` matches
   the string given, and cgload holds no table that maps one to the other.
