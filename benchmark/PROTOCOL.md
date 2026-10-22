@@ -269,4 +269,33 @@ features.
 
 ## 12. Changes after the first run
 
-None yet.
+**First run, 21 October 2026, at `benchmark-protocol-v1`: void.** Two copies of
+`run.sh` were started in one folder, six minutes apart. They downloaded,
+loaded and wrote the result tables over each other, and the second could not
+start PostgreSQL, so it marked Chado "not run" for every genome and Chado
+never ran. No number from it is reported as a result. What it showed is
+reported, because it is what the benchmark is for, and was fixed with tests
+before the second run (tag `benchmark-run-2`):
+
+* cgload refused six of the 30 RefSeq files over valid content: *Xenopus*
+  (`precursor_RNA`, D-097), rice and grape (`pseudogenic_tRNA`, D-097),
+  *Drosophila* (a trans-spliced gene's rows overlapping across strands,
+  D-098), *S. pombe* (CDS rows reading a base twice over a low-quality
+  sequence region, D-099) and *Ustilago* (an exon feature written on two rows,
+  D-100).
+* cgload failed with a traceback on *Arabidopsis* on PostgreSQL only: an
+  attribute value too long for a b-tree index (D-101).
+* The export round trip changed features silently: a multi-row feature kept
+  only its first row's attributes, and a trans-spliced gene's rows came back
+  on strand `?` (D-096).
+* `verify --against` failed on five fungi over names NCBI writes differently
+  in its GFF3 and GenBank files (D-102).
+* A killed load could leave a directory that blocked the repeated load
+  (D-095; found on the test genomes before the run).
+* The scripts: `run.sh` now refuses a second copy in the same folder and
+  stops if PostgreSQL does not start; Chado's kill trials run on
+  *F. graminearum* as section 2 says (they had taken *A. thaliana*);
+  `faults.py` and `query_timing.py` no longer crash on a genome whose load
+  failed; every runner reads the assembly ID from the database.
+
+Every measurement is repeated on every genome in the second run.

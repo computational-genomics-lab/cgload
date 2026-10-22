@@ -247,6 +247,32 @@ Expected on the lab server: about 1.5 to 2 days, most of it Chado (27.1
 million rows over the 30 genomes; human alone about 15 hours), and about
 200 GB of disk.
 
+## Phase 4, first attempt: void, 21 October 2026
+
+The run at `benchmark-protocol-v1` came back with four steps failed. Two
+copies of `run.sh` had been started six minutes apart in one folder, so every
+table, database and download was written twice at once; nothing from it is a
+result (PROTOCOL.md, section 12). `diagnose.sh` collected the step logs and
+the input lines behind each refusal. What they showed, each fixed with tests:
+
+| Found | Fix |
+|---|---|
+| a multi-row feature exported with its first row's attributes (3,249 features in human, mostly `cDNA_match`), and trans-spliced rows exported on `?` | D-096 |
+| *Xenopus*: 199 `precursor_RNA` with their exons and miRNAs refused; rice, grape: `pseudogenic_tRNA` exons refused | D-097 |
+| *Drosophila*: mod(mdg4), five gene rows alternating strands, two overlapping by 149 bases | D-098 |
+| *S. pombe*: 18 CDS reading a base twice, `exception=low-quality sequence region` | D-099 |
+| *Ustilago*: a tRNA gene's `gbkey=exon` feature on two rows sharing `id-UMAG_16066` | D-100 |
+| *Arabidopsis*, PostgreSQL only: an attribute value too long for the (key, value) b-tree index; a traceback | D-101 |
+| `verify --against` failing on five fungi over NCBI's two names for one feature | D-102 |
+| `run.sh`: no lock; carried on without PostgreSQL; Chado kills on the wrong genome; faults and timing crashing on a failed load; assembly ID assumed to be 1 | benchmark commit |
+
+Real results it showed in passing, to be measured again: txdbmaker cannot read
+maize, *Arabidopsis* or soybean (one row written backwards), and stops with
+"exons linked to transcripts not found" on rice, tomato and grape, whose
+trans-spliced plastid genes it drops; it drops 54 human exons whose parents it
+does not import, and holds no transcript for 10,792 *Xenopus* exon and CDS
+rows. gffutils' default merge strategy refuses all 30 files.
+
 ## Open
 
 - Memory: about 7 GB per million features plus 200 MB, from two loads made
