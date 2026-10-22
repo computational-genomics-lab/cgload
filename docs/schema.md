@@ -123,7 +123,8 @@ segments: `ID=cds-XP_012345.1` appears once per CDS segment, which is to say on
 essentially every RefSeq gene. Those are stored as N rows sharing a
 `source_id`, with `segment_index` ascending in **coordinate** order and strand
 held separately — not file order, which some pipelines emit 3'→5' on the minus
-strand.
+strand. Each row keeps the strand it was written with, and a row whose
+attributes differ from the first row's keeps its own (D-096).
 
 Two counts follow, and conflating them is the most likely way to break the
 headline feature:

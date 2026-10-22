@@ -941,7 +941,9 @@ def _insert_features(
                     "feature_type": item.feature_type,
                     "start": segment.start,
                     "end": segment.end,
-                    "strand": item.strand,
+                    # Each row's own strand: a trans-spliced feature is `?` as a
+                    # whole, but its rows say which strand each lies on (D-096).
+                    "strand": getattr(segment, "strand", None) or item.strand,
                     "phase": segment.phase,
                     "score": segment.score,
                     "segment_index": segment.segment_index,
@@ -1064,17 +1066,29 @@ def _insert_attributes(
     ``explain`` reads by the segment count for no gain. An anonymous feature's
     attributes are stored too; they were dropped for the same reason its parent
     was (AUDIT-2).
+
+    A later row whose attributes differ from the first row's keeps its own,
+    against its own segment (D-096): an alignment's rows each have a `Target`
+    and a `Gap`, and a partial CDS has `start_range` on one row only. Readers
+    that want the feature's attributes read the first segment's, as before.
     """
     stored = _stored_rows(connection, assembly_id, file_id, parse)
 
     rows = []
-    for item in parse.normalised.features:
-        feature_id = _row_id(stored, parse, item.segments[0])
-        for key, values in item.attributes.items():
+
+    def add(feature_id: int, attributes: dict[str, list[str]]) -> None:
+        for key, values in attributes.items():
             if key in SKIPPED_ATTRIBUTES:
                 continue
             for value in values:
                 rows.append({"feature_id": feature_id, "key": key, "value": value})
+
+    for item in parse.normalised.features:
+        add(_row_id(stored, parse, item.segments[0]), item.attributes)
+        for segment in item.segments[1:]:
+            own = getattr(segment, "attributes", None)
+            if own is not None:
+                add(_row_id(stored, parse, segment), own)
 
     if rows:
         connection.execute(insert(feature_attribute), rows)

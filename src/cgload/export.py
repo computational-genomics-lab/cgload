@@ -102,11 +102,15 @@ def _format_score(score: float | None) -> str:
     return f"{score:g}"
 
 
-def _attribute_column(feature, *, include_linkage: bool) -> str:
+def _attribute_column(feature, *, include_linkage: bool,
+                      attributes: dict[str, list[str]] | None = None) -> str:
     """Build column 9, reserved keys first, then the rest alphabetically.
 
     Deterministic ordering matters: exporting twice must give the same bytes, or
     a diff between two exports shows spurious changes and nobody trusts it.
+
+    ``attributes`` replaces the feature's own for a row that was stored with
+    attributes of its own (D-096).
     """
     pairs: list[tuple[str, list[str]]] = []
     if feature.source_id is not None:
@@ -114,9 +118,10 @@ def _attribute_column(feature, *, include_linkage: bool) -> str:
     if feature.parent_source_id is not None:
         pairs.append(("Parent", [feature.parent_source_id]))
 
+    source = feature.attributes if attributes is None else attributes
     extra = {
         key: values
-        for key, values in feature.attributes.items()
+        for key, values in source.items()
         if key not in {"ID", "Parent"}
     }
     for key in _RESERVED_ORDER:
@@ -154,11 +159,21 @@ def _row(feature, segment, attributes: str) -> str:
             str(segment.start),
             str(segment.end),
             _format_score(segment.score),
-            feature.strand,
+            # The row's own strand where it has one: a trans-spliced feature is
+            # `?` as a whole, and its rows say which strand each is on (D-096).
+            getattr(segment, "strand", None) or feature.strand,
             "." if segment.phase is None else str(segment.phase),
             attributes,
         )
     )
+
+
+def _row_attributes(feature, segment, shared: str, *, include_linkage: bool) -> str:
+    """Column 9 for one row: the feature's, unless the row has its own (D-096)."""
+    own = getattr(segment, "attributes", None)
+    if own is None:
+        return shared
+    return _attribute_column(feature, include_linkage=include_linkage, attributes=own)
 
 
 def _header(version: str, vocabulary_hash: str) -> list[str]:
@@ -226,7 +241,9 @@ def write_indexed_gff3(
                     attributes[number] = _attribute_column(
                         feature, include_linkage=include_linkage
                     )
-                line = _row(feature, feature.segments[position], attributes[number]) + "\n"
+                segment = feature.segments[position]
+                line = _row(feature, segment, _row_attributes(
+                    feature, segment, attributes[number], include_linkage=include_linkage)) + "\n"
                 begin = writer.tell()
                 writer.write(line.encode())
                 if indexable:
@@ -298,7 +315,8 @@ def export_gff3(
         attributes = _attribute_column(feature, include_linkage=include_linkage)
         for segment in sorted(feature.segments, key=lambda s: s.start):
             rows += 1
-            lines.append(_row(feature, segment, attributes))
+            lines.append(_row(feature, segment, _row_attributes(
+                feature, segment, attributes, include_linkage=include_linkage)))
 
     text = "\n".join(lines) + "\n"
     summary = ExportSummary(

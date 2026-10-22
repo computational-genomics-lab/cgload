@@ -32,6 +32,10 @@ The refusal says so. Load into a new database made with `cgload init`.
 
 ### Fixed
 
+- A feature written on several rows lost what differed between its rows: each
+  row of a `cDNA_match` alignment was exported with the first row's `Target`
+  and `Gap`, a partial CDS lost `end_range`, and a trans-spliced gene's rows
+  all came back on strand `?`. Each row now keeps its own (D-096).
 - A load killed after putting its data directory in place but before
   committing left a directory that made the repeated load fail. The next load
   into the same database now recognises such a directory by the database ID in

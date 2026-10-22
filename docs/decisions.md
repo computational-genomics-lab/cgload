@@ -553,7 +553,8 @@ six-segment CDS carries the same `protein_id`, `locus_tag` and `product` six
 times. Storing them per segment would multiply `feature_attribute`, which
 `explain` reads on every call, by the segment count for no retrievable
 information. `ID` and `Parent` are skipped entirely: both are already modelled as
-columns, and a second copy could disagree with the first.
+columns, and a second copy could disagree with the first. (D-096: a later row
+whose attributes differ from the first row's keeps its own.)
 
 ---
 
@@ -2571,3 +2572,26 @@ another database's assembly would break it.
 
 **Cost:** one column, so databases made before this are refused with the
 message REQUIRED_COLUMNS gives.
+
+## D-096 — a feature written on several rows keeps each row's attributes and strand
+
+**Found by the benchmark's round trip, 21 October 2026.** Exporting each
+RefSeq genome and comparing it with its input, feature by feature, changed
+features no check had reported: 3,249 in human, 7,729 in zebrafish, 976 in
+maize. Two causes. The rows of one feature were stored with the first row's
+attributes only (D-030), but some rows say something of their own: each row of
+a `cDNA_match` alignment has its own `Target` and `Gap`, and a partial CDS
+has `start_range` on its first row and `end_range` on its last. And the rows
+of a trans-spliced gene that lies on both strands were all written back as `?`
+(D-068), losing which strand each piece is on.
+
+**Decided:** a row whose attributes differ from the first row's keeps its own,
+stored against its own segment; a row that repeats them, as RefSeq's CDS rows
+usually do, stores nothing more, so D-030's reason still holds. Each row keeps
+the strand it was written with. The feature as a whole still reads `?` when its
+rows lie on both strands, in `query` and `explain`; export, and the indexed
+annotation in the data directory, write each row as it was. Readers of a
+feature's attributes (functional matching, `explain`) read the first segment's,
+as before.
+
+**Cost:** none to the schema; databases loaded before this export the old way.

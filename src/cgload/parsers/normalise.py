@@ -74,6 +74,15 @@ class Segment:
     #: The source row wrote start > end (D-056). Carried through so envelope
     #: repair can recompute the extent from children; never silently swapped.
     inverted: bool = False
+    #: The row's own strand. Equal to the feature's, except in a trans-spliced
+    #: feature whose rows lie on both strands: the feature is then `?` and each
+    #: row keeps the strand it was written with (D-096).
+    strand: str | None = None
+    #: The row's own attributes, when they differ from the first row's (D-096):
+    #: an alignment's `Target` and `Gap`, a partial CDS's `start_range` and
+    #: `end_range`. None when the row repeats the first row's, as RefSeq's
+    #: CDS rows usually do.
+    attributes: dict[str, list[str]] | None = None
 
 
 @dataclass
@@ -216,6 +225,7 @@ def _group_row(
         phase=raw.phase,
         score=raw.score,
         inverted=getattr(raw, "inverted", False),
+        strand=raw.strand,
     )
 
     if identifier is None:
@@ -244,7 +254,17 @@ def _group_row(
             f"repeat is a duplicate rather than a discontinuous feature."
         )
     _assert_same_feature(existing, raw, identifier, first_line[identifier], profile)
+    own = _row_attributes(raw)
+    if own != existing.attributes:
+        segment.attributes = own
     existing.segments.append(segment)
+
+
+def _row_attributes(raw: RawFeature) -> dict[str, list[str]]:
+    """A row's attributes as a feature stores them: everything but cgload's own
+    linkage stamp, which says how the edge was computed, not what the file says."""
+    return {key: list(values) for key, values in raw.attributes.items()
+            if key != LINKAGE_ATTRIBUTE}
 
 
 def _new_feature(
@@ -269,11 +289,7 @@ def _new_feature(
         # Set by a tokenizer that computed the edge itself (D-032). None for the
         # GFF3 dialects, where the file states the parent.
         linkage_method=raw.first(LINKAGE_ATTRIBUTE),
-        attributes={
-            key: list(values)
-            for key, values in raw.attributes.items()
-            if key != LINKAGE_ATTRIBUTE
-        },
+        attributes=_row_attributes(raw),
     )
 
 

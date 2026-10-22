@@ -147,9 +147,11 @@ def _explain(connection, identifier: str, assembly_id: int | None) -> str | None
     lines.append(
         f"  organism    {where.genus} {where.species} / {where.strain} / {where.assembly}"
     )
+    strands = {s.strand for s in segments}
+    strand = strands.pop() if len(strands) == 1 else "?"
     lines.append(
         f"  location    {region}:{min(s.start for s in segments):,}-"
-        f"{max(s.end for s in segments):,} ({first.strand})"
+        f"{max(s.end for s in segments):,} ({strand})"
     )
     if len(segments) > 1:
         spans = ", ".join(f"{s.start:,}-{s.end:,}" for s in segments)

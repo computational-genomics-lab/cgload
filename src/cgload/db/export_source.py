@@ -39,6 +39,11 @@ class StoredSegment:
     phase: int | None
     score: float | None
     segment_index: int = 0
+    #: The row's own strand (D-096).
+    strand: str | None = None
+    #: The row's own attributes, when it was stored with attributes that differ
+    #: from the first row's (D-096); otherwise None.
+    attributes: dict[str, list[str]] | None = None
 
 
 @dataclass
@@ -201,6 +206,7 @@ def features_where(connection: Connection, condition) -> list[StoredFeature]:
     ordered: list[StoredFeature] = []
 
     for row in rows:
+        own = {key: list(values) for key, values in attributes.get(row.feature_id, {}).items()}
         segment = StoredSegment(
             line_number=row.feature_id,
             start=row.start,
@@ -208,6 +214,7 @@ def features_where(connection: Connection, condition) -> list[StoredFeature]:
             phase=row.phase,
             score=row.score,
             segment_index=row.segment_index,
+            strand=row.strand,
         )
         if row.source_id is not None and row.source_id in named:
             item = named[row.source_id]
@@ -215,8 +222,11 @@ def features_where(connection: Connection, condition) -> list[StoredFeature]:
             if row.segment_index == 0:
                 item.row_id = row.feature_id
                 item.parent_row_id = row.parent_id
-            for key, values in attributes.get(row.feature_id, {}).items():
-                item.attributes.setdefault(key, list(values))
+                if own:
+                    item.attributes = own
+            elif own:
+                # A later row stored with attributes of its own (D-096).
+                segment.attributes = own
             continue
 
         item = StoredFeature(
@@ -241,5 +251,9 @@ def features_where(connection: Connection, condition) -> list[StoredFeature]:
 
     for item in ordered:
         item.segments.sort(key=lambda segment: (segment.start, segment.end))
+        # The feature's strand: its rows' strand, or `?` when they lie on both
+        # strands, as a trans-spliced feature's do (D-068, D-096).
+        strands = {segment.strand for segment in item.segments}
+        item.strand = strands.pop() if len(strands) == 1 else "?"
     ordered.sort(key=lambda item: (item.seqid, item.start, item.end))
     return ordered
