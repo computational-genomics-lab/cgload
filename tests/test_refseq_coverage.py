@@ -87,3 +87,60 @@ def test_trans_spliced_rows_on_one_strand_still_may_not_overlap(tmp_path):
 def test_an_overlap_across_strands_without_the_qualifier_is_still_refused(tmp_path):
     with pytest.raises(NormaliseError, match="reappears with strand"):
         normalised(tmp_path, TRANS_SPLICED.format(strand="-", qualifier="note=x"))
+
+
+# D-099 -------------------------------------------------------------------
+
+POMBE = (
+    "chr1\tRefSeq\tgene\t101800\t103600\t.\t-\t.\tID=gene-pdc101\n"
+    "chr1\tRefSeq\tmRNA\t101800\t103600\t.\t-\t.\tID=rna-1;Parent=gene-pdc101\n"
+    "chr1\tRefSeq\tCDS\t101872\t103544\t.\t-\t0\tID=cds-1;Parent=rna-1;{exception}\n"
+    "chr1\tRefSeq\tCDS\t101836\t101872\t.\t-\t1\tID=cds-1;Parent=rna-1;{exception}\n"
+)
+
+
+def test_cds_rows_may_share_a_base_over_a_low_quality_sequence_region(tmp_path):
+    """*S. pombe* (GCF_000002945.2): 18 CDS read a base twice to step over an
+    error in the genome sequence, and NCBI says so in the `exception`."""
+    result = normalised(tmp_path, POMBE.format(
+        exception="exception=low-quality sequence region"))
+    assert len(by_id(result)["cds-1"].segments) == 2
+
+
+def test_the_same_overlap_without_an_explanation_is_still_refused(tmp_path):
+    with pytest.raises(NormaliseError, match="overlapping"):
+        normalised(tmp_path, POMBE.format(exception="note=x"))
+
+
+# D-100 -------------------------------------------------------------------
+
+USTILAGO = (
+    "chr1\tRefSeq\tgene\t272753\t272856\t.\t+\t.\tID=gene-U66;gene_biotype=tRNA\n"
+    "chr1\tRefSeq\ttRNA\t272753\t272856\t.\t+\t.\tID=rna-U66;Parent=gene-U66\n"
+    "chr1\tRefSeq\texon\t272753\t272788\t.\t+\t.\tID=exon-U66-1;Parent=rna-U66;gbkey=tRNA\n"
+    "chr1\tRefSeq\texon\t272821\t272856\t.\t+\t.\tID=exon-U66-2;Parent=rna-U66;gbkey=tRNA\n"
+    "chr1\tRefSeq\texon\t272753\t272788\t.\t+\t.\tID=id-U66;Parent=gene-U66;gbkey={first}\n"
+    "chr1\tRefSeq\texon\t{start}\t{end}\t.\t+\t.\tID=id-U66;Parent=gene-U66;gbkey={second}\n"
+)
+
+
+def test_a_genbank_exon_feature_on_two_rows_shares_its_id(tmp_path):
+    """*Ustilago maydis* (GCF_000328475.2): the exon feature of an
+    intron-containing tRNA gene, `gbkey=exon`, written as two rows sharing one
+    ID, as NCBI writes any feature with a join() location (D-049)."""
+    result = normalised(tmp_path, USTILAGO.format(first="exon", second="exon",
+                                                  start=272821, end=272856))
+    exon = by_id(result)["id-U66"]
+    assert [(s.start, s.end) for s in exon.segments] == [(272753, 272788), (272821, 272856)]
+
+
+def test_an_ordinary_exon_id_may_still_not_repeat(tmp_path):
+    with pytest.raises(NormaliseError, match="repeats on a exon row"):
+        normalised(tmp_path, USTILAGO.format(first="tRNA", second="tRNA",
+                                             start=272821, end=272856))
+
+
+def test_shared_exon_rows_must_still_not_overlap(tmp_path):
+    with pytest.raises(NormaliseError, match="overlapping"):
+        normalised(tmp_path, USTILAGO.format(first="exon", second="exon",
+                                             start=272780, end=272856))

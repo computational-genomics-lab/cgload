@@ -32,10 +32,19 @@ The refusal says so. Load into a new database made with `cgload init`.
 
 ### Fixed
 
-- Four RefSeq genomes of the benchmark's thirty were refused over valid
+- Six RefSeq genomes of the benchmark's thirty were refused over valid
   content: `precursor_RNA`, `pseudogenic_tRNA` and `pseudogenic_rRNA` now load
-  as transcripts (D-097), and the rows of a trans-spliced gene may overlap when
-  they lie on opposite strands (D-098).
+  as transcripts (D-097); the rows of a trans-spliced gene may overlap when
+  they lie on opposite strands (D-098); a CDS may read a base twice where its
+  `exception` says `low-quality sequence region` (D-099); and an exon feature
+  NCBI writes on several rows with `gbkey=exon` keeps its shared ID (D-100).
+- A load on PostgreSQL failed with a traceback on an attribute value longer
+  than about 2,700 bytes, as *Arabidopsis* has; the index on attribute values
+  is gone (D-101).
+- `verify --against` reported a loss for each feature type NCBI names
+  differently in its GFF3 and GenBank files, such as `snoRNA` for an `ncRNA`
+  record and `long_terminal_repeat` for a `repeat_region`; the tier now
+  compares feature families (D-102).
 - A feature written on several rows lost what differed between its rows: each
   row of a `cDNA_match` alignment was exported with the first row's `Target`
   and `Gap`, a partial CDS lost `end_range`, and a trans-spliced gene's rows

@@ -2629,3 +2629,67 @@ may not overlap (D-033).
 opposite strand may overlap it. The pieces come from different pre-mRNAs, so
 neither duplicates the other. An overlap on one strand, or across strands
 without the qualifier, is still refused.
+
+## D-099 — a CDS may read a base twice over a low-quality sequence region
+
+**Found by the benchmark's first run, 21 October 2026.** The *S. pombe*
+RefSeq file (GCF_000002945.2) was refused: 18 CDS are written with rows that
+overlap by one or two bases, for example `cds-NP_592796.4`, 101,872-103,544
+and 101,836-101,872. Every one carries `exception=low-quality sequence
+region`: the model reads a base twice to step over an error in the genome
+sequence, the way a programmed frameshift does (D-089).
+
+**Decided:** `Profile.overlap_exception_values` replaces the single value. The
+RefSeq and cgload profiles accept `ribosomal slippage` and `low-quality
+sequence region`; the GenBank profile accepts the second as
+`/exception="low-quality sequence region"`. Matched on the value, as before;
+any other overlap is still refused.
+
+## D-100 — a GenBank exon feature written on several rows shares its ID
+
+**Found by the benchmark's first run, 21 October 2026.** The *Ustilago maydis*
+RefSeq file (GCF_000328475.2) was refused at five tRNA genes with an intron.
+Beside the tRNA's own exons, NCBI writes the gene's GenBank `exon` feature,
+which has a join() location, as two rows sharing one ID, `ID=id-UMAG_16066;
+Parent=gene-UMAG_16066;gbkey=exon`, exactly as it writes a misc_feature
+(D-049). The RefSeq profile refuses any exon ID that repeats.
+
+**Decided:** `Profile.shared_id_marker`. In the RefSeq and cgload profiles,
+exon rows whose `gbkey` is `exon` may share an ID; they are then one feature
+held to D-014's conditions (same sequence, strand and parent, no overlap). An
+exon ID repeated on any other rows is still a duplicate and still refused.
+
+## D-101 — no index on attribute values
+
+**Found by the benchmark's first run, 21 October 2026.** The *Arabidopsis*
+RefSeq file loaded on SQLite and failed on PostgreSQL with a traceback: "index
+row size 3736 exceeds btree version 4 maximum 2704 for index
+ix_feature_attribute_key_value". One attribute value is longer than
+PostgreSQL can hold in a b-tree index entry. SQLite has no such limit, and
+MySQL cannot index a TEXT column without a prefix length at all.
+
+**Decided:** the index on (key, value) goes. No query looks attributes up by
+value; functional matching reads them through the (feature, key) index.
+
+**Cost:** none to the data. A database made before this keeps the index and can
+still fail on such a value; load into a new one.
+
+## D-102 — the cross-parser tier compares feature families, not names
+
+**Found by the benchmark's first run, 21 October 2026.** `verify --against`
+failed on five fungal RefSeq genomes. NCBI's GFF3 writes Sequence Ontology
+terms where its GenBank file writes INSDC keys, and for `ncRNA` and
+`repeat_region` the term follows a qualifier: yeast's 115 GenBank `ncRNA`
+records are 76 `snoRNA`, 22 `ncRNA`, 7 `antisense_RNA`, 6 `snRNA` and four
+single others in the GFF3, and its 384 `repeat_region` records are 384
+`long_terminal_repeat` rows. `transcript` is GenBank's `misc_RNA`,
+`origin_of_replication` its `rep_origin`, `mobile_genetic_element` its
+`mobile_element`, `regulatory_region` its `regulatory`. GenBank also has
+`assembly_gap` records, which the GFF3 leaves out. The tier compared names and
+reported each as a loss.
+
+**Decided:** `CROSS_FORMAT_FAMILIES` names each family by its GenBank key and
+counts it once on each side, and `assembly_gap` joins the structural types
+that only one format has. The measured families are listed as measured; the
+others follow the same INSDC-to-SO naming. A feature missing from one side
+still fails the tier.

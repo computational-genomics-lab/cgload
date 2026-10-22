@@ -246,7 +246,7 @@ def _group_row(
         return
 
     existing = by_id[identifier]
-    if raw.type in profile.unique_id_types:
+    if raw.type in profile.unique_id_types and not _marked_as_shared(existing, raw, profile):
         raise NormaliseError(
             f"line {raw.line_number}: ID {identifier!r} repeats on a {raw.type} row "
             f"(first seen at line {first_line[identifier]}). In the "
@@ -258,6 +258,16 @@ def _group_row(
     if own != existing.attributes:
         segment.attributes = own
     existing.segments.append(segment)
+
+
+def _marked_as_shared(existing: NormalisedFeature, raw: RawFeature, profile: Profile) -> bool:
+    """Both rows carry the profile's mark of a feature that shares its ID across
+    rows, such as RefSeq's `gbkey=exon` (D-100). Everything else D-014 asks of a
+    discontinuous feature is still checked."""
+    if profile.shared_id_marker is None:
+        return False
+    key, value = profile.shared_id_marker
+    return raw.first(key) == value and existing.attributes.get(key, [None])[0] == value
 
 
 def _row_attributes(raw: RawFeature) -> dict[str, list[str]]:
@@ -354,9 +364,10 @@ def _assert_same_feature(
     # error in every format.
     if profile.overlap_qualifier and raw.first(profile.overlap_qualifier) is not None:
         return
-    if profile.overlap_exception_value and any(
-        profile.overlap_exception_value in value.lower().replace("_", " ")
+    if any(
+        explanation in value.lower().replace("_", " ")
         for value in raw.all("exception")
+        for explanation in profile.overlap_exception_values
     ):
         return
 

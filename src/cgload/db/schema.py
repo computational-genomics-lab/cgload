@@ -281,7 +281,9 @@ feature_attribute = Table(
 )
 Index("ix_feature_attribute_feature_key", feature_attribute.c.feature_id,
       feature_attribute.c.key)
-Index("ix_feature_attribute_key_value", feature_attribute.c.key, feature_attribute.c.value)
+# No index on `value` (D-101). PostgreSQL cannot put a value of more than about
+# 2,700 bytes in a b-tree index and refuses the whole load; the *Arabidopsis*
+# RefSeq file has one. No query looks attributes up by value.
 
 
 # --------------------------------------------------------------------------

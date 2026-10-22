@@ -271,3 +271,38 @@ def test_every_tier_appears_in_the_report_including_skips():
     text = render(results)
     assert "PASS" in text
     assert "----" in text
+
+
+def test_one_feature_under_its_two_names_is_not_a_discrepancy(tmp_path):
+    """D-102. NCBI's GFF3 writes a Sequence Ontology term where its GenBank file
+    writes an INSDC key, and for `ncRNA` and `repeat_region` the term depends on
+    a qualifier. Measured on the benchmark's five fungi with organelle-free
+    differences: each family agrees once folded. A real loss still fails."""
+    from cgload.verify import compare_across_formats
+
+    gff = tmp_path / "a.gff3"
+    rows = ["##gff-version 3\n"]
+    for index, kind in enumerate(("gene", "pseudogene", "snoRNA", "snRNA", "ncRNA",
+                                  "transcript", "origin_of_replication",
+                                  "mobile_genetic_element", "long_terminal_repeat",
+                                  "repeat_region", "regulatory_region")):
+        rows.append(f"chr1\tRefSeq\t{kind}\t{10 * index + 1}\t{10 * index + 5}\t.\t+\t.\t"
+                    f"ID=f{index}\n")
+    gff.write_text("".join(rows))
+    keys = ("gene", "gene", "ncRNA", "ncRNA", "ncRNA", "misc_RNA", "rep_origin",
+            "mobile_element", "repeat_region", "repeat_region", "regulatory",
+            "assembly_gap")
+    genbank = tmp_path / "a.gbff"
+    genbank.write_text(
+        "LOCUS       chr1                     200 bp    DNA     linear   CON 01-JAN-2020\n"
+        "FEATURES             Location/Qualifiers\n"
+        "     source          1..200\n"
+        + "".join(f"     {key:<16}{10 * index + 1}..{10 * index + 5}\n"
+                  for index, key in enumerate(keys))
+        + "ORIGIN\n//\n")
+    assert compare_across_formats(gff, genbank).outcome is Outcome.PASS
+
+    gff.write_text("".join(row for row in rows if "\tsnRNA\t" not in row))
+    lost = compare_across_formats(gff, genbank)
+    assert lost.outcome is Outcome.FAIL
+    assert lost.mismatches == {"ncRNA": (2, 3)}

@@ -236,6 +236,73 @@ EXTERNAL_TYPE_EQUIVALENCE: dict[str, tuple[str, ...]] = {
 #: Retained under its original name; the mapping was never GenBank-specific.
 GENBANK_TYPE_EQUIVALENCE = EXTERNAL_TYPE_EQUIVALENCE
 
+#: One feature, two names (D-102). NCBI's GFF3 writes a Sequence Ontology term
+#: in column 3 where its GenBank file writes an INSDC feature key, and for some
+#: keys the term depends on a qualifier: an `ncRNA` record is a `snoRNA`,
+#: `snRNA`, `lnc_RNA` ... row according to its /ncRNA_class, and a
+#: `repeat_region` is a `long_terminal_repeat` row when its /rpt_type says so.
+#: Each family is named by its GenBank key and counted once on each side.
+#: Measured, on the benchmark's yeast, *Candida*, *Neurospora*, *Aspergillus*
+#: and *Cryptococcus* files: the ncRNA classes, `transcript`/`misc_RNA`,
+#: `origin_of_replication`/`rep_origin`, `mobile_genetic_element`/
+#: `mobile_element`, `long_terminal_repeat`/`repeat_region` and
+#: `regulatory_region`/`regulatory`, each agreeing exactly once folded. The rest
+#: follow the same INSDC-to-SO naming, written down so that a family of the same
+#: kind does not read as a loss.
+CROSS_FORMAT_FAMILIES: dict[str, tuple[frozenset[str], frozenset[str]]] = {
+    "gene": (frozenset({"gene", "pseudogene"}), frozenset({"gene"})),
+    "ncRNA": (
+        frozenset({
+            "ncRNA", "snoRNA", "snRNA", "lnc_RNA", "lncRNA", "antisense_RNA",
+            "RNase_MRP_RNA", "RNase_P_RNA", "SRP_RNA", "telomerase_RNA", "Y_RNA",
+            "vault_RNA", "scRNA", "scaRNA", "piRNA", "siRNA", "rasiRNA", "guide_RNA",
+            "ribozyme", "hammerhead_ribozyme", "miRNA",
+        }),
+        frozenset({"ncRNA"}),
+    ),
+    "misc_RNA": (frozenset({"transcript", "misc_RNA"}), frozenset({"misc_RNA"})),
+    "precursor_RNA": (frozenset({"primary_transcript", "precursor_RNA"}),
+                      frozenset({"precursor_RNA"})),
+    "rep_origin": (frozenset({"origin_of_replication", "rep_origin"}),
+                   frozenset({"rep_origin"})),
+    "mobile_element": (
+        frozenset({"mobile_genetic_element", "mobile_element", "transposable_element",
+                   "insertion_sequence", "retrotransposon"}),
+        frozenset({"mobile_element"}),
+    ),
+    "repeat_region": (
+        frozenset({"repeat_region", "long_terminal_repeat", "inverted_repeat",
+                   "direct_repeat", "tandem_repeat", "dispersed_repeat",
+                   "terminal_inverted_repeat"}),
+        frozenset({"repeat_region", "LTR"}),
+    ),
+    "regulatory": (
+        frozenset({"regulatory_region", "regulatory", "promoter", "enhancer",
+                   "silencer", "insulator", "TATA_box", "terminator",
+                   "transcriptional_cis_regulatory_region"}),
+        frozenset({"regulatory"}),
+    ),
+    "5'UTR": (frozenset({"five_prime_UTR", "5'UTR"}), frozenset({"5'UTR"})),
+    "3'UTR": (frozenset({"three_prime_UTR", "3'UTR"}), frozenset({"3'UTR"})),
+    "protein_bind": (frozenset({"protein_binding_site", "protein_bind"}),
+                     frozenset({"protein_bind"})),
+    "misc_recomb": (frozenset({"recombination_feature", "misc_recomb"}),
+                    frozenset({"misc_recomb"})),
+    "variation": (frozenset({"sequence_alteration", "variation"}), frozenset({"variation"})),
+    "misc_difference": (frozenset({"sequence_difference", "misc_difference"}),
+                        frozenset({"misc_difference"})),
+}
+
+
+def _fold(counts: Counter, side: int) -> Counter:
+    """Counts per family name; a type in no family keeps its own name."""
+    family_of = {name: family for family, members in CROSS_FORMAT_FAMILIES.items()
+                 for name in members[side]}
+    folded: Counter = Counter()
+    for feature_type, count in counts.items():
+        folded[family_of.get(feature_type, feature_type)] += count
+    return folded
+
 
 def compare_across_formats(gff_path: Path, genbank_path: Path) -> TierResult:
     """Count the same assembly from GFF3 and from GenBank and require agreement.
@@ -248,21 +315,16 @@ def compare_across_formats(gff_path: Path, genbank_path: Path) -> TierResult:
     Measured on GCF_000240135.3: gene 13,725 = 13,725; mRNA 13,315; CDS 13,312;
     tRNA 322; rRNA 88. Exact on every type.
     """
-    gff = count_source_naively(gff_path)
-    genbank = count_source_naively(genbank_path)
-
-    folded: Counter = Counter()
-    for target, sources in GENBANK_TYPE_EQUIVALENCE.items():
-        folded[target] = sum(gff.get(source, 0) for source in sources)
-    for feature_type, count in gff.items():
-        if not any(feature_type in sources for sources in GENBANK_TYPE_EQUIVALENCE.values()):
-            folded[feature_type] = count
+    folded = _fold(count_source_naively(gff_path), 0)
+    genbank = _fold(count_source_naively(genbank_path), 1)
 
     #: Types that exist in one format and not the other by construction, so
     #: their absence is not a loss. GFF3 states exons explicitly; GenBank
     #: implies them from the location expression. GFF3 has `region` rows;
-    #: GenBank has `source`, already excluded. `gap` is assembly metadata.
-    structural_only = {"exon", "region", "gap", "sequence_feature", "misc_feature"}
+    #: GenBank has `source`, already excluded. `gap` and `assembly_gap` are
+    #: assembly metadata, which NCBI's GFF3 leaves out (D-102).
+    structural_only = {"exon", "region", "gap", "assembly_gap", "sequence_feature",
+                       "misc_feature"}
 
     # Compare the UNION, with a missing type counted as zero.
     #

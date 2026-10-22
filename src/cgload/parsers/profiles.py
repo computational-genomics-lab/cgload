@@ -129,8 +129,15 @@ class Profile:
     #: /ribosomal_slippage as the value `exception=ribosomal slippage` on every
     #: row of the CDS. Matched on the value, because `exception` also carries
     #: trans-splicing, RNA editing and other annotations that explain nothing
-    #: about an overlap (D-089).
-    overlap_exception_value: str | None = None
+    #: about an overlap (D-089). `low-quality sequence region` is the other value
+    #: that explains one: the CDS reads a base twice to step over an error in
+    #: the genome sequence (D-099).
+    overlap_exception_values: tuple[str, ...] = ()
+    #: An attribute and value that let a row of a ``unique_id_types`` type share
+    #: its ID after all. NCBI writes a GenBank `exon` feature that has a join()
+    #: location -- `gbkey=exon` -- as rows sharing one ID, exactly as it writes a
+    #: misc_feature (D-049, D-100).
+    shared_id_marker: tuple[str, str] | None = None
     #: A qualifier whose presence permits the segments of one feature to sit on
     #: *different strands*. NCBI's `exception=trans-splicing` is the only known
     #: case: a trans-spliced gene is assembled from segments on opposite strands,
@@ -228,7 +235,13 @@ REFSEQ = Profile(
     overlap_qualifier=None,
     # A programmed frameshift: the two CDS rows share the base read twice. Human
     # RefSeq writes cds-NP_001165908.1 this way, sharing base 94,664,513 (D-089).
-    overlap_exception_value="ribosomal slippage",
+    # *S. pombe* writes 18 CDS whose rows overlap by one or two bases to step
+    # over errors in the genome sequence, flagged `low-quality sequence region`
+    # (D-099).
+    overlap_exception_values=("ribosomal slippage", "low-quality sequence region"),
+    # *Ustilago maydis* writes the exon features of its intron-containing tRNA
+    # genes, `ID=id-UMAG_16066;gbkey=exon`, as two rows sharing one ID (D-100).
+    shared_id_marker=("gbkey", "exon"),
     # RefSeq writes trans-spliced organellar genes as several rows sharing one ID
     # with differing strands, flagged `exception=trans-splicing` (D-068).
     strand_exception_qualifier="exception",
@@ -300,8 +313,11 @@ GENBANK = Profile(
     comment_extraction=None,
     # A programmed frameshift reads one base twice, so the segments of one CDS
     # legitimately overlap. Gated on the qualifier: without it, an overlap in a
-    # GenBank file is still an error (D-033).
+    # GenBank file is still an error (D-033). A CDS stepping over an error in
+    # the genome sequence reads a base twice too, and says so in
+    # /exception="low-quality sequence region" (D-099).
     overlap_qualifier="ribosomal_slippage",
+    overlap_exception_values=("low-quality sequence region",),
     # GenBank writes the same genes as one record with a join() across strands,
     # handled by the location parser rather than by segment merging.
     strand_exception_qualifier=None,
@@ -347,8 +363,10 @@ CGLOAD = Profile(
     permits_anonymous_rows=True,
     comment_extraction=None,
     overlap_qualifier="ribosomal_slippage",
-    # An export of a RefSeq load keeps `exception=ribosomal slippage` (D-089).
-    overlap_exception_value="ribosomal slippage",
+    # An export of a RefSeq load keeps the `exception` values that explain an
+    # overlap (D-089, D-099), and the `gbkey=exon` rows sharing an ID (D-100).
+    overlap_exception_values=("ribosomal slippage", "low-quality sequence region"),
+    shared_id_marker=("gbkey", "exon"),
     # False, even though every exported feature does carry a `Parent`. The export
     # writes the *recorded* linkage method per feature, and that stamp is the
     # truth: an export of a GenBank load has Parent attributes whose edges were

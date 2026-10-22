@@ -186,3 +186,23 @@ def test_query_on_postgresql(pg_url, tmp_path):
     nothing = query("--term", "GO:0005524")
     assert nothing.exit_code == 0
     assert "No functional annotation is loaded" in nothing.stderr
+
+
+def test_a_long_attribute_value_loads_on_postgresql(pg_url, tmp_path):
+    """D-101. PostgreSQL cannot put a value of more than about 2,700 bytes in a
+    b-tree index. The index on (key, value) refused the whole *Arabidopsis*
+    RefSeq load; nothing looked attributes up by value, so it went."""
+    config = _project(tmp_path)
+    gff = tmp_path / MYCMAY_GFF.name
+    lines = gff.read_text().splitlines(keepends=True)
+    first = next(i for i, line in enumerate(lines) if "\tgene\t" in line)
+    # Random, so that PostgreSQL's compression cannot shrink it under the limit.
+    rng = random.Random(3)
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    note = "".join(rng.choice(alphabet) for _ in range(8000))
+    lines[first] = lines[first].rstrip("\n") + ";Note=" + note + "\n"
+    gff.write_text("".join(lines))
+    assert _run("init", "--db-url", pg_url).exit_code == 0
+    loaded = _run("load", "--db-url", pg_url, "--config", str(config),
+                  "--data-dir", str(tmp_path / "data"))
+    assert loaded.exit_code == 0, loaded.output
