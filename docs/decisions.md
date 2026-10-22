@@ -2693,3 +2693,27 @@ counts it once on each side, and `assembly_gap` joins the structural types
 that only one format has. The measured families are listed as measured; the
 others follow the same INSDC-to-SO naming. A feature missing from one side
 still fails the tier.
+
+## D-103 — mRNA is not compared where GenBank states coding sequences without it
+
+**Found by the benchmark's first run, 21 October 2026.** After D-102, `verify
+--against` still failed on four fungi, each with more mRNAs in the GFF3 than in
+the GenBank file: yeast 25, *Neurospora* 28, *Aspergillus* 20, *Cryptococcus*
+13. These are the four of the six compared whose assemblies include a
+mitochondrion; *Candida* and *Fusarium* have none and agree. In yeast
+(GCF_000146045.2), 19 of the 25 lie on the mitochondrion, NC_001224.1: the
+GFF3 has 19 mRNA rows there, and the GenBank record states its coding
+sequences with no mRNA at all. One format states that layer and the other does
+not, so counting it on both sides compares nothing.
+
+**Decided:** on a record whose GenBank side states CDS but no mRNA, the GFF3's
+mRNAs are not compared, and the tier's report gives their number. A record is
+matched to a GFF3 sequence by its LOCUS name or by the accession.version on its
+VERSION line. mRNA is compared everywhere else, so a GFF3 that loses mRNAs on a
+record that has them still fails, and so does an mRNA the GFF3 places on a
+record with no coding sequence.
+
+**Open:** the other six yeast mRNAs, one each on NC_001136 and NC_001137 and
+two each on NC_001141 and NC_001147, nuclear chromosomes whose GenBank records
+do have mRNAs. Whether the other three fungi's extras are all mitochondrial is
+expected, not yet measured.

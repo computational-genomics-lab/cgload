@@ -187,7 +187,12 @@ def run(args) -> int:
         row["verify_exit"] = verify["exit_code"]
         row["verify_wall_s"] = verify["wall_s"]
         row["verify_peak_mb"] = verify["peak_rss_mb"]
-        found = bc.tiers(bc.text_of(steps, "verify"))
+        report = bc.text_of(steps, "verify")
+        # The whole report, not only each tier's verdict: a failing tier names
+        # the types and counts that disagree.
+        (args.results / "verify").mkdir(parents=True, exist_ok=True)
+        (args.results / "verify" / f"{args.accession}.{args.backend}.txt").write_text(report)
+        found = bc.tiers(report)
         for name in ("source count", "parent edges", "stored assembly", "cross-parser"):
             row["tier_" + bc.safe_name(name)] = found.get(name, "absent")
 

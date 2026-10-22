@@ -306,3 +306,75 @@ def test_one_feature_under_its_two_names_is_not_a_discrepancy(tmp_path):
     lost = compare_across_formats(gff, genbank)
     assert lost.outcome is Outcome.FAIL
     assert lost.mismatches == {"ncRNA": (2, 3)}
+
+
+ORGANELLE_GENBANK = (
+    "LOCUS       NC_000001                400 bp    DNA     linear   CON 01-JAN-2020\n"
+    "VERSION     NC_000001.1\n"
+    "FEATURES             Location/Qualifiers\n"
+    "     source          1..400\n"
+    "     gene            10..90\n"
+    "     mRNA            10..90\n"
+    "     CDS             20..80\n"
+    "ORIGIN\n//\n"
+    "LOCUS       NC_000002                400 bp    DNA     circular CON 01-JAN-2020\n"
+    "VERSION     NC_000002.1\n"
+    "FEATURES             Location/Qualifiers\n"
+    "     source          1..400\n"
+    '                     /organelle="mitochondrion"\n'
+    "     gene            10..90\n"
+    "     CDS             10..90\n"
+    "     gene            110..190\n"
+    "     CDS             110..190\n"
+    "     {third_key:<16}210..290\n"
+    "ORIGIN\n//\n"
+)
+
+
+def organelle_gff(*, nuclear_mrna: bool = True, third: str = "rRNA") -> str:
+    rows = ["##gff-version 3\n"]
+    if nuclear_mrna:
+        rows.append("NC_000001.1\tRefSeq\tmRNA\t10\t90\t.\t+\t.\tID=rna-1;Parent=gene-1\n")
+    rows += [
+        "NC_000001.1\tRefSeq\tgene\t10\t90\t.\t+\t.\tID=gene-1\n",
+        "NC_000001.1\tRefSeq\tCDS\t20\t80\t.\t+\t0\tID=cds-1;Parent=rna-1\n",
+        "NC_000002.1\tRefSeq\tgene\t10\t90\t.\t+\t.\tID=gene-2\n",
+        "NC_000002.1\tRefSeq\tmRNA\t10\t90\t.\t+\t.\tID=rna-2;Parent=gene-2\n",
+        "NC_000002.1\tRefSeq\tCDS\t10\t90\t.\t+\t0\tID=cds-2;Parent=rna-2\n",
+        "NC_000002.1\tRefSeq\tgene\t110\t190\t.\t+\t.\tID=gene-3\n",
+        "NC_000002.1\tRefSeq\tmRNA\t110\t190\t.\t+\t.\tID=rna-3;Parent=gene-3\n",
+        "NC_000002.1\tRefSeq\tCDS\t110\t190\t.\t+\t0\tID=cds-3;Parent=rna-3\n",
+        f"NC_000002.1\tRefSeq\t{third}\t210\t290\t.\t+\t.\tID=rna-4\n",
+    ]
+    return "".join(rows)
+
+
+def test_mrna_is_not_compared_where_genbank_states_cds_without_mrna(tmp_path):
+    """D-103. Yeast's mitochondrion has 19 mRNA rows in NCBI's GFF3 and no mRNA
+    record in its GenBank file, which states the CDS alone. That layer exists in
+    one format only there, so it is set aside, and the report says how much."""
+    genbank = tmp_path / "a.gbff"
+    genbank.write_text(ORGANELLE_GENBANK.format(third_key="rRNA"))
+    gff = tmp_path / "a.gff3"
+    gff.write_text(organelle_gff())
+    result = compare_across_formats(gff, genbank)
+    assert result.outcome is Outcome.PASS, result.mismatches
+    assert "2 GFF3 mRNA" in result.detail
+    assert result.expected["mRNA"] == result.actual["mRNA"] == 1
+
+
+def test_mrna_is_still_compared_everywhere_else(tmp_path):
+    """Losing the nuclear mRNA still fails, and so does an mRNA the GFF3 places
+    on a record whose GenBank side has no coding sequence to account for it."""
+    genbank = tmp_path / "a.gbff"
+    genbank.write_text(ORGANELLE_GENBANK.format(third_key="rRNA"))
+    gff = tmp_path / "a.gff3"
+    gff.write_text(organelle_gff(nuclear_mrna=False))
+    assert compare_across_formats(gff, genbank).mismatches == {"mRNA": (0, 1)}
+
+    genbank.write_text(ORGANELLE_GENBANK.replace("     CDS             10..90\n", "")
+                       .replace("     CDS             110..190\n", "")
+                       .format(third_key="rRNA"))
+    gff.write_text(organelle_gff().replace("\tCDS\t10\t90", "\tgap\t10\t90")
+                   .replace("\tCDS\t110\t190", "\tgap\t110\t190"))
+    assert compare_across_formats(gff, genbank).mismatches == {"mRNA": (3, 1)}

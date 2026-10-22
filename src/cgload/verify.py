@@ -304,6 +304,61 @@ def _fold(counts: Counter, side: int) -> Counter:
     return folded
 
 
+def _records_with_cds_and_no_mrna(genbank_path: Path) -> set[str]:
+    """The records of a GenBank file that state coding sequences but no mRNA.
+
+    Each such record is named twice, by its LOCUS name and by the
+    accession.version on its VERSION line, so that a GFF3 seqid matches
+    whichever of the two it uses. Reads feature keys the way the naive count
+    does, and nothing else.
+    """
+    found: set[str] = set()
+    names: list[str] = []
+    keys: set[str] = set()
+    in_features = False
+    with _open(genbank_path) as handle:
+        for line in handle:
+            if line.startswith("LOCUS"):
+                names, keys, in_features = line.split()[1:2], set(), False
+            elif line.startswith("VERSION"):
+                names += line.split()[1:2]
+            elif line.startswith("FEATURES"):
+                in_features = True
+            elif line.startswith("//"):
+                if "CDS" in keys and "mRNA" not in keys:
+                    found.update(names)
+                in_features = False
+            elif line.startswith(("ORIGIN", "CONTIG", "BASE COUNT")):
+                in_features = False
+            elif in_features:
+                key = _GB_FEATURE.match(line)
+                if key:
+                    keys.add(key.group(1))
+    return found
+
+
+def _gff_mrna_on(gff_path: Path, sequences: set[str]) -> int:
+    """The mRNA features a GFF3 file places on these sequences, counted as the
+    naive pass counts them: distinct IDs, a row with no ID singly."""
+    seen: set[str] = set()
+    anonymous = 0
+    with _open(gff_path) as handle:
+        for line in handle:
+            if line.startswith("##FASTA"):
+                break
+            if line.startswith("#") or "\tmRNA\t" not in line:
+                continue
+            columns = line.rstrip("\n").split("\t")
+            if len(columns) < 9 or columns[2] != "mRNA" or columns[0] not in sequences:
+                continue
+            found = _GFF_ID.search(columns[8])
+            if found:
+                seen.add(found.group(1))
+            else:
+                anonymous += 1
+    return len(seen) + anonymous
+
+
 def compare_across_formats(gff_path: Path, genbank_path: Path) -> TierResult:
     """Count the same assembly from GFF3 and from GenBank and require agreement.
 
@@ -317,6 +372,20 @@ def compare_across_formats(gff_path: Path, genbank_path: Path) -> TierResult:
     """
     folded = _fold(count_source_naively(gff_path), 0)
     genbank = _fold(count_source_naively(genbank_path), 1)
+
+    # Where a GenBank record states coding sequences but no mRNA, NCBI's GFF3
+    # gives those genes an mRNA anyway: yeast's mitochondrion, NC_001224.1, has
+    # 19 mRNA rows in the GFF3 and no mRNA record in the GenBank file. One
+    # format states that layer there and the other does not, so it is not
+    # compared there (D-103). Everywhere else mRNA is compared as before, and a
+    # GFF3 that loses mRNAs on a record that has them still fails.
+    set_aside = 0
+    no_mrna = _records_with_cds_and_no_mrna(genbank_path)
+    if no_mrna and folded.get("mRNA"):
+        set_aside = _gff_mrna_on(gff_path, no_mrna)
+        folded["mRNA"] -= set_aside
+    aside = (f"; {set_aside:,} GFF3 mRNA on records whose GenBank side states CDS "
+             f"but no mRNA not compared (D-103)" if set_aside else "")
 
     #: Types that exist in one format and not the other by construction, so
     #: their absence is not a loss. GFF3 states exons explicitly; GenBank
@@ -351,12 +420,12 @@ def compare_across_formats(gff_path: Path, genbank_path: Path) -> TierResult:
     if expected == actual:
         return TierResult(
             "cross-parser", Outcome.PASS,
-            f"GFF3 and GenBank agree on {len(shared)} feature types",
+            f"GFF3 and GenBank agree on {len(shared)} feature types{aside}",
             expected, actual,
         )
     return TierResult(
         "cross-parser", Outcome.FAIL,
-        "GFF3 and GenBank disagree; one parser has lost features",
+        f"GFF3 and GenBank disagree; one parser has lost features{aside}",
         expected, actual,
     )
 

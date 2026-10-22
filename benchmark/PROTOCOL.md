@@ -161,7 +161,8 @@ what is already there, so a stopped run resumes.
    first, then PostgreSQL: `cgload init` on a new database; `cgload load`; if
    refused, the reasons are kept, the database is checked to be still empty, and
    the load is repeated with `--repair-envelopes`; `cgload verify` (with
-   `--against` the GenBank file for the fungi); database and data-directory
+   `--against` the GenBank file for the fungi; each report is kept whole in
+   `results/verify/`); database and data-directory
    sizes; `cgload export` and the round-trip comparison. Wall time, CPU time and
    peak memory come from `measure.py`; the time limit per command is 6 hours.
 5. **Q4, faults** (`faults.py`), on copies of the SQLite load. Damage after a

@@ -264,6 +264,7 @@ the input lines behind each refusal. What they showed, each fixed with tests:
 | *Ustilago*: a tRNA gene's `gbkey=exon` feature on two rows sharing `id-UMAG_16066` | D-100 |
 | *Arabidopsis*, PostgreSQL only: an attribute value too long for the (key, value) b-tree index; a traceback | D-101 |
 | `verify --against` failing on five fungi over NCBI's two names for one feature | D-102 |
+| `verify --against`: 13 to 28 more mRNAs in the GFF3 on four fungi with a mitochondrion; in yeast 19 of 25 on NC_001224.1, whose GenBank record states CDS without mRNA | D-103 |
 | `run.sh`: no lock; carried on without PostgreSQL; Chado kills on the wrong genome; faults and timing crashing on a failed load; assembly ID assumed to be 1 | benchmark commit |
 
 Real results it showed in passing, to be measured again: txdbmaker cannot read
@@ -284,6 +285,13 @@ rows. gffutils' default merge strategy refuses all 30 files.
 - `paper/paper.md` still has the old maize numbers (36 problems in seven
   genes). The rest of the docs now use the census.
 - The case-study genome (Q8) is not named yet.
+- Yeast: six more nuclear mRNAs in the GFF3 than in the GenBank file, one each
+  on NC_001136 and NC_001137, two each on NC_001141 and NC_001147 (D-103,
+  open). The preflight lists them.
+- The medaka GFF3 fetched on 21 October (md5 db602118...) is not the survey's
+  (e4475fda..., 7 October). Either NCBI replaced the file or the void run's
+  two copies spoiled the download; the preflight's fresh download will say
+  which. If NCBI replaced it, the rerun must take the survey's own file.
 - `run_txdb.R` has run with GenomicFeatures 1.54.3 only; the server run uses
   txdbmaker from conda.
 - Novelty: check Ensembl's datachecks and InterMine's acceptance tests before
