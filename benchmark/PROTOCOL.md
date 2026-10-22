@@ -149,7 +149,8 @@ what is already there, so a stopped run resumes.
 
 1. **Environments and PostgreSQL.** The three conda environments; a PostgreSQL 16
    server under the run folder, reached by a Unix socket only, with default
-   settings.
+   settings. `run.sh` refuses to start while another copy runs in the same
+   folder, and stops if PostgreSQL does not start.
 2. **Inputs** (section 2) and the **reference count** of every file.
 3. **Q7, agreement** (`agreement.py`): every row the survey flagged, with its
    survey class (`survey/classify_hits.py`'s rule) and what cgload does with

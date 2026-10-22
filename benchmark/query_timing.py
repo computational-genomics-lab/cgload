@@ -114,33 +114,48 @@ class Tools:
             self.pg_url = (f"postgresql+psycopg://{user}@/cgb_{bc.safe_name(args.accession)}"
                            f"?{query}")
 
+        #: The one assembly in each cgload database, or None: a refused or
+        #: failed load leaves none, and its tool is then not timed.
+        self.assembly = {
+            "cgload-sqlite": self._assembly(f"sqlite:///{self.sqlite_db}")
+            if self.sqlite_db.exists() else None,
+            "cgload-postgres": self._assembly(self.pg_url) if self.pg_url else None,
+        }
+
     def available(self) -> dict[str, bool]:
         return {
-            "cgload-sqlite": self.sqlite_db.exists(),
-            "cgload-postgres": self.pg_url is not None and self._pg_has_assembly(),
+            "cgload-sqlite": self.assembly["cgload-sqlite"] is not None,
+            "cgload-postgres": self.assembly["cgload-postgres"] is not None,
             "gffutils": self.gffutils_db.exists(),
             "tabix": self.tabix_file is not None and shutil.which(self.tabix) is not None,
         }
 
-    def _pg_has_assembly(self) -> bool:
+    @staticmethod
+    def _assembly(url: str) -> int | None:
         try:
             from sqlalchemy import create_engine, text
 
-            with create_engine(self.pg_url).connect() as connection:
-                return connection.execute(text("SELECT count(*) FROM assembly")).scalar() > 0
+            with create_engine(url).connect() as connection:
+                ids = connection.execute(text("SELECT assembly_id FROM assembly")).scalars().all()
         except Exception:  # noqa: BLE001 - no database means no timing, which is recorded
-            return False
+            return None
+        return ids[0] if len(ids) == 1 else None
+
+    def assembly_arg(self, tool: str) -> str:
+        return str(self.assembly[tool])
 
     def command(self, tool: str, task: str, target, out: Path) -> list[str] | None:
         if tool.startswith("cgload"):
             if task == "gene":
-                return ["cgload", "query", "--assembly-id", "1", "--id", target, "--descendants"]
+                return ["cgload", "query", "--assembly-id", self.assembly_arg(tool), "--id",
+                        target, "--descendants"]
             if task == "region":
-                return ["cgload", "query", "--assembly-id", "1",
+                return ["cgload", "query", "--assembly-id", self.assembly_arg(tool),
                         "--region", f"{target[0]}:{target[1]}-{target[2]}"]
             if task == "count":
                 return ["cgload", "stats", "--by", "source"]
-            return ["cgload", "query", "--assembly-id", "1", "--region", target,
+            return ["cgload", "query", "--assembly-id", self.assembly_arg(tool), "--region",
+                    target,
                     "--format", "gff3", "--output", str(out)]
         if tool == "gffutils":
             script = [sys.executable, str(bc.HERE / "gffutils_query.py"), str(self.gffutils_db)]
@@ -274,10 +289,12 @@ def time_library(args, tools: Tools, targets: dict, table: Path) -> None:
 
             url = f"sqlite:///{tools.sqlite_db}" if tool == "cgload-sqlite" else tools.pg_url
             connection = create_engine(url).connect()
+            assembly = tools.assembly[tool]
             calls = {
-                "gene": lambda g, c=connection: cg.by_id(c, 1, g, descendants=True).features,
-                "region": lambda w, c=connection: cg.in_region(
-                    c, 1, f"{w[0]}:{w[1]}-{w[2]}").features,
+                "gene": lambda g, c=connection, a=assembly: cg.by_id(
+                    c, a, g, descendants=True).features,
+                "region": lambda w, c=connection, a=assembly: cg.in_region(
+                    c, a, f"{w[0]}:{w[1]}-{w[2]}").features,
                 "count": lambda _t, c=connection: _cgload_counts(c),
             }
         for task, items in (("gene", targets["genes"]), ("region", targets["windows"]),

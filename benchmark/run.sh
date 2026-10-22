@@ -36,7 +36,15 @@ JOBS=${JOBS:-8}
 R_JOBS=${R_JOBS:-3}
 CHADO_JOBS=${CHADO_JOBS:-6}
 SKIP=",${SKIP:-},"
-mkdir -p "$RESULTS" "$INPUTS" "$LOGS" "$WORK/tools"
+mkdir -p "$RESULTS" "$INPUTS" "$LOGS" "$WORK/tools" || { echo "cannot create $WORK"; exit 1; }
+# One run per folder. Two copies writing the same tables and databases spoil
+# both, so a second copy stops here. The lock goes when this script ends.
+exec 9> "$WORK/.run.lock"
+if ! flock -n 9; then
+  echo "Another run.sh is already running in $WORK. Let it finish, or stop it"
+  echo "(pkill -f benchmark/run.sh), before starting this one."
+  exit 1
+fi
 exec > >(tee -a "$LOGS/run.log") 2>&1
 
 say() { echo "$(date -u +%FT%TZ)  $*"; }
@@ -147,14 +155,20 @@ postgres() {
   if [ ! -d "$WORK/pgdata" ]; then
     initdb -D "$WORK/pgdata" -A trust -U "$(id -un)" >/dev/null || return 1
   fi
-  pg_ctl -D "$WORK/pgdata" -o "-p $port -k $sock -c listen_addresses=''" -l "$LOGS/postgres-server.log" -w start || return 1
+  # 9>&-: the server must not inherit the run's lock, or a server left running
+  # would block the next run.
+  pg_ctl -D "$WORK/pgdata" -o "-p $port -k $sock -c listen_addresses=''" -l "$LOGS/postgres-server.log" -w start 9>&- || return 1
   PG_STARTED=1
   BENCH_PG_CONNINFO="host=$sock port=$port user=$(id -un)"
   export BENCH_PG_CONNINFO
   echo "PostgreSQL $(postgres --version 2>/dev/null) at $BENCH_PG_CONNINFO"
 }
 step postgres postgres
-echo "postgres: ${BENCH_PG_CONNINFO:-none}" >> "$RESULTS/versions.txt"
+if [ -z "${BENCH_PG_CONNINFO:-}" ]; then
+  say "PostgreSQL did not start (see logs/postgres.log); half the benchmark needs it, so the run stops."
+  exit 1
+fi
+echo "postgres: $BENCH_PG_CONNINFO" >> "$RESULTS/versions.txt"
 
 # --- 3. inputs -----------------------------------------------------------------------
 SURVEY_DOWNLOADS=${SURVEY_DOWNLOADS:-$REPO/survey/downloads}
@@ -296,7 +310,11 @@ chado_inputs() {
 }
 step chado-inputs chado_inputs
 step chado compare chado "$CHADO_JOBS" "${CHADO_TIMEOUT:-86400}"
-step kills-chado kills chado 5 "$(role kills | head -n 1)"
+kills_chado() {  # F. graminearum only (PROTOCOL.md, section 2): Chado loads are slow
+  local acc
+  for acc in $(role kills_chado); do kills chado 5 "$acc"; done
+}
+step kills-chado kills_chado
 
 # --- 11. the case study ---------------------------------------------------------------
 if [ -n "${CASE_STUDY:-}" ]; then

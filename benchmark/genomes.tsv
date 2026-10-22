@@ -27,7 +27,7 @@ GCF_000146045.2	fungus	Saccharomyces cerevisiae S288C	Saccharomyces	cerevisiae	S
 GCF_000002945.2	fungus	Schizosaccharomyces pombe	Schizosaccharomyces	pombe	reference	ASM294v3	scale,compare,agreement,crossparser
 GCF_000182965.3	fungus	Candida albicans SC5314	Candida	albicans	SC5314	ASM18296v3	scale,compare,agreement,crossparser
 GCF_000182925.2	fungus	Neurospora crassa OR74A	Neurospora	crassa	OR74A	NC12	scale,compare,agreement,crossparser
-GCF_000240135.3	fungus	Fusarium graminearum PH-1	Fusarium	graminearum	PH-1	ASM24013v3	scale,compare,agreement,crossparser,timing,faults,kills
+GCF_000240135.3	fungus	Fusarium graminearum PH-1	Fusarium	graminearum	PH-1	ASM24013v3	scale,compare,agreement,crossparser,timing,faults,kills,kills_chado
 GCF_000149205.2	fungus	Aspergillus nidulans FGSC A4	Aspergillus	nidulans	FGSC A4	ASM14920v2	scale,compare,agreement,crossparser
 GCF_000149245.1	fungus	Cryptococcus neoformans H99	Cryptococcus	neoformans	H99	CNA3	scale,compare,agreement,crossparser
 GCF_000328475.2	fungus	Ustilago maydis 521	Ustilago	maydis	521	Umaydis521_2.0	scale,compare,agreement,crossparser

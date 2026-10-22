@@ -244,6 +244,10 @@ def chado_database(args, name: str):
     and drops it afterwards."""
     import psycopg
 
+    missing = [key for key in ("BENCH_PG_CONNINFO", "BENCH_CHADO_PYTHON", "BENCH_CHADO_SCHEMA",
+                               "BENCH_SO_OBO") if not os.environ.get(key)]
+    if missing:
+        raise SystemExit(f"cannot run Chado: {', '.join(missing)} not set")
     conninfo = os.environ["BENCH_PG_CONNINFO"]
     database = f"chado_kill_{bc.safe_name(args.accession)}_{name}"
     with psycopg.connect(conninfo + " dbname=postgres", autocommit=True) as connection:

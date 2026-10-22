@@ -91,14 +91,19 @@ def database_bytes(backend: str, sqlite_path: Path, conninfo: str, database: str
         return connection.execute("SELECT pg_database_size(current_database())").fetchone()[0]
 
 
-def assemblies_in(backend: str, sqlite_path: Path, conninfo: str, database: str) -> int:
+def assembly_ids(backend: str, sqlite_path: Path, conninfo: str, database: str) -> list[int]:
+    query = "SELECT assembly_id FROM assembly ORDER BY assembly_id"
     if backend == "sqlite":
         with sqlite3.connect(sqlite_path) as connection:
-            return connection.execute("SELECT count(*) FROM assembly").fetchone()[0]
+            return [row[0] for row in connection.execute(query)]
     import psycopg
 
     with psycopg.connect(conninfo + f" dbname={database}") as connection:
-        return connection.execute("SELECT count(*) FROM assembly").fetchone()[0]
+        return [row[0] for row in connection.execute(query)]
+
+
+def assemblies_in(backend: str, sqlite_path: Path, conninfo: str, database: str) -> int:
+    return len(assembly_ids(backend, sqlite_path, conninfo, database))
 
 
 def run(args) -> int:
@@ -170,7 +175,11 @@ def run(args) -> int:
         row["repairs"] = len(repairs)
         (work / "declared.txt").write_text("\n".join(repairs) + "\n")
 
-        verify_command = ["cgload", "verify", "--assembly-id", "1"]
+        # Not always 1: on PostgreSQL a refused load can use up an id, since a
+        # sequence does not roll back.
+        ids = assembly_ids(args.backend, sqlite_path, args.pg_conninfo, database)
+        assembly = str(ids[0]) if len(ids) == 1 else "1"
+        verify_command = ["cgload", "verify", "--assembly-id", assembly]
         gbff = inputs / "genomic.gbff"
         if gbff.exists():
             verify_command += ["--against", str(gbff)]
@@ -186,7 +195,7 @@ def run(args) -> int:
         row["data_bytes"] = bc.tree_bytes(data)
 
         exported = work / "export.gff3"
-        export = bc.measured("export", ["cgload", "export", "--assembly-id", "1",
+        export = bc.measured("export", ["cgload", "export", "--assembly-id", assembly,
                                         "--format", "gff3", "--output", str(exported)],
                              steps, timeout=TIMEOUT, env=env)
         row["export_exit"] = export["exit_code"]

@@ -400,10 +400,15 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     loaded = args.work / "cgload" / "sqlite" / args.accession
     source_db = loaded / "cgload.db"
+    scale = args.results / "cgload_scale.tsv"
+    repair = bc.done(scale, accession=args.accession, backend="sqlite",
+                     outcome="loaded_with_repair")
+    if not (repair or bc.done(scale, accession=args.accession, backend="sqlite",
+                              outcome="loaded")):
+        raise SystemExit(f"{args.accession}: the scale step did not load this genome on "
+                         "SQLite, so there is no load to damage; no faults were made")
     if not source_db.exists():
         raise SystemExit(f"{source_db} is missing: run run_cgload.py --backend sqlite first")
-    repair = bc.done(args.results / "cgload_scale.tsv", accession=args.accession,
-                     backend="sqlite", outcome="loaded_with_repair")
     os.environ.pop("CGLOAD_DB_URL", None)
     db_faults(args, source_db, loaded / "data", args.inputs / args.accession)
     parser_faults(args, repair)
