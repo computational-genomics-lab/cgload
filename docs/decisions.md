@@ -2595,3 +2595,37 @@ feature's attributes (functional matching, `explain`) read the first segment's,
 as before.
 
 **Cost:** none to the schema; databases loaded before this export the old way.
+
+## D-097 — `precursor_RNA`, `pseudogenic_tRNA` and `pseudogenic_rRNA` are transcripts
+
+**Found by the benchmark's first run, 21 October 2026.** Three RefSeq files of
+the 30 were refused because a transcript type was missing from the synonym
+table, so it loaded inert and its Tier A children were refused. *Xenopus
+tropicalis* (GCF_000004195.4) writes a microRNA precursor with INSDC's feature
+key, `precursor_RNA`, where newer NCBI files write `primary_transcript`; 398
+exons and miRNAs below such precursors were refused. Rice and grape
+mitochondria (GCF_034140825.1, GCF_030704535.1) write a `pseudogenic_tRNA` with
+an exon below it.
+
+**Decided:** `precursor_RNA` maps to `mRNA`, as `primary_transcript` does
+(D-062). `pseudogenic_tRNA` and `pseudogenic_rRNA` map to `mRNA`, as
+`pseudogenic_transcript` does: the Sequence Ontology makes each a kind of
+pseudogenic transcript. `source_type` keeps the file's term.
+
+**Cost:** the vocabulary hash changes, so databases made before this are refused
+with the message `assert_vocabulary_current` gives.
+
+## D-098 — the rows of a trans-spliced feature may overlap across strands
+
+**Found by the benchmark's first run, 21 October 2026.** The *Drosophila
+melanogaster* RefSeq file (GCF_000001215.4) was refused at line 370,106:
+`gene-Dmel_CG32491`, the trans-spliced gene mod(mdg4), is written as two rows,
+21,365,609-21,370,249 and 21,370,101-21,377,401, which overlap by 149 bases.
+D-068 already merged the rows of a trans-spliced gene that lie on opposite
+strands; the overlap check then refused them, because segments of one feature
+may not overlap (D-033).
+
+**Decided:** when a row carries the trans-splicing qualifier, a segment on the
+opposite strand may overlap it. The pieces come from different pre-mRNAs, so
+neither duplicates the other. An overlap on one strand, or across strands
+without the qualifier, is still refused.

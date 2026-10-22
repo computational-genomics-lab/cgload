@@ -32,6 +32,10 @@ The refusal says so. Load into a new database made with `cgload init`.
 
 ### Fixed
 
+- Four RefSeq genomes of the benchmark's thirty were refused over valid
+  content: `precursor_RNA`, `pseudogenic_tRNA` and `pseudogenic_rRNA` now load
+  as transcripts (D-097), and the rows of a trans-spliced gene may overlap when
+  they lie on opposite strands (D-098).
 - A feature written on several rows lost what differed between its rows: each
   row of a `cDNA_match` alignment was exported with the first row's `Target`
   and `Gap`, a partial CDS lost `end_range`, and a trans-spliced gene's rows

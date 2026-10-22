@@ -362,6 +362,12 @@ def _assert_same_feature(
 
     for segment in existing.segments:
         if raw.start <= segment.end and segment.start <= raw.end:
+            # D-098. The pieces of a trans-spliced feature come from different
+            # transcripts, so two on opposite strands may overlap without either
+            # duplicating the other: *Drosophila* mod(mdg4) is written as a gene
+            # row on each strand, overlapping by 149 bases.
+            if trans_spliced and segment.strand not in (None, raw.strand):
+                continue
             raise NormaliseError(
                 f"line {raw.line_number}: ID {identifier!r} has segment "
                 f"{raw.start}-{raw.end} overlapping {segment.start}-{segment.end} from "

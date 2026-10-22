@@ -70,6 +70,17 @@ SYNONYMS: dict[str, str] = {
     "3'UTR": "three_prime_UTR",
     "pseudogenic_transcript": "mRNA",
     "pseudogenic_exon": "exon",
+    # The Sequence Ontology's pseudogenic transcripts of RNA genes, each a kind of
+    # pseudogenic_transcript and mapped as that one is. RefSeq's rice and grape
+    # mitochondria write a `pseudogenic_tRNA` with an exon below it, and the exon
+    # was refused because its parent loaded inert (D-097).
+    "pseudogenic_tRNA": "mRNA",
+    "pseudogenic_rRNA": "mRNA",
+    # INSDC's `precursor_RNA` feature key, which older NCBI GFF3 writes in
+    # column 3 where newer files write `primary_transcript`: a microRNA's
+    # precursor, with its exons and its mature miRNA below it. *Xenopus
+    # tropicalis* (GCF_000004195.4) has them, and every child was refused (D-097).
+    "precursor_RNA": "mRNA",
     "misc_RNA": "ncRNA",
     "snRNA": "ncRNA",
     "snoRNA": "ncRNA",
