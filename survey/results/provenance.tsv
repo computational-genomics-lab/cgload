@@ -1,2 +1,3 @@
 started	script	commit	uncommitted_inputs	input_md5
 2026-10-07T10:25:24Z	run_panel.sh	adccf96fd356888d4c5df88654ebbbdeb57fce8d	no	cgsurvey.py:e37f86998b8f run_panel.sh:7ff05bbc43f6 run_pipeline_arm.sh:045a9aa8546e panel.tsv:becefcd469da pipeline_arm.tsv:d35ee8d97424
+2026-10-23T07:52:49Z	cgsurvey.py, GCF_002234675.1 only (see CORRECTIONS.md)	cb651d313e284d1d76b57a18875f84a431f8baef	no	cgsurvey.py:e37f86998b8f
