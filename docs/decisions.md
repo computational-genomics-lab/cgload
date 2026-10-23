@@ -2717,3 +2717,61 @@ record with no coding sequence.
 two each on NC_001141 and NC_001147, nuclear chromosomes whose GenBank records
 do have mRNAs. Whether the other three fungi's extras are all mitochondrial is
 expected, not yet measured.
+
+## D-104 — the first segment carries the feature's attributes
+
+**Found by the benchmark's preflight, 22 October 2026.** The export round trip
+changed 1,938 features in nine of 14 genomes without a word: 1,792 `cDNA_match`
+alignments, 141 CDS and 5 genes, every one written on several rows whose
+attributes differ. In each genome some such features changed and the rest came
+back intact (*Xenopus*: 1,452 of 2,902). NCBI
+writes a minus-strand feature's rows from the highest coordinate down, and
+cgload orders segments by coordinate (finding 7). D-096 gave the feature the
+attributes of its first row in the file, and gave a later row its own only
+where they differ. The database instead reads a feature's attributes from its
+first segment in coordinate order, and gives a segment with none of its own
+the feature's. On a minus-strand feature those are different rows, so the
+lowest row lost its own `Target`, `Gap` or `end_range` and came back with the
+first row's. Reproduced with a three-row alignment and a two-row partial CDS
+written highest first; the next run shows whether this accounts for all 1,938.
+
+**Decided:** once the segments are ordered, the parser makes the first
+segment's attributes the feature's, and gives every other segment its own
+attributes where they differ from those. Each row keeps exactly what it had.
+What `explain` and `query` show as the feature's attributes is now its lowest
+row's, which differs from before only for such features.
+
+The benchmark compared a feature with disagreeing rows by the union of its
+rows' attributes, so a value moved to the wrong row went unseen unless no other
+row had it. It now compares such a feature row by row.
+
+## D-105 — mRNA is set aside per gene, not per record
+
+**Found by the benchmark's preflight, 22 October 2026.** D-103 set aside the
+GFF3's mRNAs on records whose GenBank side states coding sequences with no mRNA
+at all. Yeast still had six more mRNAs in the GFF3, and *S. pombe* 32, on
+nuclear chromosomes whose GenBank records do have mRNAs. All 38 are
+pseudogenes that GenBank states as a gene and a `/pseudo` CDS with no mRNA,
+such as FLO8 (YER109C) and SDL1 (YIL167W), the blocked reading frames of
+yeast's reference strain, and *S. pombe*'s wtf pseudogenes. NCBI's GFF3 gives
+each an mRNA with `pseudo=true`, as it does every gene on the mitochondria.
+
+**Decided:** a GFF3 mRNA is set aside when the GenBank file states its gene's
+CDS but no mRNA on the same sequence. A gene is named by its GeneID, locus tag
+or symbol, on either side; a name counts only if nothing carrying it on that
+record is an mRNA, so a symbol a pseudogene shares with a working gene does not
+set the working gene's mRNA aside. This replaces D-103's rule, which it
+includes: on yeast it sets aside the 19 mitochondrial mRNAs and the six
+pseudogenes' mRNAs, and on the other fungi their mitochondrial ones (*S. pombe*
+11, *Neurospora* 28, *Aspergillus* 20, *Cryptococcus* 13).
+
+## D-106 — family names are compared without regard to case
+
+**Found by the benchmark's preflight, 22 October 2026.** *S. pombe*'s GFF3 has
+238 `LONG_TERMINAL_REPEAT` rows where its GenBank file has 238 `repeat_region`
+records with `/rpt_type=LONG_TERMINAL_REPEAT`. INSDC makes /rpt_type values
+case-insensitive, and NCBI's GFF3 copies the value into column 3 as written.
+D-102's families list `long_terminal_repeat`, so the tier reported 238 lost.
+
+**Decided:** a type is matched to its family without regard to case. A type in
+no family is still compared under its own name, exactly as written.

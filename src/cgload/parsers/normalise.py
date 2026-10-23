@@ -399,6 +399,29 @@ def _order_segments(features: list[NormalisedFeature]) -> None:
         feature.segments.sort(key=lambda segment: (segment.start, segment.end))
         for index, segment in enumerate(feature.segments):
             segment.segment_index = index
+        _first_segment_carries_the_attributes(feature)
+
+
+def _first_segment_carries_the_attributes(feature: NormalisedFeature) -> None:
+    """Make the first segment's attributes the feature's (D-104).
+
+    Grouping takes a feature's attributes from its first row in the file, and
+    gives a later row attributes of its own only where they differ (D-096). The
+    database reads a feature's attributes from its first segment, and gives a
+    segment with none of its own the feature's. Once segments are in coordinate
+    order those are no longer the same row: NCBI writes a minus-strand feature's
+    rows from the highest coordinate down, so the file's first row is the last
+    segment. Each row keeps exactly what it had; only which row holds the
+    feature's attributes moves.
+    """
+    first = feature.segments[0]
+    if first.attributes is None:
+        return
+    previous, current = feature.attributes, first.attributes
+    for segment in feature.segments:
+        own = previous if segment.attributes is None else segment.attributes
+        segment.attributes = None if own == current else own
+    feature.attributes = current
 
 
 def _resolve_parents(

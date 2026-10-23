@@ -39,6 +39,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
+from urllib.parse import unquote
 
 
 class VerifyError(ValueError):
@@ -295,51 +296,87 @@ CROSS_FORMAT_FAMILIES: dict[str, tuple[frozenset[str], frozenset[str]]] = {
 
 
 def _fold(counts: Counter, side: int) -> Counter:
-    """Counts per family name; a type in no family keeps its own name."""
-    family_of = {name: family for family, members in CROSS_FORMAT_FAMILIES.items()
+    """Counts per family name; a type in no family keeps its own name.
+
+    Family members are matched without regard to case (D-106). INSDC makes
+    qualifier values such as /rpt_type case-insensitive, and NCBI's GFF3 copies
+    the value into column 3 as written: *S. pombe*'s 238 LTRs are
+    `LONG_TERMINAL_REPEAT` rows.
+    """
+    family_of = {name.lower(): family for family, members in CROSS_FORMAT_FAMILIES.items()
                  for name in members[side]}
     folded: Counter = Counter()
     for feature_type, count in counts.items():
-        folded[family_of.get(feature_type, feature_type)] += count
+        folded[family_of.get(feature_type.lower(), feature_type)] += count
     return folded
 
 
-def _records_with_cds_and_no_mrna(genbank_path: Path) -> set[str]:
-    """The records of a GenBank file that state coding sequences but no mRNA.
+#: What names a gene on a GenBank feature: its NCBI GeneID, locus tag and symbol.
+_GB_GENE_KEY = re.compile(r'^ {21}/(db_xref|locus_tag|gene)="([^"]*)"?')
+#: The same three on a GFF3 row.
+_GFF_GENE_KEY = re.compile(r"(?:^|;)\s*(Dbxref|locus_tag|gene)=([^;]*)")
 
-    Each such record is named twice, by its LOCUS name and by the
-    accession.version on its VERSION line, so that a GFF3 seqid matches
-    whichever of the two it uses. Reads feature keys the way the naive count
-    does, and nothing else.
+
+def _gene_keys(kind: str, value: str) -> list[tuple[str, str]]:
+    """A gene's names as (kind, value): `GeneID` from a cross-reference list,
+    `locus_tag` and `gene` as they are."""
+    if kind in ("db_xref", "Dbxref"):
+        return [("GeneID", item[len("GeneID:"):]) for item in value.split(",")
+                if item.startswith("GeneID:")]
+    return [(kind, value)]
+
+
+def _genes_with_cds_and_no_mrna(genbank_path: Path) -> set[tuple[str, str, str]]:
+    """The genes a GenBank file states coding sequences for but no mRNA.
+
+    Returned as (sequence, kind, name) for every name such a gene has, its
+    GeneID, locus tag and symbol, with the sequence named both by its LOCUS
+    name and by the accession.version on its VERSION line. A name counts only
+    if nothing carrying it on that record is an mRNA, so a symbol shared with a
+    gene that has one does not match. Reads feature keys and these three
+    qualifiers, and nothing else.
     """
-    found: set[str] = set()
+    found: set[tuple[str, str, str]] = set()
     names: list[str] = []
-    keys: set[str] = set()
+    with_cds: set[tuple[str, str]] = set()
+    with_mrna: set[tuple[str, str]] = set()
+    key: str | None = None
     in_features = False
+
+    def record_done() -> None:
+        for kind, value in with_cds - with_mrna:
+            for name in names:
+                found.add((name, kind, value))
+
     with _open(genbank_path) as handle:
         for line in handle:
             if line.startswith("LOCUS"):
-                names, keys, in_features = line.split()[1:2], set(), False
+                names, with_cds, with_mrna = line.split()[1:2], set(), set()
+                key, in_features = None, False
             elif line.startswith("VERSION"):
                 names += line.split()[1:2]
             elif line.startswith("FEATURES"):
                 in_features = True
             elif line.startswith("//"):
-                if "CDS" in keys and "mRNA" not in keys:
-                    found.update(names)
-                in_features = False
+                record_done()
+                key, in_features = None, False
             elif line.startswith(("ORIGIN", "CONTIG", "BASE COUNT")):
                 in_features = False
             elif in_features:
-                key = _GB_FEATURE.match(line)
-                if key:
-                    keys.add(key.group(1))
+                feature = _GB_FEATURE.match(line)
+                if feature:
+                    key = feature.group(1)
+                    continue
+                qualifier = _GB_GENE_KEY.match(line)
+                if qualifier and key in ("CDS", "mRNA"):
+                    target = with_cds if key == "CDS" else with_mrna
+                    target.update(_gene_keys(qualifier.group(1), qualifier.group(2)))
     return found
 
 
-def _gff_mrna_on(gff_path: Path, sequences: set[str]) -> int:
-    """The mRNA features a GFF3 file places on these sequences, counted as the
-    naive pass counts them: distinct IDs, a row with no ID singly."""
+def _gff_mrna_of(gff_path: Path, genes: set[tuple[str, str, str]]) -> int:
+    """The mRNA features a GFF3 file gives these genes, counted as the naive
+    pass counts them: distinct IDs, a row with no ID singly."""
     seen: set[str] = set()
     anonymous = 0
     with _open(gff_path) as handle:
@@ -349,11 +386,18 @@ def _gff_mrna_on(gff_path: Path, sequences: set[str]) -> int:
             if line.startswith("#") or "\tmRNA\t" not in line:
                 continue
             columns = line.rstrip("\n").split("\t")
-            if len(columns) < 9 or columns[2] != "mRNA" or columns[0] not in sequences:
+            if len(columns) < 9 or columns[2] != "mRNA":
                 continue
-            found = _GFF_ID.search(columns[8])
-            if found:
-                seen.add(found.group(1))
+            keys = {
+                (columns[0], kind, unquote(value))
+                for found in _GFF_GENE_KEY.finditer(columns[8])
+                for kind, value in _gene_keys(found.group(1), found.group(2))
+            }
+            if not keys & genes:
+                continue
+            identifier = _GFF_ID.search(columns[8])
+            if identifier:
+                seen.add(identifier.group(1))
             else:
                 anonymous += 1
     return len(seen) + anonymous
@@ -373,19 +417,19 @@ def compare_across_formats(gff_path: Path, genbank_path: Path) -> TierResult:
     folded = _fold(count_source_naively(gff_path), 0)
     genbank = _fold(count_source_naively(genbank_path), 1)
 
-    # Where a GenBank record states coding sequences but no mRNA, NCBI's GFF3
-    # gives those genes an mRNA anyway: yeast's mitochondrion, NC_001224.1, has
-    # 19 mRNA rows in the GFF3 and no mRNA record in the GenBank file. One
-    # format states that layer there and the other does not, so it is not
-    # compared there (D-103). Everywhere else mRNA is compared as before, and a
-    # GFF3 that loses mRNAs on a record that has them still fails.
+    # Where GenBank states a gene's coding sequence with no mRNA, NCBI's GFF3
+    # gives the gene an mRNA anyway: every protein-coding gene on yeast's
+    # mitochondrion (19), and its six pseudogenes with a blocked reading frame,
+    # such as FLO8. One format states that mRNA and the other does not, so it
+    # is not compared (D-103, D-105). Every other gene's mRNA is compared as
+    # before, and a GFF3 that loses one still fails.
     set_aside = 0
-    no_mrna = _records_with_cds_and_no_mrna(genbank_path)
+    no_mrna = _genes_with_cds_and_no_mrna(genbank_path)
     if no_mrna and folded.get("mRNA"):
-        set_aside = _gff_mrna_on(gff_path, no_mrna)
+        set_aside = _gff_mrna_of(gff_path, no_mrna)
         folded["mRNA"] -= set_aside
-    aside = (f"; {set_aside:,} GFF3 mRNA on records whose GenBank side states CDS "
-             f"but no mRNA not compared (D-103)" if set_aside else "")
+    aside = (f"; {set_aside:,} GFF3 mRNA of genes whose GenBank record states CDS "
+             f"but no mRNA not compared (D-105)" if set_aside else "")
 
     #: Types that exist in one format and not the other by construction, so
     #: their absence is not a loss. GFF3 states exons explicitly; GenBank

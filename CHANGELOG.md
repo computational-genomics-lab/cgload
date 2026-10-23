@@ -45,10 +45,15 @@ The refusal says so. Load into a new database made with `cgload init`.
   differently in its GFF3 and GenBank files, such as `snoRNA` for an `ncRNA`
   record and `long_terminal_repeat` for a `repeat_region`; the tier now
   compares feature families (D-102).
-- `verify --against` reported lost mRNAs on fungal genomes with a
-  mitochondrion: NCBI's GFF3 gives those genes mRNAs that its GenBank record,
-  which states their CDS alone, does not have. Such records' mRNAs are now set
-  aside, and the report says how many (D-103).
+- `verify --against` reported lost mRNAs on fungal genomes: NCBI's GFF3 gives
+  an mRNA to every gene whose CDS its GenBank file states alone, the genes of a
+  mitochondrion and pseudogenes such as yeast's FLO8. Those mRNAs are now set
+  aside gene by gene, and the report says how many (D-103, D-105). A family
+  member written in capitals, as *S. pombe*'s `LONG_TERMINAL_REPEAT`, is
+  matched to its family (D-106).
+- A feature written on several rows, from the highest coordinate down as NCBI
+  writes the minus strand, lost its lowest row's own attributes on load: the
+  row came back with the first row's `Target`, `Gap` or `end_range` (D-104).
 - A feature written on several rows lost what differed between its rows: each
   row of a `cDNA_match` alignment was exported with the first row's `Target`
   and `Gap`, a partial CDS lost `end_range`, and a trans-spliced gene's rows

@@ -308,14 +308,45 @@ def test_one_feature_under_its_two_names_is_not_a_discrepancy(tmp_path):
     assert lost.mismatches == {"ncRNA": (2, 3)}
 
 
-ORGANELLE_GENBANK = (
-    "LOCUS       NC_000001                400 bp    DNA     linear   CON 01-JAN-2020\n"
+
+#: A nuclear record with one ordinary gene, one pseudogene stated as a CDS with
+#: no mRNA, and a gene sharing the pseudogene's symbol; and a mitochondrion whose
+#: GenBank record states CDS alone. Modelled on yeast (GCF_000146045.2): YDR134C
+#: and NC_001224.1.
+SPLIT_GENBANK = (
+    "LOCUS       NC_000001                900 bp    DNA     linear   CON 01-JAN-2020\n"
     "VERSION     NC_000001.1\n"
     "FEATURES             Location/Qualifiers\n"
-    "     source          1..400\n"
+    "     source          1..900\n"
     "     gene            10..90\n"
+    '                     /locus_tag="YA1"\n'
+    '                     /db_xref="GeneID:101"\n'
     "     mRNA            10..90\n"
+    '                     /locus_tag="YA1"\n'
+    '                     /db_xref="GeneID:101"\n'
     "     CDS             20..80\n"
+    '                     /locus_tag="YA1"\n'
+    '                     /db_xref="GeneID:101"\n'
+    "     gene            110..190\n"
+    '                     /gene="ABC1"\n'
+    '                     /locus_tag="YB1"\n'
+    "                     /pseudo\n"
+    '                     /db_xref="GeneID:102"\n'
+    "     CDS             110..190\n"
+    '                     /gene="ABC1"\n'
+    '                     /locus_tag="YB1"\n'
+    '                     /note="Blocked reading frame"\n'
+    "                     /pseudo\n"
+    '                     /db_xref="GeneID:102"\n'
+    "     gene            210..290\n"
+    '                     /gene="ABC1"\n'
+    '                     /locus_tag="YC1"\n'
+    "     mRNA            210..290\n"
+    '                     /gene="ABC1"\n'
+    '                     /locus_tag="YC1"\n'
+    "     CDS             220..280\n"
+    '                     /gene="ABC1"\n'
+    '                     /locus_tag="YC1"\n'
     "ORIGIN\n//\n"
     "LOCUS       NC_000002                400 bp    DNA     circular CON 01-JAN-2020\n"
     "VERSION     NC_000002.1\n"
@@ -323,58 +354,89 @@ ORGANELLE_GENBANK = (
     "     source          1..400\n"
     '                     /organelle="mitochondrion"\n'
     "     gene            10..90\n"
+    '                     /locus_tag="Q1"\n'
     "     CDS             10..90\n"
+    '                     /locus_tag="Q1"\n'
     "     gene            110..190\n"
+    '                     /locus_tag="Q2"\n'
     "     CDS             110..190\n"
-    "     {third_key:<16}210..290\n"
+    '                     /locus_tag="Q2"\n'
+    "     rRNA            210..290\n"
+    '                     /locus_tag="Q3"\n'
     "ORIGIN\n//\n"
 )
 
 
-def organelle_gff(*, nuclear_mrna: bool = True, third: str = "rRNA") -> str:
-    rows = ["##gff-version 3\n"]
-    if nuclear_mrna:
-        rows.append("NC_000001.1\tRefSeq\tmRNA\t10\t90\t.\t+\t.\tID=rna-1;Parent=gene-1\n")
-    rows += [
-        "NC_000001.1\tRefSeq\tgene\t10\t90\t.\t+\t.\tID=gene-1\n",
-        "NC_000001.1\tRefSeq\tCDS\t20\t80\t.\t+\t0\tID=cds-1;Parent=rna-1\n",
-        "NC_000002.1\tRefSeq\tgene\t10\t90\t.\t+\t.\tID=gene-2\n",
-        "NC_000002.1\tRefSeq\tmRNA\t10\t90\t.\t+\t.\tID=rna-2;Parent=gene-2\n",
-        "NC_000002.1\tRefSeq\tCDS\t10\t90\t.\t+\t0\tID=cds-2;Parent=rna-2\n",
-        "NC_000002.1\tRefSeq\tgene\t110\t190\t.\t+\t.\tID=gene-3\n",
-        "NC_000002.1\tRefSeq\tmRNA\t110\t190\t.\t+\t.\tID=rna-3;Parent=gene-3\n",
-        "NC_000002.1\tRefSeq\tCDS\t110\t190\t.\t+\t0\tID=cds-3;Parent=rna-3\n",
-        f"NC_000002.1\tRefSeq\t{third}\t210\t290\t.\t+\t.\tID=rna-4\n",
+def split_gff(*, drop: str = "", extra: str = "") -> str:
+    """The same genes as NCBI's GFF3 writes them: an mRNA for every one."""
+    rows = [
+        "##gff-version 3\n",
+        "NC_000001.1\tRefSeq\tgene\t10\t90\t.\t+\t.\tID=gene-YA1;locus_tag=YA1\n",
+        "NC_000001.1\tRefSeq\tmRNA\t10\t90\t.\t+\t.\tID=rna-NM_1.1;Parent=gene-YA1;"
+        "Dbxref=GeneID:101;locus_tag=YA1;transcript_id=NM_1.1\n",
+        "NC_000001.1\tRefSeq\tCDS\t20\t80\t.\t+\t0\tID=cds-1;Parent=rna-NM_1.1\n",
+        "NC_000001.1\tRefSeq\tpseudogene\t110\t190\t.\t+\t.\tID=gene-YB1;locus_tag=YB1\n",
+        "NC_000001.1\tRefSeq\tmRNA\t110\t190\t.\t+\t.\tID=rna-YB1;Parent=gene-YB1;"
+        "Dbxref=GeneID:102;gene=ABC1;locus_tag=YB1;pseudo=true\n",
+        "NC_000001.1\tRefSeq\tCDS\t110\t190\t.\t+\t0\tID=cds-YB1;Parent=rna-YB1\n",
+        "NC_000001.1\tRefSeq\tgene\t210\t290\t.\t+\t.\tID=gene-YC1;locus_tag=YC1\n",
+        "NC_000001.1\tRefSeq\tmRNA\t210\t290\t.\t+\t.\tID=rna-NM_3.1;Parent=gene-YC1;"
+        "gene=ABC1;locus_tag=YC1;transcript_id=NM_3.1\n",
+        "NC_000001.1\tRefSeq\tCDS\t220\t280\t.\t+\t0\tID=cds-3;Parent=rna-NM_3.1\n",
+        "NC_000002.1\tRefSeq\tgene\t10\t90\t.\t+\t.\tID=gene-Q1;locus_tag=Q1\n",
+        "NC_000002.1\tRefSeq\tmRNA\t10\t90\t.\t+\t.\tID=rna-Q1;Parent=gene-Q1;locus_tag=Q1\n",
+        "NC_000002.1\tRefSeq\tCDS\t10\t90\t.\t+\t0\tID=cds-Q1;Parent=rna-Q1\n",
+        "NC_000002.1\tRefSeq\tgene\t110\t190\t.\t+\t.\tID=gene-Q2;locus_tag=Q2\n",
+        "NC_000002.1\tRefSeq\tmRNA\t110\t190\t.\t+\t.\tID=rna-Q2;Parent=gene-Q2;locus_tag=Q2\n",
+        "NC_000002.1\tRefSeq\tCDS\t110\t190\t.\t+\t0\tID=cds-Q2;Parent=rna-Q2\n",
+        "NC_000002.1\tRefSeq\trRNA\t210\t290\t.\t+\t.\tID=rna-Q3;locus_tag=Q3\n",
     ]
-    return "".join(rows)
+    return "".join(row for row in rows if not (drop and f"ID={drop};" in row)) + extra
 
 
 def test_mrna_is_not_compared_where_genbank_states_cds_without_mrna(tmp_path):
-    """D-103. Yeast's mitochondrion has 19 mRNA rows in NCBI's GFF3 and no mRNA
-    record in its GenBank file, which states the CDS alone. That layer exists in
-    one format only there, so it is set aside, and the report says how much."""
+    """D-103, D-105. NCBI's GFF3 gives an mRNA to every gene whose CDS its
+    GenBank file states with no mRNA: yeast's 19 mitochondrial genes and its six
+    pseudogenes with a blocked reading frame. Those are set aside, and the
+    report says how many."""
     genbank = tmp_path / "a.gbff"
-    genbank.write_text(ORGANELLE_GENBANK.format(third_key="rRNA"))
+    genbank.write_text(SPLIT_GENBANK)
     gff = tmp_path / "a.gff3"
-    gff.write_text(organelle_gff())
+    gff.write_text(split_gff())
     result = compare_across_formats(gff, genbank)
     assert result.outcome is Outcome.PASS, result.mismatches
-    assert "2 GFF3 mRNA" in result.detail
-    assert result.expected["mRNA"] == result.actual["mRNA"] == 1
+    assert "3 GFF3 mRNA" in result.detail
+    assert result.expected["mRNA"] == result.actual["mRNA"] == 2
 
 
-def test_mrna_is_still_compared_everywhere_else(tmp_path):
-    """Losing the nuclear mRNA still fails, and so does an mRNA the GFF3 places
-    on a record whose GenBank side has no coding sequence to account for it."""
+def test_mrna_is_still_compared_for_every_other_gene(tmp_path):
+    """Losing an ordinary gene's mRNA still fails, including the gene that
+    shares a symbol with the pseudogene, and so does an mRNA the GFF3 gives a
+    gene whose GenBank record has no CDS to account for it."""
     genbank = tmp_path / "a.gbff"
-    genbank.write_text(ORGANELLE_GENBANK.format(third_key="rRNA"))
+    genbank.write_text(SPLIT_GENBANK)
     gff = tmp_path / "a.gff3"
-    gff.write_text(organelle_gff(nuclear_mrna=False))
-    assert compare_across_formats(gff, genbank).mismatches == {"mRNA": (0, 1)}
+    for lost in ("rna-NM_1.1", "rna-NM_3.1"):
+        gff.write_text(split_gff(drop=lost))
+        assert compare_across_formats(gff, genbank).mismatches == {"mRNA": (1, 2)}
+    gff.write_text(split_gff(extra="NC_000002.1\tRefSeq\tmRNA\t210\t290\t.\t+\t.\t"
+                                   "ID=rna-Q3b;locus_tag=Q3\n"))
+    assert compare_across_formats(gff, genbank).mismatches == {"mRNA": (3, 2)}
 
-    genbank.write_text(ORGANELLE_GENBANK.replace("     CDS             10..90\n", "")
-                       .replace("     CDS             110..190\n", "")
-                       .format(third_key="rRNA"))
-    gff.write_text(organelle_gff().replace("\tCDS\t10\t90", "\tgap\t10\t90")
-                   .replace("\tCDS\t110\t190", "\tgap\t110\t190"))
-    assert compare_across_formats(gff, genbank).mismatches == {"mRNA": (3, 1)}
+
+def test_a_family_member_is_matched_without_regard_to_case(tmp_path):
+    """D-106. INSDC qualifier values are case-insensitive, and NCBI's GFF3
+    copies /rpt_type into column 3 as written: *S. pombe*'s LTRs are
+    `LONG_TERMINAL_REPEAT` rows, its GenBank file's `repeat_region` records."""
+    gff = tmp_path / "a.gff3"
+    gff.write_text("##gff-version 3\n"
+                   "chr1\tRefSeq\tLONG_TERMINAL_REPEAT\t1\t300\t.\t+\t.\tID=id-1\n")
+    genbank = tmp_path / "a.gbff"
+    genbank.write_text(
+        "LOCUS       chr1                    1000 bp    DNA     linear   CON 01-JAN-2020\n"
+        "FEATURES             Location/Qualifiers\n"
+        "     source          1..1000\n"
+        "     repeat_region   1..300\n"
+        '                     /rpt_type=LONG_TERMINAL_REPEAT\n'
+        "ORIGIN\n//\n")
+    assert compare_across_formats(gff, genbank).outcome is Outcome.PASS

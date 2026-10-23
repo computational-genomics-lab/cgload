@@ -1067,10 +1067,11 @@ def _insert_attributes(
     attributes are stored too; they were dropped for the same reason its parent
     was (AUDIT-2).
 
-    A later row whose attributes differ from the first row's keeps its own,
-    against its own segment (D-096): an alignment's rows each have a `Target`
+    A later segment whose attributes differ from the first segment's keeps its
+    own, against its own row (D-096): an alignment's rows each have a `Target`
     and a `Gap`, and a partial CDS has `start_range` on one row only. Readers
     that want the feature's attributes read the first segment's, as before.
+    The parser makes the first segment's attributes the feature's (D-104).
     """
     stored = _stored_rows(connection, assembly_id, file_id, parse)
 

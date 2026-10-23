@@ -161,3 +161,75 @@ def test_query_reports_a_trans_spliced_gene_as_both_strands(tmp_path):
     assert result.exit_code == 0, result.output
     row = next(line for line in result.output.splitlines() if line.startswith("gene-t\t"))
     assert row.split("\t")[6] == "?"
+
+
+# NCBI writes the rows of a minus-strand feature 5' to 3', so from the highest
+# coordinate down. cgload orders segments by coordinate (finding 7), so the
+# file's first row is not the first segment. Found by the benchmark's preflight,
+# 22 October 2026: about half the alignments and partial CDS whose rows differ
+# lost their lowest row's own attributes (D-104).
+DESCENDING = (
+    "##gff-version 3\n"
+    "##sequence-region chr1 1 10000\n"
+    "chr1\tRefSeq\tregion\t1\t10000\t.\t+\t.\tID=chr1:1..10000;genome=chromosome\n"
+    "chr1\tRefSeq\tgene\t6000\t9000\t.\t-\t.\tID=gene-c;Name=c\n"
+    "chr1\tRefSeq\tmRNA\t6000\t9000\t.\t-\t.\tID=rna-c;Parent=gene-c;transcript_id=NM_3.1\n"
+    "chr1\tRefSeq\texon\t8000\t9000\t.\t-\t.\tID=exon-c-1;Parent=rna-c\n"
+    "chr1\tRefSeq\texon\t6000\t6500\t.\t-\t.\tID=exon-c-2;Parent=rna-c\n"
+    "chr1\tRefSeq\tCDS\t8000\t8800\t.\t-\t0\tID=cds-c;Parent=rna-c;protein_id=NP_3.1;"
+    "partial=true;end_range=8800,.\n"
+    "chr1\tRefSeq\tCDS\t6200\t6500\t.\t-\t2\tID=cds-c;Parent=rna-c;protein_id=NP_3.1;"
+    "partial=true\n"
+    "chr1\tRefSeq\tcDNA_match\t8000\t9000\t.\t-\t.\tID=aln-2;Target=NM_3.1 1 1001 +;"
+    "Gap=M1001\n"
+    "chr1\tRefSeq\tcDNA_match\t7000\t7400\t.\t-\t.\tID=aln-2;Target=NM_3.1 1002 1402 +;"
+    "Gap=M401\n"
+    "chr1\tRefSeq\tcDNA_match\t6000\t6500\t.\t-\t.\tID=aln-2;Target=NM_3.1 1403 1903 +;"
+    "Gap=M501\n"
+)
+
+
+def loaded_from(tmp_path: Path, text: str) -> str:
+    directory = tmp_path / "in"
+    config = write_inputs(directory)
+    (directory / "a.gff3").write_text(text)
+    url = f"sqlite:///{tmp_path / 'g.db'}"
+    assert run("init", "--db-url", url).exit_code == 0
+    result = run("load", "--db-url", url, "--config", str(config), "--data-dir",
+                 str(tmp_path / "data"))
+    assert result.exit_code == 0, result.output
+    return url
+
+
+def test_rows_written_highest_first_keep_their_own_attributes(tmp_path):
+    import gzip
+
+    url = loaded_from(tmp_path, DESCENDING)
+    out = tmp_path / "out.gff3"
+    exported = run("export", "--db-url", url, "--assembly-id", "1", "--format", "gff3",
+                   "--output", str(out))
+    assert exported.exit_code == 0, exported.output
+    assert rows_of(out.read_text()) == rows_of(DESCENDING)
+    annotation = next((tmp_path / "data").glob("**/annotation.gff3.gz"))
+    with gzip.open(annotation, "rt") as handle:
+        assert rows_of(handle.read()) == rows_of(DESCENDING)
+
+
+def test_the_first_segment_carries_the_feature_attributes(tmp_path):
+    """The database reads a feature's attributes from its first segment, so the
+    parser hands over the lowest row's as the feature's, and a later segment
+    keeps its own only where it differs from those."""
+    path = tmp_path / "a.gff3"
+    path.write_text(DESCENDING)
+    tokenized = tokenize(path)
+    result = normalise(tokenized.features, dialects.REFSEQ, comments=tokenized.comments)
+    by_id = {item.source_id: item for item in result.features}
+    alignment = by_id["aln-2"]
+    assert alignment.attributes["Target"] == ["NM_3.1 1403 1903 +"]
+    assert [segment.attributes and segment.attributes["Target"]
+            for segment in alignment.segments] == [
+        None, ["NM_3.1 1002 1402 +"], ["NM_3.1 1 1001 +"]]
+    cds = by_id["cds-c"]
+    assert "end_range" not in cds.attributes
+    assert cds.segments[0].attributes is None
+    assert cds.segments[1].attributes["end_range"] == ["8800", "."]
