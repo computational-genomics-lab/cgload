@@ -561,3 +561,45 @@ def test_a_single_problem_reads_as_before(tmp_path):
     )
     with pytest.raises(NormaliseError, match=r"^line 3: exon references Parent 'missing'"):
         normalised_from(gff3(tmp_path, body), P.REFSEQ)
+
+
+#: Every column-3 type in the 30 RefSeq files of the benchmark panel, as the
+#: benchmark's reference count listed them (D-107).
+PANEL_REFSEQ_TYPES = {
+    "CAAT_signal", "CAGE_cluster", "CDS", "C_gene_segment", "DNaseI_hypersensitive_site",
+    "D_gene_segment", "D_loop", "GC_rich_promoter_region", "J_gene_segment",
+    "LONG_TERMINAL_REPEAT", "RNase_MRP_RNA", "RNase_P_RNA", "SRP_RNA", "TATA_box", "TSS",
+    "V_gene_segment", "Y_RNA", "antisense_RNA", "biological_region", "cDNA_match",
+    "centromere", "chromosome_breakpoint", "conserved_region", "direct_repeat",
+    "dispersed_repeat", "enhancer", "enhancer_blocking_element",
+    "epigenetically_modified_region", "exon", "five_prime_UTR", "gap", "gene",
+    "guide_RNA", "imprinting_control_region", "insulator", "intron", "inverted_repeat",
+    "lncRNA", "lnc_RNA", "locus_control_region", "long_terminal_repeat", "mRNA", "match",
+    "matrix_attachment_site", "meiotic_recombination_region", "miRNA", "microsatellite",
+    "minisatellite", "mitotic_recombination_region", "mobile_genetic_element", "ncRNA",
+    "non_allelic_homologous_recombination_region", "nucleotide_cleavage_site",
+    "nucleotide_motif", "origin_of_replication", "polyA_site", "precursor_RNA",
+    "primary_transcript", "promoter", "protein_binding_site", "pseudogene",
+    "pseudogenic_tRNA", "rRNA", "recombination_feature", "region", "regulatory_region",
+    "repeat_instability_region", "repeat_region", "replication_regulatory_region",
+    "replication_start_site", "response_element", "scRNA", "scaRNA", "sequence_alteration",
+    "sequence_alteration_artifact", "sequence_comparison", "sequence_conflict",
+    "sequence_difference", "sequence_feature", "sequence_secondary_structure", "silencer",
+    "snRNA", "snoRNA", "tRNA", "tandem_repeat", "telomerase_RNA", "telomere",
+    "three_prime_UTR", "transcript", "transcriptional_cis_regulatory_region", "vault_RNA",
+}
+
+
+def test_the_refseq_profile_declares_what_refseq_files_contain(tmp_path):
+    """D-107. With nine declared types, 29 of the panel's 30 RefSeq files warned
+    on every load and `--strict-vocabulary` refused them. A type outside the
+    panel's still warns."""
+    assert len(PANEL_REFSEQ_TYPES) == 91
+    assert P.REFSEQ.provides >= PANEL_REFSEQ_TYPES
+    assert P.CGLOAD.provides >= PANEL_REFSEQ_TYPES
+    path = tmp_path / "a.gff3"
+    path.write_text(
+        "##gff-version 3\n#!processor NCBI annotwriter\n"
+        "chr1\tRefSeq\tlnc_RNA\t1\t100\t.\t+\t.\tID=rna-1\n"
+        "chr1\tRefSeq\tmade_up_RNA\t1\t100\t.\t+\t.\tID=rna-2\n")
+    assert P.unexpected_types(P.REFSEQ, tokenize(path).features) == {"made_up_RNA"}

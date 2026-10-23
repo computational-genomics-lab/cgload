@@ -294,6 +294,22 @@ genome. Nothing was lost in the round trip. What it showed:
 *Neurospora*, *Aspergillus* and *Cryptococcus*: their extra mRNAs were all
 mitochondrial (28, 20, 13), and their GenBank comparison passed with D-103.
 
+## Phase 4, second preflight: 23 October 2026
+
+The same 14 genomes at cb651d3, SQLite only, with the agreement and fault steps
+(42 min). The round trip changed nothing but the 7 declared repairs, so D-104
+accounted for all 1,938 changes. `verify --against` passed on all eight fungi.
+The faults gave the predicted outcome in 54 of 54. The agreement step compared
+13 genomes; medaka was left out because its file was not the survey's.
+
+The survey's copy of medaka, still on the lab server, is 292,477 lines and ends
+mid-line: the download was cut short. Surveyed again on the complete file, its
+row changed only in the counts that describe the file; no defect before or
+after (`survey/results/CORRECTIONS.md`).
+
+The warnings, now kept, showed every RefSeq load but *Aspergillus*'s warning
+about types the profile did not declare (D-107).
+
 ## Open
 
 - Memory: about 7 GB per million features plus 200 MB, from two loads made
@@ -305,8 +321,6 @@ mitochondrial (28, 20, 13), and their GenBank comparison passed with D-103.
 - `paper/paper.md` still has the old maize numbers (36 problems in seven
   genes). The rest of the docs now use the census.
 - The case-study genome (Q8) is not named yet.
-- The survey's medaka row must be replaced by a survey of the complete file
-  before the second run (the preflight's finding above).
 - `run_txdb.R` has run with GenomicFeatures 1.54.3 only; the server run uses
   txdbmaker from conda.
 - Novelty: check Ensembl's datachecks and InterMine's acceptance tests before

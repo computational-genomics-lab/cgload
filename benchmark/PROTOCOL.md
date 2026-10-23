@@ -318,12 +318,21 @@ tests before the second run:
   writes *S. pombe*'s LTRs in capitals (D-106).
 * The survey read a different medaka file from NCBI's: 292,462 rows on 5
   sequences, where NCBI's file, fetched twice on different days with the same
-  MD5, has 1,399,050 rows on 25. Most likely the survey's download was cut
-  short. The other 29 files are the survey's exactly. The survey is run again
-  on the complete medaka file before the second run, and its row replaced
-  (`survey/results/`).
+  MD5, has 1,399,050 rows on 25. The other 29 files are the survey's exactly.
+  The survey's copy, still on the lab server, ends in the middle of a line: its
+  download had been cut short. The survey was run again on the complete file
+  and its row replaced; its findings did not change
+  (`survey/results/CORRECTIONS.md`).
 * The summary reported 0 silent changes for cgload, because the scale table
   had no such column; it now has the announced and silent counts. The load's
   warnings and the whole verify report are kept in `results/`.
+
+**Second preflight, 23 October 2026, at cb651d3.** The same 14 genomes on
+SQLite, with the agreement and fault steps. No feature changed in the round
+trip except the seven repairs cgload declared, `verify --against` passed on all
+eight fungi, and the 54 faults (27 on each of *F. graminearum* and *A.
+thaliana*) gave the outcomes `faults.py` predicts. It showed one more thing,
+fixed before the second run: every RefSeq load but one warned about feature
+types the RefSeq profile did not declare (D-107).
 
 Every measurement is repeated on every genome in the second run.

@@ -54,6 +54,10 @@ The refusal says so. Load into a new database made with `cgload init`.
 - A feature written on several rows, from the highest coordinate down as NCBI
   writes the minus strand, lost its lowest row's own attributes on load: the
   row came back with the first row's `Target`, `Gap` or `end_range` (D-104).
+- Every RefSeq load but one warned about feature types "not declared by the
+  refseq profile", and `--strict-vocabulary` refused 29 of the benchmark's 30
+  RefSeq files: the profile declared 9 of the 91 types they use. It now
+  declares all 91 (D-107).
 - A feature written on several rows lost what differed between its rows: each
   row of a `cDNA_match` alignment was exported with the first row's `Target`
   and `Gap`, a partial CDS lost `end_range`, and a trans-spliced gene's rows

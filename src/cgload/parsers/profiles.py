@@ -218,6 +218,46 @@ AUGUSTUS_PROTEINS = CommentExtraction(
 # an error until their fixtures pass (D-013's fail-closed rule).
 # --------------------------------------------------------------------------
 
+#: Every column-3 type in the 30 RefSeq files of the benchmark's panel (survey
+#: tag survey-panel-v1), 91 in all (D-107). Declaring only the nine core types
+#: made 29 of the 30 files warn on every load and made `--strict-vocabulary`
+#: refuse them. A type outside this list still warns, which is the point.
+REFSEQ_TYPES = frozenset({
+    # genes, transcripts and their parts
+    "region", "gene", "pseudogene", "mRNA", "transcript", "primary_transcript",
+    "precursor_RNA", "pseudogenic_tRNA", "exon", "intron", "CDS", "five_prime_UTR",
+    "three_prime_UTR", "polyA_site", "TSS",
+    # RNA classes
+    "tRNA", "rRNA", "ncRNA", "lnc_RNA", "lncRNA", "antisense_RNA", "miRNA", "snRNA",
+    "snoRNA", "scaRNA", "scRNA", "SRP_RNA", "RNase_P_RNA", "RNase_MRP_RNA",
+    "telomerase_RNA", "guide_RNA", "Y_RNA", "vault_RNA",
+    # immunoglobulin and T-cell receptor segments
+    "C_gene_segment", "D_gene_segment", "J_gene_segment", "V_gene_segment",
+    # alignments
+    "match", "cDNA_match",
+    # regulatory regions
+    "promoter", "enhancer", "silencer", "insulator", "TATA_box", "CAAT_signal",
+    "GC_rich_promoter_region", "response_element", "enhancer_blocking_element",
+    "locus_control_region", "imprinting_control_region", "matrix_attachment_site",
+    "transcriptional_cis_regulatory_region", "regulatory_region",
+    "replication_regulatory_region", "DNaseI_hypersensitive_site", "CAGE_cluster",
+    "epigenetically_modified_region", "nucleotide_motif", "protein_binding_site",
+    "conserved_region", "biological_region",
+    # repeats and mobile elements; *S. pombe* writes LTRs in capitals (D-106)
+    "repeat_region", "long_terminal_repeat", "LONG_TERMINAL_REPEAT", "direct_repeat",
+    "inverted_repeat", "tandem_repeat", "dispersed_repeat", "microsatellite",
+    "minisatellite", "mobile_genetic_element", "repeat_instability_region",
+    # chromosome structure, replication and recombination
+    "centromere", "telomere", "origin_of_replication", "replication_start_site", "D_loop",
+    "recombination_feature", "meiotic_recombination_region",
+    "mitotic_recombination_region", "non_allelic_homologous_recombination_region",
+    "chromosome_breakpoint", "nucleotide_cleavage_site",
+    # notes on the sequence itself
+    "sequence_feature", "sequence_alteration", "sequence_alteration_artifact",
+    "sequence_comparison", "sequence_conflict", "sequence_difference",
+    "sequence_secondary_structure", "gap",
+})
+
 REFSEQ = Profile(
     name="refseq",
     sources=frozenset({"RefSeq", "Gnomon", "BestRefSeq", "tRNAscan-SE", "cmsearch"}),
@@ -225,9 +265,7 @@ REFSEQ = Profile(
     parent_inference=ParentInference.EXPLICIT,
     linkage_strategy=LinkageStrategy.NOT_APPLICABLE,
     stop_codon=StopCodonConvention.INSIDE_CDS,
-    provides=frozenset(
-        {"region", "gene", "pseudogene", "mRNA", "tRNA", "rRNA", "ncRNA", "exon", "CDS"}
-    ),
+    provides=REFSEQ_TYPES,
     warns_if_missing=frozenset({"gene", "mRNA", "exon", "CDS"}),
     unique_id_types=frozenset({"exon"}),
     permits_anonymous_rows=False,
@@ -343,15 +381,15 @@ CGLOAD = Profile(
     parent_inference=ParentInference.EXPLICIT,
     linkage_strategy=LinkageStrategy.NOT_APPLICABLE,
     stop_codon=StopCodonConvention.INSIDE_CDS,
-    # An export may carry any type the source dialect held, and the vocabulary is
-    # open (D-017), so nothing is declared and nothing is expected.
+    # An export may carry any type its source dialect held, so it declares every
+    # type the source profiles declare (D-107), and expects none of them.
     provides=frozenset(
         {
             "region", "gene", "pseudogene", "mRNA", "transcript", "tRNA", "rRNA",
             "ncRNA", "tmRNA", "exon", "CDS", "intron", "start_codon", "stop_codon",
             "five_prime_UTR", "three_prime_UTR", "repeat_region", "sequence_feature",
         }
-    ),
+    ) | REFSEQ.provides | FUNANNOTATE.provides | AUGUSTUS.provides | GENBANK.provides,
     warns_if_missing=frozenset(),
     # Whatever the source shared, the export writes back the same way. An export
     # of AUGUSTUS shares CDS ids; an export of RefSeq shares them for

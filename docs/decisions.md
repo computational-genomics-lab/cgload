@@ -2775,3 +2775,21 @@ D-102's families list `long_terminal_repeat`, so the tier reported 238 lost.
 
 **Decided:** a type is matched to its family without regard to case. A type in
 no family is still compared under its own name, exactly as written.
+
+## D-107 — the RefSeq profile declares what RefSeq files contain
+
+**Found by the benchmark's second preflight, 23 October 2026, which now keeps
+each load's warnings.** Every RefSeq load but one warned that the file held
+feature types "not declared by the refseq profile": `lnc_RNA`, `miRNA`,
+`snoRNA`, `cDNA_match`, `primary_transcript` and so on, up to 15 per file. The
+profile declared nine types. The 30 RefSeq files of the benchmark's panel use
+91, and 29 of them use at least one of the other 82, so `--strict-vocabulary`
+(D-087) would have refused 29 of 30 real RefSeq files. A warning that every
+file triggers is one people learn to skip.
+
+**Decided:** the RefSeq profile declares the 91 types the panel's files use,
+listed in `profiles.REFSEQ_TYPES`. The cgload export profile declares every
+type its source profiles declare, since an export carries what its source
+held. Loading does not change: undeclared types still load verbatim, and a
+type outside the list still warns, and is still refused under
+`--strict-vocabulary`.
