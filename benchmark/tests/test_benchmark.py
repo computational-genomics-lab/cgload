@@ -76,11 +76,20 @@ def test_the_reference_count_follows_the_specification(tmp_path):
     assert any("no_id" in value for key, value in found.items() if key.startswith("anon:"))
 
 
-def test_rows_that_disagree_are_merged_before_the_digest(tmp_path):
+def test_rows_that_disagree_are_compared_row_by_row(tmp_path):
+    """A loader that keeps both Notes but gives each to the other row has
+    changed the feature, though no value is lost (D-104 was such a case)."""
     db, _ = build(tmp_path, HARD)
     with sqlite3.connect(db) as connection:
         (digest,) = connection.execute("SELECT attrs FROM feature WHERE key = 'c1'").fetchone()
-    assert digest == gffmodel.attrs_digest({"Note": ["first", "second"]})
+    assert digest == gffmodel.feature_digest([(100, 200, {"Note": ["first"]}),
+                                              (200, 300, {"Note": ["second"]})])
+    swapped, _ = build(tmp_path, HARD.replace("Note=first", "Note=tmp")
+                       .replace("Note=second", "Note=first").replace("Note=tmp", "Note=second"),
+                       "swapped.gff3")
+    result = compare.compare(db, swapped)
+    assert result["field_differences"] == {"attrs": 1}
+    assert result["examples"]["changed:attrs"] == ["c1"]
 
 
 def test_a_file_compared_with_itself_keeps_everything(tmp_path):
@@ -142,15 +151,16 @@ def test_measure_kills_a_command_that_runs_too_long(tmp_path):
 
 
 @pytest.mark.skipif(shutil.which("cgload") is None, reason="cgload is not installed")
-def test_cgload_round_trips_a_real_fixture_exactly(tmp_path):
-    source = FIXTURES / "refseq_fgraminearum_NC_026477.gff3"
-    gff = tmp_path / source.name
-    gff.write_text(source.read_text())
-    lengths = {line.split()[1]: int(line.split()[3]) for line in gff.read_text().splitlines()
+def cgload_round_trip(tmp_path: Path, text: str, name: str = "a.gff3") -> dict:
+    """The benchmark's round trip, as run_cgload.py runs it: load, export, and
+    the reference count of each file compared."""
+    gff = tmp_path / name
+    gff.write_text(text)
+    lengths = {line.split()[1]: int(line.split()[3]) for line in text.splitlines()
                if line.startswith("##sequence-region")}
     with (tmp_path / "a.fa").open("w") as handle:
-        for name, length in lengths.items():
-            handle.write(f">{name}\n" + "ACGT" * (length // 4) + "A" * (length % 4) + "\n")
+        for sequence, length in lengths.items():
+            handle.write(f">{sequence}\n" + "ACGT" * (length // 4) + "A" * (length % 4) + "\n")
     (tmp_path / "o.toml").write_text(
         '[organism]\ngenus = "F"\nspecies = "g"\n[assembly]\nname = "a"\nfasta = "a.fa"\n'
         f'[[files.annotation]]\npath = "{gff.name}"\n')
@@ -160,12 +170,41 @@ def test_cgload_round_trips_a_real_fixture_exactly(tmp_path):
                      str(tmp_path / "data")],
                     ["cgload", "export", "--assembly-id", "1", "--format", "gff3", "--output",
                      str(tmp_path / "out.gff3")]):
-        assert subprocess.run(command, env=env, capture_output=True, check=False).returncode == 0
+        done = subprocess.run(command, env=env, capture_output=True, text=True, check=False)
+        assert done.returncode == 0, done.stdout + done.stderr
     before, after = tmp_path / "t.sqlite", tmp_path / "s.sqlite"
     truth.build(gff, before)
     truth.build(tmp_path / "out.gff3", after, frozenset({"cgload_linkage_method"}))
-    result = compare.compare(before, after)
+    return compare.compare(before, after)
+
+
+def test_cgload_round_trips_a_real_fixture_exactly(tmp_path):
+    source = FIXTURES / "refseq_fgraminearum_NC_026477.gff3"
+    result = cgload_round_trip(tmp_path, source.read_text(), source.name)
     assert result["totals"]["kept"] == result["totals"]["truth"] == 354
+
+
+def test_cgload_keeps_each_rows_attributes_when_rows_run_highest_first(tmp_path):
+    """NCBI writes a minus-strand feature's rows from the highest coordinate
+    down. The preflight of 22 October 2026 found the lowest row's own
+    attributes replaced by the first row's (D-104)."""
+    text = (
+        "##gff-version 3\n"
+        "##sequence-region chr1 1 10000\n"
+        "chr1\tRefSeq\tgene\t6000\t9000\t.\t-\t.\tID=gene-c\n"
+        "chr1\tRefSeq\tmRNA\t6000\t9000\t.\t-\t.\tID=rna-c;Parent=gene-c\n"
+        "chr1\tRefSeq\texon\t8000\t9000\t.\t-\t.\tID=exon-c-1;Parent=rna-c\n"
+        "chr1\tRefSeq\texon\t6000\t6500\t.\t-\t.\tID=exon-c-2;Parent=rna-c\n"
+        "chr1\tRefSeq\tCDS\t8000\t8800\t.\t-\t0\tID=cds-c;Parent=rna-c;partial=true;"
+        "end_range=8800,.\n"
+        "chr1\tRefSeq\tCDS\t6200\t6500\t.\t-\t2\tID=cds-c;Parent=rna-c;partial=true\n"
+        "chr1\tRefSeq\tcDNA_match\t8000\t9000\t.\t-\t.\tID=aln-2;Target=NM_3.1 1 1001 +;"
+        "Gap=M1001\n"
+        "chr1\tRefSeq\tcDNA_match\t6000\t6500\t.\t-\t.\tID=aln-2;Target=NM_3.1 1002 1502 +;"
+        "Gap=M501\n"
+    )
+    result = cgload_round_trip(tmp_path, text)
+    assert result["totals"]["kept"] == result["totals"]["truth"] == 6, result["examples"]
 
 
 TXDB_GFF = (

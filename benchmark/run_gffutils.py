@@ -91,18 +91,18 @@ def extract(db: Path, out: Path) -> dict:
     def rows():
         for key, members in grouped.items():
             first = records[members[0]]
-            strands, segs, parents, merged = set(), [], set(), {}
+            strands, segs, parents, rows_of = set(), [], set(), []
             for record_id in members:
                 seqid, ftype, start, end, strand, parsed = records[record_id]
                 strands.add(strand)
                 segs.append((start, end))
                 parents |= parent_keys(record_id)
-                gffmodel.merge_attributes(merged, parsed)
+                rows_of.append((start, end, parsed))
             low = min(min(a, b) for a, b in segs)
             high = max(max(a, b) for a, b in segs)
             yield (key, first[0], first[1], ",".join(sorted(strands)), low, high, len(segs),
                    gffmodel.segs_text(segs), ",".join(sorted(parents)),
-                   gffmodel.attrs_digest(merged), len(members), "")
+                   gffmodel.feature_digest(rows_of), len(members), "")
 
     connection = gffmodel.create(out)
     written = gffmodel.write_features(connection, rows())

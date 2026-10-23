@@ -46,8 +46,9 @@ COLUMNS = (
     "load_cpu_s", "load_peak_mb", "warnings", "repairs", "envelope_exceptions", "verify_exit",
     "verify_wall_s", "verify_peak_mb", "tier_source_count", "tier_parent_edges",
     "tier_stored_assembly", "tier_cross_parser", "db_bytes", "data_bytes", "export_exit",
-    "export_wall_s", "rt_truth", "rt_kept", "rt_changed", "rt_changed_declared", "rt_lost",
-    "rt_extra", "rt_truth_links", "rt_kept_links", "rt_fields_changed",
+    "export_wall_s", "rt_truth", "rt_kept", "rt_changed", "rt_changed_declared",
+    "rt_changed_announced", "rt_changed_silent", "rt_lost", "rt_lost_announced",
+    "rt_lost_silent", "rt_extra", "rt_truth_links", "rt_kept_links", "rt_fields_changed",
 )
 
 
@@ -163,7 +164,12 @@ def run(args) -> int:
     row["load_cpu_s"] = final.get("cpu_s")
     row["load_peak_mb"] = final["peak_rss_mb"]
     load_text = bc.text_of(steps, final_name)
-    row["warnings"] = sum(1 for line in load_text.splitlines() if "warning:" in line)
+    warned = [line.strip() for line in load_text.splitlines() if "warning:" in line]
+    row["warnings"] = len(warned)
+    # What cgload warned about, not only how often: the paper reports it.
+    (args.results / "warnings").mkdir(parents=True, exist_ok=True)
+    (args.results / "warnings" / f"{args.accession}.{args.backend}.txt").write_text(
+        "".join(line + "\n" for line in warned))
 
     if final["exit_code"] == 0:
         manifest = next(data.glob("**/manifest.json"), None)
@@ -223,8 +229,9 @@ def run(args) -> int:
             if result_json.exists():
                 result = json.loads(result_json.read_text())
                 totals = result["totals"]
-                for name in ("truth", "kept", "changed", "changed_declared", "lost",
-                             "truth_links", "kept_links"):
+                for name in ("truth", "kept", "changed", "changed_declared",
+                             "changed_announced", "changed_silent", "lost", "lost_announced",
+                             "lost_silent", "truth_links", "kept_links"):
                     row["rt_" + name] = totals.get(name, 0)
                 row["rt_extra"] = sum(result["extra_by_type"].values())
                 row["rt_fields_changed"] = ",".join(

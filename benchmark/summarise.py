@@ -107,8 +107,8 @@ def tools(results: Path) -> list[dict]:
         units[tool] = "features"
         per_tool[tool]["genomes"] += 1
         per_tool[tool][row.get("outcome") or "failed"] += 1
-        for key in ("truth", "kept", "changed", "changed_declared", "lost", "truth_links",
-                    "kept_links"):
+        for key in ("truth", "kept", "changed", "changed_declared", "lost", "lost_silent",
+                    "changed_silent", "truth_links", "kept_links"):
             per_tool[tool][key] += number(row.get(f"rt_{key}"), int) or 0
     for row in read(results / "compare_loaders.tsv"):
         tool = row["tool"]
@@ -262,8 +262,9 @@ def main(argv=None) -> int:
         "loaded_sqlite": sum(1 for r in scale_rows if r["sqlite_outcome"] == "loaded"),
         "loaded_sqlite_with_repair": sum(1 for r in scale_rows
                                          if r["sqlite_outcome"] == "loaded_with_repair"),
-        "loaded_postgres": sum(1 for r in scale_rows
-                               if str(r["postgres_outcome"]).startswith("loaded")),
+        "loaded_postgres": sum(1 for r in scale_rows if r["postgres_outcome"] == "loaded"),
+        "loaded_postgres_with_repair": sum(1 for r in scale_rows
+                                           if r["postgres_outcome"] == "loaded_with_repair"),
         "rows_loaded": sum(number(r["rows"], int) or 0 for r in loaded),
         "features_loaded": sum(number(r["features"], int) or 0 for r in loaded),
         "slowest_load_s": max((number(r["sqlite_load_s"]) or 0 for r in scale_rows), default=None),

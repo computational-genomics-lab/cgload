@@ -112,13 +112,6 @@ def parse_attributes(column: str) -> dict[str, list[str]]:
     return found
 
 
-def merge_attributes(target: dict[str, set[str]], attributes: dict[str, list[str]]) -> None:
-    for key, values in attributes.items():
-        if key in ("ID", "Parent"):
-            continue
-        target.setdefault(key, set()).update(values)
-
-
 def attrs_digest(attributes: dict[str, Iterable[str]]) -> str:
     """One digest for a feature's attributes: keys sorted, values sorted."""
     canonical = _SEP_KEY.join(
@@ -127,6 +120,23 @@ def attrs_digest(attributes: dict[str, Iterable[str]]) -> str:
         if key not in ("ID", "Parent")
     )
     return hashlib.sha1(canonical.encode("utf-8"), usedforsecurity=False).hexdigest()
+
+
+def feature_digest(rows: Iterable[tuple[int, int, dict[str, Iterable[str]]]]) -> str:
+    """One digest for a feature's attributes, from its rows as (start, end,
+    attributes).
+
+    Rows that agree give their attributes' digest. Rows that disagree are
+    compared row by row: each row's span with that row's own attributes, so a
+    value that moves to another row is a change, not only a value that is lost
+    from all of them.
+    """
+    digests = sorted(f"{start}\t{end}\t{attrs_digest(attributes)}"
+                     for start, end, attributes in rows)
+    if len({digest.rsplit("\t", 1)[1] for digest in digests}) <= 1:
+        return digests[0].rsplit("\t", 1)[1] if digests else attrs_digest({})
+    canonical = "\n".join(digests)
+    return "rows:" + hashlib.sha1(canonical.encode("utf-8"), usedforsecurity=False).hexdigest()
 
 
 def anon_key(seqid: str, ftype: str, start: int, end: int, strand: str, parents: str) -> str:

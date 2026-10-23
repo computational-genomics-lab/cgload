@@ -274,6 +274,26 @@ trans-spliced plastid genes it drops; it drops 54 human exons whose parents it
 does not import, and holds no transcript for 10,792 *Xenopus* exon and CDS
 rows. gffutils' default merge strategy refuses all 30 files.
 
+## Phase 4, preflight: 22 October 2026
+
+The 14 genomes the void run had trouble with, at 573d173, scale steps only
+(1 h 16 min on the lab server). All 14 loaded on SQLite and PostgreSQL, three
+with `--repair-envelopes`; every source-count, parent-edge and stored-assembly
+tier passed, and the two databases gave the same verify report for every
+genome. Nothing was lost in the round trip. What it showed:
+
+| Found | Fix |
+|---|---|
+| 1,938 features changed silently in the round trip (1,792 `cDNA_match`, 141 CDS, 5 genes): a minus-strand feature's lowest row lost its own attributes | D-104 |
+| the comparison took the union of a feature's rows' attributes, so a value moved to the wrong row could pass | per-row digest (`gffmodel.feature_digest`) |
+| yeast's six extra mRNAs, and *S. pombe*'s 32: pseudogenes GenBank states as a CDS alone | D-105 |
+| *S. pombe*'s 238 `LONG_TERMINAL_REPEAT` rows | D-106 |
+| the survey read a medaka file of 292,462 rows on 5 sequences; NCBI's has 1,399,050 on 25 (most likely a download cut short) | survey rerun on the complete file |
+| the summary's silent-change count for cgload was always 0 | scale table columns |
+
+*Neurospora*, *Aspergillus* and *Cryptococcus*: their extra mRNAs were all
+mitochondrial (28, 20, 13), and their GenBank comparison passed with D-103.
+
 ## Open
 
 - Memory: about 7 GB per million features plus 200 MB, from two loads made
@@ -285,13 +305,8 @@ rows. gffutils' default merge strategy refuses all 30 files.
 - `paper/paper.md` still has the old maize numbers (36 problems in seven
   genes). The rest of the docs now use the census.
 - The case-study genome (Q8) is not named yet.
-- Yeast: six more nuclear mRNAs in the GFF3 than in the GenBank file, one each
-  on NC_001136 and NC_001137, two each on NC_001141 and NC_001147 (D-103,
-  open). The preflight lists them.
-- The medaka GFF3 fetched on 21 October (md5 db602118...) is not the survey's
-  (e4475fda..., 7 October). Either NCBI replaced the file or the void run's
-  two copies spoiled the download; the preflight's fresh download will say
-  which. If NCBI replaced it, the rerun must take the survey's own file.
+- The survey's medaka row must be replaced by a survey of the complete file
+  before the second run (the preflight's finding above).
 - `run_txdb.R` has run with GenomicFeatures 1.54.3 only; the server run uses
   txdbmaker from conda.
 - Novelty: check Ensembl's datachecks and InterMine's acceptance tests before

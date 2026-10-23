@@ -107,7 +107,9 @@ skipped, dropped, ignored, rejected or unknown; otherwise it is **silent**.
 
 Fields compared: sequence, type, strands, spans, parents and attributes for
 cgload and gffutils; the same without attributes for Chado (python-chado spreads
-them over several tables).
+them over several tables). A feature whose rows carry different attributes is
+compared row by row: each row's span with that row's own attributes, so a value
+given to the wrong row is a change even when no value is lost.
 
 txdbmaker holds transcripts, not features, so it is compared per transcript
 (`compare_txdb.py`): sequence, strand, span, gene, exon spans (when the file
@@ -298,5 +300,30 @@ before the second run (tag `benchmark-run-2`):
   *F. graminearum* as section 2 says (they had taken *A. thaliana*);
   `faults.py` and `query_timing.py` no longer crash on a genome whose load
   failed; every runner reads the assembly ID from the database.
+
+**Preflight, 22 October 2026, at 573d173.** The 14 genomes the first run had
+problems with, loaded, verified and exported on both databases, nothing else.
+Every one loaded, three with `--repair-envelopes` (*A. thaliana*, rice, *S.
+pombe*, each repair declared), and every load passed the source-count,
+parent-edge and stored-assembly tiers. It showed, and these were fixed with
+tests before the second run:
+
+* The round trip changed 1,938 features silently, every one written on rows
+  with different attributes: a minus-strand feature's lowest row came back
+  with its first row's attributes (D-104). The comparison had missed part of
+  this, since it took the union of a feature's rows; it now compares such a
+  feature row by row (section 5).
+* `verify --against` still failed on yeast and *S. pombe*: NCBI's GFF3 gives
+  an mRNA to pseudogenes that GenBank states as a CDS alone (D-105), and
+  writes *S. pombe*'s LTRs in capitals (D-106).
+* The survey read a different medaka file from NCBI's: 292,462 rows on 5
+  sequences, where NCBI's file, fetched twice on different days with the same
+  MD5, has 1,399,050 rows on 25. Most likely the survey's download was cut
+  short. The other 29 files are the survey's exactly. The survey is run again
+  on the complete medaka file before the second run, and its row replaced
+  (`survey/results/`).
+* The summary reported 0 silent changes for cgload, because the scale table
+  had no such column; it now has the announced and silent counts. The load's
+  warnings and the whole verify report are kept in `results/`.
 
 Every measurement is repeated on every genome in the second run.

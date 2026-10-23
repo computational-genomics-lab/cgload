@@ -152,22 +152,23 @@ def read(path: Path, ignore: frozenset[str] = frozenset()):
     return features, sequences, rows, id_conflicts, non_numeric
 
 
-def merge_disagreeing(path: Path, features: dict[str, Feature],
-                      ignore: frozenset[str] = frozenset()) -> dict[str, str]:
+def digest_disagreeing(path: Path, features: dict[str, Feature],
+                       ignore: frozenset[str] = frozenset()) -> dict[str, str]:
     """Second pass, only for features whose rows carry different attributes:
-    their digest is taken over the union of all their rows' attributes."""
+    their digest is taken row by row (``gffmodel.feature_digest``), so a loader
+    that keeps every value but gives it to the wrong row is caught."""
     wanted = {key for key, feature in features.items() if feature.disagree}
     if not wanted:
         return {}
-    merged: dict[str, dict[str, set[str]]] = {key: {} for key in wanted}
+    rows: dict[str, list] = {key: [] for key in wanted}
     for _number, columns in gffmodel.iter_rows(path):
         attributes = gffmodel.parse_attributes(columns[8])
         for name in ignore:
             attributes.pop(name, None)
         identifier = attributes.get("ID", [None])[0]
-        if identifier in merged:
-            gffmodel.merge_attributes(merged[identifier], attributes)
-    return {key: gffmodel.attrs_digest(values) for key, values in merged.items()}
+        if identifier in rows:
+            rows[identifier].append((columns[3], columns[4], attributes))
+    return {key: gffmodel.feature_digest(values) for key, values in rows.items()}
 
 
 def flag(features: dict[str, Feature], sequences: dict[str, dict]) -> None:
@@ -210,7 +211,7 @@ def flag(features: dict[str, Feature], sequences: dict[str, dict]) -> None:
 
 def build(path: Path, out: Path, ignore: frozenset[str] = frozenset()) -> dict:
     features, sequences, rows, id_conflicts, non_numeric = read(path, ignore)
-    merged = merge_disagreeing(path, features, ignore)
+    merged = digest_disagreeing(path, features, ignore)
     flag(features, sequences)
 
     connection = gffmodel.create(out)
