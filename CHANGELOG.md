@@ -58,6 +58,9 @@ The refusal says so. Load into a new database made with `cgload init`.
   refseq profile", and `--strict-vocabulary` refused 29 of the benchmark's 30
   RefSeq files: the profile declared 9 of the 91 types they use. It now
   declares all 91 (D-107).
+- `query --id` on PostgreSQL read the whole feature table twice: 12 s for a
+  human gene. It now fetches the features it selects by name, using the index
+  (D-108).
 - A feature written on several rows lost what differed between its rows: each
   row of a `cDNA_match` alignment was exported with the first row's `Target`
   and `Gap`, a partial CDS lost `end_range`, and a trans-spliced gene's rows

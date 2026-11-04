@@ -272,6 +272,46 @@ def test_the_txdb_comparison_follows_txdbmakers_rules(tmp_path):
     assert result["by_case"]["exon_under_pseudogene"] == {"truth": 1, "kept": 1}
 
 
+ANTISENSE_GFF = (
+    "##gff-version 3\n"
+    "chr1\t.\tgene\t100\t200\t.\t+\t.\tID=gene-MIR1A;Name=MIR1A\n"
+    "chr1\t.\tprimary_transcript\t100\t200\t.\t+\t.\tID=rna-MIR1A;Parent=gene-MIR1A\n"
+    "chr1\t.\texon\t100\t200\t.\t+\t.\tID=exon-MIR1A-1;Parent=rna-MIR1A\n"
+    "chr1\t.\tgene\t100\t200\t.\t-\t.\tID=gene-MIR1B;Name=MIR1B\n"
+    "chr1\t.\tprimary_transcript\t100\t200\t.\t-\t.\tID=rna-MIR1B;Parent=gene-MIR1B\n"
+    "chr1\t.\texon\t100\t200\t.\t-\t.\tID=exon-MIR1B-1;Parent=rna-MIR1B\n"
+)
+
+
+def test_unnamed_transcripts_on_one_span_are_paired_by_strand(tmp_path):
+    """Human MIR103A1 and its antisense MIR103B1: one span, two strands, no
+    transcript_id. Paired crosswise, each looked like a strand change."""
+    import compare_txdb
+
+    db, _ = build(tmp_path, ANTISENSE_GFF)
+    directory = tmp_path / "txdb"
+    directory.mkdir()
+    kinds = {"gene": ("gene",), "transcript": ("primary_transcript",), "exon": ("exon",),
+             "cds": ("CDS",), "stop_codon": ("stop_codon",),
+             "imported": ("gene", "primary_transcript", "exon", "CDS", "stop_codon")}
+    (directory / "types.txt").write_text("".join(
+        f"{kind}\ttest\t{value}\n" for kind, values in kinds.items() for value in values))
+    # The TxDb lists the minus-strand transcript first, the order a crosswise
+    # pairing needs to show up.
+    (directory / "transcripts.tsv").write_text(
+        "tx_id\ttx_name\tseqid\tstrand\tstart\tend\ttype\tgenes\n"
+        "1\t\tchr1\t-\t100\t200\tprimary_transcript\tMIR1B\n"
+        "2\t\tchr1\t+\t100\t200\tprimary_transcript\tMIR1A\n")
+    (directory / "exons.tsv").write_text(
+        "tx_id\trank\tseqid\tstrand\tstart\tend\tname\n"
+        "1\t1\tchr1\t-\t100\t200\t\n2\t1\tchr1\t+\t100\t200\t\n")
+    (directory / "cds.tsv").write_text("tx_id\trank\tseqid\tstrand\tstart\tend\tname\n")
+    (directory / "genes.tsv").write_text("gene_id\nMIR1A\nMIR1B\n")
+    result = compare_txdb.compare(db, directory, tmp_path / "a.gff3", [])
+    assert result["totals"] == {"truth": 2, "kept": 2}, result["examples"]
+    assert result["paired_by"] == {"span, strand and type": 2}
+
+
 def test_txdbmaker_names_genes_by_id_when_names_do_not_tell_them_apart(tmp_path):
     import compare_txdb
 

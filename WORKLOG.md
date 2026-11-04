@@ -310,6 +310,40 @@ after (`survey/results/CORRECTIONS.md`).
 The warnings, now kept, showed every RefSeq load but *Aspergillus*'s warning
 about types the profile did not declare (D-107).
 
+## Phase 4, second run: 23 and 24 October 2026
+
+At `benchmark-run-2`, all 30 genomes, 19.5 hours on the lab server. Results in
+the lab's copy of `cgload-benchmark-run/results`.
+
+* Q1, Q2: all 30 loaded on SQLite and on PostgreSQL, 7 with
+  `--repair-envelopes` (12 envelopes repaired, each declared); 18,017,618
+  features in 28,211,625 rows. Every load passed the source-count,
+  parent-edge and stored-assembly tiers; `verify --against` passed on all 8
+  fungi. Round trip: nothing lost, nothing changed silently; the 12 repairs are
+  the only changes. Human: 641 s and 30 GB peak on SQLite, 1,978 s and 37 GB on
+  PostgreSQL. 54 of 60 loads printed no warning (D-107).
+* Q4: 81 of 81 faults as predicted (27 on each of human, *Arabidopsis*,
+  *F. graminearum*): 19 detected, 8 not, by design.
+* Q5: cgload left an empty database in 20 of 20 killed new loads, and the
+  earlier load intact in 20 of 20 killed `--force` reloads. gffutils left a file
+  in all 20 trials that gffutils itself cannot open (its `meta` row is written
+  last); 3 of those held every record. Chado held nothing in 5 of 5.
+* Q3: gffutils' default refuses all 30 (duplicate ID); `create_unique` splits
+  all 1,072,125 multi-row features into one record per row, silently, and
+  changed attributes of 133 *S. pombe* features (not yet explained). Chado and
+  txdbmaker are being measured again (PROTOCOL.md, section 12). In what Chado
+  did load: every `lnc_RNA` is lost, with its exons, in each genome that has
+  them: the current Sequence Ontology calls the term `lncRNA`, and NCBI still
+  writes `lnc_RNA`.
+* Q7: all 30 compared; of the survey's 102 flagged rows, cgload objects to 79
+  and accepts 23, and it never accepts a row the survey calls an error. It
+  objects to 66 rows the survey calls documented conventions: exons and CDS
+  outside the stated span of a trans-spliced organelle mRNA in five plants,
+  and three *Anopheles* mRNAs outside their gene. It refuses each of them
+  unless `--repair-envelopes` is given, and accepts them once the parent is
+  repaired. It also objects to 8 features the survey did not flag: the parents
+  of such rows (to analyse).
+
 ## Open
 
 - Memory: about 7 GB per million features plus 200 MB, from two loads made

@@ -2793,3 +2793,22 @@ type its source profiles declare, since an export carries what its source
 held. Loading does not change: undeclared types still load verbatim, and a
 type outside the list still warns, and is still refused under
 `--strict-vocabulary`.
+
+## D-108 — a query fetches the features it selects by name, in batches
+
+**Found by the benchmark's second run, 23 October 2026.** Looking up one gene
+with everything below it took 12 s on PostgreSQL for the human RefSeq
+annotation, against 5 ms on SQLite, and 0.4 s for maize and *Arabidopsis*.
+The query was one statement: a recursive walk down from the gene, nested
+inside the expansion to whole features, nested inside the fetch of their rows
+and attributes. PostgreSQL cannot estimate a recursive walk, so it expected
+thousands of rows where a gene has tens, and read the whole feature table to
+join them, once for the rows and once for the attributes. Reproduced on a
+480,000-row synthetic genome: two sequential scans, 110 ms a gene.
+
+**Decided:** `query` finds what it selects first, as the names of the features
+(and the row ids of features without a name), then fetches those features by
+name in batches. With the names in hand the planner uses the index: 15 ms a
+gene on the same synthetic genome, and no scan. A batch never holds more values
+than the connection allows, which SQLite reports and lets a caller lower
+(AUDIT-8); the ancestor lookup that already ran in batches uses the same rule.

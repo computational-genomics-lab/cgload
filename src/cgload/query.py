@@ -280,9 +280,30 @@ def _whole_features(assembly_id: int, rows):
     return feature.c.feature_id.in_(union(by_name, anonymous))
 
 
-#: Ancestors looked up per statement in ``_top_level``: well under every
-#: driver's parameter limit (AUDIT-8), whatever the size of the answer.
-_ANCESTOR_BATCH = 500
+#: Values per IN list in ``_top_level`` and ``_fetch_whole_features``: well
+#: under every driver's parameter limit (AUDIT-8), and under a lower one where
+#: the connection reports it (``_batch_size``).
+_BATCH = 500
+
+
+def _batch_size(connection: Connection) -> int:
+    """How many values one IN list may carry on this connection.
+
+    SQLite's limit on bound parameters is set when it is built, 999 in older
+    builds and 32,766 since 3.32, and can be lowered at run time; the
+    connection says what it is. Other drivers allow tens of thousands.
+    """
+    if connection.dialect.name != "sqlite":
+        return _BATCH
+    import sqlite3
+
+    try:
+        limit = connection.connection.dbapi_connection.getlimit(
+            sqlite3.SQLITE_LIMIT_VARIABLE_NUMBER)
+    except AttributeError:  # Python before 3.11 cannot ask
+        limit = 999
+    # A few parameters of each statement are not in the list.
+    return max(1, min(_BATCH, limit - 8))
 
 
 def _top_level(connection: Connection, features: list[StoredFeature]) -> dict[int, str | None]:
@@ -299,10 +320,11 @@ def _top_level(connection: Connection, features: list[StoredFeature]) -> dict[in
         parent_of[item.row_id] = item.parent_row_id
         name_of[item.row_id] = item.source_id
     missing = {p for p in parent_of.values() if p is not None and p not in parent_of}
+    size = _batch_size(connection)
     while missing:
         wanted = sorted(missing)
-        for begin in range(0, len(wanted), _ANCESTOR_BATCH):
-            batch = wanted[begin : begin + _ANCESTOR_BATCH]
+        for begin in range(0, len(wanted), size):
+            batch = wanted[begin : begin + size]
             for row in connection.execute(
                 select(feature.c.feature_id, feature.c.parent_id, feature.c.source_id).where(
                     feature.c.feature_id.in_(batch)
@@ -341,8 +363,40 @@ def _finish(
     description: str,
 ) -> QueryResult:
     selected = _with_ancestors(rows) if ancestors else rows
-    features = features_where(connection, _whole_features(assembly_id, selected))
+    features = _fetch_whole_features(connection, assembly_id, selected)
     return QueryResult(features, _top_level(connection, features), hits, description)
+
+
+def _fetch_whole_features(
+    connection: Connection, assembly_id: int, rows
+) -> list[StoredFeature]:
+    """Every row of every feature with a row in ``rows``, in two steps (D-108).
+
+    First the names of the features selected, then the features themselves,
+    looked up by name in bounded batches. One nested statement did both, and
+    PostgreSQL, unable to estimate a recursive walk, expected thousands of rows
+    where a gene has tens and read the whole feature table twice: 12 s for a
+    human gene, against 5 ms on SQLite.
+    """
+    named = select(feature.c.source_id).where(
+        feature.c.feature_id.in_(rows), feature.c.source_id.is_not(None)
+    ).distinct()
+    anonymous = select(feature.c.feature_id).where(
+        feature.c.feature_id.in_(rows), feature.c.source_id.is_(None)
+    )
+    names = sorted(name for (name,) in connection.execute(named).all())
+    row_ids = sorted(row_id for (row_id,) in connection.execute(anonymous).all())
+    size = _batch_size(connection)
+    features: list[StoredFeature] = []
+    for begin in range(0, len(names), size):
+        batch = names[begin : begin + size]
+        features.extend(features_where(connection, and_(
+            feature.c.assembly_id == assembly_id, feature.c.source_id.in_(batch))))
+    for begin in range(0, len(row_ids), size):
+        batch = row_ids[begin : begin + size]
+        features.extend(features_where(connection, feature.c.feature_id.in_(batch)))
+    features.sort(key=lambda item: (item.seqid, item.start, item.end))
+    return features
 
 
 def by_id(

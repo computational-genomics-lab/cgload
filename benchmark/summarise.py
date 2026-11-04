@@ -124,6 +124,7 @@ def tools(results: Path) -> list[dict]:
     for tool, counts in sorted(per_tool.items()):
         out.append({"tool": tool, "unit": units.get(tool, ""), **{key: counts[key] for key in (
             "genomes", "loaded", "loaded_with_repair", "refused", "failed", "timed_out",
+            "setup_failed", "not_run",
             "truth", "kept", "changed", "changed_declared", "lost", "lost_silent",
             "changed_silent", "extra", "not_modelled", "parts_unattached", "truth_links",
             "kept_links", "genes_truth", "genes_held")}})
@@ -273,7 +274,8 @@ def main(argv=None) -> int:
         "faults_as_expected": f"{sum(r['as_expected'] for r in fault_rows)} of "
                               f"{sum(r['genomes'] for r in fault_rows)}",
         "tools": {r["tool"]: {k: r[k] for k in ("genomes", "loaded", "loaded_with_repair",
-                                                 "refused", "failed", "timed_out", "kept",
+                                                 "refused", "failed", "timed_out",
+                                                 "setup_failed", "not_run", "kept",
                                                  "changed", "changed_declared", "lost",
                                                  "lost_silent", "changed_silent")}
                   for r in tool_rows},

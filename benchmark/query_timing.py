@@ -295,7 +295,7 @@ def time_library(args, tools: Tools, targets: dict, table: Path) -> None:
                     c, a, g, descendants=True).features,
                 "region": lambda w, c=connection, a=assembly: cg.in_region(
                     c, a, f"{w[0]}:{w[1]}-{w[2]}").features,
-                "count": lambda _t, c=connection: _cgload_counts(c),
+                "count": lambda _t, c=connection, a=assembly: _cgload_counts(c, a),
             }
         for task, items in (("gene", targets["genes"]), ("region", targets["windows"]),
                             ("count", ["all"])):
@@ -316,12 +316,14 @@ def time_library(args, tools: Tools, targets: dict, table: Path) -> None:
         print(f"{args.accession} library {tool}: {len(rows)} runs")
 
 
-def _cgload_counts(connection) -> dict:
+def _cgload_counts(connection, assembly: int) -> dict:
+    """Features per type, as `cgload stats` counts them: a feature written on
+    several rows counts once. Counting rows instead, as this did before the
+    second run, timed an easier question than the command answers."""
+    from cgload.db.counts import counts_by
     from cgload.db.schema import feature
-    from sqlalchemy import func, select
 
-    return dict(connection.execute(
-        select(feature.c.source_type, func.count()).group_by(feature.c.source_type)).all())
+    return dict(connection.execute(counts_by(feature.c.source_type, assembly)).all())
 
 
 def main(argv=None) -> int:

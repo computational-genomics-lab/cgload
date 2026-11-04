@@ -76,8 +76,6 @@ def parse_obo(path: Path) -> list[dict]:
 
 def load_ontology(dsn: str, obo: Path) -> int:
     """The Sequence Ontology into cv 'sequence', with its synonyms."""
-    import psycopg2
-
     connection = _connect(dsn)
     cursor = connection.cursor()
 
@@ -106,18 +104,23 @@ def load_ontology(dsn: str, obo: Path) -> int:
             accession = accession.split(":", 1)[1]
         xref = one("INSERT INTO dbxref (db_id, accession) VALUES (%s, %s) RETURNING dbxref_id",
                    (db_so, accession))
-        cursor.execute("SAVEPOINT term")
-        try:
-            term = one(
-                "INSERT INTO cvterm (cv_id, name, definition, dbxref_id, is_obsolete, "
-                "is_relationshiptype) VALUES (%s, %s, %s, %s, %s, %s) RETURNING cvterm_id",
-                (cv_sequence, stanza["name"], stanza.get("def", "")[:10000], xref,
-                 1 if stanza.get("is_obsolete") == "true" else 0,
-                 1 if stanza["kind"] == "Typedef" else 0))
-        except psycopg2.Error:
-            # An obsolete term may share its name with a current one.
-            cursor.execute("ROLLBACK TO SAVEPOINT term")
+        # An obsolete term may share its name with another obsolete one, which
+        # Chado's unique (name, cv, is_obsolete) refuses; such a term is skipped.
+        # ON CONFLICT, not a savepoint per term: each savepoint that writes holds
+        # a lock until the transaction ends, and six genomes set up at once ran
+        # PostgreSQL out of lock space ("out of shared memory"), so their loads
+        # found no ontology at all (the second run, 23 October 2026).
+        cursor.execute(
+            "INSERT INTO cvterm (cv_id, name, definition, dbxref_id, is_obsolete, "
+            "is_relationshiptype) VALUES (%s, %s, %s, %s, %s, %s) "
+            "ON CONFLICT DO NOTHING RETURNING cvterm_id",
+            (cv_sequence, stanza["name"], stanza.get("def", "")[:10000], xref,
+             1 if stanza.get("is_obsolete") == "true" else 0,
+             1 if stanza["kind"] == "Typedef" else 0))
+        found = cursor.fetchone()
+        if found is None:
             continue
+        term = found[0]
         loaded += 1
         seen = set()
         for text, scope in stanza["synonym"]:
@@ -140,6 +143,17 @@ def setup(args) -> int:
     terms = load_ontology(args.dsn, args.so)
     print(json.dumps({"schema_errors": len(errors), "schema_error_kinds": sorted(
         {re.sub(r"^.*ERROR:\s*", "", line) for line in errors}), "ontology_terms": terms}))
+    # The load looks up its landmark type, `region`, before anything else. A
+    # database without it is a setup that failed, not a load that did.
+    connection = _connect(args.dsn)
+    cursor = connection.cursor()
+    cursor.execute("SELECT count(*) FROM cvterm t JOIN cv ON cv.cv_id = t.cv_id "
+                   "WHERE cv.name = 'sequence' AND t.name = 'region'")
+    ready = cursor.fetchone()[0] == 1
+    connection.close()
+    if not ready:
+        print("setup failed: the Sequence Ontology is not in the database", file=sys.stderr)
+        return 1
     return 0
 
 

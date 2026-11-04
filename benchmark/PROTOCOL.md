@@ -336,3 +336,29 @@ fixed before the second run: every RefSeq load but one warned about feature
 types the RefSeq profile did not declare (D-107).
 
 Every measurement is repeated on every genome in the second run.
+
+**Second run, 23 and 24 October 2026, at `benchmark-run-2` (8c999e2).** Every
+step finished, in 19.5 hours. Two steps were wrong in the scripts, not in the
+tools they measure, and one measurement found a cgload defect. Each was fixed
+with tests, and the steps they touch were run again at `benchmark-run-2.1`:
+
+* Chado's database setup. Six genomes were set up at once, and loading the
+  Sequence Ontology with one savepoint per term ran PostgreSQL out of lock
+  space ("out of shared memory"). The first six genomes, all vertebrates, got
+  no ontology, and python-chado stopped at once. Reproduced with eight setups
+  at once. The ontology now loads without savepoints, and a setup that fails is
+  recorded as such, never as a Chado result. Chado is measured again on all 30.
+* txdbmaker's comparison paired two unnamed transcripts that share a span on
+  opposite strands crosswise, as it did human MIR103A1 and its antisense
+  MIR103B1 precursors, and reported strand changes txdbmaker never made (14 in
+  human, 10 in rat). Pairing now tries the same strand first. txdbmaker is
+  measured again on all 30.
+* Q6: looking up one human gene took 12 s on PostgreSQL (D-108). The timing
+  step is measured again. Its library count now counts features as `cgload
+  stats` does; it had counted rows, an easier question than the command
+  answers.
+
+`forget.py` set aside what the repeated steps replace, in
+`results/superseded/`. Every other step stands as measured at
+`benchmark-run-2`: the scale, round-trip, fault, interrupted-load, gffutils
+and agreement steps do not run the code these fixes changed.

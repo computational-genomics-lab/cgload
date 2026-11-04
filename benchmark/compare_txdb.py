@@ -26,10 +26,11 @@ A TxDb does not keep the file's IDs. It names a transcript by its
 ``Name``, and a gene by its ``gene_id``, ``Name`` or ID, by the rules of
 makeTxDbFromGRanges, which ``txdb_names`` repeats. Each transcript of the file
 is paired with one of the TxDb's in stages: same name and span; same name,
-when only one of each has it; same span and type; same span, when only one of
-each has it. A transcript left unpaired is lost; a TxDb transcript left
-unpaired is extra. Exon and CDS features under no transcript, which txdbmaker
-drops, are counted apart.
+when only one of each has it; same span, strand and type; same span and
+type, when only one of each has it; same span, when only one of each has it.
+A transcript left unpaired is lost; a TxDb transcript left unpaired is extra.
+Exon and CDS features under no transcript, which txdbmaker drops, are counted
+apart.
 
 A lost or changed transcript is announced when txdbmaker's own output (--log)
 names it or a feature below it; txdbmaker lists the transcripts it drops by
@@ -311,13 +312,22 @@ def _pair(expected: dict, held: list[dict]) -> tuple[dict[str, dict], Counter]:
     def name(row):
         return row.get("tx_name") or None
 
+    def strand(row):
+        return TXDB_STRAND.get(row["strand"], row["strand"])
+
     typed = all(row.get("type") for row in held)
     run("name and span", lambda w: (w["name"], w["seqid"], w["start"], w["end"]),
         lambda r: (name(r), r["seqid"], r["start"], r["end"]), unique=False)
     run("name", lambda w: (w["name"],), lambda r: (name(r),), unique=True)
     if typed:
+        # Strand first: two unnamed transcripts can share a span on opposite
+        # strands, as human MIR103A1 and its antisense MIR103B1 precursors do,
+        # and pairing them crosswise reported a strand change txdbmaker never made.
+        run("span, strand and type",
+            lambda w: (w["seqid"], w["start"], w["end"], w["strand"], w["type"]),
+            lambda r: (r["seqid"], r["start"], r["end"], strand(r), r["type"]), unique=False)
         run("span and type", lambda w: (w["seqid"], w["start"], w["end"], w["type"]),
-            lambda r: (r["seqid"], r["start"], r["end"], r["type"]), unique=False)
+            lambda r: (r["seqid"], r["start"], r["end"], r["type"]), unique=True)
     run("span", lambda w: (w["seqid"], w["start"], w["end"]),
         lambda r: (r["seqid"], r["start"], r["end"]), unique=True)
     return pairs, stages

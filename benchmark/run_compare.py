@@ -194,8 +194,16 @@ def run_chado(args, row, work, steps) -> None:
         connection.execute(f'DROP DATABASE IF EXISTS "{database}"')
         connection.execute(f'CREATE DATABASE "{database}"')
     dsn = f"{conninfo} dbname={database}"
-    bc.measured("setup", [python, str(bc.HERE / "run_chado.py"), "setup", "--dsn", dsn,
-                          "--schema", schema, "--so", ontology, "--psql", psql], steps)
+    setup = bc.measured("setup", [python, str(bc.HERE / "run_chado.py"), "setup", "--dsn", dsn,
+                                  "--schema", schema, "--so", ontology, "--psql", psql], steps)
+    if setup["exit_code"] != 0:
+        # Not python-chado's failure: the database it was given was not ready, so
+        # nothing it did or lost is a result (the second run's first six genomes).
+        row.update(outcome="setup_failed", exit_code=setup["exit_code"],
+                   error=error_of(steps, "setup"))
+        with psycopg.connect(conninfo + " dbname=postgres", autocommit=True) as connection:
+            connection.execute(f'DROP DATABASE IF EXISTS "{database}"')
+        return
     genome = bc.genome(args.accession)
     load = bc.measured("load", [python, "-W", "ignore", str(bc.HERE / "run_chado.py"), "load",
                                 "--dsn", dsn, str(args.inputs / args.accession / "genomic.gff"),
