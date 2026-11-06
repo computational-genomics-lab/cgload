@@ -345,3 +345,96 @@ def test_the_timing_reads_each_tools_answer(tmp_path):
     assert query_timing.answer_of("gffutils", "gene", gff_lines, tmp_path / "x") == "2"
     assert query_timing.answer_of("gffutils", "count", "gene\t1\nmRNA\t1\n2\n",
                                   tmp_path / "x") == "2"
+
+
+def test_a_long_log_and_many_losses_give_the_old_answer_quickly(tmp_path):
+    """The second run's human Chado comparison: 3.2 million lost features, a
+    15 MB log, and over a day spent reading the log once per feature. The
+    answer must stay exactly what `key in log` gave, words inside longer words
+    included."""
+    import random
+    import time
+
+    rng = random.Random(7)
+    lost = 60_000
+    rows = ["##gff-version 3\n"]
+    for index in range(lost):
+        rows.append(f"chr1\t.\texon\t{index * 10 + 1}\t{index * 10 + 5}\t.\t+\t.\t"
+                    f"ID=exon-{index:06d}\n")
+    rows.append("chr1\t.\tsnoRNA\t900001\t900100\t.\t+\t.\tID=rna-sno\n")
+    db, _ = build(tmp_path, "".join(rows))
+    empty = tmp_path / "empty.sqlite"
+    gffmodel.create(empty).close()
+    named = {f"exon-{index:06d}" for index in rng.sample(range(lost), 300)}
+    embedded = sorted(f"exon-{index:06d}" for index in rng.sample(range(lost), 50))
+    noise = "".join(f"Malformed Target value (unknown target): NR_{rng.randrange(10**6)}.1 "
+                    f"{rng.randrange(1000)} {rng.randrange(1000)} +, skipping\n"
+                    for _ in range(60_000))
+    log = tmp_path / "load.err"
+    # Lines that name a feature without a word such as "skipped", so that the
+    # exons are announced by name, one by one, not by their type.
+    log.write_text(noise + "".join(f"placed {key}\n" for key in sorted(named))
+                   + "".join(f"part of x{key}y\n" for key in embedded)
+                   + "snoRNA rows dropped\n")
+    started = time.perf_counter()
+    result = compare.compare(db, empty, logs=[log])
+    took = time.perf_counter() - started
+    # The keys occur in the log only where they were written into it, so this is
+    # what `key in log` answers for each, without asking it 60,000 times.
+    loud = len(named | set(embedded))
+    assert result["totals"]["lost_announced"] == loud + 1  # and the snoRNA, by type
+    assert result["totals"]["lost_silent"] == lost - loud
+    assert took < 60, took
+
+
+def test_the_quick_name_check_answers_exactly_as_a_search_of_the_log():
+    import random
+
+    rng = random.Random(11)
+    alphabet = "ab-_.:|0 ;="
+    text = "".join(rng.choice(alphabet) for _ in range(20_000))
+    names = compare._Names(text)
+    keys = [text[start:start + length] for start, length in
+            ((rng.randrange(19_000), rng.randrange(1, 30)) for _ in range(3_000))]
+    keys += ["".join(rng.choice(alphabet) for _ in range(rng.randrange(1, 30)))
+             for _ in range(3_000)]
+    assert [names(key) for key in keys] == [key in text for key in keys]
+
+
+def test_a_comparison_that_did_not_finish_can_be_done_again(tmp_path):
+    """The second run's human Chado load: timed out, left nothing, and its
+    comparison was stopped. recompare.py fills in the comparison alone."""
+    import benchcommon as bc
+    import recompare
+    import run_compare
+
+    results, work = tmp_path / "results", tmp_path / "work"
+    (results / "truth").mkdir(parents=True)
+    gff = tmp_path / "a.gff3"
+    gff.write_text(HARD)
+    truth.build(gff, results / "truth" / "G1.sqlite")
+    steps = work / "compare" / "chado" / "G1" / "steps"
+    steps.mkdir(parents=True)
+    (steps / "extract.out").write_text('{"features": 0, "landmarks": 0}\n')
+    (steps / "load.out").write_text("")
+    (steps / "load.err").write_text("Malformed Target value, skipping g1\n")
+    row = dict.fromkeys(run_compare.COLUMNS)
+    row.update(accession="G1", tool="chado", outcome="timed_out", exit_code=124,
+               wall_s=86401.334, error="Malformed Target value, skipping g1")
+    other = dict(row, accession="G2", outcome="loaded")
+    for item in (row, other):
+        bc.append_row(results / "compare_loaders.tsv", item)
+    before = (results / "compare_loaders.tsv").read_text().splitlines()
+    assert recompare.main(["G1", "--tool", "chado", "--results", str(results),
+                           "--work", str(work)]) == 0
+    after = (results / "compare_loaders.tsv").read_text().splitlines()
+    assert after[0] == before[0] and after[2] == before[2]
+    filled = dict(zip(after[0].split("\t"), after[1].split("\t"), strict=True))
+    truth_count = filled["truth"]
+    assert filled["kept"] == "0" and filled["lost"] == truth_count != "0"
+    assert int(filled["lost_silent"]) == int(truth_count) - 1  # g1 is named in the log
+    assert filled["outcome"] == "timed_out" and filled["wall_s"] == "86401.334"
+    assert (results / "compare" / "G1.chado.json").exists()
+    assert list((results / "superseded").glob("*/compare_loaders.tsv"))
+    assert recompare.main(["G1", "--tool", "chado", "--results", str(results),
+                           "--work", str(work)]) == 1  # once only

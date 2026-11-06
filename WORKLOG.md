@@ -330,11 +330,21 @@ the lab's copy of `cgload-benchmark-run/results`.
   last); 3 of those held every record. Chado held nothing in 5 of 5.
 * Q3: gffutils' default refuses all 30 (duplicate ID); `create_unique` splits
   all 1,072,125 multi-row features into one record per row, silently, and
-  changed attributes of 133 *S. pombe* features (not yet explained). Chado and
-  txdbmaker are being measured again (PROTOCOL.md, section 12). In what Chado
-  did load: every `lnc_RNA` is lost, with its exons, in each genome that has
-  them: the current Sequence Ontology calls the term `lncRNA`, and NCBI still
-  writes `lnc_RNA`.
+  changed attributes of 133 *S. pombe* features (not yet explained).
+  txdbmaker (repeat): 24 loaded, 6 failed (an inverted row in maize,
+  *Arabidopsis* and soybean; exons of trans-spliced transcripts in rice,
+  tomato and grape); 36 transcripts lost and 104 changed, all announced but
+  3 *Candida* genes. Chado (repeat): 21 loaded, 8 failed (multi-row
+  trans-spliced organelle genes in the fly and five plants, an inverted row in
+  *Arabidopsis* and soybean), human timed out at 24 h with nothing stored.
+  Where it loaded it loses every `lnc_RNA`, with its exons: the current
+  Sequence Ontology calls the term `lncRNA`, and NCBI still writes `lnc_RNA`.
+  The mammals, chicken and zebrafish lose 5 to 11% of their features; *Xenopus*,
+  whose file writes `lncRNA`, loses none.
+* Q6 (repeat): a human gene with everything below it, library view, 5 ms on
+  SQLite and 25 ms on PostgreSQL (12 s before D-108), 1 ms for gffutils.
+  Counting features by type on PostgreSQL still takes 19 s for human: cgload
+  counts features, gffutils counts records, which split features inflate.
 * Q7: all 30 compared; of the survey's 102 flagged rows, cgload objects to 79
   and accepts 23, and it never accepts a row the survey calls an error. It
   objects to 66 rows the survey calls documented conventions: exons and CDS

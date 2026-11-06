@@ -362,3 +362,13 @@ with tests, and the steps they touch were run again at `benchmark-run-2.1`:
 `results/superseded/`. Every other step stands as measured at
 `benchmark-run-2`: the scale, round-trip, fault, interrupted-load, gffutils
 and agreement steps do not run the code these fixes changed.
+
+**The repeat, 4 to 6 November 2026, at `benchmark-run-2.1` (9b97178).**
+txdbmaker and the timing step finished as expected, and Chado on 29 genomes.
+The human Chado load reached its 24-hour limit and left nothing, as python-chado
+commits only at the end. Its comparison then ran for 26 hours and was stopped:
+`compare.py` searched the load's 15 MB log once for each of 3.2 million lost
+features, to tell an announced loss from a silent one. It now answers the same
+question from an index of the log, built once (tested to give exactly the old
+answer), and `recompare.py` filled in that one comparison without loading
+again. The run's other results are as the repeat measured them.

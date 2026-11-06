@@ -53,17 +53,58 @@ def _log_text(paths: list[Path]) -> tuple[str, list[str]]:
     return joined, announcing
 
 
+#: Characters no feature key contains in practice, so an occurrence of a key
+#: without them lies inside one run of the others.
+_SEPARATORS = re.compile(r"[\s()\[\]{}<>,;\"'=]+")
+_GRAM = 8
+
+
+class _Names:
+    """``key in text``, answered without reading the text for every key.
+
+    Searching a 15 MB log once per lost feature took over a day for the human
+    genome's 3.2 million features in the second run. Every 8-character piece of
+    every distinct word of the log goes into a set once. A key one of whose
+    8-character pieces is not in the set cannot occur in the log; every piece is
+    checked, since IDs share their beginnings (`exon-XM_`) and differ at the
+    end. Every other key is searched for as before, so the answer is always
+    exactly ``key in text``.
+    """
+
+    def __init__(self, text: str):
+        self.text = text
+        words = set(_SEPARATORS.split(text))
+        self.grams = {word[i:i + _GRAM] for word in words
+                      for i in range(len(word) - _GRAM + 1)}
+
+    def __call__(self, key: str) -> bool:
+        if not key or not self.text:
+            return False
+        if len(key) >= _GRAM and not _SEPARATORS.search(key):
+            grams = self.grams
+            if any(key[i:i + _GRAM] not in grams for i in range(len(key) - _GRAM + 1)):
+                return False
+        return key in self.text
+
+
 def compare(truth: Path, stored: Path, *, fields=FIELDS, types: set[str] | None = None,
             declared: set[str] = frozenset(), logs: list[Path] = (), examples: int = 5) -> dict:
     connection = sqlite3.connect(truth)
     connection.execute("ATTACH DATABASE ? AS s", (str(stored),))
     log_text, announcing_lines = _log_text(list(logs))
     announcing_text = "\n".join(announcing_lines)
+    named = _Names(log_text)
+    type_announced: dict[str, bool] = {}
 
     def announced(key: str, ftype: str) -> bool:
-        if key and key in log_text:
+        if named(key):
             return True
-        return bool(ftype) and re.search(rf"\b{re.escape(ftype)}\b", announcing_text) is not None
+        if not ftype:
+            return False
+        if ftype not in type_announced:
+            type_announced[ftype] = re.search(
+                rf"\b{re.escape(ftype)}\b", announcing_text) is not None
+        return type_announced[ftype]
 
     totals = Counter()
     by_type: dict[str, Counter] = defaultdict(Counter)
