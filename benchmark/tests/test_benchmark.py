@@ -438,3 +438,52 @@ def test_a_comparison_that_did_not_finish_can_be_done_again(tmp_path):
     assert list((results / "superseded").glob("*/compare_loaders.tsv"))
     assert recompare.main(["G1", "--tool", "chado", "--results", str(results),
                            "--work", str(work)]) == 1  # once only
+
+
+POMBE = (  # S. pombe's rows as NCBI writes them: a space ends each product
+    "##gff-version 3\n"
+    "##sequence-region NC_003424.3 1 200000\n"
+    "NC_003424.3\tRefSeq\tgene\t146884\t148055\t.\t+\t.\tID=gene-SPOM_SPAC5H10.01;"
+    "Dbxref=GeneID:2541830;Name=dgc1;gbkey=Gene;gene=dgc1;gene_biotype=protein_coding;"
+    "locus_tag=SPOM_SPAC5H10.01\n"
+    "NC_003424.3\tRefSeq\tmRNA\t146884\t148055\t.\t+\t.\tID=rna-NM_001018214.3;"
+    "Parent=gene-SPOM_SPAC5H10.01;Dbxref=GeneID:2541830,GenBank:NM_001018214.3;"
+    "gbkey=mRNA;product=D-glutamate cyclase ;transcript_id=NM_001018214.3\n"
+    "NC_003424.3\tRefSeq\texon\t146884\t148055\t.\t+\t.\tID=exon-NM_001018214.3-1;"
+    "Parent=rna-NM_001018214.3;gbkey=mRNA;product=D-glutamate cyclase ;"
+    "transcript_id=NM_001018214.3\n"
+    "NC_003424.3\tRefSeq\tCDS\t146974\t147879\t.\t+\t0\tID=cds-NP_592814.1;"
+    "Parent=rna-NM_001018214.3;Note=50%2541 and 100%25 coverage;gbkey=CDS;"
+    "product=D-glutamate cyclase ;protein_id=NP_592814.1\n"
+    "NC_003424.3\tRefSeq\tgene\t150000\t151000\t.\t-\t.\tID=gene-x;Note= lead;"
+    "Dbxref=x ,y \n"
+)
+
+
+def test_gffutils_values_are_read_as_the_truth_reads_the_file():
+    """gffutils keeps a space that ends a value and has decoded the escapes
+    already; truth.py drops the space and decodes once. The second run counted
+    133 S. pombe features as changed by gffutils over this alone."""
+    import run_gffutils
+
+    as_gffutils_holds = {"product": ["D-glutamate cyclase "], "Note": [" lead"],
+                         "Dbxref": ["x ", "y "], "note": ["50%41"], "ID": ["g"]}
+    line = "product=D-glutamate cyclase ;Note= lead;Dbxref=x ,y ;note=50%2541;ID=g"
+    assert {key: run_gffutils.as_truth_reads(values)
+            for key, values in as_gffutils_holds.items()} == gffmodel.parse_attributes(line)
+    assert run_gffutils.as_truth_reads([]) == []
+
+
+def test_gffutils_keeps_the_pombe_products_it_was_charged_with_changing(tmp_path):
+    pytest.importorskip("gffutils")
+    import run_gffutils
+
+    gff = tmp_path / "pombe.gff3"
+    gff.write_text(POMBE)
+    before = tmp_path / "truth.sqlite"
+    truth.build(gff, before)
+    db, stored = tmp_path / "gffutils.db", tmp_path / "stored.sqlite"
+    assert run_gffutils.load(gff, db, "create_unique") == 0
+    run_gffutils.extract(db, stored)
+    result = compare.compare(before, stored)
+    assert result["totals"]["kept"] == result["totals"]["truth"] == 5, result["examples"]

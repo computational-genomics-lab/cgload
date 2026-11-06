@@ -86,12 +86,15 @@ feature of its own; `Parent` names the parents; `##sequence-region` and the
 `region` rows give each sequence's length, whether it is circular and which
 genome it belongs to. For each feature it records the sequence, type, every
 row's strand, every row's span, the parents, and a digest of all other
-attributes (keys and values sorted, escapes decoded, rows merged).
+attributes (keys and values sorted, escapes decoded, rows merged). White space
+at either end of a tag=value pair is not part of it.
 
 **A loader's result** is reduced to the same record and compared feature by
 feature (`compare.py`). For cgload, the record is read from what `cgload
 export` writes (the round trip). For gffutils and Chado it is read from their
 databases with SQL; for txdbmaker from what the TxDb holds (`run_txdb.R`).
+gffutils keeps a space that ends a value, so its values are trimmed as
+`truth.py` trims the file's (`run_gffutils.py`).
 
 A feature is
 
@@ -372,3 +375,15 @@ features, to tell an announced loss from a silent one. It now answers the same
 question from an index of the log, built once (tested to give exactly the old
 answer), and `recompare.py` filled in that one comparison without loading
 again. The run's other results are as the repeat measured them.
+
+**After the repeat, 6 November 2026.** gffutils' 133 attribute changes in
+*S. pombe* were an error in the comparison. NCBI ends some *S. pombe* product
+names with a space ("D-glutamate cyclase "). gffutils keeps the space, and so
+does cgload, while `truth.py` drops white space at the end of a tag=value pair.
+cgload's result is read from its export by `truth.py`, so the space was dropped
+on both sides of its comparison. gffutils' result is read from its database, where
+the space stayed. `run_gffutils.py` now trims gffutils' values as `truth.py`
+trims the file's. It also stops decoding escapes a second time, since gffutils
+decodes them itself. Only the gffutils comparison runs this code, and it is
+measured again on all 30 genomes at `benchmark-run-2.2`, so that every gffutils
+result comes from the same scripts.

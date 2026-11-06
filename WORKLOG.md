@@ -330,7 +330,8 @@ the lab's copy of `cgload-benchmark-run/results`.
   last); 3 of those held every record. Chado held nothing in 5 of 5.
 * Q3: gffutils' default refuses all 30 (duplicate ID); `create_unique` splits
   all 1,072,125 multi-row features into one record per row, silently, and
-  changed attributes of 133 *S. pombe* features (not yet explained).
+  changed attributes of 133 *S. pombe* features (an error in the comparison:
+  see below).
   txdbmaker (repeat): 24 loaded, 6 failed (an inverted row in maize,
   *Arabidopsis* and soybean; exons of trans-spliced transcripts in rice,
   tomato and grape); 36 transcripts lost and 104 changed, all announced but
@@ -353,6 +354,13 @@ the lab's copy of `cgload-benchmark-run/results`.
   unless `--repair-envelopes` is given, and accepts them once the parent is
   repaired. It also objects to 8 features the survey did not flag: the parents
   of such rows (to analyse).
+
+The 133 *S. pombe* attribute changes were the comparison's own. NCBI ends some
+*S. pombe* product names with a space. gffutils and cgload both keep it;
+`truth.py` drops it. cgload's result passes through `truth.py` (its export),
+gffutils' did not. `run_gffutils.py` now reads values as `truth.py` does and
+no longer decodes escapes twice (tested with gffutils on the *S. pombe* rows).
+gffutils is measured again on all 30 at `benchmark-run-2.2`.
 
 ## Open
 

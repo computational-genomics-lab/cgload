@@ -19,7 +19,9 @@ How a gffutils database is read back:
 * a record's parents are the level-1 rows of ``relations``, translated back to
   the features those parent records hold;
 * a record with no ``ID`` attribute is keyed exactly as truth.py keys a row
-  without one.
+  without one;
+* a record's values are read as truth.py reads them from the file
+  (``as_truth_reads``).
 """
 
 from __future__ import annotations
@@ -31,11 +33,30 @@ import sys
 import time
 from collections import defaultdict
 from pathlib import Path
-from urllib.parse import unquote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import gffmodel  # noqa: E402
+
+
+def as_truth_reads(values: list[str]) -> list[str]:
+    """One tag's values from a gffutils record, as truth.py reads them.
+
+    gffutils has already decoded the escapes in a GFF3 file, so they are not
+    decoded again: "%2541" would become "A". White space at the end of a
+    tag=value pair is not part of the value for truth.py
+    (``gffmodel.parse_attributes``), but gffutils keeps it, so it is dropped
+    from the tag's last value. Without this, *S. pombe*'s products such as
+    "D-glutamate cyclase " counted as 133 attribute changes in the second run.
+
+    Two cases cannot be read exactly, because gffutils keeps neither the line
+    nor its escapes: a tag written twice on one line comes as one list, so only
+    its last value is trimmed, and an escaped space at the end ("%20") is
+    trimmed too, where truth.py keeps it.
+    """
+    if not values:
+        return []
+    return [*values[:-1], values[-1].rstrip()]
 
 
 def load(gff: Path, db: Path, strategy: str) -> int:
@@ -63,7 +84,7 @@ def extract(db: Path, out: Path) -> dict:
         "ORDER BY seqid, start, end"
     ):
         parsed = json.loads(attributes) if attributes else {}
-        parsed = {key: [unquote(v) for v in values] for key, values in parsed.items()}
+        parsed = {key: as_truth_reads(values) for key, values in parsed.items()}
         records[record_id] = (seqid, ftype, int(start), int(end), strand, parsed)
         original = parsed.get("ID", [None])[0]
         if original is None:
