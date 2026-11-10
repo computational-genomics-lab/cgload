@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use cgload, please cite it as below."
+title: "cgload"
+abstract: >-
+  Loads a genome assembly and its annotation (GFF3, GenBank, eggNOG-mapper and
+  InterProScan output) into SQLite, PostgreSQL or MySQL in one transaction, and
+  checks the stored features and parent links against an independent count of
+  the input files.
+type: software
+license: MIT
+version: "0.2.0"
+date-released: "2026-11-10"
+repository-code: "https://github.com/computational-genomics-lab/cgload"
+authors:
+  - family-names: Upadhyay
+    given-names: Aditya
+    affiliation: "CSIR-Indian Institute of Chemical Biology, Kolkata; AcSIR, Ghaziabad"
+  - family-names: Panda
+    given-names: Arijit
+    affiliation: "Mayo Clinic, Rochester, MN"
+  - family-names: Tripathy
+    given-names: Sucheta
+    affiliation: "CSIR-Indian Institute of Chemical Biology, Kolkata; AcSIR, Ghaziabad"
+keywords:
+  - genome annotation
+  - GFF3
+  - database
+  - data integrity

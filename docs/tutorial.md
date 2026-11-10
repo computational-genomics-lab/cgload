@@ -32,7 +32,7 @@ cgload init
 
 ```
 Created 11 tables in sqlite:///cgload.db
-Seeded vocabulary version 1 (43 terms, d5fa82cadbce)
+Seeded vocabulary version 1 (46 terms, 10bf08715e85)
 ```
 
 `cgload.db` is a single file in the current directory. That file *is* the
@@ -281,7 +281,7 @@ exon DEMO_000001-T1.exon1
   parent      mRNA DEMO_000001-T1
   linked by   explicit_parent — the file stated it (GFF3 Parent attribute)
               this link was stated by the file
-  recorded by cgload 0.1.0 under vocabulary version 1
+  recorded by cgload 0.2.0 under vocabulary version 1
 ```
 
 `explain` shows how one feature was linked and which rule produced the link.
@@ -341,8 +341,8 @@ head -8 roundtrip.gff3
 
 ```
 ##gff-version 3
-##cgload-export 0.1.0
-##cgload-vocabulary d5fa82cadbce07c9f15895aad21658c1e83705c0b902f49e867f9c39818edea5
+##cgload-export 0.2.0
+##cgload-vocabulary 10bf08715e85e1497870a92bd10f72193f827d785a435dcb42f6766134782491
 ##sequence-region demo_scaffold_1 1 5000
 # The source dialect does not emit these types, so their absence is a property of the input and not a loss during loading:
 #   intron, start_codon, stop_codon

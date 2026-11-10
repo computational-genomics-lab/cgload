@@ -4,6 +4,8 @@ Decisions referred to as D-0xx are in [docs/decisions.md](docs/decisions.md).
 
 ## Unreleased
 
+## 0.2.0 (10 November 2026)
+
 Databases made by 0.1.0 are refused: the schema and the vocabulary changed.
 The refusal says so. Load into a new database made with `cgload init`.
 

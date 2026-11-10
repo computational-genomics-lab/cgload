@@ -375,8 +375,6 @@ attribute change anywhere; every other table identical.
   facts, numbers, structure and citations are all here. Still to add: funding,
   contributions, biographies, the corresponding e-mail, the log of LLM use for
   the supplementary materials, and a check of every reference.
-- The case-study genome (Q8) is not named. Run it, or record in PROTOCOL.md
-  section 12 that it was dropped, and why; the manuscript reports Q1 to Q7.
 - The census of the 30 files (`survey/`) is now part of this paper, not a
   separate manuscript: the Database draft was never submitted, because it did
   not describe cgload's features. Its findings are the Methods section "Census
@@ -390,8 +388,15 @@ attribute change anywhere; every other table identical.
 - `paper/paper.md`, the JOSS draft, is superseded by `paper/manuscript.md`. It
   still has the old maize numbers and a wrong note about the name on PyPI; fix
   or remove it before any JOSS submission.
-- Zenodo: deposit the full results tarball, superseded results included, and
-  put its DOI in the manuscript (token only in `ZENODO_TOKEN`).
+- Release 0.2.0 is prepared (version, changelog, `CITATION.cff`, docs output).
+  Tag `v0.2.0` and push the tag; then `paper/deposit_zenodo.py` makes two
+  Zenodo drafts with reserved DOIs (software, and the results with the
+  census), for the manuscript's two "[DOI]" places. Publish both drafts when
+  the paper is submitted; publishing is permanent. A GitHub release would also
+  publish 0.2.0 to PyPI through `release.yml`, which is permanent too, and is
+  not needed for the paper.
+- `paper/llm_use.md` is the supplementary note on LLM use that the journal's
+  policy asks for; two statements in it are the authors' to make.
 - MySQL has no test. No MySQL server could be started in this session.
 - The system Python of Ubuntu 22.04 is 3.10, which cgload does not support.
   The README and tutorial say how to get 3.11 or newer; a bioconda package
@@ -406,3 +411,14 @@ txdbmaker 1.6.2 ran on the server; and the novelty check is done (InterMine's
 acceptance tests and Ensembl's datachecks test the built database against
 curators' rules; gffbase validates a sample of records; GFFx assumes
 well-formed input; none, as documented, recounts the input file).
+
+## 10 November 2026: Q8 dropped, release 0.2.0 prepared
+
+No lab genome was available for the case study, so Q8 is dropped (PROTOCOL.md
+section 12) and the paper says so; every result is on RefSeq GFF3. Version
+0.2.0: `__version__`, the changelog, `CITATION.cff`, and the vocabulary lines in
+the README and tutorial, which still showed 43 terms from before D-107 (now 46,
+`10bf08715e85`). 566 tests pass in the default tier, and the 20 of the
+benchmark. `paper/deposit_zenodo.py` was rehearsed against a local stand-in for
+Zenodo's API; it has not met the real one.
+

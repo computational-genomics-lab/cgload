@@ -126,11 +126,6 @@ benchmark's answers to seven questions:
 - Q7. Do cgload's structural checks agree with an independent census of the
   same files?
 
-<!-- AUTHORS: the protocol also lists Q8, a case study on one of our own
-genomes with eggNOG-mapper and InterProScan output. It is not run yet. Either
-run it (it adds a section 3.7 and the JBrowse figure) or record in PROTOCOL.md
-section 12 that it was dropped, and why. -->
-
 # Materials and methods
 
 ## cgload
@@ -194,7 +189,10 @@ names. It states the questions, the genomes, the software, the hardware, the
 definitions and, for every planted fault, the outcome expected from what cgload
 claims to check. A change made after the first run is listed in the protocol
 with its date and reason, and every measurement it affects was repeated
-(section "Changes after the first run").
+(section "Changes after the first run"). The protocol also listed an eighth
+question, a case study on one of our own genomes with its functional
+annotation. No such genome was available, and the question was dropped before
+any of it was run.
 
 ## Genomes and input files
 
@@ -601,8 +599,9 @@ cgload was corrected on the same 30 genomes it is measured on. Fourteen of its
 recorded decisions (D-095 to D-108 in the repository) fixed problems that these
 files exposed in the first run, the preflights and the second run. Its results
 on files from other sources, or on later RefSeq releases, may be worse. The planted faults and the other loaders were not
-tuned in this way. All genomes are RefSeq; GFF3 from other annotation pipelines
-was not part of this benchmark.
+tuned in this way. All genomes are RefSeq. cgload's profiles for funannotate
+and AUGUSTUS files are covered by its tests, but no such file was part of this
+benchmark, and neither was its loading of functional annotation.
 
 cgload holds the whole file in memory during a load, about 6 KB per row. A
 human-sized annotation needs 30 to 37 GB, which rules out a laptop. Counting
@@ -631,9 +630,10 @@ put to other loaders and other files.
 # Data availability
 
 The benchmark results reported here are in `paper/data/benchmark-run-2.2/` of
-the repository. The full results, including the superseded ones, the PostgreSQL
-server log and the reference databases, are deposited at Zenodo
-[DOI to be added]. The census scripts and their results are in `survey/` of the
+the repository. The full results, including the superseded ones and the
+PostgreSQL server log, are deposited at Zenodo [dataset DOI]. The reference
+readings are not deposited; `benchmark/truth.py` rebuilds them from the input
+files. The census scripts and their results are in `survey/` of the
 same repository. All input files are public RefSeq releases, identified
 by accession and MD5 in `paper/data/benchmark-run-2.2/inputs.tsv`.
 
@@ -642,8 +642,8 @@ by accession and MD5 in `paper/data/benchmark-run-2.2/inputs.tsv`.
 cgload is free software under the MIT license at
 https://github.com/computational-genomics-lab/cgload. The benchmark protocol and
 scripts are in `benchmark/`, and `paper/figures.py` makes every figure and
-table from the deposited results. The version described is tagged
-[release tag to be added] and archived at Zenodo [DOI to be added].
+table from the deposited results. The version described is cgload 0.2.0,
+tagged `v0.2.0`, and its source is archived at Zenodo [software DOI].
 
 # Use of large language models
 
@@ -712,6 +712,9 @@ submission. Reference 17's article number and reference 10's pages were taken
 from memory; their DOIs were checked. -->
 
 # Supplementary material
+
+**Supplementary Note S1.** Use of a large language model: which model, what it
+did, and how the authors checked it (`paper/llm_use.md`).
 
 **Supplementary Table S1.** The 30 genomes, with cgload's load and verify times,
 peak memory and sizes on each database system.

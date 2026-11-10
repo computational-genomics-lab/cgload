@@ -400,3 +400,9 @@ the human Chado comparison filled in at `44c2ca5`; and `benchmark-run-2.2`
 (`56f6861`) for gffutils with `create_unique`. Their tables are in
 `paper/data/benchmark-run-2.2/`. The full results, superseded ones included,
 are deposited with the paper.
+
+**Q8 dropped, 10 November 2026.** No genome of ours with funannotate gene
+models, eggNOG-mapper and InterProScan output was available, so the case study
+(step 9, section 7.7) was not run and is not reported. `run.sh` still has its
+step, which does nothing while `CASE_STUDY` is unset. With it goes the only
+file from outside RefSeq (section 11): every result here is on RefSeq GFF3.
