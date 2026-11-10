@@ -24,3 +24,6 @@ benchmark-run/
 
 # Tracked although under a data/ folder: the benchmark results the paper reports
 !paper/data/
+
+# paper/build.py output
+paper/build/

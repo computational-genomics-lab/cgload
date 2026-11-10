@@ -14,7 +14,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 import matplotlib
@@ -181,6 +181,82 @@ def thousands(value, _position) -> str:
     if value >= 1e3:
         return f"{value / 1e3:g} k"
     return f"{value:g}"
+
+
+# --- Figure 1: how cgload loads and verifies -----------------------------------------
+
+CHECK = RAMP[0]   # boxes that check, in the one-hue ramp's lightest step
+STEP = NOTHING    # boxes that load
+
+
+def box(axis, x, y, w, h, title, body, fill):
+    from matplotlib.patches import FancyBboxPatch
+    axis.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0,rounding_size=0.05",
+                                  facecolor=fill, edgecolor="none"))
+    axis.text(x + 0.08, y + h - 0.08, title, ha="left", va="top", fontsize=7,
+              fontweight="bold", color=INK)
+    axis.text(x + 0.08, y + h - 0.27, body, ha="left", va="top", fontsize=6.2,
+              color=INK2, linespacing=1.35)
+
+
+def arrow(axis, start, end, colour=MUTED):
+    axis.annotate("", xy=end, xytext=start,
+                  arrowprops={"arrowstyle": "-|>", "color": colour, "linewidth": 0.8,
+                              "shrinkA": 0, "shrinkB": 0, "mutation_scale": 7})
+
+
+def figure_design(out: Path) -> None:
+    width, height = FULL_WIDTH, 3.45
+    figure = plt.figure(figsize=(width, height))
+    axis = figure.add_axes((0, 0, 1, 1))
+    axis.set_xlim(0, width)
+    axis.set_ylim(0, height)
+    axis.axis("off")
+    margin, gap = 0.06, 0.155
+    w = (width - 2 * margin - 4 * gap) / 5
+    xs = [margin + i * (w + gap) for i in range(5)]
+    top, h = 2.38, 1.02
+    box(axis, xs[0], top, w, h, "Input files",
+        "GFF3 and FASTA\nGenBank (optional)\neggNOG-mapper,\nInterProScan (optional)", STEP)
+    box(axis, xs[1], top, w, h, "Read, normalise",
+        "Detect the dialect:\nRefSeq, funannotate,\nAUGUSTUS, GenBank.\nRefuse an unknown file.",
+        STEP)
+    box(axis, xs[2], top, w, h, "Structural checks",
+        "Child inside its parent,\nstart not after end,\nrow inside its sequence.\n"
+        "Refuse, or repair and\nrecord each repair.", CHECK)
+    box(axis, xs[3], top, w, h, "One transaction",
+        "Rows into SQLite or\nPostgreSQL. FASTA\nbgzipped and indexed in\na staging folder, "
+        "moved\nin before the commit.", STEP)
+    box(axis, xs[4], top, w, h, "End-of-load check",
+        "Stored counts against\nthe independent count.\nShort: roll back, and\nthe database is as\n"
+        "it was before.", CHECK)
+    for a, b in zip(xs, xs[1:], strict=False):
+        arrow(axis, (a + w, top + h / 2), (b, top + h / 2))
+
+    mid, mh = 1.50, 0.62
+    box(axis, xs[1], mid, 2 * w + gap, mh, "Independent count of the file",
+        "Separate code that imports nothing from cgload: features by type,\nrows of "
+        "multi-row features, Parent= statements.", CHECK)
+    box(axis, xs[4], mid, w, mh, "Database", "and data folder,\nchecksums recorded", STEP)
+    arrow(axis, (xs[0] + w / 2, top), (xs[1], mid + mh / 2))
+    arrow(axis, (xs[2] + w, mid + mh / 2 + 0.12), (xs[4] + 0.25, top))
+    arrow(axis, (xs[4] + w / 2, top), (xs[4] + w / 2, mid + mh))
+
+    low, lh = 0.08, 0.74
+    rule = low + lh + 0.08
+    axis.plot([xs[0], xs[4] + w], [rule, rule], color=AXIS, linewidth=0.6)
+    axis.text(xs[1] + 0.08, rule + 0.05, "cgload verify, at any later time", ha="left",
+              va="bottom", fontsize=7, fontweight="bold", color=INK)
+    tiers = [("Source count", "Independent count\nagainst the database"),
+             ("Parent links", "Every Parent= is a\nstored link"),
+             ("Stored assembly", "FASTA and index\nagainst their checksums"),
+             ("Cross-parser", "GFF3 against GenBank\n(optional)"),
+             ("Reference", "File against NCBI's\npublished totals (optional)")]
+    for x, (title, body) in zip(xs, tiers, strict=True):
+        box(axis, x, low, w, lh, title, body, CHECK)
+    arrow(axis, (xs[1] + 0.3, mid), (xs[0] + w / 2, low + lh))
+    arrow(axis, (xs[4] + w / 2, mid), (xs[4] + w / 2, rule))
+    save(figure, out, "fig1_design")
 
 
 # --- Figure 2: the cost of a load (Q1) ------------------------------------------------
@@ -499,34 +575,56 @@ CASE_NAMES = {
 }
 
 
+def chado_cases_finished(results: Results) -> tuple[int, dict[str, Counter]]:
+    """Chado's hard cases in the loads that finished only: a failed load stored
+    nothing, so counting its genomes would put every crash under every case."""
+    totals: dict[str, Counter] = defaultdict(Counter)
+    finished = [r for r in results.loaders if r["tool"] == "chado" and r["outcome"] == "loaded"]
+    for row in finished:
+        comparison = json.loads(
+            (results.folder / "compare" / f"{row['accession']}.chado.json").read_text())
+        for case, counts in comparison["by_case"].items():
+            totals[case].update(counts)
+    return len(finished), totals
+
+
 def table_cases(results: Results) -> str:
-    """Per hard case, what each loader altered; txdbmaker counts transcripts."""
+    """Per hard case, what each loader altered. txdbmaker counts transcripts in
+    the genomes it loaded, and Chado features in its loads that finished; both
+    carry their own totals."""
     by = {(r["tool"], r["case"]): r for r in results.cases}
-    tools = ["cgload-sqlite", "gffutils", "chado", "txdbmaker"]
+    finished, chado = chado_cases_finished(results)
     cases = sorted({r["case"] for r in results.cases},
                    key=lambda c: -number(by[("cgload-sqlite", c)]["truth"])
                    if ("cgload-sqlite", c) in by else 0)
 
+    def counts(tool, case) -> dict | None:
+        if tool == "chado":
+            return {k: str(v) for k, v in chado[case].items()} if case in chado else None
+        return by.get((tool, case))
+
     def cell(tool, case):
-        r = by.get((tool, case))
+        r = counts(tool, case)
         if r is None:
             return "–"
-        altered = number(r["changed"]) + number(r["lost"])
-        silent = number(r["changed_silent"]) + number(r["lost_silent"])
-        declared = number(r["changed_declared"])
-        of = f" of {n(number(r['truth']))}" if tool == "txdbmaker" else ""
+        altered = number(r.get("changed")) + number(r.get("lost"))
+        silent = number(r.get("changed_silent")) + number(r.get("lost_silent"))
+        declared = number(r.get("changed_declared"))
+        own_total = tool in ("txdbmaker", "chado")
+        of = f" of {n(number(r['truth']))}" if own_total else ""
         if declared and not altered:
             return f"{n(declared)} repaired, declared{of}"
         if not altered:
-            return f"0{of}" if of else "none"
+            return f"0{of}" if own_total else "none"
         if silent == altered:
             return f"{n(altered)}{of}, all silent"
         if silent:
             return f"{n(altered)}{of}, {n(silent)} silent"
         return f"{n(altered)}{of}, all announced"
 
+    tools = ["cgload-sqlite", "gffutils", "chado", "txdbmaker"]
     header = ["Hard case", "Features", "cgload", "gffutils, create_unique",
-              "Chado (python-chado)", "txdbmaker (transcripts)"]
+              f"Chado, {finished} finished loads", "txdbmaker (transcripts)"]
     rows = [[CASE_NAMES.get(c, c), n(number(by[("cgload-sqlite", c)]["truth"]))]
             + [cell(t, c) for t in tools] for c in cases]
     return md_table(header, rows, "lrllll")
@@ -712,6 +810,7 @@ def main(argv=None) -> int:
     parser.add_argument("--out", type=Path, default=HERE)
     args = parser.parse_args(argv)
     results = Results(args.results)
+    figure_design(args.out / "figures")
     figure_scale(results, args.out / "figures")
     figure_loaders(results, args.out / "figures")
     figure_queries(results, args.out / "figures")
