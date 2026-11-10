@@ -18,6 +18,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 INCLUDE = re.compile(r"^<!-- include (tables/[\w.-]+\.md) -->$")
+# Notes to the authors, which pandoc would otherwise drop with the comment.
+NOTE = re.compile(r"<!--\s*(NOT FOR SUBMISSION.*?|AUTHORS:.*?)-->", re.S)
 
 
 def assemble(source: Path) -> str:
@@ -31,7 +33,13 @@ def assemble(source: Path) -> str:
             lines.append(table.read_text().rstrip("\n"))
         else:
             lines.append(line)
-    return "\n".join(lines) + "\n"
+    text = "\n".join(lines) + "\n"
+
+    def note(match: re.Match) -> str:
+        said = " ".join(match.group(1).removeprefix("AUTHORS:").split())
+        return f"\n**[TO THE AUTHORS: {said}]**\n"
+
+    return NOTE.sub(note, text)
 
 
 def main() -> int:

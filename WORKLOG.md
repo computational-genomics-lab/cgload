@@ -367,18 +367,21 @@ attribute change anywhere; every other table identical.
 ## Open
 
 - The paper's draft is `paper/manuscript.md` (Briefings in Bioinformatics,
-  Problem Solving Protocol); `paper/build.py` makes a Word file. HTML comments
-  mark what the authors must add: funding, contributions, biographies, the
-  AI-use wording against the journal's policy, and a check of every reference.
+  Problem Solving Protocol); `paper/build.py` makes a Word file and shows each
+  note to the authors in it. The journal follows the ISCB policy on large
+  language models: an LLM may help with code, documentation and analysis, and
+  may not draft the paper. This draft's prose was drafted by an LLM, so it is a
+  working document. The authors must write the submitted text themselves; the
+  facts, numbers, structure and citations are all here. Still to add: funding,
+  contributions, biographies, the corresponding e-mail, the log of LLM use for
+  the supplementary materials, and a check of every reference.
 - The case-study genome (Q8) is not named. Run it, or record in PROTOCOL.md
   section 12 that it was dropped, and why; the manuscript reports Q1 to Q7.
-- The survey manuscript (submitted to Database) still says 27.1 million rows,
-  from the incomplete medaka file; the corrected panel has 28,211,625 rows
-  (`survey/results/CORRECTIONS.md`), and its rates per million change a little.
-  The cgload paper cites the corrected number. The survey manuscript also
-  introduces cgload in its Methods; cgload has not been published, and the
-  authors want this paper to be its first description, so trim that passage
-  at revision to the repository that holds the survey scripts.
+- The census of the 30 files (`survey/`) is now part of this paper, not a
+  separate manuscript: the Database draft was never submitted, because it did
+  not describe cgload's features. Its findings are the Methods section "Census
+  of the files" and the Results section "What the files contain". The old
+  `survey/` manuscript zip in outputs is superseded.
 - `verify` exits 0 when it skips the source count because the input file has
   changed (F16): the report names the file, but a script that reads only the
   exit status misses it. Decide before the release whether this should fail.

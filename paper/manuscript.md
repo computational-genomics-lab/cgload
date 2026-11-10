@@ -1,7 +1,17 @@
 ---
 title: "cgload: loading genome annotations into a database and checking that every feature arrived"
-subtitle: "Problem Solving Protocol, for Briefings in Bioinformatics. Draft of 10 November 2026."
+subtitle: "Problem Solving Protocol, for Briefings in Bioinformatics. Working draft of 10 November 2026."
 ---
+
+<!--
+NOT FOR SUBMISSION AS IT STANDS. The journal follows the ISCB policy on large
+language models, which allows an LLM to help with code, documentation and
+analysis, and does not allow it to draft the paper. This draft's prose was
+drafted by an LLM, so it is a working document: it holds the facts, the
+numbers, the structure and the citations, and the authors must write the text
+of the submitted manuscript themselves. Everything each section has to say is
+here; the sentences must be theirs.
+-->
 
 <!--
 Built by paper/build.py: each "include" line below is replaced by the table
@@ -74,31 +84,32 @@ feature be written on several rows that share an ID, which is how RefSeq writes
 coding sequences, so a reader that expects one row per feature, or one ID per
 row, gets these features wrong. Some features cross the origin of a circular
 sequence, some genes are trans-spliced from distant parts of an organelle
-genome, and some strands are unknown. In a survey of the 30 RefSeq genomes used
-here [9], rows that break a GFF3 rule were rare (9 of 28.2 million, and 4 more
-that no convention explains). Rows that follow a documented convention or carry
-a documented exception were more common (98), and a loader has to take them as
-written. A loader can finish without a message and still leave such features
-out, or store them in another form. The database then answers queries, and
+genome, and some strands are unknown. We counted these in the 30 RefSeq
+annotations used here (Results, "What the files contain"). Rows that break a
+GFF3 rule outright are rare: 4 of 28.2 million that no convention explains.
+Rows that follow a documented convention, or carry an attribute that documents
+an exception, are more common, and a loader has to take them as written. A
+loader can finish without a message and still leave such features out, or store
+them in another form. The database then answers queries, and
 nothing downstream can see what is missing.
 
 Large resources test their databases before each release. InterMine's
 acceptance tests are SQL queries with expected answers, such as a minimum
-number of GO annotations [10]. Ensembl's datachecks test row counts and
-metadata in each database before it is handed over [11, 12]. Curators write
+number of GO annotations [9]. Ensembl's datachecks test row counts and
+metadata in each database before it is handed over [10, 11]. Curators write
 these tests for a resource they know, and the tests compare the built database
 with their expectations. As documented, neither compares a database with an
 independent reading of the files it was built from. Recent tools aim at speed:
 gffbase stores GFF3 and GTF files in DuckDB and validates a sample of records
-[13], and GFFx indexes GFF files for fast extraction and assumes well-formed
-input [14]. Toolkits such as GenomeTools [15] and AGAT [16] check or repair a
+[12], and GFFx indexes GFF files for fast extraction and assumes well-formed
+input [13]. Toolkits such as GenomeTools [14] and AGAT [15] check or repair a
 file before it is loaded, and do not see what a loader then stores.
 
 We wrote cgload to make that check part of every load. It reads the input file
 twice, once to load it and once, with separate code, to count it, and it keeps
 the load only if the database holds what the count says. We then asked how
 cgload and other loaders behave on real files. Benchmarks written by a tool's
-own authors tend to favour that tool [17, 18]. To limit this, we fixed the
+own authors tend to favour that tool [16, 17]. To limit this, we fixed the
 questions, the genomes and the scripts in a tagged protocol before the first
 run, compared every loader with the same reference reading, and report every
 change made after the first run. This paper introduces cgload and reports the
@@ -112,8 +123,8 @@ benchmark's answers to seven questions:
 - Q4. Which damage to a loaded genome, or inside the parser, does cgload notice?
 - Q5. What does an interrupted load leave behind?
 - Q6. How long does a user wait for everyday answers?
-- Q7. Do cgload's structural checks agree with the survey's checker on the same
-  files?
+- Q7. Do cgload's structural checks agree with an independent census of the
+  same files?
 
 <!-- AUTHORS: the protocol also lists Q8, a case study on one of our own
 genomes with eggNOG-mapper and InterProScan output. It is not run yet. Either
@@ -130,12 +141,12 @@ through SQLAlchemy, on SQLite, PostgreSQL or MySQL. The schema has 11 tables. A
 feature written on several rows keeps one stored row per segment, each with
 its own attributes; features are identified by their ID, and parent links are
 kept in a table of their own. The assembly FASTA is compressed with bgzip and
-indexed [19, 20] in a data folder beside the database, and the database records
-its checksum. Functional annotation from eggNOG-mapper [21] and InterProScan
-[22] becomes one row per GO term, KEGG ortholog, Pfam domain or EC number.
+indexed [18, 19] in a data folder beside the database, and the database records
+its checksum. Functional annotation from eggNOG-mapper [20] and InterProScan
+[21] becomes one row per GO term, KEGG ortholog, Pfam domain or EC number.
 
 Annotation pipelines write GFF3 differently. cgload reads RefSeq GFF3, the GFF3
-of funannotate [23] and AUGUSTUS [24], and GenBank flat files. Each dialect is
+of funannotate [22] and AUGUSTUS [23], and GenBank flat files. Each dialect is
 a declared profile that says which feature types it provides and how the file
 identifies itself, and a file that matches no profile is refused with the names
 of the profiles that were tried. Every dialect is normalised to one
@@ -187,16 +198,39 @@ with its date and reason, and every measurement it affects was repeated
 
 ## Genomes and input files
 
-The panel is the 30 RefSeq genomes of the survey [9]: 8 vertebrates, 7
-insects, 7 plants and 8 fungi (Supplementary Table S1). The list was fixed in a
-tagged commit before the survey ran. Together the annotations have 28,211,625
+The panel is 30 RefSeq genomes: 8 vertebrates, 7 insects, 7 plants and 8 fungi
+(Supplementary Table S1). They were chosen to span clades, assembly sizes and
+annotation ages, and the list was fixed in a tagged commit before any of them
+was read. Together the annotations have 28,211,625
 GFF3 rows, 18,017,618 features and 16,566,107 stated parent links. The smallest
 is *Candida albicans* (25,889 rows) and the largest is human (4,932,571 rows,
-3,203,237 features). Each annotation is the exact file the survey read,
-checked by its MD5. One survey download, medaka, had been cut short; the survey
-was repeated on the complete file and its findings did not change [9]. The
-assembly FASTA files, and the GenBank files of the eight fungi, came from NCBI
-Datasets [25].
+3,203,237 features). Every file is identified by its MD5, which the benchmark
+checks before each run. One download, medaka, had been cut short, and this
+check found it; the file was fetched again and every count of it redone
+(`survey/results/CORRECTIONS.md`). The assembly FASTA files, and the GenBank
+files of the eight fungi, came from NCBI Datasets [23].
+
+## Census of the files
+
+Before the benchmark we counted what the 30 files contain, with a script
+(`survey/cgsurvey.py`) that reads a GFF3 file as text, line by line, with the
+Python standard library only. It shares no code with cgload and is not
+installed with it. For each file it counts the rows, the parent statements, the
+sequences and the IDs written on more than one row, and it flags four kinds of
+row: a feature outside the parent that claims it, a start after its end, a row
+past the end of its sequence, and a strand written `?`. It counts separately
+the rows that follow two documented conventions, an exon placed directly under
+a pseudogene and a row that crosses the origin of a circular sequence, which
+GFF3 and NCBI both write by letting the end run past the sequence length. For
+every flagged row it records the raw GFF3 line and any attribute that documents
+an exception, such as `exception=trans-splicing` or `partial=true`, so that
+each can be read by hand.
+
+We then classed every flagged row into one of four: (A) valid GFF3 that a
+loader must accept, (B) a documented convention or an exception the file itself
+states, (C) an error in the file, and (D) a finding no convention explains.
+Classes A and B are what a loader has to handle; C and D are what a file ought
+not to contain.
 
 ## Reference reading and comparison
 
@@ -238,10 +272,10 @@ these cases occur in the 30 files (Table 2).
 gffutils 0.14 was run twice: with its default merge strategy, which is what a
 user who changes nothing gets, and with `create_unique`, the documented way to
 load a file whose rows repeat an ID [3]. txdbmaker 1.6.2's `makeTxDbFromGFF` was
-told which sequences are circular [7]. For Chado we used python-chado 2.3.9 [26],
+told which sequences are circular [7]. For Chado we used python-chado 2.3.9 [25],
 the `load_gff` command used by Galaxy Genome Annotation, which reads GFF3 with
-Biopython 1.81 [28], into a new Chado 1.31 database with the Sequence Ontology
-[27]. Chado has other GFF3 loaders, such as
+Biopython 1.81 [27], into a new Chado 1.31 database with the Sequence Ontology
+[26]. Chado has other GFF3 loaders, such as
 the GMOD bulk loader and Tripal's importer, and our results stand for
 python-chado only. Each load had a time limit of 12 hours, or 24 hours for
 Chado. A load that was refused, crashed, or ran out of memory or time is
@@ -281,9 +315,11 @@ the median of the repeated asks; the first asks are in Supplementary Table S3.
 The server did not let us drop the page cache, so no ask started from a cold
 disk.
 
-For Q7 we took every row the survey flagged and the survey's class for it, and
-ran cgload's checks on the same files with its own code, without a database, as
-`cgload load --repair-envelopes` runs them.
+For Q7 we took every row the census flagged, with the class the census gave
+it, and ran cgload's structural checks on the same files, without a database,
+as `cgload load --repair-envelopes` runs them. The two find problems by
+different routes: the census reads each file as text and checks rows, while
+cgload checks features it has already parsed and assembled.
 
 ## Hardware and software
 
@@ -305,8 +341,8 @@ long for a PostgreSQL index, and changed some features on the way back out
 through `cgload export`. Its cross-parser tier failed on five fungi over names
 that NCBI writes differently in GFF3 and GenBank. A killed load could leave a
 directory that blocked the next load. Two preflights on the 14 genomes involved
-then found more of the same kind, and also showed that the survey had read an
-incomplete medaka file.
+then found more of the same kind, and also showed that the medaka file we had
+counted was incomplete.
 
 The second run (23 and 24 October) finished every step. It found two errors in
 our scripts, in the Chado database setup and in txdbmaker's pairing of
@@ -325,6 +361,27 @@ return to this under Limitations. The results reported here come from three
 tagged commits, and the protocol says which result comes from which.
 
 # Results
+
+## What the files contain
+
+The 30 annotations hold 28,211,625 GFF3 rows on 23,793 sequences, of which 33
+are organellar. Writing one feature on several rows is not an edge case:
+10,194,007 IDs appear on more than one row. Exons placed directly under a
+pseudogene, which some readers do not expect, occur 91,009 times in 20 of the
+30 files. No file had a dangling parent statement, an ID used for two different
+features, or a non-numeric coordinate.
+
+The census flagged 110 findings on 102 distinct rows, about 4 per million. Most
+are things a loader must accept rather than errors: 67 features lie outside the
+parent that claims them, 63 of them in genes whose own attributes state
+trans-splicing or RNA editing, and 31 rows carry the strand `?`, which GFF3
+allows. Of the rest, 9 rows run past the end of their sequence and 3 have a
+start after their end. Sixteen findings in 5 files carry no documented
+exception: 12 on plant organelles, and 4 in *S. pombe*, the only ones outside
+an organelle, where a gene's span leaves out part of a child. A further 9 rows cross the origin of a circular sequence,
+which the census counts as a convention, not a defect. So the files are clean,
+and nearly everything that looks wrong at first reading is a documented
+convention that a loader has to store as written.
 
 ## cgload loads and verifies all 30 genomes (Q1, Q2)
 
@@ -376,8 +433,8 @@ crassa*. gffutils printed nothing about it. It changed no attribute and kept
 every parent link.
 
 txdbmaker stopped on six of the seven plant genomes. On three it rejected a row
-whose end precedes its start, the inverted *nad1* transcripts the survey
-reported [9]. On the other three it stopped while building the TxDb, reporting 2
+whose end precedes its start, the three inverted mitochondrial *nad1*
+transcripts of the census. On the other three it stopped while building the TxDb, reporting 2
 exons in each file linked to transcripts it could not find. On the
 24 genomes it loaded, it kept 1,169,686 of 1,169,826 transcripts. It changed 104
 and dropped 36, and its messages named all but 3 of the changes. Another 647,583
@@ -389,7 +446,7 @@ gene: organelle genes in the plants and CG32491 in the fly. The human load
 reached its 24-hour limit. None of these nine loads stored anything. In the 21
 loads that finished, python-chado lost 540,255 of 10,773,540 features (5.0%),
 of three kinds. It dropped all 109,181 features of type lnc_RNA, a type the
-current Sequence Ontology names lncRNA [27], and its log named the type. It
+current Sequence Ontology names lncRNA [26], and its log named the type. It
 dropped their 430,836 exons without a message. It also dropped 238 long
 terminal repeats that the *S. pombe* file writes in capitals, and named that
 type too. So four in five of its losses were silent, from none in 9 genomes
@@ -479,27 +536,26 @@ against 6.6 s for gffutils.
 
 ![**Figure 4.** Median time of repeated asks for four everyday tasks, on four genomes from 0.1 to 4.9 million rows. Top: one new process per answer, as a user typing a command waits. Bottom: one process asking T1 to T3 in turn, as a script waits. tabix answers T2 and T4 from cgload's compressed annotation, and T3 by a full scan. Medians at or under 1 ms, the resolution of the clock, are drawn at 1 ms. The page cache was not dropped.](figures/fig4_queries.png)
 
-## Agreement with the survey (Q7)
+## cgload's checks against the census (Q7)
 
-The survey flagged 111 rows in the 30 files: 102 listed one by one, and 9
-crossing the origin of a circular sequence, which it only counted [9]. cgload
-accepts rows of the second kind, which GFF3 allows. Of the 102 listed rows
-(Table 5), both checkers accepted 23 rows with an unknown strand, and both
-objected to the 13 the survey classed as errors or unexplained, though cgload
-loaded 6 of these with a warning. For 66 rows that the survey classed as
-documented conventions or exceptions, nearly all in trans-spliced organelle
-genes, cgload refused the file unless `--repair-envelopes` was given. With it,
-cgload repaired the parents of 59 of these rows, repaired 5 rows itself and
-stored 2 as written. No row that the survey classed as an error was accepted by
-cgload without comment. cgload objected to 8 features that the survey did not
-list. Each is a gene or pseudogene whose span leaves out a child that the
-survey did list, so the two checkers found the same 11 parent and child pairs
-from opposite ends.
+The census flagged 110 findings on 102 distinct rows, and counted 9 more that
+cross the origin of a circular sequence. cgload accepts rows of that last kind,
+as GFF3 allows. On the 102 rows (Table 5), both checkers accepted the 23 rows
+whose only finding is the strand `?`, and both objected to the 13 the census
+classed as errors or unexplained, though cgload loaded 6 of these with a
+warning rather than refusing them. For the other 66 rows, nearly all in
+trans-spliced organelle genes, cgload refused the file unless
+`--repair-envelopes` was given. With it, cgload repaired the parents of 59 of
+these rows, repaired 5 rows itself and stored 2 as written. No row that the
+census classed as an error was accepted by cgload without comment. cgload
+objected to 8 features that the census did not flag. Each is a gene or
+pseudogene whose span leaves out a child that the census did flag, so the two
+found the same 11 parent and child pairs from opposite ends.
 
 <!-- include tables/table5_agreement.md -->
 
-**Table 5.** cgload's checks and the survey's checker on the same 30 files.
-The survey's classes are its own [9].
+**Table 5.** cgload's structural checks and the census on the same 30 files,
+by the census's classes.
 
 # Discussion
 
@@ -533,8 +589,8 @@ who needs values checked has to compare them with the file, as our round trip
 does, and that comparison is not part of `cgload verify`.
 
 Refusing by default has a cost. Seven of the 30 RefSeq files were refused
-until `--repair-envelopes` was given, over rows that the survey classed as
-documented conventions or exceptions. We chose to stop and name the features,
+until `--repair-envelopes` was given, over rows that carry a documented
+exception or follow a documented convention. We chose to stop and name the features,
 and to repair only on request, because a parent span that does not contain its
 children is contradictory whatever its cause. A user who wants every RefSeq
 file to load without a flag will find this strict.
@@ -556,7 +612,7 @@ its staging files, and `verify` exits 0 when it skips the source count because
 the input file has changed.
 
 The benchmark was written by cgload's authors. We tried to limit the bias that
-follows [17, 18] by committing the protocol first, by using a reference reader
+follows [16, 17] by committing the protocol first, by using a reference reader
 that shares no code with any loader, and by reporting our own harness errors.
 Three of those errors made other loaders look worse, until we found and fixed
 them. Chado stands here for python-chado alone, and the other loaders ran in
@@ -577,8 +633,8 @@ put to other loaders and other files.
 The benchmark results reported here are in `paper/data/benchmark-run-2.2/` of
 the repository. The full results, including the superseded ones, the PostgreSQL
 server log and the reference databases, are deposited at Zenodo
-[DOI to be added]. The genome panel and the survey results are in `survey/` of
-the same repository [9]. All input files are public RefSeq releases, identified
+[DOI to be added]. The census scripts and their results are in `survey/` of the
+same repository. All input files are public RefSeq releases, identified
 by accession and MD5 in `paper/data/benchmark-run-2.2/inputs.tsv`.
 
 # Code availability
@@ -589,12 +645,20 @@ scripts are in `benchmark/`, and `paper/figures.py` makes every figure and
 table from the deposited results. The version described is tagged
 [release tag to be added] and archived at Zenodo [DOI to be added].
 
-# Use of AI tools
+# Use of large language models
 
-Claude (Anthropic) wrote code, ran the analyses and drafted text for cgload,
-the benchmark and this manuscript, under the authors' direction. The authors
-checked the code, the results and the text, and take responsibility for them.
-<!-- AUTHORS: confirm this wording against the journal's current policy. -->
+<!-- AUTHORS: this wording describes the acceptable uses in the ISCB policy
+that the journal follows (code, documentation, data processing, finding
+anomalies). It will be true of the submitted manuscript only once the text is
+written by the authors, as that policy requires. The same disclosure belongs in
+the cover letter, and the detail in the supplementary materials. -->
+
+A large language model (Claude, Anthropic) was used to write and document
+parts of the cgload source code, the benchmark scripts and the scripts that
+make the figures and tables of this paper, and to help find errors in them. The
+authors reviewed all code, re-ran every analysis from the deposited inputs, and
+are responsible for its correctness. A log of this use is in the supplementary
+materials. The text of this paper was written by the authors.
 
 # Funding
 
@@ -623,29 +687,28 @@ and research interest. To be completed by the authors.]
 6. Lawrence M, Huber W, Pagès H, et al. Software for computing and annotating genomic ranges. *PLoS Comput Biol* 2013;**9**:e1003118. doi:10.1371/journal.pcbi.1003118
 7. Pagès H, Carlson M, Aboyoun P, et al. txdbmaker: tools for making TxDb objects from genomic annotations. R package version 1.6.2, Bioconductor. doi:10.18129/B9.bioc.txdbmaker
 8. Smith RN, Aleksic J, Butano D, et al. InterMine: a flexible data warehouse system for the integration and analysis of heterogeneous biological data. *Bioinformatics* 2012;**28**:3163–5. doi:10.1093/bioinformatics/bts577
-9. Upadhyay A, Panda A, Tripathy S. Few structural errors in RefSeq genome annotations: a survey of 30 eukaryotes. *Database*, submitted.
-10. InterMine documentation. Acceptance tests. https://intermine.readthedocs.io/en/latest/database/data-integrity-checks/acceptance-tests/ (10 November 2026, date last accessed).
-11. Dyer SC, Austine-Orimoloye O, Azov AG, et al. Ensembl 2025. *Nucleic Acids Res* 2025;**53**:D948–57. doi:10.1093/nar/gkae1071
-12. Ensembl. ensembl-datacheck: code for checking Ensembl databases during release production. https://github.com/Ensembl/ensembl-datacheck
-13. Chao K-H. gffbase: a genomic-annotation engine for GFF3 and GTF, version 0.3.0. 2026. https://github.com/Kuanhao-Chao/gffbase
-14. Chen B, Wu D, Zhang G. GFFx: a Rust-based suite of utilities for ultra-fast genomic feature extraction. *GigaScience* 2025;**14**:giaf124. doi:10.1093/gigascience/giaf124
-15. Gremme G, Steinbiss S, Kurtz S. GenomeTools: a comprehensive software library for efficient processing of structured genome annotations. *IEEE/ACM Trans Comput Biol Bioinform* 2013;**10**:645–56. doi:10.1109/TCBB.2013.68
-16. Dainat J. AGAT: Another Gff Analysis Toolkit to handle annotations in any GTF/GFF format. Zenodo. doi:10.5281/zenodo.3552717
-17. Weber LM, Saelens W, Cannoodt R, et al. Essential guidelines for computational method benchmarking. *Genome Biol* 2019;**20**:125. doi:10.1186/s13059-019-1738-8
-18. Buchka S, Hapfelmeier A, Gardner PP, et al. On the optimistic performance evaluation of newly introduced bioinformatic methods. *Genome Biol* 2021;**22**:152. doi:10.1186/s13059-021-02365-4
-19. Li H. Tabix: fast retrieval of sequence features from generic TAB-delimited files. *Bioinformatics* 2011;**27**:718–9. doi:10.1093/bioinformatics/btq671
-20. Bonfield JK, Marshall J, Danecek P, et al. HTSlib: C library for reading/writing high-throughput sequencing data. *GigaScience* 2021;**10**:giab007. doi:10.1093/gigascience/giab007
-21. Cantalapiedra CP, Hernández-Plaza A, Letunic I, et al. eggNOG-mapper v2: functional annotation, orthology assignments, and domain prediction at the metagenomic scale. *Mol Biol Evol* 2021;**38**:5825–9. doi:10.1093/molbev/msab293
-22. Jones P, Binns D, Chang H-Y, et al. InterProScan 5: genome-scale protein function classification. *Bioinformatics* 2014;**30**:1236–40. doi:10.1093/bioinformatics/btu031
-23. Palmer JM, Stajich J. Funannotate v1.8.1: eukaryotic genome annotation. Zenodo 2020. doi:10.5281/zenodo.1134477
-24. Stanke M, Morgenstern B. AUGUSTUS: a web server for gene prediction in eukaryotes that allows user-defined constraints. *Nucleic Acids Res* 2005;**33**:W465–7. doi:10.1093/nar/gki458
-25. O'Leary NA, Cox E, Holmes JB, et al. Exploring and retrieving sequence and metadata for species across the tree of life with NCBI Datasets. *Sci Data* 2024;**11**:732. doi:10.1038/s41597-024-03571-y
-26. Galaxy Genome Annotation. python-chado, version 2.3.9. https://github.com/galaxy-genome-annotation/python-chado
-27. Eilbeck K, Lewis SE, Mungall CJ, et al. The Sequence Ontology: a tool for the unification of genome annotations. *Genome Biol* 2005;**6**:R44. doi:10.1186/gb-2005-6-5-r44
-28. Cock PJA, Antao T, Chang JT, et al. Biopython: freely available Python tools for computational molecular biology and bioinformatics. *Bioinformatics* 2009;**25**:1422–3. doi:10.1093/bioinformatics/btp163
+9. InterMine documentation. Acceptance tests. https://intermine.readthedocs.io/en/latest/database/data-integrity-checks/acceptance-tests/ (10 November 2026, date last accessed).
+10. Dyer SC, Austine-Orimoloye O, Azov AG, et al. Ensembl 2025. *Nucleic Acids Res* 2025;**53**:D948–57. doi:10.1093/nar/gkae1071
+11. Ensembl. ensembl-datacheck: code for checking Ensembl databases during release production. https://github.com/Ensembl/ensembl-datacheck
+12. Chao K-H. gffbase: a genomic-annotation engine for GFF3 and GTF, version 0.3.0. 2026. https://github.com/Kuanhao-Chao/gffbase
+13. Chen B, Wu D, Zhang G. GFFx: a Rust-based suite of utilities for ultra-fast genomic feature extraction. *GigaScience* 2025;**14**:giaf124. doi:10.1093/gigascience/giaf124
+14. Gremme G, Steinbiss S, Kurtz S. GenomeTools: a comprehensive software library for efficient processing of structured genome annotations. *IEEE/ACM Trans Comput Biol Bioinform* 2013;**10**:645–56. doi:10.1109/TCBB.2013.68
+15. Dainat J. AGAT: Another Gff Analysis Toolkit to handle annotations in any GTF/GFF format. Zenodo. doi:10.5281/zenodo.3552717
+16. Weber LM, Saelens W, Cannoodt R, et al. Essential guidelines for computational method benchmarking. *Genome Biol* 2019;**20**:125. doi:10.1186/s13059-019-1738-8
+17. Buchka S, Hapfelmeier A, Gardner PP, et al. On the optimistic performance evaluation of newly introduced bioinformatic methods. *Genome Biol* 2021;**22**:152. doi:10.1186/s13059-021-02365-4
+18. Li H. Tabix: fast retrieval of sequence features from generic TAB-delimited files. *Bioinformatics* 2011;**27**:718–9. doi:10.1093/bioinformatics/btq671
+19. Bonfield JK, Marshall J, Danecek P, et al. HTSlib: C library for reading/writing high-throughput sequencing data. *GigaScience* 2021;**10**:giab007. doi:10.1093/gigascience/giab007
+20. Cantalapiedra CP, Hernández-Plaza A, Letunic I, et al. eggNOG-mapper v2: functional annotation, orthology assignments, and domain prediction at the metagenomic scale. *Mol Biol Evol* 2021;**38**:5825–9. doi:10.1093/molbev/msab293
+21. Jones P, Binns D, Chang H-Y, et al. InterProScan 5: genome-scale protein function classification. *Bioinformatics* 2014;**30**:1236–40. doi:10.1093/bioinformatics/btu031
+22. Palmer JM, Stajich J. Funannotate v1.8.1: eukaryotic genome annotation. Zenodo 2020. doi:10.5281/zenodo.1134477
+23. Stanke M, Morgenstern B. AUGUSTUS: a web server for gene prediction in eukaryotes that allows user-defined constraints. *Nucleic Acids Res* 2005;**33**:W465–7. doi:10.1093/nar/gki458
+24. O'Leary NA, Cox E, Holmes JB, et al. Exploring and retrieving sequence and metadata for species across the tree of life with NCBI Datasets. *Sci Data* 2024;**11**:732. doi:10.1038/s41597-024-03571-y
+25. Galaxy Genome Annotation. python-chado, version 2.3.9. https://github.com/galaxy-genome-annotation/python-chado
+26. Eilbeck K, Lewis SE, Mungall CJ, et al. The Sequence Ontology: a tool for the unification of genome annotations. *Genome Biol* 2005;**6**:R44. doi:10.1186/gb-2005-6-5-r44
+27. Cock PJA, Antao T, Chang JT, et al. Biopython: freely available Python tools for computational molecular biology and bioinformatics. *Bioinformatics* 2009;**25**:1422–3. doi:10.1093/bioinformatics/btp163
 
 <!-- AUTHORS: check every reference against the journal's style before
-submission. Reference 18's article number and reference 11's pages were taken
+submission. Reference 17's article number and reference 10's pages were taken
 from memory; their DOIs were checked. -->
 
 # Supplementary material
