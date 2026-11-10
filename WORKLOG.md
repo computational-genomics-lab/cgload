@@ -372,13 +372,13 @@ attribute change anywhere; every other table identical.
   AI-use wording against the journal's policy, and a check of every reference.
 - The case-study genome (Q8) is not named. Run it, or record in PROTOCOL.md
   section 12 that it was dropped, and why; the manuscript reports Q1 to Q7.
-- txdbmaker stopped in makeTxDbFromGRanges on rice, tomato and grapevine; the
-  second line of each error, in `compare/txdbmaker/<accession>/steps/load.err`
-  on the server, belongs in the paper.
 - The survey manuscript (submitted to Database) still says 27.1 million rows,
   from the incomplete medaka file; the corrected panel has 28,211,625 rows
   (`survey/results/CORRECTIONS.md`), and its rates per million change a little.
-  The cgload paper cites the corrected number.
+  The cgload paper cites the corrected number. The survey manuscript also
+  introduces cgload in its Methods; cgload has not been published, and the
+  authors want this paper to be its first description, so trim that passage
+  at revision to the repository that holds the survey scripts.
 - `verify` exits 0 when it skips the source count because the input file has
   changed (F16): the report names the file, but a script that reads only the
   exit status misses it. Decide before the release whether this should fail.

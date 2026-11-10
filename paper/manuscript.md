@@ -36,8 +36,8 @@ all 30 files with its default settings, and with create_unique it split
 txdbmaker failed on six plant genomes. python-chado failed or timed out on nine
 genomes and, in the 21 loads that finished, lost 5.0% of the features, four in
 five of them without a message. cgload noticed all 57 planted faults that its
-checks cover and, as documented, none of the 24 that changed values but kept
-every count. Every killed cgload load left the database as it was. Loading the
+checks cover and, as the protocol predicted, none of the 24 that changed values
+but kept every count. Every killed cgload load left the database as it was. Loading the
 human annotation took 641 s and 29.5 GB of memory on SQLite. cgload is free
 software under the MIT license.
 
@@ -101,8 +101,8 @@ cgload and other loaders behave on real files. Benchmarks written by a tool's
 own authors tend to favour that tool [17, 18]. To limit this, we fixed the
 questions, the genomes and the scripts in a tagged protocol before the first
 run, compared every loader with the same reference reading, and report every
-change made after the first run. This paper describes cgload and the benchmark,
-and reports its answers to seven questions:
+change made after the first run. This paper introduces cgload and reports the
+benchmark's answers to seven questions:
 
 - Q1. Does cgload load and verify all 30 genomes, on SQLite and on PostgreSQL,
   and at what cost in time, memory and disk?
@@ -171,7 +171,7 @@ a tier fails and 0 otherwise.
 These checks establish completeness: every feature, every row and every stated
 parent link is present, and nothing was invented. They do not establish that a
 value is right. A wrong strand or a shifted coordinate keeps every count the
-same, and the documentation says so.
+same, so these checks cannot see it.
 
 ![**Figure 1.** How cgload loads and verifies an annotation. Grey boxes load and blue boxes check. A separate reader counts the input file with code that imports nothing from cgload. At the end of the load its counts decide whether the transaction is committed or rolled back, and `cgload verify` compares them with the database again at any later time.](figures/fig1_design.png)
 
@@ -377,13 +377,11 @@ every parent link.
 
 txdbmaker stopped on six of the seven plant genomes. On three it rejected a row
 whose end precedes its start, the inverted *nad1* transcripts the survey
-reported [9], and on the other three it stopped while building the TxDb. On the
+reported [9]. On the other three it stopped while building the TxDb, reporting 2
+exons in each file linked to transcripts it could not find. On the
 24 genomes it loaded, it kept 1,169,686 of 1,169,826 transcripts. It changed 104
 and dropped 36, and its messages named all but 3 of the changes. Another 647,583
 features have types that a TxDb does not model.
-<!-- AUTHORS: the three makeTxDbFromGRanges errors (rice, tomato, grapevine)
-are in compare/txdbmaker/<accession>/steps/load.err on the server; add the
-reason in a few words. -->
 
 python-chado stopped with an error about a feature's location on all seven
 plant genomes and on *Drosophila melanogaster*, each time at a trans-spliced
@@ -451,7 +449,7 @@ time. After the 20 killed `--force` reloads, the earlier load was intact and
 passed `verify`. In 28 of the 40 trials, cgload left files on disk outside any
 stored assembly, from its staging folder or from the folder a `--force` reload
 sets aside (up to 124 MB). After a killed new load, the next load did not
-remove them. The documentation lists this.
+remove them. We list this among cgload's known limitations.
 
 python-chado commits only at the end, so its five killed loads left an empty
 database. gffutils left a database file after all 20 kills, and gffutils could
