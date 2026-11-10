@@ -1,0 +1,98 @@
+| View | Task | Genome | Tool | Targets | First ask, median s | Repeated asks, median s |
+| :-- | :-- | :-- | :-- | :-- | --: | --: |
+| command | T3 | Fusarium graminearum | cgload (PostgreSQL) | 1 | 1.227 | 1.125 |
+| command | T3 | Fusarium graminearum | cgload (SQLite) | 1 | 0.333 | 0.304 |
+| command | T3 | Fusarium graminearum | gffutils, create_unique | 1 | 0.17 | 0.091 |
+| command | T3 | Fusarium graminearum | tabix | 1 | 0.19 | 0.1845 |
+| command | T3 | Arabidopsis thaliana | cgload (PostgreSQL) | 1 | 4.497 | 3.1015 |
+| command | T3 | Arabidopsis thaliana | cgload (SQLite) | 1 | 0.932 | 0.692 |
+| command | T3 | Arabidopsis thaliana | gffutils, create_unique | 1 | 0.214 | 0.1315 |
+| command | T3 | Arabidopsis thaliana | tabix | 1 | 2.203 | 2.169 |
+| command | T3 | Zea mays | cgload (PostgreSQL) | 1 | 6.6 | 4.342 |
+| command | T3 | Zea mays | cgload (SQLite) | 1 | 1.368 | 0.9475 |
+| command | T3 | Zea mays | gffutils, create_unique | 1 | 0.212 | 0.145 |
+| command | T3 | Zea mays | tabix | 1 | 1.461 | 1.333 |
+| command | T3 | Homo sapiens | cgload (PostgreSQL) | 1 | 27.577 | 19.494 |
+| command | T3 | Homo sapiens | cgload (SQLite) | 1 | 9.761 | 3.752 |
+| command | T3 | Homo sapiens | gffutils, create_unique | 1 | 0.381 | 0.3115 |
+| command | T3 | Homo sapiens | tabix | 1 | 6.879 | 6.805 |
+| command | T1 | Fusarium graminearum | cgload (PostgreSQL) | 20 | 0.617 | 0.3685 |
+| command | T1 | Fusarium graminearum | cgload (SQLite) | 20 | 0.3395 | 0.2625 |
+| command | T1 | Fusarium graminearum | gffutils, create_unique | 20 | 0.1655 | 0.1288 |
+| command | T1 | Arabidopsis thaliana | cgload (PostgreSQL) | 20 | 0.5445 | 0.368 |
+| command | T1 | Arabidopsis thaliana | cgload (SQLite) | 20 | 0.452 | 0.2648 |
+| command | T1 | Arabidopsis thaliana | gffutils, create_unique | 20 | 0.208 | 0.1578 |
+| command | T1 | Zea mays | cgload (PostgreSQL) | 20 | 0.5955 | 0.3792 |
+| command | T1 | Zea mays | cgload (SQLite) | 20 | 0.382 | 0.298 |
+| command | T1 | Zea mays | gffutils, create_unique | 20 | 0.216 | 0.138 |
+| command | T1 | Homo sapiens | cgload (PostgreSQL) | 20 | 0.7245 | 0.4113 |
+| command | T1 | Homo sapiens | cgload (SQLite) | 20 | 0.4775 | 0.2662 |
+| command | T1 | Homo sapiens | gffutils, create_unique | 20 | 0.3465 | 0.2445 |
+| command | T2 | Fusarium graminearum | cgload (PostgreSQL) | 20 | 1.106 | 0.971 |
+| command | T2 | Fusarium graminearum | cgload (SQLite) | 20 | 0.4495 | 0.3815 |
+| command | T2 | Fusarium graminearum | gffutils, create_unique | 20 | 0.26 | 0.1792 |
+| command | T2 | Fusarium graminearum | tabix | 20 | 0.009 | 0.008 |
+| command | T2 | Arabidopsis thaliana | cgload (PostgreSQL) | 20 | 1.915 | 1.3718 |
+| command | T2 | Arabidopsis thaliana | cgload (SQLite) | 20 | 0.9385 | 0.5297 |
+| command | T2 | Arabidopsis thaliana | gffutils, create_unique | 20 | 0.519 | 0.4117 |
+| command | T2 | Arabidopsis thaliana | tabix | 20 | 0.0295 | 0.0222 |
+| command | T2 | Zea mays | cgload (PostgreSQL) | 20 | 0.745 | 0.3967 |
+| command | T2 | Zea mays | cgload (SQLite) | 20 | 0.627 | 0.28 |
+| command | T2 | Zea mays | gffutils, create_unique | 20 | 0.214 | 0.148 |
+| command | T2 | Zea mays | tabix | 20 | 0.0265 | 0.019 |
+| command | T2 | Homo sapiens | cgload (PostgreSQL) | 20 | 1.6575 | 0.5435 |
+| command | T2 | Homo sapiens | cgload (SQLite) | 20 | 1.17 | 0.3197 |
+| command | T2 | Homo sapiens | gffutils, create_unique | 20 | 0.3775 | 0.2248 |
+| command | T2 | Homo sapiens | tabix | 20 | 0.0535 | 0.0363 |
+| command | T4 | Fusarium graminearum | cgload (PostgreSQL) | 3 | 6.668 | 6.5885 |
+| command | T4 | Fusarium graminearum | cgload (SQLite) | 3 | 1.831 | 1.869 |
+| command | T4 | Fusarium graminearum | gffutils, create_unique | 3 | 1.095 | 0.9015 |
+| command | T4 | Fusarium graminearum | tabix | 3 | 0.039 | 0.061 |
+| command | T4 | Arabidopsis thaliana | cgload (PostgreSQL) | 3 | 33.616 | 30.635 |
+| command | T4 | Arabidopsis thaliana | cgload (SQLite) | 3 | 11.713 | 9.3815 |
+| command | T4 | Arabidopsis thaliana | gffutils, create_unique | 3 | 8.411 | 6.5715 |
+| command | T4 | Arabidopsis thaliana | tabix | 3 | 0.287 | 0.3555 |
+| command | T4 | Zea mays | cgload (PostgreSQL) | 3 | 23.789 | 21.893 |
+| command | T4 | Zea mays | cgload (SQLite) | 3 | 10.149 | 5.4585 |
+| command | T4 | Zea mays | gffutils, create_unique | 3 | 3.243 | 3.165 |
+| command | T4 | Zea mays | tabix | 3 | 0.149 | 0.1255 |
+| command | T4 | Homo sapiens | cgload (PostgreSQL) | 3 | 2.776 | 1.5285 |
+| command | T4 | Homo sapiens | cgload (SQLite) | 3 | 0.791 | 0.55 |
+| command | T4 | Homo sapiens | gffutils, create_unique | 3 | 0.458 | 0.3765 |
+| command | T4 | Homo sapiens | tabix | 3 | 0.073 | 0.0655 |
+| library | T3 | Fusarium graminearum | cgload (PostgreSQL) | 1 | 0.568 | 0.522 |
+| library | T3 | Fusarium graminearum | cgload (SQLite) | 1 | 0.05 | 0.0465 |
+| library | T3 | Fusarium graminearum | gffutils, create_unique | 1 | 0.007 | 0.004 |
+| library | T3 | Arabidopsis thaliana | cgload (PostgreSQL) | 1 | 3.617 | 2.8255 |
+| library | T3 | Arabidopsis thaliana | cgload (SQLite) | 1 | 0.44 | 0.4265 |
+| library | T3 | Arabidopsis thaliana | gffutils, create_unique | 1 | 0.024 | 0.017 |
+| library | T3 | Zea mays | cgload (PostgreSQL) | 1 | 5.539 | 3.8205 |
+| library | T3 | Zea mays | cgload (SQLite) | 1 | 1.069 | 1.059 |
+| library | T3 | Zea mays | gffutils, create_unique | 1 | 0.046 | 0.0355 |
+| library | T3 | Homo sapiens | cgload (PostgreSQL) | 1 | 22.281 | 18.9595 |
+| library | T3 | Homo sapiens | cgload (SQLite) | 1 | 3.476 | 3.464 |
+| library | T3 | Homo sapiens | gffutils, create_unique | 1 | 0.136 | 0.137 |
+| library | T1 | Fusarium graminearum | cgload (PostgreSQL) | 20 | 0.01 | 0.008 |
+| library | T1 | Fusarium graminearum | cgload (SQLite) | 20 | 0.004 | 0.004 |
+| library | T1 | Fusarium graminearum | gffutils, create_unique | 20 | 0.0 | 0.0 |
+| library | T1 | Arabidopsis thaliana | cgload (PostgreSQL) | 20 | 0.016 | 0.0147 |
+| library | T1 | Arabidopsis thaliana | cgload (SQLite) | 20 | 0.005 | 0.004 |
+| library | T1 | Arabidopsis thaliana | gffutils, create_unique | 20 | 0.0 | 0.0 |
+| library | T1 | Zea mays | cgload (PostgreSQL) | 20 | 0.0195 | 0.0187 |
+| library | T1 | Zea mays | cgload (SQLite) | 20 | 0.0045 | 0.004 |
+| library | T1 | Zea mays | gffutils, create_unique | 20 | 0.0 | 0.0 |
+| library | T1 | Homo sapiens | cgload (PostgreSQL) | 20 | 0.0275 | 0.0253 |
+| library | T1 | Homo sapiens | cgload (SQLite) | 20 | 0.0055 | 0.005 |
+| library | T1 | Homo sapiens | gffutils, create_unique | 20 | 0.001 | 0.001 |
+| library | T2 | Fusarium graminearum | cgload (PostgreSQL) | 20 | 0.6015 | 0.601 |
+| library | T2 | Fusarium graminearum | cgload (SQLite) | 20 | 0.127 | 0.1258 |
+| library | T2 | Fusarium graminearum | gffutils, create_unique | 20 | 0.062 | 0.0733 |
+| library | T2 | Arabidopsis thaliana | cgload (PostgreSQL) | 20 | 1.1095 | 1.094 |
+| library | T2 | Arabidopsis thaliana | cgload (SQLite) | 20 | 0.2655 | 0.2675 |
+| library | T2 | Arabidopsis thaliana | gffutils, create_unique | 20 | 0.137 | 0.1373 |
+| library | T2 | Zea mays | cgload (PostgreSQL) | 20 | 0.091 | 0.0905 |
+| library | T2 | Zea mays | cgload (SQLite) | 20 | 0.0225 | 0.0215 |
+| library | T2 | Zea mays | gffutils, create_unique | 20 | 0.018 | 0.017 |
+| library | T2 | Homo sapiens | cgload (PostgreSQL) | 20 | 0.1835 | 0.1818 |
+| library | T2 | Homo sapiens | cgload (SQLite) | 20 | 0.0615 | 0.0557 |
+| library | T2 | Homo sapiens | gffutils, create_unique | 20 | 0.0375 | 0.0335 |

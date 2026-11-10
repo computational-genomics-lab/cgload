@@ -1,0 +1,724 @@
+#!/usr/bin/env python3
+"""Make the paper's figures and tables from the benchmark results.
+
+    python3 paper/figures.py [RESULTS] [--out paper]
+
+RESULTS is a results folder as benchmark/run.sh leaves it; by default the one
+the paper reports, paper/data/benchmark-run-2.2. Figures go to OUT/figures/
+(PDF for the journal, PNG to look at), tables to OUT/tables/ as Markdown.
+Every number is read from RESULTS; none is typed in here. Needs matplotlib.
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+from collections import defaultdict
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.lines import Line2D  # noqa: E402
+from matplotlib.patches import Rectangle  # noqa: E402
+
+HERE = Path(__file__).resolve().parent
+
+# Colours: the light-mode reference palette of the dataviz method (slots 1 to 3,
+# checked together on white: worst colour-blind distance 9.2, normal 24.0).
+INK, INK2, MUTED = "#0b0b0b", "#52514e", "#898781"
+GRID, AXIS = "#e1e0d9", "#c3c2b7"
+BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"
+NOTHING, FAILED = "#f0efec", "#d6d5cf"
+RAMP = ["#cde2fb", "#b7d3f6", "#9ec5f4", "#86b6ef", "#6da7ec", "#5598e7", "#3987e5",
+        "#2a78d6", "#256abf", "#1c5cab", "#184f95", "#104281", "#0d366b"]
+
+FULL_WIDTH = 6.85  # inches: a double column of Briefings in Bioinformatics, 174 mm
+
+plt.rcParams.update({
+    "font.family": "sans-serif",
+    "font.sans-serif": ["Arial", "Helvetica", "Liberation Sans", "DejaVu Sans"],
+    "font.size": 7, "axes.titlesize": 7.5, "axes.labelsize": 7,
+    "xtick.labelsize": 6.5, "ytick.labelsize": 6.5, "legend.fontsize": 7,
+    "text.color": INK, "axes.labelcolor": INK2, "axes.edgecolor": AXIS,
+    "xtick.color": AXIS, "ytick.color": AXIS,
+    "xtick.labelcolor": INK2, "ytick.labelcolor": INK2,
+    "axes.linewidth": 0.6, "xtick.major.width": 0.6, "ytick.major.width": 0.6,
+    "xtick.minor.width": 0.4, "ytick.minor.width": 0.4,
+    "axes.spines.top": False, "axes.spines.right": False,
+    "axes.grid": True, "grid.color": GRID, "grid.linewidth": 0.5, "grid.linestyle": "-",
+    "axes.axisbelow": True, "figure.facecolor": "white", "axes.facecolor": "white",
+    "savefig.facecolor": "white", "pdf.fonttype": 42, "ps.fonttype": 42,
+})
+
+TOOL_NAMES = {
+    "cgload-sqlite": "cgload (SQLite)", "cgload-postgres": "cgload (PostgreSQL)",
+    "gffutils-default": "gffutils, default", "gffutils": "gffutils, create_unique",
+    "txdbmaker": "txdbmaker", "chado": "Chado (python-chado)", "tabix": "tabix",
+}
+CLADES = [("vertebrate", "Vertebrates"), ("insect", "Insects"), ("plant", "Plants"),
+          ("fungus", "Fungi")]
+
+
+# --- reading ---------------------------------------------------------------------------
+
+def read_tsv(path: Path) -> list[dict]:
+    with path.open(newline="") as handle:
+        return list(csv.DictReader(handle, delimiter="\t"))
+
+
+def number(text: str | None) -> int:
+    return int(text) if text not in (None, "", "NA") else 0
+
+
+def species(organism: str) -> str:
+    """Genus, species and a subspecies (Canis lupus familiaris); the strain is in
+    the genome table."""
+    words = organism.split()
+    keep = 3 if len(words) > 2 and words[2].isalpha() and words[2].islower() else 2
+    return " ".join(words[:keep])
+
+
+def short_species(organism: str) -> str:
+    """H. sapiens, for labels where the full name does not fit."""
+    words = organism.split()
+    return f"{words[0][0]}. {words[1]}"
+
+
+class Results:
+    def __init__(self, folder: Path):
+        self.folder = folder
+        self.genomes = read_tsv(folder / "tables" / "scale.tsv")
+        self.order = sorted(self.genomes, key=lambda g: (
+            [c for c, _ in CLADES].index(g["clade"]), -number(g["rows"])))
+        self.loaders = read_tsv(folder / "compare_loaders.tsv")
+        self.tools = {row["tool"]: row for row in read_tsv(folder / "tables" / "tools.tsv")}
+        self.cases = read_tsv(folder / "tables" / "cases.tsv")
+        self.faults = read_tsv(folder / "tables" / "faults.tsv")
+        self.fault_trials = read_tsv(folder / "faults.tsv")
+        self.kills = read_tsv(folder / "tables" / "kills.tsv")
+        self.agreement = read_tsv(folder / "tables" / "agreement.tsv")
+        self.timing = read_tsv(folder / "tables" / "timing.tsv")
+        self.scale = {(row["accession"], row["backend"]): row
+                      for row in read_tsv(folder / "cgload_scale.tsv")}
+        self.headline = json.loads((folder / "tables" / "headline.json").read_text())
+        self.name = {g["accession"]: g["organism"] for g in self.genomes}
+
+    def loader(self, accession: str, tool: str) -> dict:
+        """One loader's comparison for one genome, in compare_loaders.tsv's columns.
+
+        cgload's own comparison is its round trip, kept in cgload_scale.tsv; there
+        "changed" counts only the changes it did not declare."""
+        if tool.startswith("cgload-"):
+            row = self.scale[(accession, tool.removeprefix("cgload-"))]
+            return {"outcome": row["outcome"], "truth": row["rt_truth"],
+                    "kept": row["rt_kept"], "changed": row["rt_changed"],
+                    "changed_declared": row["rt_changed_declared"],
+                    "changed_silent": row["rt_changed_silent"], "lost": row["rt_lost"],
+                    "lost_silent": row["rt_lost_silent"]}
+        found = [r for r in self.loaders if r["accession"] == accession and r["tool"] == tool]
+        if len(found) != 1:
+            raise SystemExit(f"{accession} {tool}: {len(found)} rows in compare_loaders.tsv")
+        return found[0]
+
+
+# --- figure helpers --------------------------------------------------------------------
+
+def save(figure, out: Path, name: str) -> None:
+    out.mkdir(parents=True, exist_ok=True)
+    # No dates in the files, so that drawing again changes nothing.
+    figure.savefig(out / f"{name}.pdf", metadata={"CreationDate": None})
+    figure.savefig(out / f"{name}.png", dpi=300, metadata={"Software": None})
+    plt.close(figure)
+
+
+def hex_rgb(colour: str) -> tuple[float, float, float]:
+    colour = colour.lstrip("#")
+    return tuple(int(colour[i:i + 2], 16) / 255 for i in (0, 2, 4))
+
+
+def luminance(colour: str) -> float:
+    def channel(c):
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+    r, g, b = (channel(c) for c in hex_rgb(colour))
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def ink_on(fill: str) -> str:
+    """White or near-black, whichever reads better on the fill."""
+    light = luminance(fill)
+    return INK if (light + 0.05) / 0.05 > 1.05 / (light + 0.05) else "#ffffff"
+
+
+def ramp_colour(fraction: float) -> str:
+    """A step of the one-hue ramp, light for little, dark for much."""
+    fraction = min(max(fraction, 0.0), 1.0)
+    position = fraction * (len(RAMP) - 1)
+    low = int(position)
+    high = min(low + 1, len(RAMP) - 1)
+    weight = position - low
+    a, b = hex_rgb(RAMP[low]), hex_rgb(RAMP[high])
+    mixed = [round((x + (y - x) * weight) * 255) for x, y in zip(a, b, strict=True)]
+    return "#" + "".join(f"{c:02x}" for c in mixed)
+
+
+def log_seconds(axis, which: str = "x") -> None:
+    def label(value, _position):
+        if value < 1:
+            milliseconds = value * 1000
+            return f"{milliseconds:g} ms"
+        return f"{value:g} s"
+    formatter = matplotlib.ticker.FuncFormatter(label)
+    target = axis.xaxis if which == "x" else axis.yaxis
+    target.set_major_formatter(formatter)
+
+
+def thousands(value, _position) -> str:
+    if value >= 1e6:
+        return f"{value / 1e6:g} M"
+    if value >= 1e3:
+        return f"{value / 1e3:g} k"
+    return f"{value:g}"
+
+
+# --- Figure 2: the cost of a load (Q1) ------------------------------------------------
+
+def figure_scale(results: Results, out: Path) -> None:
+    panels = [
+        ("load_wall_s", 1, "Load time (s)", "s"),
+        ("verify_wall_s", 1, "Verify time (s)", "s"),
+        ("load_peak_mb", 1 / 1024, "Peak memory of the load (GB)", "GB"),
+        ("db_bytes", 1 / 1024 ** 3, "Database size (GB)", "GB"),
+    ]
+    backends = [("sqlite", "SQLite", BLUE), ("postgres", "PostgreSQL", ORANGE)]
+    figure, axes = plt.subplots(2, 2, figsize=(FULL_WIDTH, 4.5))
+    largest = max(results.genomes, key=lambda g: number(g["rows"]))
+    for axis, (column, factor, title, unit), letter in zip(axes.flat, panels, "abcd",
+                                                            strict=True):
+        for backend, label, colour in backends:
+            xs, ys = [], []
+            for genome in results.genomes:
+                row = results.scale[(genome["accession"], backend)]
+                xs.append(number(genome["rows"]))
+                ys.append(float(row[column]) * factor)
+            axis.plot(xs, ys, linestyle="none", marker="o", markersize=4.6,
+                      markerfacecolor=colour, markeredgecolor="white",
+                      markeredgewidth=0.7, label=label, zorder=3)
+        # The largest genome's two values, beside its points: the higher one
+        # nudged up and the lower one down, so that close values do not collide.
+        values = {backend: float(results.scale[(largest["accession"], backend)][column])
+                  * factor for backend, _, _ in backends}
+        higher = max(values, key=values.get)
+        for backend, value in values.items():
+            shown = f"{value:,.0f} {unit}" if value >= 10 else f"{value:.1f} {unit}"
+            up = backend == higher
+            axis.annotate(shown, (number(largest["rows"]), value),
+                          xytext=(6, 2.5 if up else -2.5), textcoords="offset points",
+                          ha="left", va="bottom" if up else "top", fontsize=6.5, color=INK2)
+        axis.set_xscale("log")
+        axis.set_yscale("log")
+        axis.xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(thousands))
+        axis.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(
+            lambda v, _p: f"{v:g}"))
+        axis.set_xlim(1e4, 2e7)
+        axis.grid(True, which="major")
+        axis.grid(False, which="minor")
+        axis.set_title(title, loc="left", color=INK, fontweight="bold")
+        axis.text(-0.16, 1.06, letter, transform=axis.transAxes, fontsize=9,
+                  fontweight="bold", color=INK, va="bottom")
+        axis.set_xlabel("Rows in the GFF3 file")
+    handles = [Line2D([], [], linestyle="none", marker="o", markersize=5,
+                      markerfacecolor=colour, markeredgecolor="white", label=label)
+               for _, label, colour in backends]
+    figure.legend(handles=handles, loc="upper center", ncol=2, frameon=False,
+                  bbox_to_anchor=(0.5, 1.0), handletextpad=0.3, columnspacing=1.5)
+    figure.tight_layout(rect=(0, 0, 1, 0.95), h_pad=1.6, w_pad=2.0)
+    save(figure, out, "fig2_scale")
+
+
+# --- Figure 3: what each loader did with each genome (Q3) -----------------------------
+
+LOADER_COLUMNS = [
+    ("cgload-sqlite", "cgload", "SQLite and PostgreSQL"),
+    ("gffutils-default", "gffutils", "default"),
+    ("gffutils", "gffutils", "create_unique"),
+    ("txdbmaker", "txdbmaker", "transcripts"),
+    ("chado", "Chado", "python-chado"),
+]
+
+
+def silent_share(row: dict) -> float | None:
+    """Percent of the file's features (transcripts) changed or lost without a word."""
+    if row["outcome"] not in ("loaded", "loaded_with_repair"):
+        return None
+    truth = number(row["truth"])
+    return 100 * (number(row["changed_silent"]) + number(row["lost_silent"])) / truth
+
+
+def figure_loaders(results: Results, out: Path) -> None:
+    for accession in (g["accession"] for g in results.genomes):
+        sqlite = results.loader(accession, "cgload-sqlite")
+        postgres = results.loader(accession, "cgload-postgres")
+        same = ("outcome", "kept", "changed", "changed_declared", "lost")
+        if any(sqlite[key] != postgres[key] for key in same):
+            raise SystemExit(f"{accession}: the two cgload back ends differ; one column "
+                             "cannot stand for both")
+    shares = [silent_share(r) for r in results.loaders if r["tool"] != "cgload-postgres"]
+    top = max(s for s in shares if s is not None)
+    scale_max = 5 * (int(top // 5) + 1)
+
+    rows_per_clade = [(clade, title, [g for g in results.order if g["clade"] == clade])
+                      for clade, title in CLADES]
+    row_h, gap_h, head_h = 0.165, 0.09, 0.42
+    n_rows = len(results.order)
+    body_h = n_rows * row_h + (len(CLADES) - 1) * gap_h
+    legend_h = 0.62
+    height = head_h + body_h + legend_h
+    figure = plt.figure(figsize=(FULL_WIDTH, height))
+    left, names_w = 0.28, 1.62
+    col_w = (FULL_WIDTH - left - names_w - 0.08) / len(LOADER_COLUMNS)
+    axis = figure.add_axes((0, 0, 1, 1))
+    axis.set_xlim(0, FULL_WIDTH)
+    axis.set_ylim(height, 0)
+    axis.axis("off")
+    x0 = left + names_w
+    pad = 0.012  # inches of white between cells (about 2 px at screen size)
+
+    for i, (_tool, name, setting) in enumerate(LOADER_COLUMNS):
+        cx = x0 + (i + 0.5) * col_w
+        axis.text(cx, head_h - 0.20, name, ha="center", va="bottom", fontsize=7.5,
+                  fontweight="bold", color=INK)
+        axis.text(cx, head_h - 0.06, setting, ha="center", va="bottom", fontsize=6.5,
+                  color=INK2)
+
+    y = head_h
+    for _clade, title, genomes in rows_per_clade:
+        top_y = y
+        for genome in genomes:
+            accession = genome["accession"]
+            repaired = genome["sqlite_outcome"] == "loaded_with_repair"
+            label = species(genome["organism"]) + (" †" if repaired else "")
+            axis.text(x0 - 0.06, y + row_h / 2, label, ha="right", va="center",
+                      fontsize=6.5, style="italic", color=INK)
+            for i, (tool, _name, _setting) in enumerate(LOADER_COLUMNS):
+                row = results.loader(accession, tool)
+                share = silent_share(row)
+                if share is None:
+                    fill = FAILED
+                    text = "timed out" if row["outcome"] == "timed_out" else "failed"
+                    colour = INK2
+                elif share == 0:
+                    fill, text, colour = NOTHING, "0", INK2
+                else:
+                    fill = ramp_colour(share / scale_max)
+                    text = "<0.1" if share < 0.1 else f"{share:.1f}"
+                    colour = ink_on(fill)
+                axis.add_patch(Rectangle((x0 + i * col_w + pad, y + pad),
+                                         col_w - 2 * pad, row_h - 2 * pad,
+                                         facecolor=fill, edgecolor="none"))
+                axis.text(x0 + (i + 0.5) * col_w, y + row_h / 2, text, ha="center",
+                          va="center", fontsize=6.3, color=colour)
+            y += row_h
+        axis.text(left * 0.55, (top_y + y) / 2, title, rotation=90, ha="center",
+                  va="center", fontsize=7, color=INK, fontweight="bold")
+        axis.plot([left * 0.95, left * 0.95], [top_y + 0.02, y - 0.02], color=AXIS,
+                  linewidth=0.6)
+        y += gap_h
+
+    # Key: the ramp, then "nothing" and "failed" chips.
+    key_y = head_h + body_h + 0.20
+    bar_x, bar_w, bar_h = x0, 2.2, 0.10
+    steps = 60
+    for k in range(steps):
+        axis.add_patch(Rectangle((bar_x + k * bar_w / steps, key_y), bar_w / steps + 0.002,
+                                 bar_h, facecolor=ramp_colour((k + 0.5) / steps),
+                                 edgecolor="none"))
+    for tick in range(0, scale_max + 1, 5):
+        tx = bar_x + bar_w * tick / scale_max
+        axis.plot([tx, tx], [key_y + bar_h, key_y + bar_h + 0.04], color=AXIS, linewidth=0.6)
+        axis.text(tx, key_y + bar_h + 0.06, f"{tick}%", ha="center", va="top",
+                  fontsize=6.3, color=INK2)
+    axis.text(bar_x, key_y - 0.05, "Features changed or lost without a word "
+              "(% of the file's features)", ha="left", va="bottom", fontsize=6.5, color=INK)
+    chip_x = bar_x + bar_w + 0.35
+    for fill, text in ((NOTHING, "none"), (FAILED, "load failed or timed out")):
+        axis.add_patch(Rectangle((chip_x, key_y), 0.18, bar_h, facecolor=fill,
+                                 edgecolor="none"))
+        axis.text(chip_x + 0.24, key_y + bar_h / 2, text, ha="left", va="center",
+                  fontsize=6.5, color=INK2)
+        chip_x += 0.24 + 0.08 * len(text) + 0.25
+    save(figure, out, "fig3_loaders")
+
+
+# --- Figure 4: query waits (Q6) -------------------------------------------------------
+
+TASKS = [("gene", "T1  A gene and its parts"),
+         ("region", "T2  A 1 Mb window"),
+         ("count", "T3  Counts by type"),
+         ("sequence", "T4  A sequence as GFF3")]
+QUERY_TOOLS = [  # (tool, marker, face, edge)
+    ("cgload-sqlite", "o", BLUE, BLUE),
+    ("cgload-postgres", "o", "white", BLUE),
+    ("gffutils", "s", ORANGE, ORANGE),
+    ("tabix", "D", AQUA, AQUA),
+]
+RESOLUTION = 0.001  # the clock's resolution, in seconds
+
+
+def figure_queries(results: Results, out: Path) -> None:
+    accessions = sorted({r["accession"] for r in results.timing},
+                        key=lambda a: number(next(g["rows"] for g in results.genomes
+                                                  if g["accession"] == a)))
+    median = {(r["accession"], r["view"], r["tool"], r["task"]): float(r["repeat_median_s"])
+              for r in results.timing}
+    views = [("command", "One command per answer"), ("library", "One process, asked in turn")]
+    figure, axes = plt.subplots(2, 4, figsize=(FULL_WIDTH, 3.9), sharey=True)
+    for row_index, (view, _view_title) in enumerate(views):
+        for col_index, (task, task_title) in enumerate(TASKS):
+            axis = axes[row_index][col_index]
+            asked = [t for t in QUERY_TOOLS
+                     if any((a, view, t[0], task) in median for a in accessions)]
+            if not asked:
+                axis.axis("off")
+                continue
+            offsets = {t[0]: (k - (len(QUERY_TOOLS) - 1) / 2) * 0.17
+                       for k, t in enumerate(QUERY_TOOLS)}
+            for tool, marker, face, edge in asked:
+                for y, accession in enumerate(accessions):
+                    value = median.get((accession, view, tool, task))
+                    if value is None:
+                        continue
+                    axis.plot(max(value, RESOLUTION), y + offsets[tool], linestyle="none",
+                              marker=marker, markersize=4.2 if marker != "D" else 3.8,
+                              markerfacecolor=face, markeredgecolor=edge,
+                              markeredgewidth=0.9 if face == "white" else 0.0, zorder=3)
+            axis.set_xscale("log")
+            axis.set_xlim(RESOLUTION / 1.6, 60)
+            # A gridline at every decade, a label at every other one.
+            axis.set_xticks([1e-3, 1e-2, 1e-1, 1, 10])
+            axis.set_xticklabels(["1 ms", "", "0.1 s", "", "10 s"])
+            axis.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
+            axis.grid(True, axis="x")
+            axis.grid(False, axis="y")
+            axis.set_yticks(range(len(accessions)))
+            axis.set_yticklabels([short_species(results.name[a]) for a in accessions],
+                                 style="italic")
+            axis.set_ylim(len(accessions) - 0.5, -0.5)
+            axis.tick_params(axis="y", length=0)
+            if row_index == 0:
+                axis.set_title(task_title, loc="left", fontsize=6.8, color=INK,
+                               fontweight="bold")
+    handles = [Line2D([], [], linestyle="none", marker=marker, markersize=5,
+                      markerfacecolor=face, markeredgecolor=edge,
+                      markeredgewidth=0.9 if face == "white" else 0.0,
+                      label=TOOL_NAMES[tool])
+               for tool, marker, face, edge in QUERY_TOOLS]
+    legend_axis = axes[1][3]
+    legend_axis.axis("off")
+    legend_axis.legend(handles=handles, loc="center left", frameon=False,
+                       title="Median of repeated asks", title_fontsize=6.8,
+                       handletextpad=0.4, labelspacing=0.7)
+    figure.tight_layout(w_pad=0.8, h_pad=1.4)
+    figure.subplots_adjust(left=0.155)
+    for row_index, (_view, view_title) in enumerate(views):
+        box = axes[row_index][0].get_position()
+        figure.text(0.012, (box.y0 + box.y1) / 2, view_title, rotation=90, ha="left",
+                    va="center", fontsize=7, fontweight="bold", color=INK)
+    save(figure, out, "fig4_queries")
+
+
+# --- tables ----------------------------------------------------------------------------
+
+def md_table(header: list[str], rows: list[list[str]], align: str | None = None) -> str:
+    align = align or "l" + "r" * (len(header) - 1)
+    marks = {"l": ":--", "r": "--:", "c": ":-:"}
+    lines = ["| " + " | ".join(header) + " |",
+             "| " + " | ".join(marks[a] for a in align) + " |"]
+    lines += ["| " + " | ".join(row) + " |" for row in rows]
+    return "\n".join(lines) + "\n"
+
+
+def n(value: int) -> str:
+    return f"{value:,}"
+
+
+def table_loaders(results: Results) -> str:
+    rows = []
+
+    def add(label, loaded, failed, truth, kept, declared, ch_announced, ch_silent,
+            lost_announced, lost_silent):
+        counts = [truth, kept, declared, ch_announced, ch_silent, lost_announced, lost_silent]
+        # A loader that stored nothing from any file has nothing to compare.
+        shown = [n(c) for c in counts] if truth else ["–"] * len(counts)
+        rows.append([label, loaded, failed, *shown])
+
+    for tool in ("cgload-sqlite", "cgload-postgres", "gffutils-default", "gffutils",
+                 "txdbmaker"):
+        t = results.tools[tool]
+        loaded = number(t["loaded"]) + number(t["loaded_with_repair"])
+        repaired = number(t["loaded_with_repair"])
+        failed = number(t["failed"]) + number(t["timed_out"]) + number(t["refused"])
+        changed, silent = number(t["changed"]), number(t["changed_silent"])
+        lost, lost_silent = number(t["lost"]), number(t["lost_silent"])
+        loaded_text = f"{loaded}" + (f" ({repaired} with repair)" if repaired else "")
+        unit = " (transcripts)" if t["unit"] == "transcripts" else ""
+        add(TOOL_NAMES[tool] + unit, loaded_text, str(failed), number(t["truth"]),
+            number(t["kept"]), number(t["changed_declared"]), changed - silent, silent,
+            lost - lost_silent, lost_silent)
+    chado = [r for r in results.loaders if r["tool"] == "chado"]
+    for label, pick in (("Chado, loads that finished", lambda r: r["outcome"] == "loaded"),
+                        ("Chado, loads that failed", lambda r: r["outcome"] != "loaded")):
+        part = [r for r in chado if pick(r)]
+        total = {k: sum(number(r[k]) for r in part)
+                 for k in ("truth", "kept", "changed", "changed_silent", "lost",
+                           "lost_silent", "changed_declared")}
+        outcomes = defaultdict(int)
+        for r in part:
+            outcomes[r["outcome"]] += 1
+        loaded = str(outcomes["loaded"]) if outcomes["loaded"] else "0"
+        failed = (", ".join(f"{v} {k.replace('_', ' ')}" for k, v in sorted(outcomes.items())
+                            if k != "loaded") or "0")
+        add(label, loaded, failed, total["truth"], total["kept"], total["changed_declared"],
+            total["changed"] - total["changed_silent"], total["changed_silent"],
+            total["lost"] - total["lost_silent"], total["lost_silent"])
+    header = ["Loader", "Genomes loaded", "Failed", "In the files", "Kept",
+              "Changed, declared", "Changed, announced", "Changed, silent",
+              "Lost, announced", "Lost, silent"]
+    return md_table(header, rows, "llr" + "r" * 7)
+
+
+CASE_NAMES = {
+    "multi_row": "Written on several rows", "multi_valued": "Attribute with several values",
+    "rows_disagree": "Rows carry different attributes", "overlapping_rows": "Rows overlap",
+    "trans_spliced": "Trans-spliced", "organelle": "On an organelle",
+    "exon_under_pseudogene": "Exon under a pseudogene", "escapes_parent": "Outside its parent",
+    "crosses_origin": "Crosses the origin", "strand_unknown": "Strand unknown (?)",
+    "past_end": "Past the end of its sequence", "inverted": "Start after end",
+}
+
+
+def table_cases(results: Results) -> str:
+    """Per hard case, what each loader altered; txdbmaker counts transcripts."""
+    by = {(r["tool"], r["case"]): r for r in results.cases}
+    tools = ["cgload-sqlite", "gffutils", "chado", "txdbmaker"]
+    cases = sorted({r["case"] for r in results.cases},
+                   key=lambda c: -number(by[("cgload-sqlite", c)]["truth"])
+                   if ("cgload-sqlite", c) in by else 0)
+
+    def cell(tool, case):
+        r = by.get((tool, case))
+        if r is None:
+            return "–"
+        altered = number(r["changed"]) + number(r["lost"])
+        silent = number(r["changed_silent"]) + number(r["lost_silent"])
+        declared = number(r["changed_declared"])
+        of = f" of {n(number(r['truth']))}" if tool == "txdbmaker" else ""
+        if declared and not altered:
+            return f"{n(declared)} repaired, declared{of}"
+        if not altered:
+            return f"0{of}" if of else "none"
+        if silent == altered:
+            return f"{n(altered)}{of}, all silent"
+        if silent:
+            return f"{n(altered)}{of}, {n(silent)} silent"
+        return f"{n(altered)}{of}, all announced"
+
+    header = ["Hard case", "Features", "cgload", "gffutils, create_unique",
+              "Chado (python-chado)", "txdbmaker (transcripts)"]
+    rows = [[CASE_NAMES.get(c, c), n(number(by[("cgload-sqlite", c)]["truth"]))]
+            + [cell(t, c) for t in tools] for c in cases]
+    return md_table(header, rows, "lrllll")
+
+
+FAULT_GROUPS = [
+    ("Features deleted, duplicated or retyped in the database",
+     {"F01", "F02", "F03", "F09", "F11", "F19"}),
+    ("Parent links removed from the database", {"F04", "F05", "F18"}),
+    ("Stored assembly damaged or moved", {"F13", "F14", "F15", "F17"}),
+    ("Input file edited after the load", {"F16"}),
+    ("Parser drops, invents or retypes rows", {"P01", "P02", "P03", "P04", "P06"}),
+    ("Values changed, counts kept (database)", {"F06", "F07", "F08", "F10", "F12"}),
+    ("Values changed, counts kept (parser)", {"P05", "P07", "P08"}),
+]
+
+
+def caught_by(trials: list[dict]) -> str:
+    """The checks that caught a fault, read from each trial's tiers and message."""
+    found = []
+
+    def add(label):
+        if label not in found:
+            found.append(label)
+
+    for trial in trials:
+        message = trial["message"]
+        if trial["tier_source_count"] == "fail":
+            add("source count")
+        if trial["tier_source_count"] == "skipped" and "has changed since" in message:
+            add("input's SHA-256 (count skipped, exit 0)")
+        if trial["tier_parent_edges"] == "fail":
+            add("parent links")
+        if trial["tier_stored_assembly"] == "fail":
+            add("stored assembly")
+        if trial["load_refused"] == "True":
+            for text, label in (("which is not defined", "load refused: parent not defined"),
+                                ("did not store the parent links",
+                                 "load rolled back: links short"),
+                                ("did not store what the file contains",
+                                 "load rolled back: counts short"),
+                                ("two stored rows share", "load rolled back: row stored twice")):
+                if text in message:
+                    add(label)
+    return ", ".join(found)
+
+
+def table_faults(results: Results) -> str:
+    by = {r["fault_id"]: r for r in results.faults}
+    rows = []
+    for title, ids in FAULT_GROUPS:
+        members = [by[i] for i in sorted(ids)]
+        trials = sum(number(r["genomes"]) for r in members)
+        detected = sum(number(r["detected"]) for r in members)
+        as_expected = sum(number(r["as_expected"]) for r in members)
+        expected = {r["expected"] for r in members}
+        caught = caught_by([r for r in results.fault_trials
+                            if r["fault_id"] in ids and r["observed"] == "detected"])
+        rows.append([title, ", ".join(sorted(ids)), " / ".join(sorted(expected)),
+                     f"{detected} of {trials}", f"{as_expected} of {trials}", caught or "–"])
+    header = ["Fault", "Faults", "Expected", "Detected", "As expected", "Caught by"]
+    return md_table(header, rows, "lllrrl")
+
+
+def table_faults_full(results: Results) -> str:
+    rows = [[r["fault_id"], r["fault"].replace("_", " "), r["layer"], r["expected"],
+             f"{number(r['detected'])} of {number(r['genomes'])}",
+             f"{number(r['as_expected'])} of {number(r['genomes'])}",
+             caught_by([x for x in results.fault_trials if x["fault_id"] == r["fault_id"]
+                        and x["observed"] == "detected"]) or "–"] for r in results.faults]
+    header = ["ID", "Fault", "Layer", "Expected", "Detected", "As expected", "Caught by"]
+    return md_table(header, rows, "llllrrl")
+
+
+def table_kills(results: Results) -> str:
+    """What each interrupted load left, from the trials themselves."""
+    trials = read_tsv(results.folder / "kills.tsv")
+    labels = {"cgload": "cgload, new load", "cgload-force": "cgload, --force reload",
+              "gffutils": "gffutils, create_unique", "chado": "Chado (python-chado)"}
+    groups = defaultdict(list)
+    for trial in trials:
+        groups[(trial["tool"], trial["accession"])].append(trial)
+    rows = []
+    for (tool, accession), group in groups.items():
+        states = defaultdict(int)
+        for trial in group:
+            states[trial["state"]] += 1
+        notes = []
+        if tool == "gffutils":
+            opens = sum(trial["opens"] == "True" for trial in group)
+            notes.append(f"gffutils opens {opens} of the {len(group)} files left")
+        if tool == "cgload":
+            again = sum(trial["reload_ok"] == "True" for trial in group)
+            notes.append(f"the repeated load succeeded {again} times")
+        if tool == "cgload-force":
+            passed = sum(trial["verify_after"] == "pass" for trial in group)
+            notes.append(f"the earlier load passed verify {passed} times")
+        if tool.startswith("cgload"):
+            left = [number(trial["leftover_bytes"]) for trial in group]
+            if any(left):
+                notes.append(f"{sum(1 for b in left if b)} left staging files, up to "
+                             f"{max(left) / 1024 ** 2:,.0f} MB")
+        rows.append([labels.get(tool, tool), species(results.name[accession]),
+                     str(len(group)),
+                     ", ".join(f"{v} {k}" for k, v in sorted(states.items())),
+                     "; ".join(notes) or "–"])
+    header = ["Loader", "Genome", "Kills", "State afterwards", "Notes"]
+    return md_table(header, rows, "llrll")
+
+
+def table_agreement(results: Results) -> str:
+    keys = [("survey_rows", "Rows the survey flagged"),
+            ("both_accept", "Both accept (the survey calls them documented conventions)"),
+            ("both_object", "Both object"),
+            ("survey_documented_cgload_objects",
+             "The survey calls them documented; cgload objects without --repair-envelopes"),
+            ("survey_error_cgload_accepts", "The survey calls them errors; cgload accepts"),
+            ("cgload_only", "cgload objects; the survey did not flag them")]
+    total = {k: sum(number(r[k]) for r in results.agreement) for k, _ in keys}
+    genomes = sum(1 for r in results.agreement if r["same_file"] == "True")
+    rows = [[label, n(total[k])] for k, label in keys]
+    rows.append(["Genomes compared (same file as the survey)", str(genomes)])
+    return md_table(["", "Count"], rows, "lr")
+
+
+def table_genomes(results: Results) -> str:
+    rows = []
+    for g in results.order:
+        a = results.scale[(g["accession"], "sqlite")]
+        b = results.scale[(g["accession"], "postgres")]
+        outcome = "repaired" if g["sqlite_outcome"] == "loaded_with_repair" else "loaded"
+        rows.append([f"*{g['organism']}*", g["accession"], g["clade"], n(number(g["rows"])),
+                     n(number(g["features"])), outcome,
+                     f"{float(a['load_wall_s']):,.0f}", f"{float(b['load_wall_s']):,.0f}",
+                     f"{float(a['load_peak_mb']) / 1024:.1f}",
+                     f"{float(b['load_peak_mb']) / 1024:.1f}",
+                     f"{float(a['verify_wall_s']):.1f}", f"{float(b['verify_wall_s']):.1f}",
+                     f"{number(a['db_bytes']) / 1024 ** 3:.2f}",
+                     f"{number(b['db_bytes']) / 1024 ** 3:.2f}",
+                     f"{number(a['data_bytes']) / 1024 ** 3:.2f}"])
+    header = ["Organism", "Accession", "Clade", "Rows", "Features", "cgload",
+              "Load s, SQLite", "Load s, PostgreSQL", "Peak GB, SQLite",
+              "Peak GB, PostgreSQL", "Verify s, SQLite", "Verify s, PostgreSQL",
+              "Database GB, SQLite", "Database GB, PostgreSQL", "Data folder GB"]
+    return md_table(header, rows, "llllrrl" + "r" * 8)
+
+
+def table_timing(results: Results) -> str:
+    rows = []
+    names = dict(TASKS)
+    size = {g["accession"]: number(g["rows"]) for g in results.genomes}
+    for r in sorted(results.timing,
+                    key=lambda r: (r["view"], r["task"], size[r["accession"]], r["tool"])):
+        rows.append([r["view"], names.get(r["task"], r["task"]).split("  ")[0],
+                     species(results.name[r["accession"]]), TOOL_NAMES.get(r["tool"], r["tool"]),
+                     r["targets"], r["first_run_median_s"], r["repeat_median_s"]])
+    header = ["View", "Task", "Genome", "Tool", "Targets", "First ask, median s",
+              "Repeated asks, median s"]
+    return md_table(header, rows, "lllllrr")
+
+
+def write_tables(results: Results, out: Path) -> None:
+    out.mkdir(parents=True, exist_ok=True)
+    tables = {
+        "table1_loaders.md": table_loaders(results),
+        "table2_cases.md": table_cases(results),
+        "table3_faults.md": table_faults(results),
+        "table4_kills.md": table_kills(results),
+        "table5_agreement.md": table_agreement(results),
+        "tableS1_genomes.md": table_genomes(results),
+        "tableS2_faults.md": table_faults_full(results),
+        "tableS3_timing.md": table_timing(results),
+    }
+    for name, text in tables.items():
+        (out / name).write_text(text)
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("results", nargs="?", type=Path,
+                        default=HERE / "data" / "benchmark-run-2.2")
+    parser.add_argument("--out", type=Path, default=HERE)
+    args = parser.parse_args(argv)
+    results = Results(args.results)
+    figure_scale(results, args.out / "figures")
+    figure_loaders(results, args.out / "figures")
+    figure_queries(results, args.out / "figures")
+    write_tables(results, args.out / "tables")
+    print(f"figures in {args.out / 'figures'}, tables in {args.out / 'tables'}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
