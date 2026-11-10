@@ -1,4 +1,4 @@
-| Loader | Genomes loaded | Failed | In the files | Kept | Changed, declared | Changed, announced | Changed, silent | Lost, announced | Lost, silent |
+| Loader | Loaded | Failed | Compared | Kept | Changed, declared | Changed, announced | Changed, silent | Lost, announced | Lost, silent |
 | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: |
 | cgload (SQLite) | 30 (7 with repair) | 0 | 18,017,618 | 18,017,606 | 12 | 0 | 0 | 0 | 0 |
 | cgload (PostgreSQL) | 30 (7 with repair) | 0 | 18,017,618 | 18,017,606 | 12 | 0 | 0 | 0 | 0 |

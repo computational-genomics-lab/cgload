@@ -366,26 +366,40 @@ attribute change anywhere; every other table identical.
 
 ## Open
 
-- Memory: about 7 GB per million features plus 200 MB, from two loads made
-  before the indexed annotation existed. Measure again in Phase 4.
-- Three of the 30 RefSeq files (maize, *Arabidopsis*, soybean) each have one
-  mitochondrial mRNA row whose start is after its end (survey `hits.tsv`).
-  cgload refuses such a file unless `--repair-envelopes` is given (D-056), so
-  the Phase 4 loads of those three need it, and the paper must say so.
-- `paper/paper.md` still has the old maize numbers (36 problems in seven
-  genes). The rest of the docs now use the census.
-- The case-study genome (Q8) is not named yet.
-- `run_txdb.R` has run with GenomicFeatures 1.54.3 only; the server run uses
-  txdbmaker from conda.
-- Novelty: check Ensembl's datachecks and InterMine's acceptance tests before
-  the paper claims that no other loader recounts against the source.
-- `paper/paper.md` says the name cgload is taken on PyPI. PyPI has no project
-  of that name (its JSON API returned 404 on 14 October 2026), and the comment
-  points at `docs/NAME.md`, which does not exist. Fix when the paper is
-  rewritten.
+- The paper's draft is `paper/manuscript.md` (Briefings in Bioinformatics,
+  Problem Solving Protocol); `paper/build.py` makes a Word file. HTML comments
+  mark what the authors must add: funding, contributions, biographies, the
+  AI-use wording against the journal's policy, and a check of every reference.
+- The case-study genome (Q8) is not named. Run it, or record in PROTOCOL.md
+  section 12 that it was dropped, and why; the manuscript reports Q1 to Q7.
+- txdbmaker stopped in makeTxDbFromGRanges on rice, tomato and grapevine; the
+  second line of each error, in `compare/txdbmaker/<accession>/steps/load.err`
+  on the server, belongs in the paper.
+- The survey manuscript (submitted to Database) still says 27.1 million rows,
+  from the incomplete medaka file; the corrected panel has 28,211,625 rows
+  (`survey/results/CORRECTIONS.md`), and its rates per million change a little.
+  The cgload paper cites the corrected number.
+- `verify` exits 0 when it skips the source count because the input file has
+  changed (F16): the report names the file, but a script that reads only the
+  exit status misses it. Decide before the release whether this should fail.
+- A killed load leaves its staging files, and the next load does not remove
+  them (28 of 40 kill trials, up to 124 MB; already in known limitations).
+- `paper/paper.md`, the JOSS draft, is superseded by `paper/manuscript.md`. It
+  still has the old maize numbers and a wrong note about the name on PyPI; fix
+  or remove it before any JOSS submission.
+- Zenodo: deposit the full results tarball, superseded results included, and
+  put its DOI in the manuscript (token only in `ZENODO_TOKEN`).
 - MySQL has no test. No MySQL server could be started in this session.
 - The system Python of Ubuntu 22.04 is 3.10, which cgload does not support.
   The README and tutorial say how to get 3.11 or newer; a bioconda package
   would make it one command (release phase).
 - Changing the vocabulary hash and the schema means databases made before this
   branch are refused, with a message saying why. Reload into a new database.
+
+Settled since the last list: memory was measured (median 5.7 KB per GFF3 row on
+SQLite, 6.9 KB on PostgreSQL; human 29.5 and 36.4 GB); the three files with an
+inverted mRNA row loaded with `--repair-envelopes`, as the paper says;
+txdbmaker 1.6.2 ran on the server; and the novelty check is done (InterMine's
+acceptance tests and Ensembl's datachecks test the built database against
+curators' rules; gffbase validates a sample of records; GFFx assumes
+well-formed input; none, as documented, recounts the input file).

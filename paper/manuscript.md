@@ -237,8 +237,8 @@ these cases occur in the 30 files (Table 2).
 
 gffutils 0.14 was run twice: with its default merge strategy, which is what a
 user who changes nothing gets, and with `create_unique`, the documented way to
-load a file whose rows repeat an ID [3]. txdbmaker's `makeTxDbFromGFF` was told
-which sequences are circular [7]. For Chado we used python-chado 2.3.9 [26],
+load a file whose rows repeat an ID [3]. txdbmaker 1.6.2's `makeTxDbFromGFF` was
+told which sequences are circular [7]. For Chado we used python-chado 2.3.9 [26],
 the `load_gff` command used by Galaxy Genome Annotation, which reads GFF3 with
 Biopython 1.81 [28], into a new Chado 1.31 database with the Sequence Ontology
 [27]. Chado has other GFF3 loaders, such as
@@ -623,7 +623,7 @@ and research interest. To be completed by the authors.]
 4. Mungall CJ, Emmert DB, FlyBase Consortium. A Chado case study: an ontology-based modular schema for representing genome-associated biological information. *Bioinformatics* 2007;**23**:i337–46. doi:10.1093/bioinformatics/btm189
 5. Sanderson LA, Ficklin SP, Cheng CH, et al. Tripal v1.1: a standards-based toolkit for construction of online genetic and genomic databases. *Database* 2013;**2013**:bat075. doi:10.1093/database/bat075
 6. Lawrence M, Huber W, Pagès H, et al. Software for computing and annotating genomic ranges. *PLoS Comput Biol* 2013;**9**:e1003118. doi:10.1371/journal.pcbi.1003118
-7. Pagès H, Carlson M, Aboyoun P, et al. txdbmaker: tools for making TxDb objects from genomic annotations. Bioconductor. doi:10.18129/B9.bioc.txdbmaker
+7. Pagès H, Carlson M, Aboyoun P, et al. txdbmaker: tools for making TxDb objects from genomic annotations. R package version 1.6.2, Bioconductor. doi:10.18129/B9.bioc.txdbmaker
 8. Smith RN, Aleksic J, Butano D, et al. InterMine: a flexible data warehouse system for the integration and analysis of heterogeneous biological data. *Bioinformatics* 2012;**28**:3163–5. doi:10.1093/bioinformatics/bts577
 9. Upadhyay A, Panda A, Tripathy S. Few structural errors in RefSeq genome annotations: a survey of 30 eukaryotes. *Database*, submitted.
 10. InterMine documentation. Acceptance tests. https://intermine.readthedocs.io/en/latest/database/data-integrity-checks/acceptance-tests/ (10 November 2026, date last accessed).

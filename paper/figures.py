@@ -559,7 +559,7 @@ def table_loaders(results: Results) -> str:
         add(label, loaded, failed, total["truth"], total["kept"], total["changed_declared"],
             total["changed"] - total["changed_silent"], total["changed_silent"],
             total["lost"] - total["lost_silent"], total["lost_silent"])
-    header = ["Loader", "Genomes loaded", "Failed", "In the files", "Kept",
+    header = ["Loader", "Loaded", "Failed", "Compared", "Kept",
               "Changed, declared", "Changed, announced", "Changed, silent",
               "Lost, announced", "Lost, silent"]
     return md_table(header, rows, "llr" + "r" * 7)
