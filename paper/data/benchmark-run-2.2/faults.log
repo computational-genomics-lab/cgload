@@ -1,0 +1,81 @@
+GCF_000001405.40 F01 delete_one_feature: expected detected, detected
+GCF_000001405.40 F02 delete_one_percent: expected detected, detected
+GCF_000001405.40 F03 delete_gene_model: expected detected, detected
+GCF_000001405.40 F04 unlink_one: expected detected, detected
+GCF_000001405.40 F05 unlink_and_unrecord: expected detected, detected
+GCF_000001405.40 F06 repoint_parent: expected not detected, not detected
+GCF_000001405.40 F07 flip_strand: expected not detected, not detected
+GCF_000001405.40 F08 shift_start: expected not detected, not detected
+GCF_000001405.40 F09 change_type: expected detected, detected
+GCF_000001405.40 F10 rename_feature: expected not detected, not detected
+GCF_000001405.40 F11 duplicate_feature: expected detected, detected
+GCF_000001405.40 F12 delete_attribute: expected not detected, not detected
+GCF_000001405.40 F13 truncate_fasta: expected detected, detected
+GCF_000001405.40 F14 delete_fai: expected detected, detected
+GCF_000001405.40 F15 change_one_base: expected detected, detected
+GCF_000001405.40 F16 input_edited: expected detected, detected
+GCF_000001405.40 F17 data_dir_moved: expected detected, detected
+GCF_000001405.40 F18 unlink_all: expected detected, detected
+GCF_000001405.40 F19 delete_one_row: expected detected, detected
+GCF_000001405.40 P01 drop_rows: expected detected, detected
+GCF_000001405.40 P02 drop_one_segment: expected detected, detected
+GCF_000001405.40 P03 drop_parent: expected detected, detected
+GCF_000001405.40 P04 retype_row: expected detected, detected
+GCF_000001405.40 P05 flip_strand: expected not detected, not detected
+GCF_000001405.40 P06 invent_feature: expected detected, detected
+GCF_000001405.40 P07 shift_start: expected not detected, not detected
+GCF_000001405.40 P08 swap_ids: expected not detected, not detected
+GCF_000001735.4 F01 delete_one_feature: expected detected, detected
+GCF_000001735.4 F02 delete_one_percent: expected detected, detected
+GCF_000001735.4 F03 delete_gene_model: expected detected, detected
+GCF_000001735.4 F04 unlink_one: expected detected, detected
+GCF_000001735.4 F05 unlink_and_unrecord: expected detected, detected
+GCF_000001735.4 F06 repoint_parent: expected not detected, not detected
+GCF_000001735.4 F07 flip_strand: expected not detected, not detected
+GCF_000001735.4 F08 shift_start: expected not detected, not detected
+GCF_000001735.4 F09 change_type: expected detected, detected
+GCF_000001735.4 F10 rename_feature: expected not detected, not detected
+GCF_000001735.4 F11 duplicate_feature: expected detected, detected
+GCF_000001735.4 F12 delete_attribute: expected not detected, not detected
+GCF_000001735.4 F13 truncate_fasta: expected detected, detected
+GCF_000001735.4 F14 delete_fai: expected detected, detected
+GCF_000001735.4 F15 change_one_base: expected detected, detected
+GCF_000001735.4 F16 input_edited: expected detected, detected
+GCF_000001735.4 F17 data_dir_moved: expected detected, detected
+GCF_000001735.4 F18 unlink_all: expected detected, detected
+GCF_000001735.4 F19 delete_one_row: expected detected, detected
+GCF_000001735.4 P01 drop_rows: expected detected, detected
+GCF_000001735.4 P02 drop_one_segment: expected detected, detected
+GCF_000001735.4 P03 drop_parent: expected detected, detected
+GCF_000001735.4 P04 retype_row: expected detected, detected
+GCF_000001735.4 P05 flip_strand: expected not detected, not detected
+GCF_000001735.4 P06 invent_feature: expected detected, detected
+GCF_000001735.4 P07 shift_start: expected not detected, not detected
+GCF_000001735.4 P08 swap_ids: expected not detected, not detected
+GCF_000240135.3 F01 delete_one_feature: expected detected, detected
+GCF_000240135.3 F02 delete_one_percent: expected detected, detected
+GCF_000240135.3 F03 delete_gene_model: expected detected, detected
+GCF_000240135.3 F04 unlink_one: expected detected, detected
+GCF_000240135.3 F05 unlink_and_unrecord: expected detected, detected
+GCF_000240135.3 F06 repoint_parent: expected not detected, not detected
+GCF_000240135.3 F07 flip_strand: expected not detected, not detected
+GCF_000240135.3 F08 shift_start: expected not detected, not detected
+GCF_000240135.3 F09 change_type: expected detected, detected
+GCF_000240135.3 F10 rename_feature: expected not detected, not detected
+GCF_000240135.3 F11 duplicate_feature: expected detected, detected
+GCF_000240135.3 F12 delete_attribute: expected not detected, not detected
+GCF_000240135.3 F13 truncate_fasta: expected detected, detected
+GCF_000240135.3 F14 delete_fai: expected detected, detected
+GCF_000240135.3 F15 change_one_base: expected detected, detected
+GCF_000240135.3 F16 input_edited: expected detected, detected
+GCF_000240135.3 F17 data_dir_moved: expected detected, detected
+GCF_000240135.3 F18 unlink_all: expected detected, detected
+GCF_000240135.3 F19 delete_one_row: expected detected, detected
+GCF_000240135.3 P01 drop_rows: expected detected, detected
+GCF_000240135.3 P02 drop_one_segment: expected detected, detected
+GCF_000240135.3 P03 drop_parent: expected detected, detected
+GCF_000240135.3 P04 retype_row: expected detected, detected
+GCF_000240135.3 P05 flip_strand: expected not detected, not detected
+GCF_000240135.3 P06 invent_feature: expected detected, detected
+GCF_000240135.3 P07 shift_start: expected not detected, not detected
+GCF_000240135.3 P08 swap_ids: expected not detected, not detected

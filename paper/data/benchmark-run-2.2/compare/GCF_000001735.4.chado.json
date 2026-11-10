@@ -1,0 +1,175 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents"
+ ],
+ "totals": {
+  "truth": 472741,
+  "truth_links": 433445,
+  "lost": 472741,
+  "lost_silent": 468863,
+  "lost_announced": 3878
+ },
+ "stored_features": 0,
+ "stored_links": 0,
+ "extra_by_type": {},
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 48265,
+   "lost": 48265
+  },
+  "antisense_RNA": {
+   "truth": 92,
+   "lost": 92
+  },
+  "direct_repeat": {
+   "truth": 46,
+   "lost": 46
+  },
+  "exon": {
+   "truth": 324848,
+   "lost": 324848
+  },
+  "five_prime_UTR": {
+   "truth": 25,
+   "lost": 25
+  },
+  "gene": {
+   "truth": 33461,
+   "lost": 33461
+  },
+  "inverted_repeat": {
+   "truth": 34,
+   "lost": 34
+  },
+  "lnc_RNA": {
+   "truth": 3878,
+   "lost": 3878
+  },
+  "mRNA": {
+   "truth": 52177,
+   "lost": 52177
+  },
+  "miRNA": {
+   "truth": 428,
+   "lost": 428
+  },
+  "ncRNA": {
+   "truth": 540,
+   "lost": 540
+  },
+  "primary_transcript": {
+   "truth": 326,
+   "lost": 326
+  },
+  "pseudogene": {
+   "truth": 4851,
+   "lost": 4851
+  },
+  "rRNA": {
+   "truth": 14,
+   "lost": 14
+  },
+  "region": {
+   "truth": 7,
+   "lost": 7
+  },
+  "repeat_region": {
+   "truth": 29,
+   "lost": 29
+  },
+  "sequence_feature": {
+   "truth": 818,
+   "lost": 818
+  },
+  "snRNA": {
+   "truth": 82,
+   "lost": 82
+  },
+  "snoRNA": {
+   "truth": 287,
+   "lost": 287
+  },
+  "tRNA": {
+   "truth": 684,
+   "lost": 684
+  },
+  "three_prime_UTR": {
+   "truth": 23,
+   "lost": 23
+  },
+  "transcript": {
+   "truth": 1826,
+   "lost": 1826
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 40265,
+   "lost": 40265,
+   "lost_silent": 40265
+  },
+  "trans_spliced": {
+   "truth": 29,
+   "lost": 29,
+   "lost_silent": 29
+  },
+  "strand_unknown": {
+   "truth": 4,
+   "lost": 4,
+   "lost_silent": 4
+  },
+  "crosses_origin": {
+   "truth": 4,
+   "lost": 4,
+   "lost_silent": 4
+  },
+  "past_end": {
+   "truth": 2,
+   "lost": 2,
+   "lost_silent": 2
+  },
+  "inverted": {
+   "truth": 1,
+   "lost": 1,
+   "lost_silent": 1
+  },
+  "escapes_parent": {
+   "truth": 13,
+   "lost": 13,
+   "lost_silent": 13
+  },
+  "multi_valued": {
+   "truth": 470500,
+   "lost": 470500,
+   "lost_silent": 466622,
+   "lost_announced": 3878
+  },
+  "rows_disagree": {
+   "truth": 85,
+   "lost": 85,
+   "lost_silent": 85
+  },
+  "organelle": {
+   "truth": 2359,
+   "lost": 2359,
+   "lost_silent": 2359
+  }
+ },
+ "case_field_differences": {},
+ "examples": {
+  "lost": [
+   "NC_003070.9:1..30427671",
+   "gene-AT1G01010",
+   "rna-NM_099983.2",
+   "exon-NM_099983.2-1",
+   "exon-NM_099983.2-2"
+  ]
+ },
+ "genome": "GCF_000001735.4",
+ "tool": "chado"
+}

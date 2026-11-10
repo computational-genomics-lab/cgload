@@ -1,0 +1,127 @@
+{
+ "tool": "txdbmaker",
+ "types_from": [
+  "txdbmaker::.CDS_TYPES",
+  "txdbmaker::.EXON_TYPES",
+  "txdbmaker::.GENE_TYPES",
+  "txdbmaker::.STOP_CODON_TYPES",
+  "txdbmaker::.TX_TYPES",
+  "txdbmaker::GFF_FEATURE_TYPES"
+ ],
+ "transcript_names_from": "transcript_id",
+ "gene_ids_from": "ID",
+ "totals": {
+  "truth": 207908,
+  "kept": 207898,
+  "changed": 10,
+  "changed_announced": 10
+ },
+ "extra_transcripts": 0,
+ "paired_by": {
+  "name and span": 197587,
+  "span, strand and type": 10321
+ },
+ "field_differences": {
+  "cds": 10
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 139275,
+   "kept": 139265,
+   "changed": 10,
+   "changed_announced": 10
+  },
+  "overlapping_rows": {
+   "truth": 3,
+   "changed": 3,
+   "changed_announced": 3
+  },
+  "exon_under_pseudogene": {
+   "truth": 5501,
+   "kept": 5501
+  },
+  "multi_valued": {
+   "truth": 206880,
+   "kept": 206870,
+   "changed": 10,
+   "changed_announced": 10
+  },
+  "rows_disagree": {
+   "truth": 1160,
+   "kept": 1160
+  },
+  "organelle": {
+   "truth": 37,
+   "kept": 37
+  }
+ },
+ "genes": {
+  "truth": 67512,
+  "held": 55563,
+  "absent": 11949
+ },
+ "parts_under_no_transcript": {
+  "exon": 54
+ },
+ "not_modelled_by_type": {
+  "region": 709,
+  "enhancer": 115208,
+  "biological_region": 137093,
+  "silencer": 35932,
+  "transcriptional_cis_regulatory_region": 2259,
+  "meiotic_recombination_region": 370,
+  "repeat_instability_region": 62,
+  "nucleotide_motif": 623,
+  "tandem_repeat": 64,
+  "CAGE_cluster": 96,
+  "DNaseI_hypersensitive_site": 177,
+  "epigenetically_modified_region": 12,
+  "scaRNA": 54,
+  "non_allelic_homologous_recombination_region": 514,
+  "promoter": 438,
+  "conserved_region": 138,
+  "enhancer_blocking_element": 59,
+  "mobile_genetic_element": 204,
+  "sequence_comparison": 4,
+  "chromosome_breakpoint": 16,
+  "minisatellite": 13,
+  "protein_binding_site": 1418,
+  "locus_control_region": 14,
+  "centromere": 24,
+  "response_element": 20,
+  "TATA_box": 30,
+  "sequence_feature": 1793,
+  "sequence_alteration": 30,
+  "match": 161208,
+  "cDNA_match": 2568,
+  "insulator": 12,
+  "matrix_attachment_site": 18,
+  "repeat_region": 10,
+  "regulatory_region": 2,
+  "sequence_secondary_structure": 14,
+  "origin_of_replication": 87,
+  "mitotic_recombination_region": 54,
+  "CAAT_signal": 6,
+  "dispersed_repeat": 5,
+  "recombination_feature": 632,
+  "GC_rich_promoter_region": 15,
+  "replication_regulatory_region": 11,
+  "sequence_alteration_artifact": 10,
+  "microsatellite": 5,
+  "imprinting_control_region": 2,
+  "direct_repeat": 20,
+  "replication_start_site": 3,
+  "nucleotide_cleavage_site": 4,
+  "D_loop": 1
+ },
+ "examples": {
+  "changed:cds": [
+   "rna-NM_001134939.1",
+   "rna-NM_001172437.2",
+   "rna-NM_001184961.1",
+   "rna-NM_001301020.1",
+   "rna-NM_001301302.1"
+  ]
+ },
+ "genome": "GCF_000001405.40"
+}

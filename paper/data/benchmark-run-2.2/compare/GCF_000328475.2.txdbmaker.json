@@ -1,0 +1,49 @@
+{
+ "tool": "txdbmaker",
+ "types_from": [
+  "txdbmaker::.CDS_TYPES",
+  "txdbmaker::.EXON_TYPES",
+  "txdbmaker::.GENE_TYPES",
+  "txdbmaker::.STOP_CODON_TYPES",
+  "txdbmaker::.TX_TYPES",
+  "txdbmaker::GFF_FEATURE_TYPES"
+ ],
+ "transcript_names_from": "transcript_id",
+ "gene_ids_from": "Name",
+ "totals": {
+  "truth": 7027,
+  "kept": 7027
+ },
+ "extra_transcripts": 0,
+ "paired_by": {
+  "name and span": 6814,
+  "span, strand and type": 213
+ },
+ "field_differences": {},
+ "by_case": {
+  "multi_row": {
+   "truth": 1862,
+   "kept": 1862
+  },
+  "multi_valued": {
+   "truth": 6814,
+   "kept": 6814
+  },
+  "rows_disagree": {
+   "truth": 7,
+   "kept": 7
+  }
+ },
+ "genes": {
+  "truth": 6907,
+  "held": 6907
+ },
+ "parts_under_no_transcript": {},
+ "not_modelled_by_type": {
+  "region": 27,
+  "gap": 227,
+  "sequence_feature": 3
+ },
+ "examples": {},
+ "genome": "GCF_000328475.2"
+}

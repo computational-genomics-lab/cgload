@@ -1,0 +1,72 @@
+{
+ "tool": "txdbmaker",
+ "types_from": [
+  "txdbmaker::.CDS_TYPES",
+  "txdbmaker::.EXON_TYPES",
+  "txdbmaker::.GENE_TYPES",
+  "txdbmaker::.STOP_CODON_TYPES",
+  "txdbmaker::.TX_TYPES",
+  "txdbmaker::GFF_FEATURE_TYPES"
+ ],
+ "transcript_names_from": "transcript_id",
+ "gene_ids_from": "ID",
+ "totals": {
+  "truth": 12657,
+  "kept": 12636,
+  "lost": 21,
+  "lost_announced": 21
+ },
+ "extra_transcripts": 0,
+ "paired_by": {
+  "name and span": 12392,
+  "span, strand and type": 244
+ },
+ "field_differences": {},
+ "by_case": {
+  "multi_row": {
+   "truth": 2413,
+   "kept": 2395,
+   "lost": 18,
+   "lost_announced": 18
+  },
+  "overlapping_rows": {
+   "truth": 18,
+   "lost": 18,
+   "lost_announced": 18
+  },
+  "multi_valued": {
+   "truth": 12424,
+   "kept": 12403,
+   "lost": 21,
+   "lost_announced": 21
+  },
+  "organelle": {
+   "truth": 41,
+   "kept": 41
+  }
+ },
+ "genes": {
+  "truth": 12645,
+  "held": 12624,
+  "absent": 21
+ },
+ "parts_under_no_transcript": {},
+ "not_modelled_by_type": {
+  "region": 4,
+  "LONG_TERMINAL_REPEAT": 238,
+  "sequence_feature": 34,
+  "three_prime_UTR": 2,
+  "five_prime_UTR": 2,
+  "intron": 3
+ },
+ "examples": {
+  "lost": [
+   "rna-NM_001018196.4",
+   "rna-NM_001018847.3",
+   "rna-NM_001020308.3",
+   "rna-NM_001021703.3",
+   "rna-NM_001021740.3"
+  ]
+ },
+ "genome": "GCF_000002945.2"
+}

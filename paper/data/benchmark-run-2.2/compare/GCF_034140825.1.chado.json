@@ -1,0 +1,163 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents"
+ ],
+ "totals": {
+  "truth": 480764,
+  "truth_links": 440583,
+  "lost": 480764,
+  "lost_silent": 474212,
+  "lost_announced": 6552
+ },
+ "stored_features": 0,
+ "stored_links": 0,
+ "extra_by_type": {},
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 42933,
+   "lost": 42933
+  },
+  "cDNA_match": {
+   "truth": 285,
+   "lost": 285
+  },
+  "exon": {
+   "truth": 341091,
+   "lost": 341091
+  },
+  "gene": {
+   "truth": 37477,
+   "lost": 37477
+  },
+  "intron": {
+   "truth": 1,
+   "lost": 1
+  },
+  "inverted_repeat": {
+   "truth": 2,
+   "lost": 2
+  },
+  "lnc_RNA": {
+   "truth": 6551,
+   "lost": 6551
+  },
+  "mRNA": {
+   "truth": 42933,
+   "lost": 42933
+  },
+  "match": {
+   "truth": 1,
+   "lost": 1
+  },
+  "pseudogene": {
+   "truth": 1910,
+   "lost": 1910
+  },
+  "pseudogenic_tRNA": {
+   "truth": 3,
+   "lost": 3
+  },
+  "rRNA": {
+   "truth": 1756,
+   "lost": 1756
+  },
+  "region": {
+   "truth": 15,
+   "lost": 15
+  },
+  "sequence_feature": {
+   "truth": 489,
+   "lost": 489
+  },
+  "snRNA": {
+   "truth": 71,
+   "lost": 71
+  },
+  "snoRNA": {
+   "truth": 611,
+   "lost": 611
+  },
+  "tRNA": {
+   "truth": 708,
+   "lost": 708
+  },
+  "transcript": {
+   "truth": 3927,
+   "lost": 3927
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 34470,
+   "lost": 34470,
+   "lost_silent": 34469,
+   "lost_announced": 1
+  },
+  "trans_spliced": {
+   "truth": 31,
+   "lost": 31,
+   "lost_announced": 1,
+   "lost_silent": 30
+  },
+  "strand_unknown": {
+   "truth": 4,
+   "lost": 4,
+   "lost_silent": 4
+  },
+  "crosses_origin": {
+   "truth": 2,
+   "lost": 2,
+   "lost_silent": 2
+  },
+  "past_end": {
+   "truth": 1,
+   "lost": 1,
+   "lost_silent": 1
+  },
+  "escapes_parent": {
+   "truth": 6,
+   "lost": 6,
+   "lost_silent": 6
+  },
+  "exon_under_pseudogene": {
+   "truth": 5991,
+   "lost": 5991,
+   "lost_silent": 5991
+  },
+  "multi_valued": {
+   "truth": 435481,
+   "lost": 435481,
+   "lost_silent": 428930,
+   "lost_announced": 6551
+  },
+  "rows_disagree": {
+   "truth": 292,
+   "lost": 292,
+   "lost_silent": 291,
+   "lost_announced": 1
+  },
+  "organelle": {
+   "truth": 1436,
+   "lost": 1436,
+   "lost_silent": 1435,
+   "lost_announced": 1
+  }
+ },
+ "case_field_differences": {},
+ "examples": {
+  "lost": [
+   "NC_089035.1:1..43929697",
+   "gene-LOC4326813",
+   "rna-XM_066304510.1",
+   "exon-XM_066304510.1-1",
+   "exon-XM_066304510.1-2"
+  ]
+ },
+ "genome": "GCF_034140825.1",
+ "tool": "chado"
+}

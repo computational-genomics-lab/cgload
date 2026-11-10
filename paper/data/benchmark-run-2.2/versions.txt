@@ -1,0 +1,5 @@
+cgload cgload, version 0.1.0
+commit 56f6861a1ea3e4db7a0459989e992bd562ae2227
+gffutils 0.14
+python 3.12.15
+postgres: host=/tmp/cgb-1000 port=55433 user=sucheta

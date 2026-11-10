@@ -1,0 +1,464 @@
+genome	tool	case	truth	kept	changed	changed_declared	lost	changed_silent	lost_silent	fields_changed
+GCF_015227675.2	txdbmaker	multi_row	67776	67769	7	0	0	0	0	
+GCF_015227675.2	txdbmaker	overlapping_rows	1	0	1	0	0	0	0	
+GCF_015227675.2	txdbmaker	exon_under_pseudogene	6402	6402	0	0	0	0	0	
+GCF_015227675.2	txdbmaker	multi_valued	104710	104703	7	0	0	0	0	
+GCF_015227675.2	txdbmaker	rows_disagree	35	35	0	0	0	0	0	
+GCF_015227675.2	txdbmaker	organelle	37	37	0	0	0	0	0	
+GCF_000001635.27	txdbmaker	multi_row	91311	91305	6	0	0	0	0	
+GCF_000001635.27	txdbmaker	overlapping_rows	1	0	1	0	0	0	0	
+GCF_000001635.27	txdbmaker	exon_under_pseudogene	2448	2448	0	0	0	0	0	
+GCF_000001635.27	txdbmaker	multi_valued	141836	141830	6	0	0	0	0	
+GCF_000001635.27	txdbmaker	rows_disagree	28	28	0	0	0	0	0	
+GCF_000001635.27	txdbmaker	organelle	37	37	0	0	0	0	0	
+GCF_000002035.6	txdbmaker	multi_row	54744	54740	4	0	0	0	0	
+GCF_000002035.6	txdbmaker	exon_under_pseudogene	394	394	0	0	0	0	0	
+GCF_000002035.6	txdbmaker	multi_valued	73777	73773	4	0	0	0	0	
+GCF_000002035.6	txdbmaker	rows_disagree	1767	1767	0	0	0	0	0	
+GCF_000002035.6	txdbmaker	organelle	37	37	0	0	0	0	0	
+GCF_000001405.40	txdbmaker	multi_row	139275	139265	10	0	0	0	0	
+GCF_000001405.40	txdbmaker	overlapping_rows	3	0	3	0	0	0	0	
+GCF_000001405.40	txdbmaker	exon_under_pseudogene	5501	5501	0	0	0	0	0	
+GCF_000001405.40	txdbmaker	multi_valued	206880	206870	10	0	0	0	0	
+GCF_000001405.40	txdbmaker	rows_disagree	1160	1160	0	0	0	0	0	
+GCF_000001405.40	txdbmaker	organelle	37	37	0	0	0	0	0	
+GCF_016699485.2	txdbmaker	multi_row	65487	65484	3	0	0	0	0	
+GCF_016699485.2	txdbmaker	exon_under_pseudogene	153	153	0	0	0	0	0	
+GCF_016699485.2	txdbmaker	multi_valued	85533	85530	3	0	0	0	0	
+GCF_016699485.2	txdbmaker	rows_disagree	168	168	0	0	0	0	0	
+GCF_016699485.2	txdbmaker	organelle	37	37	0	0	0	0	0	
+GCF_000004195.4	txdbmaker	multi_row	41655	41651	4	0	0	0	0	
+GCF_000004195.4	txdbmaker	exon_under_pseudogene	548	548	0	0	0	0	0	
+GCF_000004195.4	txdbmaker	multi_valued	47294	47290	4	0	0	0	0	
+GCF_000004195.4	txdbmaker	rows_disagree	215	215	0	0	0	0	0	
+GCF_000004195.4	txdbmaker	organelle	37	37	0	0	0	0	0	
+GCF_014441545.1	txdbmaker	multi_row	62133	62129	4	0	0	0	0	
+GCF_014441545.1	txdbmaker	overlapping_rows	1	0	1	0	0	0	0	
+GCF_014441545.1	txdbmaker	exon_under_pseudogene	4725	4725	0	0	0	0	0	
+GCF_014441545.1	txdbmaker	multi_valued	100596	100592	4	0	0	0	0	
+GCF_014441545.1	txdbmaker	rows_disagree	117	117	0	0	0	0	0	
+GCF_000005575.2	txdbmaker	multi_row	12414	12414	0	0	0	0	0	
+GCF_000005575.2	txdbmaker	escapes_parent	3	3	0	0	0	0	0	
+GCF_000005575.2	txdbmaker	multi_valued	14746	14746	0	0	0	0	0	
+GCF_000005575.2	txdbmaker	rows_disagree	2647	2647	0	0	0	0	0	
+GCF_000005575.2	txdbmaker	organelle	37	37	0	0	0	0	0	
+GCF_002234675.1	txdbmaker	multi_row	42957	42957	0	0	0	0	0	
+GCF_002234675.1	txdbmaker	exon_under_pseudogene	169	169	0	0	0	0	0	
+GCF_002234675.1	txdbmaker	multi_valued	50752	50752	0	0	0	0	0	
+GCF_002234675.1	txdbmaker	rows_disagree	141	141	0	0	0	0	0	
+GCF_002234675.1	txdbmaker	organelle	37	37	0	0	0	0	0	
+GCF_000001215.4	txdbmaker	multi_row	26473	26450	14	0	9	0	0	
+GCF_000001215.4	txdbmaker	overlapping_rows	1	0	1	0	0	0	0	
+GCF_000001215.4	txdbmaker	trans_spliced	23	14	0	0	9	0	0	
+GCF_000001215.4	txdbmaker	strand_unknown	9	0	0	0	9	0	0	
+GCF_000001215.4	txdbmaker	exon_under_pseudogene	311	311	0	0	0	0	0	
+GCF_000001215.4	txdbmaker	multi_valued	35677	35654	14	0	9	0	0	
+GCF_000001215.4	txdbmaker	rows_disagree	35	16	10	0	9	0	0	
+GCF_000001215.4	txdbmaker	organelle	37	37	0	0	0	0	0	
+GCF_002204515.2	txdbmaker	multi_row	26273	26273	0	0	0	0	0	
+GCF_002204515.2	txdbmaker	exon_under_pseudogene	354	354	0	0	0	0	0	
+GCF_002204515.2	txdbmaker	multi_valued	33026	33026	0	0	0	0	0	
+GCF_002204515.2	txdbmaker	rows_disagree	140	140	0	0	0	0	0	
+GCF_002204515.2	txdbmaker	organelle	38	38	0	0	0	0	0	
+GCF_000002335.3	txdbmaker	multi_row	21189	21188	1	0	0	0	0	
+GCF_000002335.3	txdbmaker	exon_under_pseudogene	34	34	0	0	0	0	0	
+GCF_000002335.3	txdbmaker	multi_valued	24946	24945	1	0	0	0	0	
+GCF_000002335.3	txdbmaker	rows_disagree	108	108	0	0	0	0	0	
+GCF_000002335.3	txdbmaker	organelle	37	37	0	0	0	0	0	
+GCF_003254395.2	txdbmaker	multi_row	22770	22770	0	0	0	0	0	
+GCF_003254395.2	txdbmaker	exon_under_pseudogene	41	41	0	0	0	0	0	
+GCF_003254395.2	txdbmaker	multi_valued	28154	28154	0	0	0	0	0	
+GCF_003254395.2	txdbmaker	rows_disagree	65	65	0	0	0	0	0	
+GCF_003254395.2	txdbmaker	organelle	37	37	0	0	0	0	0	
+GCF_009193385.2	txdbmaker	multi_row	32296	32296	0	0	0	0	0	
+GCF_009193385.2	txdbmaker	exon_under_pseudogene	146	146	0	0	0	0	0	
+GCF_009193385.2	txdbmaker	multi_valued	37445	37445	0	0	0	0	0	
+GCF_009193385.2	txdbmaker	rows_disagree	25	25	0	0	0	0	0	
+GCF_030269925.1	txdbmaker	multi_row	26161	26160	1	0	0	0	0	
+GCF_030269925.1	txdbmaker	crosses_origin	1	1	0	0	0	0	0	
+GCF_030269925.1	txdbmaker	exon_under_pseudogene	80	80	0	0	0	0	0	
+GCF_030269925.1	txdbmaker	multi_valued	34881	34880	1	0	0	0	0	
+GCF_030269925.1	txdbmaker	rows_disagree	60	60	0	0	0	0	0	
+GCF_030269925.1	txdbmaker	organelle	37	37	0	0	0	0	0	
+GCF_000003195.3	txdbmaker	multi_row	31713	31707	0	0	6	0	0	
+GCF_000003195.3	txdbmaker	trans_spliced	10	4	0	0	6	0	0	
+GCF_000003195.3	txdbmaker	strand_unknown	3	0	0	0	3	0	0	
+GCF_000003195.3	txdbmaker	crosses_origin	1	0	0	0	1	0	0	
+GCF_000003195.3	txdbmaker	escapes_parent	1	0	0	0	1	0	0	
+GCF_000003195.3	txdbmaker	exon_under_pseudogene	1204	1204	0	0	0	0	0	
+GCF_000003195.3	txdbmaker	multi_valued	48311	48308	0	0	3	0	0	
+GCF_000003195.3	txdbmaker	rows_disagree	75	69	0	0	6	0	0	
+GCF_000003195.3	txdbmaker	organelle	214	208	0	0	6	0	0	
+GCF_000146045.2	txdbmaker	multi_row	329	282	47	0	0	0	0	
+GCF_000146045.2	txdbmaker	multi_valued	6478	6431	47	0	0	0	0	
+GCF_000146045.2	txdbmaker	organelle	47	47	0	0	0	0	0	
+GCF_000002945.2	txdbmaker	multi_row	2413	2395	0	0	18	0	0	
+GCF_000002945.2	txdbmaker	overlapping_rows	18	0	0	0	18	0	0	
+GCF_000002945.2	txdbmaker	multi_valued	12424	12403	0	0	21	0	0	
+GCF_000002945.2	txdbmaker	organelle	41	41	0	0	0	0	0	
+GCF_000182965.3	txdbmaker	multi_row	362	362	0	0	0	0	0	
+GCF_000182965.3	txdbmaker	multi_valued	6137	6134	3	0	0	3	0	
+GCF_000182965.3	txdbmaker	rows_disagree	1	1	0	0	0	0	0	
+GCF_000182925.2	txdbmaker	multi_row	8500	8500	0	0	0	0	0	
+GCF_000182925.2	txdbmaker	multi_valued	11200	11200	0	0	0	0	0	
+GCF_000182925.2	txdbmaker	rows_disagree	4	4	0	0	0	0	0	
+GCF_000182925.2	txdbmaker	organelle	56	56	0	0	0	0	0	
+GCF_000149205.2	txdbmaker	multi_row	8427	8427	0	0	0	0	0	
+GCF_000149205.2	txdbmaker	multi_valued	9556	9556	0	0	0	0	0	
+GCF_000149205.2	txdbmaker	organelle	70	70	0	0	0	0	0	
+GCF_000240135.3	txdbmaker	multi_row	10207	10207	0	0	0	0	0	
+GCF_000240135.3	txdbmaker	multi_valued	13402	13402	0	0	0	0	0	
+GCF_000240135.3	txdbmaker	rows_disagree	35	35	0	0	0	0	0	
+GCF_000149245.1	txdbmaker	multi_row	7567	7567	0	0	0	0	0	
+GCF_000149245.1	txdbmaker	multi_valued	9027	9027	0	0	0	0	0	
+GCF_000149245.1	txdbmaker	rows_disagree	7	7	0	0	0	0	0	
+GCF_000149245.1	txdbmaker	organelle	27	27	0	0	0	0	0	
+GCF_000328475.2	txdbmaker	multi_row	1862	1862	0	0	0	0	0	
+GCF_000328475.2	txdbmaker	multi_valued	6814	6814	0	0	0	0	0	
+GCF_000328475.2	txdbmaker	rows_disagree	7	7	0	0	0	0	0	
+GCF_014441545.1	chado	multi_row	63265	63265	0	0	0	0	0	
+GCF_014441545.1	chado	overlapping_rows	1	1	0	0	0	0	0	
+GCF_014441545.1	chado	exon_under_pseudogene	7910	7910	0	0	0	0	0	
+GCF_014441545.1	chado	multi_valued	1236610	1097795	0	0	138815	0	113906	
+GCF_014441545.1	chado	rows_disagree	1249	1249	0	0	0	0	0	
+GCF_016699485.2	chado	multi_row	66116	66116	0	0	0	0	0	
+GCF_016699485.2	chado	exon_under_pseudogene	541	541	0	0	0	0	0	
+GCF_016699485.2	chado	multi_valued	1294029	1231969	0	0	62060	0	51998	
+GCF_016699485.2	chado	rows_disagree	797	797	0	0	0	0	0	
+GCF_016699485.2	chado	organelle	127	127	0	0	0	0	0	
+GCF_015227675.2	chado	multi_row	68343	68343	0	0	0	0	0	
+GCF_015227675.2	chado	overlapping_rows	1	1	0	0	0	0	0	
+GCF_015227675.2	chado	exon_under_pseudogene	10061	10061	0	0	0	0	0	
+GCF_015227675.2	chado	multi_valued	1347101	1260594	0	0	86507	0	70241	
+GCF_015227675.2	chado	rows_disagree	602	602	0	0	0	0	0	
+GCF_015227675.2	chado	organelle	127	127	0	0	0	0	0	
+GCF_000001215.4	chado	multi_row	26474	0	0	0	26474	0	26473	
+GCF_000001215.4	chado	overlapping_rows	2	0	0	0	2	0	1	
+GCF_000001215.4	chado	trans_spliced	170	0	0	0	170	0	169	
+GCF_000001215.4	chado	strand_unknown	9	0	0	0	9	0	9	
+GCF_000001215.4	chado	exon_under_pseudogene	563	0	0	0	563	0	563	
+GCF_000001215.4	chado	multi_valued	276181	0	0	0	276181	0	273805	
+GCF_000001215.4	chado	rows_disagree	36	0	0	0	36	0	35	
+GCF_000001215.4	chado	organelle	126	0	0	0	126	0	126	
+GCF_000002035.6	chado	multi_row	61336	61336	0	0	0	0	0	
+GCF_000002035.6	chado	exon_under_pseudogene	1375	1375	0	0	0	0	0	
+GCF_000002035.6	chado	multi_valued	977647	927235	0	0	50412	0	41600	
+GCF_000002035.6	chado	rows_disagree	8359	8359	0	0	0	0	0	
+GCF_000002035.6	chado	organelle	127	127	0	0	0	0	0	
+GCF_000005575.2	chado	multi_row	12414	12414	0	0	0	0	0	
+GCF_000005575.2	chado	escapes_parent	3	3	0	0	0	0	0	
+GCF_000005575.2	chado	multi_valued	104408	104408	0	0	0	0	0	
+GCF_000005575.2	chado	rows_disagree	2647	2647	0	0	0	0	0	
+GCF_000005575.2	chado	organelle	126	126	0	0	0	0	0	
+GCF_002204515.2	chado	multi_row	26511	26511	0	0	0	0	0	
+GCF_002204515.2	chado	exon_under_pseudogene	739	739	0	0	0	0	0	
+GCF_002204515.2	chado	multi_valued	271474	257330	0	0	14144	0	10100	
+GCF_002204515.2	chado	rows_disagree	378	378	0	0	0	0	0	
+GCF_002204515.2	chado	organelle	128	128	0	0	0	0	0	
+GCF_003254395.2	chado	multi_row	22975	22975	0	0	0	0	0	
+GCF_003254395.2	chado	exon_under_pseudogene	164	164	0	0	0	0	0	
+GCF_003254395.2	chado	multi_valued	327975	310711	0	0	17264	0	14118	
+GCF_003254395.2	chado	rows_disagree	270	270	0	0	0	0	0	
+GCF_003254395.2	chado	organelle	126	126	0	0	0	0	0	
+GCF_000002335.3	chado	multi_row	21374	21374	0	0	0	0	0	
+GCF_000002335.3	chado	exon_under_pseudogene	105	105	0	0	0	0	0	
+GCF_000002335.3	chado	multi_valued	219513	214362	0	0	5151	0	3787	
+GCF_000002335.3	chado	rows_disagree	293	293	0	0	0	0	0	
+GCF_000002335.3	chado	organelle	126	126	0	0	0	0	0	
+GCF_002234675.1	chado	multi_row	43275	43275	0	0	0	0	0	
+GCF_002234675.1	chado	exon_under_pseudogene	669	669	0	0	0	0	0	
+GCF_002234675.1	chado	multi_valued	781410	762472	0	0	18938	0	14827	
+GCF_002234675.1	chado	rows_disagree	459	459	0	0	0	0	0	
+GCF_002234675.1	chado	organelle	102	102	0	0	0	0	0	
+GCF_902167145.1	chado	multi_row	48422	0	0	0	48422	0	48421	
+GCF_902167145.1	chado	trans_spliced	51	0	0	0	51	0	50	
+GCF_902167145.1	chado	strand_unknown	5	0	0	0	5	0	5	
+GCF_902167145.1	chado	crosses_origin	1	0	0	0	1	0	1	
+GCF_902167145.1	chado	inverted	1	0	0	0	1	0	1	
+GCF_902167145.1	chado	escapes_parent	8	0	0	0	8	0	8	
+GCF_902167145.1	chado	exon_under_pseudogene	12763	0	0	0	12763	0	12763	
+GCF_902167145.1	chado	multi_valued	636194	0	0	0	636194	0	628390	
+GCF_902167145.1	chado	rows_disagree	1070	0	0	0	1070	0	1069	
+GCF_902167145.1	chado	organelle	1710	0	0	0	1710	0	1709	
+GCF_000001735.4	chado	multi_row	40265	0	0	0	40265	0	40265	
+GCF_000001735.4	chado	trans_spliced	29	0	0	0	29	0	29	
+GCF_000001735.4	chado	strand_unknown	4	0	0	0	4	0	4	
+GCF_000001735.4	chado	crosses_origin	4	0	0	0	4	0	4	
+GCF_000001735.4	chado	past_end	2	0	0	0	2	0	2	
+GCF_000001735.4	chado	inverted	1	0	0	0	1	0	1	
+GCF_000001735.4	chado	escapes_parent	13	0	0	0	13	0	13	
+GCF_000001735.4	chado	multi_valued	470500	0	0	0	470500	0	466622	
+GCF_000001735.4	chado	rows_disagree	85	0	0	0	85	0	85	
+GCF_000001735.4	chado	organelle	2359	0	0	0	2359	0	2359	
+GCF_034140825.1	chado	multi_row	34470	0	0	0	34470	0	34469	
+GCF_034140825.1	chado	trans_spliced	31	0	0	0	31	0	30	
+GCF_034140825.1	chado	strand_unknown	4	0	0	0	4	0	4	
+GCF_034140825.1	chado	crosses_origin	2	0	0	0	2	0	2	
+GCF_034140825.1	chado	past_end	1	0	0	0	1	0	1	
+GCF_034140825.1	chado	escapes_parent	6	0	0	0	6	0	6	
+GCF_034140825.1	chado	exon_under_pseudogene	5991	0	0	0	5991	0	5991	
+GCF_034140825.1	chado	multi_valued	435481	0	0	0	435481	0	428930	
+GCF_034140825.1	chado	rows_disagree	292	0	0	0	292	0	291	
+GCF_034140825.1	chado	organelle	1436	0	0	0	1436	0	1435	
+GCF_000003195.3	chado	multi_row	31830	0	0	0	31830	0	31829	
+GCF_000003195.3	chado	trans_spliced	36	0	0	0	36	0	35	
+GCF_000003195.3	chado	strand_unknown	3	0	0	0	3	0	3	
+GCF_000003195.3	chado	crosses_origin	1	0	0	0	1	0	1	
+GCF_000003195.3	chado	escapes_parent	6	0	0	0	6	0	6	
+GCF_000003195.3	chado	exon_under_pseudogene	4727	0	0	0	4727	0	4727	
+GCF_000003195.3	chado	multi_valued	379043	0	0	0	379043	0	373145	
+GCF_000003195.3	chado	rows_disagree	192	0	0	0	192	0	191	
+GCF_000003195.3	chado	organelle	822	0	0	0	822	0	821	
+GCF_000004195.4	chado	multi_row	44342	44342	0	0	0	0	0	
+GCF_000004195.4	chado	exon_under_pseudogene	1589	1589	0	0	0	0	0	
+GCF_000004195.4	chado	multi_valued	756289	756289	0	0	0	0	0	
+GCF_000004195.4	chado	rows_disagree	2902	2902	0	0	0	0	0	
+GCF_000004195.4	chado	organelle	127	127	0	0	0	0	0	
+GCF_000004515.6	chado	multi_row	62949	0	0	0	62949	0	62949	
+GCF_000004515.6	chado	trans_spliced	36	0	0	0	36	0	36	
+GCF_000004515.6	chado	strand_unknown	2	0	0	0	2	0	2	
+GCF_000004515.6	chado	crosses_origin	1	0	0	0	1	0	1	
+GCF_000004515.6	chado	inverted	1	0	0	0	1	0	1	
+GCF_000004515.6	chado	escapes_parent	6	0	0	0	6	0	6	
+GCF_000004515.6	chado	exon_under_pseudogene	20440	0	0	0	20440	0	20440	
+GCF_000004515.6	chado	multi_valued	737554	0	0	0	737554	0	731859	
+GCF_000004515.6	chado	rows_disagree	653	0	0	0	653	0	653	
+GCF_000004515.6	chado	organelle	1013	0	0	0	1013	0	1013	
+GCF_000188115.5	chado	multi_row	31841	0	0	0	31841	0	31840	
+GCF_000188115.5	chado	trans_spliced	12	0	0	0	12	0	11	
+GCF_000188115.5	chado	strand_unknown	1	0	0	0	1	0	1	
+GCF_000188115.5	chado	exon_under_pseudogene	4148	0	0	0	4148	0	4148	
+GCF_000188115.5	chado	multi_valued	389334	0	0	0	389334	0	384126	
+GCF_000188115.5	chado	rows_disagree	518	0	0	0	518	0	517	
+GCF_000188115.5	chado	organelle	827	0	0	0	827	0	826	
+GCF_030704535.1	chado	multi_row	33603	0	0	0	33603	0	33602	
+GCF_030704535.1	chado	trans_spliced	36	0	0	0	36	0	35	
+GCF_030704535.1	chado	strand_unknown	2	0	0	0	2	0	2	
+GCF_030704535.1	chado	exon_under_pseudogene	5448	0	0	0	5448	0	5448	
+GCF_030704535.1	chado	multi_valued	403885	0	0	0	403885	0	401617	
+GCF_030704535.1	chado	rows_disagree	323	0	0	0	323	0	323	
+GCF_030704535.1	chado	organelle	1039	0	0	0	1039	0	1038	
+GCF_009193385.2	chado	multi_row	32377	32377	0	0	0	0	0	
+GCF_009193385.2	chado	exon_under_pseudogene	533	533	0	0	0	0	0	
+GCF_009193385.2	chado	multi_valued	408726	402615	0	0	6111	0	4751	
+GCF_009193385.2	chado	rows_disagree	106	106	0	0	0	0	0	
+GCF_000146045.2	chado	multi_row	329	329	0	0	0	0	0	
+GCF_000146045.2	chado	multi_valued	25412	25412	0	0	0	0	0	
+GCF_000146045.2	chado	organelle	200	200	0	0	0	0	0	
+GCF_000182965.3	chado	multi_row	362	362	0	0	0	0	0	
+GCF_000182965.3	chado	multi_valued	24754	24754	0	0	0	0	0	
+GCF_000182965.3	chado	rows_disagree	1	1	0	0	0	0	0	
+GCF_000002945.2	chado	multi_row	2414	2414	0	0	0	0	0	
+GCF_000002945.2	chado	overlapping_rows	18	18	0	0	0	0	0	
+GCF_000002945.2	chado	escapes_parent	4	4	0	0	0	0	0	
+GCF_000002945.2	chado	multi_valued	47638	33363	0	0	14275	0	7137	
+GCF_000002945.2	chado	organelle	140	140	0	0	0	0	0	
+GCF_000182925.2	chado	multi_row	8501	8501	0	0	0	0	0	
+GCF_000182925.2	chado	multi_valued	55797	55797	0	0	0	0	0	
+GCF_000182925.2	chado	rows_disagree	4	4	0	0	0	0	0	
+GCF_000182925.2	chado	organelle	210	210	0	0	0	0	0	
+GCF_000149205.2	chado	multi_row	8427	8427	0	0	0	0	0	
+GCF_000149205.2	chado	multi_valued	63741	63741	0	0	0	0	0	
+GCF_000149205.2	chado	organelle	177	177	0	0	0	0	0	
+GCF_000240135.3	chado	multi_row	10208	10208	0	0	0	0	0	
+GCF_000240135.3	chado	multi_valued	75501	75501	0	0	0	0	0	
+GCF_000240135.3	chado	rows_disagree	35	35	0	0	0	0	0	
+GCF_030269925.1	chado	multi_row	27076	27076	0	0	0	0	0	
+GCF_030269925.1	chado	crosses_origin	4	4	0	0	0	0	0	
+GCF_030269925.1	chado	exon_under_pseudogene	159	159	0	0	0	0	0	
+GCF_030269925.1	chado	multi_valued	387470	370976	0	0	16494	0	12155	
+GCF_030269925.1	chado	rows_disagree	975	975	0	0	0	0	0	
+GCF_030269925.1	chado	organelle	126	126	0	0	0	0	0	
+GCF_000328475.2	chado	multi_row	1864	1864	0	0	0	0	0	
+GCF_000328475.2	chado	multi_valued	30129	30129	0	0	0	0	0	
+GCF_000328475.2	chado	rows_disagree	7	7	0	0	0	0	0	
+GCF_000001635.27	chado	multi_row	91336	91336	0	0	0	0	0	
+GCF_000001635.27	chado	overlapping_rows	1	1	0	0	0	0	0	
+GCF_000001635.27	chado	exon_under_pseudogene	4069	4069	0	0	0	0	0	
+GCF_000001635.27	chado	multi_valued	1872798	1762947	0	0	109851	0	86216	
+GCF_000001635.27	chado	rows_disagree	53	53	0	0	0	0	0	
+GCF_000001635.27	chado	organelle	139	139	0	0	0	0	0	
+GCF_000149245.1	chado	multi_row	7567	7567	0	0	0	0	0	
+GCF_000149245.1	chado	multi_valued	72019	72019	0	0	0	0	0	
+GCF_000149245.1	chado	rows_disagree	7	7	0	0	0	0	0	
+GCF_000149245.1	chado	organelle	98	98	0	0	0	0	0	
+GCF_000001405.40	chado	multi_row	141859	0	0	0	141859	0	141859	
+GCF_000001405.40	chado	overlapping_rows	3	0	0	0	3	0	3	
+GCF_000001405.40	chado	crosses_origin	1	0	0	0	1	0	1	
+GCF_000001405.40	chado	exon_under_pseudogene	9015	0	0	0	9015	0	9015	
+GCF_000001405.40	chado	multi_valued	2724045	0	0	0	2724045	0	2690842	
+GCF_000001405.40	chado	rows_disagree	3573	0	0	0	3573	0	3573	
+GCF_000001405.40	chado	organelle	127	0	0	0	127	0	127	
+GCF_002234675.1	gffutils	multi_row	43275	0	43275	0	0	43275	0	split:43275
+GCF_002234675.1	gffutils	exon_under_pseudogene	669	669	0	0	0	0	0	
+GCF_002234675.1	gffutils	multi_valued	781410	738552	42858	0	0	42858	0	split:42858
+GCF_002234675.1	gffutils	rows_disagree	459	0	459	0	0	459	0	split:459
+GCF_002234675.1	gffutils	organelle	102	102	0	0	0	0	0	
+GCF_000004195.4	gffutils	multi_row	44342	0	44342	0	0	44342	0	split:44342
+GCF_000004195.4	gffutils	exon_under_pseudogene	1589	1589	0	0	0	0	0	
+GCF_000004195.4	gffutils	multi_valued	756289	714704	41585	0	0	41585	0	split:41585
+GCF_000004195.4	gffutils	rows_disagree	2902	0	2902	0	0	2902	0	split:2902
+GCF_000004195.4	gffutils	organelle	127	127	0	0	0	0	0	
+GCF_000005575.2	gffutils	multi_row	12414	0	12414	0	0	12414	0	split:12414
+GCF_000005575.2	gffutils	escapes_parent	3	3	0	0	0	0	0	
+GCF_000005575.2	gffutils	multi_valued	104408	91994	12414	0	0	12414	0	split:12414
+GCF_000005575.2	gffutils	rows_disagree	2647	0	2647	0	0	2647	0	split:2647
+GCF_000005575.2	gffutils	organelle	126	126	0	0	0	0	0	
+GCF_000001215.4	gffutils	multi_row	26474	0	26474	0	0	26474	0	split:26474
+GCF_000001215.4	gffutils	overlapping_rows	2	0	2	0	0	2	0	split:2
+GCF_000001215.4	gffutils	trans_spliced	170	146	24	0	0	24	0	split:24
+GCF_000001215.4	gffutils	strand_unknown	9	9	0	0	0	0	0	
+GCF_000001215.4	gffutils	exon_under_pseudogene	563	563	0	0	0	0	0	
+GCF_000001215.4	gffutils	multi_valued	276181	249707	26474	0	0	26474	0	split:26474
+GCF_000001215.4	gffutils	rows_disagree	36	0	36	0	0	36	0	split:36
+GCF_000001215.4	gffutils	organelle	126	126	0	0	0	0	0	
+GCF_000002035.6	gffutils	multi_row	61336	0	61336	0	0	61336	0	split:61336
+GCF_000002035.6	gffutils	exon_under_pseudogene	1375	1375	0	0	0	0	0	
+GCF_000002035.6	gffutils	multi_valued	977647	922928	54719	0	0	54719	0	split:54719
+GCF_000002035.6	gffutils	rows_disagree	8359	0	8359	0	0	8359	0	split:8359
+GCF_000002035.6	gffutils	organelle	127	127	0	0	0	0	0	
+GCF_014441545.1	gffutils	multi_row	63265	0	63265	0	0	63265	0	split:63265
+GCF_014441545.1	gffutils	overlapping_rows	1	0	1	0	0	1	0	split:1
+GCF_014441545.1	gffutils	exon_under_pseudogene	7910	7910	0	0	0	0	0	
+GCF_014441545.1	gffutils	multi_valued	1236610	1174691	61919	0	0	61919	0	split:61919
+GCF_014441545.1	gffutils	rows_disagree	1249	0	1249	0	0	1249	0	split:1249
+GCF_002204515.2	gffutils	multi_row	26511	0	26511	0	0	26511	0	split:26511
+GCF_002204515.2	gffutils	exon_under_pseudogene	739	739	0	0	0	0	0	
+GCF_002204515.2	gffutils	multi_valued	271474	245201	26273	0	0	26273	0	split:26273
+GCF_002204515.2	gffutils	rows_disagree	378	0	378	0	0	378	0	split:378
+GCF_002204515.2	gffutils	organelle	128	128	0	0	0	0	0	
+GCF_016699485.2	gffutils	multi_row	66116	0	66116	0	0	66116	0	split:66116
+GCF_016699485.2	gffutils	exon_under_pseudogene	541	541	0	0	0	0	0	
+GCF_016699485.2	gffutils	multi_valued	1294029	1228553	65476	0	0	65476	0	split:65476
+GCF_016699485.2	gffutils	rows_disagree	797	0	797	0	0	797	0	split:797
+GCF_016699485.2	gffutils	organelle	127	126	1	0	0	1	0	split:1
+GCF_015227675.2	gffutils	multi_row	68343	0	68343	0	0	68343	0	split:68343
+GCF_015227675.2	gffutils	overlapping_rows	1	0	1	0	0	1	0	split:1
+GCF_015227675.2	gffutils	exon_under_pseudogene	10061	10061	0	0	0	0	0	
+GCF_015227675.2	gffutils	multi_valued	1347101	1279566	67535	0	0	67535	0	split:67535
+GCF_015227675.2	gffutils	rows_disagree	602	0	602	0	0	602	0	split:602
+GCF_015227675.2	gffutils	organelle	127	127	0	0	0	0	0	
+GCF_000002335.3	gffutils	multi_row	21374	0	21374	0	0	21374	0	split:21374
+GCF_000002335.3	gffutils	exon_under_pseudogene	105	105	0	0	0	0	0	
+GCF_000002335.3	gffutils	multi_valued	219513	198324	21189	0	0	21189	0	split:21189
+GCF_000002335.3	gffutils	rows_disagree	293	0	293	0	0	293	0	split:293
+GCF_000002335.3	gffutils	organelle	126	126	0	0	0	0	0	
+GCF_003254395.2	gffutils	multi_row	22975	0	22975	0	0	22975	0	split:22975
+GCF_003254395.2	gffutils	exon_under_pseudogene	164	164	0	0	0	0	0	
+GCF_003254395.2	gffutils	multi_valued	327975	305205	22770	0	0	22770	0	split:22770
+GCF_003254395.2	gffutils	rows_disagree	270	0	270	0	0	270	0	split:270
+GCF_003254395.2	gffutils	organelle	126	126	0	0	0	0	0	
+GCF_009193385.2	gffutils	multi_row	32377	0	32377	0	0	32377	0	split:32377
+GCF_009193385.2	gffutils	exon_under_pseudogene	533	533	0	0	0	0	0	
+GCF_009193385.2	gffutils	multi_valued	408726	376430	32296	0	0	32296	0	split:32296
+GCF_009193385.2	gffutils	rows_disagree	106	0	106	0	0	106	0	split:106
+GCF_030269925.1	gffutils	multi_row	27076	0	27076	0	0	27076	0	split:27076
+GCF_030269925.1	gffutils	crosses_origin	4	4	0	0	0	0	0	
+GCF_030269925.1	gffutils	exon_under_pseudogene	159	159	0	0	0	0	0	
+GCF_030269925.1	gffutils	multi_valued	387470	361309	26161	0	0	26161	0	split:26161
+GCF_030269925.1	gffutils	rows_disagree	975	0	975	0	0	975	0	split:975
+GCF_030269925.1	gffutils	organelle	126	126	0	0	0	0	0	
+GCF_000001635.27	gffutils	multi_row	91336	0	91336	0	0	91336	0	split:91336
+GCF_000001635.27	gffutils	overlapping_rows	1	0	1	0	0	1	0	split:1
+GCF_000001635.27	gffutils	exon_under_pseudogene	4069	4069	0	0	0	0	0	
+GCF_000001635.27	gffutils	multi_valued	1872798	1781487	91311	0	0	91311	0	split:91311
+GCF_000001635.27	gffutils	rows_disagree	53	0	53	0	0	53	0	split:53
+GCF_000001635.27	gffutils	organelle	139	139	0	0	0	0	0	
+GCF_000003195.3	gffutils	multi_row	31830	0	31830	0	0	31830	0	split:31830
+GCF_000003195.3	gffutils	trans_spliced	36	26	10	0	0	10	0	split:10
+GCF_000003195.3	gffutils	strand_unknown	3	3	0	0	0	0	0	
+GCF_000003195.3	gffutils	crosses_origin	1	1	0	0	0	0	0	
+GCF_000003195.3	gffutils	escapes_parent	6	5	1	0	0	1	0	split:1
+GCF_000003195.3	gffutils	exon_under_pseudogene	4727	4727	0	0	0	0	0	
+GCF_000003195.3	gffutils	multi_valued	379043	347335	31708	0	0	31708	0	split:31708
+GCF_000003195.3	gffutils	rows_disagree	192	0	192	0	0	192	0	split:192
+GCF_000003195.3	gffutils	organelle	822	796	26	0	0	26	0	split:26
+GCF_000146045.2	gffutils	multi_row	329	0	329	0	0	329	0	split:329
+GCF_000146045.2	gffutils	multi_valued	25412	25083	329	0	0	329	0	split:329
+GCF_000146045.2	gffutils	organelle	200	189	11	0	0	11	0	split:11
+GCF_034140825.1	gffutils	multi_row	34470	0	34470	0	0	34470	0	split:34470
+GCF_034140825.1	gffutils	trans_spliced	31	22	9	0	0	9	0	split:9
+GCF_034140825.1	gffutils	strand_unknown	4	4	0	0	0	0	0	
+GCF_034140825.1	gffutils	crosses_origin	2	1	1	0	0	1	0	split:1
+GCF_034140825.1	gffutils	past_end	1	1	0	0	0	0	0	
+GCF_034140825.1	gffutils	escapes_parent	6	4	2	0	0	2	0	split:2
+GCF_034140825.1	gffutils	exon_under_pseudogene	5991	5991	0	0	0	0	0	
+GCF_034140825.1	gffutils	multi_valued	435481	401259	34222	0	0	34222	0	split:34222
+GCF_034140825.1	gffutils	rows_disagree	292	0	292	0	0	292	0	split:292
+GCF_034140825.1	gffutils	organelle	1436	1409	27	0	0	27	0	split:27
+GCF_000182965.3	gffutils	multi_row	362	0	362	0	0	362	0	split:362
+GCF_000182965.3	gffutils	multi_valued	24754	24392	362	0	0	362	0	split:362
+GCF_000182965.3	gffutils	rows_disagree	1	0	1	0	0	1	0	split:1
+GCF_000001735.4	gffutils	multi_row	40265	0	40265	0	0	40265	0	split:40265
+GCF_000001735.4	gffutils	trans_spliced	29	20	9	0	0	9	0	split:9
+GCF_000001735.4	gffutils	strand_unknown	4	3	1	0	0	1	0	split:1
+GCF_000001735.4	gffutils	crosses_origin	4	3	1	0	0	1	0	split:1
+GCF_000001735.4	gffutils	past_end	2	2	0	0	0	0	0	
+GCF_000001735.4	gffutils	inverted	1	1	0	0	0	0	0	
+GCF_000001735.4	gffutils	escapes_parent	13	11	2	0	0	2	0	split:2
+GCF_000001735.4	gffutils	multi_valued	470500	430240	40260	0	0	40260	0	split:40260
+GCF_000001735.4	gffutils	rows_disagree	85	0	85	0	0	85	0	split:85
+GCF_000001735.4	gffutils	organelle	2359	2330	29	0	0	29	0	split:29
+GCF_000002945.2	gffutils	multi_row	2414	0	2414	0	0	2414	0	split:2414
+GCF_000002945.2	gffutils	overlapping_rows	18	0	18	0	0	18	0	split:18
+GCF_000002945.2	gffutils	escapes_parent	4	4	0	0	0	0	0	
+GCF_000002945.2	gffutils	multi_valued	47638	45240	2398	0	0	2398	0	split:2398
+GCF_000002945.2	gffutils	organelle	140	138	2	0	0	2	0	split:2
+GCF_000182925.2	gffutils	multi_row	8501	0	8501	0	0	8501	0	split:8501
+GCF_000182925.2	gffutils	multi_valued	55797	47297	8500	0	0	8500	0	split:8500
+GCF_000182925.2	gffutils	rows_disagree	4	0	4	0	0	4	0	split:4
+GCF_000182925.2	gffutils	organelle	210	201	9	0	0	9	0	split:9
+GCF_000149205.2	gffutils	multi_row	8427	0	8427	0	0	8427	0	split:8427
+GCF_000149205.2	gffutils	multi_valued	63741	55314	8427	0	0	8427	0	split:8427
+GCF_000149205.2	gffutils	organelle	177	175	2	0	0	2	0	split:2
+GCF_000240135.3	gffutils	multi_row	10208	0	10208	0	0	10208	0	split:10208
+GCF_000240135.3	gffutils	multi_valued	75501	65294	10207	0	0	10207	0	split:10207
+GCF_000240135.3	gffutils	rows_disagree	35	0	35	0	0	35	0	split:35
+GCF_902167145.1	gffutils	multi_row	48422	0	48422	0	0	48422	0	split:48422
+GCF_902167145.1	gffutils	trans_spliced	51	37	14	0	0	14	0	split:14
+GCF_902167145.1	gffutils	strand_unknown	5	5	0	0	0	0	0	
+GCF_902167145.1	gffutils	crosses_origin	1	1	0	0	0	0	0	
+GCF_902167145.1	gffutils	inverted	1	1	0	0	0	0	0	
+GCF_902167145.1	gffutils	escapes_parent	8	6	2	0	0	2	0	split:2
+GCF_902167145.1	gffutils	exon_under_pseudogene	12763	12763	0	0	0	0	0	
+GCF_902167145.1	gffutils	multi_valued	636194	588696	47498	0	0	47498	0	split:47498
+GCF_902167145.1	gffutils	rows_disagree	1070	0	1070	0	0	1070	0	split:1070
+GCF_902167145.1	gffutils	organelle	1710	1680	30	0	0	30	0	split:30
+GCF_000328475.2	gffutils	multi_row	1864	0	1864	0	0	1864	0	split:1864
+GCF_000328475.2	gffutils	multi_valued	30129	28272	1857	0	0	1857	0	split:1857
+GCF_000328475.2	gffutils	rows_disagree	7	0	7	0	0	7	0	split:7
+GCF_000149245.1	gffutils	multi_row	7567	0	7567	0	0	7567	0	split:7567
+GCF_000149245.1	gffutils	multi_valued	72019	64452	7567	0	0	7567	0	split:7567
+GCF_000149245.1	gffutils	rows_disagree	7	0	7	0	0	7	0	split:7
+GCF_000149245.1	gffutils	organelle	98	96	2	0	0	2	0	split:2
+GCF_000188115.5	gffutils	multi_row	31841	0	31841	0	0	31841	0	split:31841
+GCF_000188115.5	gffutils	trans_spliced	12	8	4	0	0	4	0	split:4
+GCF_000188115.5	gffutils	strand_unknown	1	1	0	0	0	0	0	
+GCF_000188115.5	gffutils	exon_under_pseudogene	4148	4148	0	0	0	0	0	
+GCF_000188115.5	gffutils	multi_valued	389334	357862	31472	0	0	31472	0	split:31472
+GCF_000188115.5	gffutils	rows_disagree	518	0	518	0	0	518	0	split:518
+GCF_000188115.5	gffutils	organelle	827	802	25	0	0	25	0	split:25
+GCF_030704535.1	gffutils	multi_row	33603	0	33603	0	0	33603	0	split:33603
+GCF_030704535.1	gffutils	trans_spliced	36	26	10	0	0	10	0	split:10
+GCF_030704535.1	gffutils	strand_unknown	2	2	0	0	0	0	0	
+GCF_030704535.1	gffutils	exon_under_pseudogene	5448	5448	0	0	0	0	0	
+GCF_030704535.1	gffutils	multi_valued	403885	370546	33339	0	0	33339	0	split:33339
+GCF_030704535.1	gffutils	rows_disagree	323	0	323	0	0	323	0	split:323
+GCF_030704535.1	gffutils	organelle	1039	1009	30	0	0	30	0	split:30
+GCF_000004515.6	gffutils	multi_row	62949	0	62949	0	0	62949	0	split:62949
+GCF_000004515.6	gffutils	trans_spliced	36	26	10	0	0	10	0	split:10
+GCF_000004515.6	gffutils	strand_unknown	2	2	0	0	0	0	0	
+GCF_000004515.6	gffutils	crosses_origin	1	1	0	0	0	0	0	
+GCF_000004515.6	gffutils	inverted	1	1	0	0	0	0	0	
+GCF_000004515.6	gffutils	escapes_parent	6	5	1	0	0	1	0	split:1
+GCF_000004515.6	gffutils	exon_under_pseudogene	20440	20440	0	0	0	0	0	
+GCF_000004515.6	gffutils	multi_valued	737554	675077	62477	0	0	62477	0	split:62477
+GCF_000004515.6	gffutils	rows_disagree	653	0	653	0	0	653	0	split:653
+GCF_000004515.6	gffutils	organelle	1013	985	28	0	0	28	0	split:28
+GCF_000001405.40	gffutils	multi_row	141859	0	141859	0	0	141859	0	split:141859
+GCF_000001405.40	gffutils	overlapping_rows	3	0	3	0	0	3	0	split:3
+GCF_000001405.40	gffutils	crosses_origin	1	1	0	0	0	0	0	
+GCF_000001405.40	gffutils	exon_under_pseudogene	9015	9015	0	0	0	0	0	
+GCF_000001405.40	gffutils	multi_valued	2724045	2584610	139435	0	0	139435	0	split:139435
+GCF_000001405.40	gffutils	rows_disagree	3573	0	3573	0	0	3573	0	split:3573
+GCF_000001405.40	gffutils	organelle	127	127	0	0	0	0	0	

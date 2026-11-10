@@ -1,0 +1,15 @@
+argcomplete==3.7.2
+argh==0.31.3
+-e git+https://github.com/computational-genomics-lab/cgload@56f6861a1ea3e4db7a0459989e992bd562ae2227#egg=cgload
+click==8.5.0
+gffutils==0.14
+packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1785888127/work
+psycopg==3.3.6
+psycopg-binary==3.3.6
+pyfaidx==0.9.1
+pysam==0.24.1
+setuptools==84.2.0
+simplejson==4.2.0
+SQLAlchemy==2.1.5
+typing_extensions==4.16.0
+wheel==0.48.0

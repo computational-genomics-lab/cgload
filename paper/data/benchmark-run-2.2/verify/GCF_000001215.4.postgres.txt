@@ -1,0 +1,6 @@
+  source count      PASS  282,355 features in the file, 282,355 in the database, across 20 type(s); 414,876 rows in each
+  parent edges      PASS  256,878 edge(s), all accounted for (explicit_parent 256,878); the file states 256,878
+  stored assembly   PASS  /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload/postgres/GCF_000001215.4/data/drosophila_melanogaster/reference/release_6_plus_iso1_mt/assembly.fa and its index are present; SHA-256 matches the load
+  cross-parser      ----  no second format supplied; pass --against with a GenBank or GFF3 file describing the same assembly
+  reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
+

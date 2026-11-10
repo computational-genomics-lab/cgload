@@ -1,0 +1,144 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents",
+  "attrs"
+ ],
+ "totals": {
+  "truth": 332608,
+  "truth_links": 319816,
+  "kept_links": 319816,
+  "kept": 309633,
+  "changed": 22975,
+  "changed_silent": 22975
+ },
+ "stored_features": 332608,
+ "stored_links": 319816,
+ "extra_by_type": {},
+ "field_differences": {
+  "split": 22975
+ },
+ "by_type": {
+  "CDS": {
+   "truth": 23471,
+   "changed": 22770,
+   "kept": 701
+  },
+  "cDNA_match": {
+   "truth": 216,
+   "kept": 11,
+   "changed": 205
+  },
+  "exon": {
+   "truth": 267977,
+   "kept": 267977
+  },
+  "gene": {
+   "truth": 12356,
+   "kept": 12356
+  },
+  "guide_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "lnc_RNA": {
+   "truth": 3146,
+   "kept": 3146
+  },
+  "mRNA": {
+   "truth": 23471,
+   "kept": 23471
+  },
+  "miRNA": {
+   "truth": 248,
+   "kept": 248
+  },
+  "primary_transcript": {
+   "truth": 238,
+   "kept": 238
+  },
+  "pseudogene": {
+   "truth": 42,
+   "kept": 42
+  },
+  "rRNA": {
+   "truth": 57,
+   "kept": 57
+  },
+  "region": {
+   "truth": 177,
+   "kept": 177
+  },
+  "sequence_feature": {
+   "truth": 1,
+   "kept": 1
+  },
+  "snRNA": {
+   "truth": 26,
+   "kept": 26
+  },
+  "snoRNA": {
+   "truth": 14,
+   "kept": 14
+  },
+  "tRNA": {
+   "truth": 218,
+   "kept": 218
+  },
+  "transcript": {
+   "truth": 949,
+   "kept": 949
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 22975,
+   "changed": 22975,
+   "changed_silent": 22975
+  },
+  "exon_under_pseudogene": {
+   "truth": 164,
+   "kept": 164
+  },
+  "multi_valued": {
+   "truth": 327975,
+   "kept": 305205,
+   "changed": 22770,
+   "changed_silent": 22770
+  },
+  "rows_disagree": {
+   "truth": 270,
+   "changed": 270,
+   "changed_silent": 270
+  },
+  "organelle": {
+   "truth": 126,
+   "kept": 126
+  }
+ },
+ "case_field_differences": {
+  "multi_row": {
+   "split": 22975
+  },
+  "multi_valued": {
+   "split": 22770
+  },
+  "rows_disagree": {
+   "split": 270
+  }
+ },
+ "examples": {
+  "changed:split": [
+   "cds-XP_623975.1",
+   "cds-XP_006557468.1",
+   "cds-XP_006557467.1",
+   "cds-XP_623952.2",
+   "cds-XP_006557469.1"
+  ]
+ },
+ "genome": "GCF_003254395.2",
+ "tool": "gffutils"
+}

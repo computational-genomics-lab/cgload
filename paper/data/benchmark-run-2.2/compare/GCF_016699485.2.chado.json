@@ -1,0 +1,152 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents"
+ ],
+ "totals": {
+  "truth": 1297179,
+  "truth_links": 1270629,
+  "kept_links": 1208569,
+  "kept": 1235119,
+  "lost": 62060,
+  "lost_announced": 10062,
+  "lost_silent": 51998
+ },
+ "stored_features": 1303803,
+ "stored_links": 1277253,
+ "extra_by_type": {
+  "polypeptide": 68684
+ },
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 68754,
+   "kept": 68754
+  },
+  "C_gene_segment": {
+   "truth": 2,
+   "kept": 2
+  },
+  "D_loop": {
+   "truth": 1,
+   "kept": 1
+  },
+  "SRP_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "V_gene_segment": {
+   "truth": 68,
+   "kept": 68
+  },
+  "cDNA_match": {
+   "truth": 674,
+   "kept": 674
+  },
+  "exon": {
+   "truth": 1116171,
+   "lost": 51998,
+   "kept": 1064173
+  },
+  "gene": {
+   "truth": 25440,
+   "kept": 25440
+  },
+  "lnc_RNA": {
+   "truth": 10062,
+   "lost": 10062
+  },
+  "mRNA": {
+   "truth": 68684,
+   "kept": 68684
+  },
+  "match": {
+   "truth": 23,
+   "kept": 23
+  },
+  "miRNA": {
+   "truth": 1209,
+   "kept": 1209
+  },
+  "ncRNA": {
+   "truth": 13,
+   "kept": 13
+  },
+  "primary_transcript": {
+   "truth": 800,
+   "kept": 800
+  },
+  "pseudogene": {
+   "truth": 198,
+   "kept": 198
+  },
+  "rRNA": {
+   "truth": 94,
+   "kept": 94
+  },
+  "region": {
+   "truth": 214,
+   "kept": 214
+  },
+  "snRNA": {
+   "truth": 67,
+   "kept": 67
+  },
+  "snoRNA": {
+   "truth": 186,
+   "kept": 186
+  },
+  "tRNA": {
+   "truth": 303,
+   "kept": 303
+  },
+  "telomerase_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "transcript": {
+   "truth": 4214,
+   "kept": 4214
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 66116,
+   "kept": 66116
+  },
+  "exon_under_pseudogene": {
+   "truth": 541,
+   "kept": 541
+  },
+  "multi_valued": {
+   "truth": 1294029,
+   "lost": 62060,
+   "lost_announced": 10062,
+   "lost_silent": 51998,
+   "kept": 1231969
+  },
+  "rows_disagree": {
+   "truth": 797,
+   "kept": 797
+  },
+  "organelle": {
+   "truth": 127,
+   "kept": 127
+  }
+ },
+ "case_field_differences": {},
+ "examples": {
+  "lost": [
+   "rna-XR_006939951.1",
+   "exon-XR_006939951.1-1",
+   "exon-XR_006939951.1-2",
+   "exon-XR_006939951.1-3",
+   "rna-XR_005839958.1"
+  ]
+ },
+ "genome": "GCF_016699485.2",
+ "tool": "chado"
+}

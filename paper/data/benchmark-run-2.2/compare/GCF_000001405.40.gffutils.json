@@ -1,0 +1,381 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents",
+  "attrs"
+ ],
+ "totals": {
+  "truth": 3203237,
+  "truth_links": 2673724,
+  "kept_links": 2673724,
+  "kept": 3061378,
+  "changed": 141859,
+  "changed_silent": 141859
+ },
+ "stored_features": 3203237,
+ "stored_links": 2673724,
+ "extra_by_type": {},
+ "field_differences": {
+  "split": 141859
+ },
+ "by_type": {
+  "CAAT_signal": {
+   "truth": 6,
+   "kept": 6
+  },
+  "CAGE_cluster": {
+   "truth": 96,
+   "kept": 96
+  },
+  "CDS": {
+   "truth": 146337,
+   "changed": 139275,
+   "kept": 7062
+  },
+  "C_gene_segment": {
+   "truth": 44,
+   "kept": 44
+  },
+  "DNaseI_hypersensitive_site": {
+   "truth": 177,
+   "kept": 177
+  },
+  "D_gene_segment": {
+   "truth": 61,
+   "kept": 61
+  },
+  "D_loop": {
+   "truth": 1,
+   "kept": 1
+  },
+  "GC_rich_promoter_region": {
+   "truth": 15,
+   "kept": 15
+  },
+  "J_gene_segment": {
+   "truth": 128,
+   "kept": 128
+  },
+  "RNase_MRP_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "RNase_P_RNA": {
+   "truth": 2,
+   "kept": 2
+  },
+  "TATA_box": {
+   "truth": 30,
+   "kept": 30
+  },
+  "V_gene_segment": {
+   "truth": 663,
+   "kept": 663
+  },
+  "Y_RNA": {
+   "truth": 4,
+   "kept": 4
+  },
+  "antisense_RNA": {
+   "truth": 42,
+   "kept": 42
+  },
+  "biological_region": {
+   "truth": 137093,
+   "kept": 137093
+  },
+  "cDNA_match": {
+   "truth": 2568,
+   "changed": 2413,
+   "kept": 155
+  },
+  "centromere": {
+   "truth": 24,
+   "kept": 24
+  },
+  "chromosome_breakpoint": {
+   "truth": 16,
+   "kept": 16
+  },
+  "conserved_region": {
+   "truth": 138,
+   "kept": 138
+  },
+  "direct_repeat": {
+   "truth": 20,
+   "kept": 20
+  },
+  "dispersed_repeat": {
+   "truth": 5,
+   "kept": 5
+  },
+  "enhancer": {
+   "truth": 115208,
+   "kept": 115208
+  },
+  "enhancer_blocking_element": {
+   "truth": 59,
+   "kept": 59
+  },
+  "epigenetically_modified_region": {
+   "truth": 12,
+   "kept": 12
+  },
+  "exon": {
+   "truth": 2324920,
+   "kept": 2324920
+  },
+  "gene": {
+   "truth": 48173,
+   "kept": 48173
+  },
+  "imprinting_control_region": {
+   "truth": 2,
+   "kept": 2
+  },
+  "insulator": {
+   "truth": 12,
+   "kept": 12
+  },
+  "lnc_RNA": {
+   "truth": 33203,
+   "kept": 33203
+  },
+  "locus_control_region": {
+   "truth": 14,
+   "kept": 14
+  },
+  "mRNA": {
+   "truth": 145477,
+   "kept": 145477
+  },
+  "match": {
+   "truth": 161208,
+   "kept": 161208
+  },
+  "matrix_attachment_site": {
+   "truth": 18,
+   "kept": 18
+  },
+  "meiotic_recombination_region": {
+   "truth": 370,
+   "kept": 370
+  },
+  "miRNA": {
+   "truth": 3218,
+   "kept": 3218
+  },
+  "microsatellite": {
+   "truth": 5,
+   "kept": 5
+  },
+  "minisatellite": {
+   "truth": 13,
+   "kept": 13
+  },
+  "mitotic_recombination_region": {
+   "truth": 54,
+   "kept": 54
+  },
+  "mobile_genetic_element": {
+   "truth": 204,
+   "kept": 204
+  },
+  "non_allelic_homologous_recombination_region": {
+   "truth": 514,
+   "kept": 514
+  },
+  "nucleotide_cleavage_site": {
+   "truth": 4,
+   "kept": 4
+  },
+  "nucleotide_motif": {
+   "truth": 623,
+   "kept": 623
+  },
+  "origin_of_replication": {
+   "truth": 87,
+   "kept": 87
+  },
+  "primary_transcript": {
+   "truth": 2139,
+   "kept": 2139
+  },
+  "promoter": {
+   "truth": 438,
+   "kept": 438
+  },
+  "protein_binding_site": {
+   "truth": 1418,
+   "kept": 1418
+  },
+  "pseudogene": {
+   "truth": 19339,
+   "kept": 19339
+  },
+  "rRNA": {
+   "truth": 80,
+   "kept": 80
+  },
+  "recombination_feature": {
+   "truth": 632,
+   "kept": 632
+  },
+  "region": {
+   "truth": 709,
+   "kept": 709
+  },
+  "regulatory_region": {
+   "truth": 2,
+   "kept": 2
+  },
+  "repeat_instability_region": {
+   "truth": 62,
+   "kept": 62
+  },
+  "repeat_region": {
+   "truth": 10,
+   "kept": 10
+  },
+  "replication_regulatory_region": {
+   "truth": 11,
+   "kept": 11
+  },
+  "replication_start_site": {
+   "truth": 3,
+   "kept": 3
+  },
+  "response_element": {
+   "truth": 20,
+   "kept": 20
+  },
+  "scRNA": {
+   "truth": 4,
+   "kept": 4
+  },
+  "scaRNA": {
+   "truth": 54,
+   "kept": 54
+  },
+  "sequence_alteration": {
+   "truth": 30,
+   "kept": 30
+  },
+  "sequence_alteration_artifact": {
+   "truth": 10,
+   "kept": 10
+  },
+  "sequence_comparison": {
+   "truth": 4,
+   "kept": 4
+  },
+  "sequence_feature": {
+   "truth": 1793,
+   "kept": 1622,
+   "changed": 171
+  },
+  "sequence_secondary_structure": {
+   "truth": 14,
+   "kept": 14
+  },
+  "silencer": {
+   "truth": 35932,
+   "kept": 35932
+  },
+  "snRNA": {
+   "truth": 174,
+   "kept": 174
+  },
+  "snoRNA": {
+   "truth": 1300,
+   "kept": 1300
+  },
+  "tRNA": {
+   "truth": 691,
+   "kept": 691
+  },
+  "tandem_repeat": {
+   "truth": 64,
+   "kept": 64
+  },
+  "telomerase_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "transcript": {
+   "truth": 15171,
+   "kept": 15171
+  },
+  "transcriptional_cis_regulatory_region": {
+   "truth": 2259,
+   "kept": 2259
+  },
+  "vault_RNA": {
+   "truth": 4,
+   "kept": 4
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 141859,
+   "changed": 141859,
+   "changed_silent": 141859
+  },
+  "overlapping_rows": {
+   "truth": 3,
+   "changed": 3,
+   "changed_silent": 3
+  },
+  "crosses_origin": {
+   "truth": 1,
+   "kept": 1
+  },
+  "exon_under_pseudogene": {
+   "truth": 9015,
+   "kept": 9015
+  },
+  "multi_valued": {
+   "truth": 2724045,
+   "kept": 2584610,
+   "changed": 139435,
+   "changed_silent": 139435
+  },
+  "rows_disagree": {
+   "truth": 3573,
+   "changed": 3573,
+   "changed_silent": 3573
+  },
+  "organelle": {
+   "truth": 127,
+   "kept": 127
+  }
+ },
+ "case_field_differences": {
+  "multi_row": {
+   "split": 141859
+  },
+  "multi_valued": {
+   "split": 139435
+  },
+  "rows_disagree": {
+   "split": 3573
+  },
+  "overlapping_rows": {
+   "split": 3
+  }
+ },
+ "examples": {
+  "changed:split": [
+   "cds-NP_001005484.2",
+   "cds-XP_047292308.1",
+   "cds-XP_011540840.1",
+   "cds-NP_001372569.1",
+   "cds-NP_001372570.1"
+  ]
+ },
+ "genome": "GCF_000001405.40",
+ "tool": "gffutils"
+}

@@ -1,0 +1,148 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents",
+  "attrs"
+ ],
+ "totals": {
+  "truth": 406813,
+  "truth_links": 387557,
+  "kept_links": 387557,
+  "kept": 379737,
+  "changed": 27076,
+  "changed_silent": 27076
+ },
+ "stored_features": 406813,
+ "stored_links": 387557,
+ "extra_by_type": {},
+ "field_differences": {
+  "split": 27076
+ },
+ "by_type": {
+  "CDS": {
+   "truth": 28341,
+   "kept": 2180,
+   "changed": 26161
+  },
+  "cDNA_match": {
+   "truth": 1014,
+   "kept": 99,
+   "changed": 915
+  },
+  "exon": {
+   "truth": 323944,
+   "kept": 323944
+  },
+  "gene": {
+   "truth": 18127,
+   "kept": 18127
+  },
+  "lnc_RNA": {
+   "truth": 4339,
+   "kept": 4339
+  },
+  "mRNA": {
+   "truth": 28347,
+   "kept": 28347
+  },
+  "match": {
+   "truth": 1,
+   "kept": 1
+  },
+  "miRNA": {
+   "truth": 508,
+   "kept": 508
+  },
+  "origin_of_replication": {
+   "truth": 1,
+   "kept": 1
+  },
+  "primary_transcript": {
+   "truth": 407,
+   "kept": 407
+  },
+  "pseudogene": {
+   "truth": 83,
+   "kept": 83
+  },
+  "rRNA": {
+   "truth": 132,
+   "kept": 132
+  },
+  "region": {
+   "truth": 30,
+   "kept": 30
+  },
+  "snRNA": {
+   "truth": 100,
+   "kept": 100
+  },
+  "snoRNA": {
+   "truth": 16,
+   "kept": 16
+  },
+  "tRNA": {
+   "truth": 431,
+   "kept": 431
+  },
+  "transcript": {
+   "truth": 992,
+   "kept": 992
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 27076,
+   "changed": 27076,
+   "changed_silent": 27076
+  },
+  "crosses_origin": {
+   "truth": 4,
+   "kept": 4
+  },
+  "exon_under_pseudogene": {
+   "truth": 159,
+   "kept": 159
+  },
+  "multi_valued": {
+   "truth": 387470,
+   "kept": 361309,
+   "changed": 26161,
+   "changed_silent": 26161
+  },
+  "rows_disagree": {
+   "truth": 975,
+   "changed": 975,
+   "changed_silent": 975
+  },
+  "organelle": {
+   "truth": 126,
+   "kept": 126
+  }
+ },
+ "case_field_differences": {
+  "multi_row": {
+   "split": 27076
+  },
+  "multi_valued": {
+   "split": 26161
+  },
+  "rows_disagree": {
+   "split": 975
+  }
+ },
+ "examples": {
+  "changed:split": [
+   "cds-XP_062527326.1",
+   "cds-XP_004932775.1",
+   "cds-XP_012551487.1",
+   "cds-XP_012551486.1",
+   "cds-XP_012551485.1"
+  ]
+ },
+ "genome": "GCF_030269925.1",
+ "tool": "gffutils"
+}

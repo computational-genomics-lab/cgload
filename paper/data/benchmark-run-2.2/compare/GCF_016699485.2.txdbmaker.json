@@ -1,0 +1,73 @@
+{
+ "tool": "txdbmaker",
+ "types_from": [
+  "txdbmaker::.CDS_TYPES",
+  "txdbmaker::.EXON_TYPES",
+  "txdbmaker::.GENE_TYPES",
+  "txdbmaker::.STOP_CODON_TYPES",
+  "txdbmaker::.TX_TYPES",
+  "txdbmaker::GFF_FEATURE_TYPES"
+ ],
+ "transcript_names_from": "transcript_id",
+ "gene_ids_from": "ID",
+ "totals": {
+  "truth": 85857,
+  "kept": 85854,
+  "changed": 3,
+  "changed_announced": 3
+ },
+ "extra_transcripts": 0,
+ "paired_by": {
+  "name and span": 84107,
+  "span, strand and type": 1750
+ },
+ "field_differences": {
+  "cds": 3
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 65487,
+   "kept": 65484,
+   "changed": 3,
+   "changed_announced": 3
+  },
+  "exon_under_pseudogene": {
+   "truth": 153,
+   "kept": 153
+  },
+  "multi_valued": {
+   "truth": 85533,
+   "kept": 85530,
+   "changed": 3,
+   "changed_announced": 3
+  },
+  "rows_disagree": {
+   "truth": 168,
+   "kept": 168
+  },
+  "organelle": {
+   "truth": 37,
+   "kept": 37
+  }
+ },
+ "genes": {
+  "truth": 25638,
+  "held": 25619,
+  "absent": 19
+ },
+ "parts_under_no_transcript": {},
+ "not_modelled_by_type": {
+  "region": 214,
+  "cDNA_match": 674,
+  "match": 23,
+  "D_loop": 1
+ },
+ "examples": {
+  "changed:cds": [
+   "rna-NM_001142862.4",
+   "rna-NM_001397692.1",
+   "rna-NM_204916.1"
+  ]
+ },
+ "genome": "GCF_016699485.2"
+}

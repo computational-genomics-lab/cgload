@@ -1,0 +1,121 @@
+accession	tool	tool_version	outcome	exit_code	wall_s	cpu_s	peak_mb	error	unit	truth	kept	changed	changed_declared	lost	extra	not_modelled	parts_unattached	truth_links	kept_links	fields_changed	lost_silent	changed_silent	genes_truth	genes_held
+GCF_015227675.2	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.666	0.173	31.900	ValueError: Duplicate ID cds-NP_001092930.2	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_014441545.1	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.666	0.172	31.900	ValueError: Duplicate ID cds-XP_038509739.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000002035.6	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.716	0.165	31.900	ValueError: Duplicate ID cds-NP_775342.2	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000004195.4	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.716	0.171	31.900	ValueError: Duplicate ID cds-XP_031751054.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000001635.27	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.717	0.168	31.900	ValueError: Duplicate ID cds-XP_006495613.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_002234675.1	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.716	0.169	31.900	ValueError: Duplicate ID cds-XP_020557853.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000001405.40	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.716	0.175	31.900	ValueError: Duplicate ID cds-NP_001005484.2	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_016699485.2	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.766	0.231	31.200	ValueError: Duplicate ID cds-XP_040503669.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000001215.4	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.365	0.162	31.900	ValueError: Duplicate ID cds-NP_001096854.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000005575.2	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.465	0.162	31.900	ValueError: Duplicate ID cds-XP_311158.5	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_030269925.1	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.415	0.168	31.900	ValueError: Duplicate ID cds-XP_062527326.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000002335.3	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.466	0.161	31.900	ValueError: Duplicate ID cds-XP_008190819.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_002204515.2	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.516	0.165	31.900	ValueError: Duplicate ID cds-XP_021694431.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_009193385.2	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.516	0.160	31.900	ValueError: Duplicate ID cds-XP_031777847.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_902167145.1	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.465	0.163	31.900	ValueError: Duplicate ID cds-XP_020400304.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_003254395.2	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.566	0.165	31.900	ValueError: Duplicate ID cds-XP_623975.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000001735.4	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.365	0.150	31.200	ValueError: Duplicate ID cds-NP_171609.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_034140825.1	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.465	0.152	31.900	ValueError: Duplicate ID cds-XP_066160607.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000003195.3	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.465	0.137	31.900	ValueError: Duplicate ID cds-XP_002466049.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_030704535.1	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.465	0.165	31.900	ValueError: Duplicate ID cds-XP_019077417.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000004515.6	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.515	0.219	32.500	ValueError: Duplicate ID cds-XP_040871501.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000188115.5	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.465	0.151	31.900	ValueError: Duplicate ID cds-NP_001233827.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000146045.2	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.465	0.179	31.900	ValueError: Duplicate ID cds-NP_009372.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000002945.2	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.465	0.162	31.900	ValueError: Duplicate ID cds-NP_001343026.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000182965.3	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.265	0.153	31.900	ValueError: Duplicate ID cds-XP_019330598.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000182925.2	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.415	0.148	31.900	ValueError: Duplicate ID cds-XP_001727976.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000149205.2	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.415	0.125	31.900	ValueError: Duplicate ID cds-XP_664091.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000240135.3	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.465	0.149	31.900	ValueError: Duplicate ID cds-XP_011315563.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000328475.2	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.415	0.155	31.900	ValueError: Duplicate ID cds-XP_011385992.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000149245.1	gffutils-default	gffutils 0.14 merge_strategy=error	failed	1	0.465	0.154	30.600	ValueError: Duplicate ID cds-XP_012046141.1	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_015227675.2	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	70.400	71.649	3963.500	NA	transcripts	105659	105652	7	0	0	0	2221	0	NA	NA	cds:7	0	0	42049	40436
+GCF_000001635.27	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	93.284	95.570	4580.200	NA	transcripts	141898	141892	6	0	0	0	131401	0	NA	NA	cds:6	0	0	50766	43527
+GCF_000002035.6	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	50.751	59.585	2246.000	NA	transcripts	82914	82910	4	0	0	0	10633	0	NA	NA	cds:4	0	0	54144	54103
+GCF_000001405.40	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	136.019	137.894	5417.100	NA	transcripts	207908	207898	10	0	0	0	462061	54	NA	NA	cds:10	0	0	67512	55563
+GCF_016699485.2	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	62.501	71.139	3713.900	NA	transcripts	85857	85854	3	0	0	0	912	0	NA	NA	cds:3	0	0	25638	25619
+GCF_000004195.4	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	43.177	51.978	2605.600	NA	transcripts	50058	50054	4	0	0	0	6103	10792	NA	NA	cds:4	0	0	28938	26378
+GCF_014441545.1	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	61.587	70.493	2882.700	NA	transcripts	105327	105323	4	0	0	0	2118	0	NA	NA	cds:4	0	0	42272	41818
+GCF_000005575.2	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	12.948	21.660	1206.900	NA	transcripts	14770	14770	0	0	0	0	8257	0	NA	NA		0	0	13271	13271
+GCF_002234675.1	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	40.870	49.565	2419.200	NA	transcripts	51797	51797	0	0	0	0	362	0	NA	NA		0	0	26846	26846
+GCF_000001215.4	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	21.115	29.932	1434.400	NA	transcripts	35677	35654	14	0	9	0	7605	0	NA	NA	cds:14	0	0	17872	17872
+GCF_002204515.2	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	20.519	29.437	1392.200	NA	transcripts	34315	34315	0	0	0	0	2581	0	NA	NA		0	0	19623	19623
+GCF_000002335.3	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	17.804	26.604	1315.900	NA	transcripts	25229	25228	1	0	0	0	2284	0	NA	NA	cds:1	0	0	14527	14526
+GCF_003254395.2	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	23.226	31.851	1487.400	NA	transcripts	28409	28409	0	0	0	0	394	0	NA	NA		0	0	12398	12397
+GCF_902167145.1	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	failed	1	15.350	24.220	1330.800	Import genomic features from the file as a GRanges object ... Error in .width_as_unnamed_integer(width, msg = "an end that is greater or equal to its start minus one") :	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_009193385.2	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	25.980	34.886	1529.400	NA	transcripts	37764	37764	0	0	0	0	609	0	NA	NA		0	0	15501	15412
+GCF_000001735.4	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	failed	1	14.441	23.067	1272.100	Import genomic features from the file as a GRanges object ... Error in .width_as_unnamed_integer(width, msg = "an end that is greater or equal to its start minus one") :	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_030269925.1	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	25.113	33.936	1502.000	NA	transcripts	35352	35351	1	0	0	0	1046	0	NA	NA	cds:1	0	0	18210	18209
+GCF_034140825.1	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	failed	1	18.310	27.204	1301.400	Error in makeTxDbFromGRanges(gr, metadata = metadata) :	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000004515.6	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	failed	1	16.349	25.182	1451.200	Import genomic features from the file as a GRanges object ... Error in .width_as_unnamed_integer(width, msg = "an end that is greater or equal to its start minus one") :	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000188115.5	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	failed	1	16.855	25.730	1254.400	Error in makeTxDbFromGRanges(gr, metadata = metadata) :	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_030704535.1	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	failed	1	16.254	25.079	1258.500	Error in makeTxDbFromGRanges(gr, metadata = metadata) :	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GCF_000003195.3	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	27.435	36.292	1493.600	NA	transcripts	50116	50110	0	0	6	0	1051	0	NA	NA		0	0	32945	32941
+GCF_000146045.2	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	9.585	18.488	1137.100	NA	transcripts	6478	6431	47	0	0	0	943	0	NA	NA	cds:47	0	0	6477	6477
+GCF_000002945.2	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	10.341	19.228	1147.400	NA	transcripts	12657	12636	0	0	21	0	283	0	NA	NA		0	0	12645	12624
+GCF_000182965.3	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	9.336	18.163	1137.800	NA	transcripts	6263	6260	3	0	0	0	199	0	NA	NA	gene:3	0	3	6263	6263
+GCF_000182925.2	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	11.791	20.717	1177.500	NA	transcripts	11643	11643	0	0	0	0	22	0	NA	NA		0	0	10590	10588
+GCF_000149205.2	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	10.838	19.438	1170.800	NA	transcripts	9794	9794	0	0	0	0	91	0	NA	NA		0	0	9586	9586
+GCF_000240135.3	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	11.539	20.364	1189.100	NA	transcripts	13725	13725	0	0	0	0	20	0	NA	NA		0	0	13725	13725
+GCF_000149245.1	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	11.840	20.713	1207.500	NA	transcripts	9189	9189	0	0	0	0	6130	0	NA	NA		0	0	8338	8338
+GCF_000328475.2	txdbmaker	txdbmaker 1.6.2; GenomicFeatures 1.62.0; makeTxDbFromGFF from txdbmaker	loaded	0	8.987	17.861	1077.900	NA	transcripts	7027	7027	0	0	0	0	257	0	NA	NA		0	0	6907	6907
+GCF_014441545.1	chado	python-chado 2.3.9, Chado 1.31	loaded	0	24351.028	17216.399	8695.500	NA	features	1274516	1135701	0	0	138815	66768	0	NA	1230126	1091311		113906	0	NA	NA
+GCF_016699485.2	chado	python-chado 2.3.9, Chado 1.31	loaded	0	25954.347	18267.626	9935.500	NA	features	1297179	1235119	0	0	62060	68684	0	NA	1270629	1208569		51998	0	NA	NA
+GCF_015227675.2	chado	python-chado 2.3.9, Chado 1.31	loaded	0	26328.417	18535.972	9683.900	NA	features	1352739	1266232	0	0	86507	73415	0	NA	1308469	1221962		70241	0	NA	NA
+GCF_000001215.4	chado	python-chado 2.3.9, Chado 1.31	failed	1	36.557	39.624	1853.800	ValueError: Did not find remapped ID location: gene-Dmel_CG32491, [[21370100, 21377401], [21365608, 21370249], [21362187, 21365488], [21360175, 21362131], [21350845, 21359768]], [21350845, 21377401]	features	282355	0	0	0	282355	0	0	NA	256878	0		279979	0	NA	NA
+GCF_000002035.6	chado	python-chado 2.3.9, Chado 1.31	loaded	0	26226.312	19661.299	8315.200	NA	features	1033297	982885	0	0	50412	58064	0	NA	968520	918108		41600	0	NA	NA
+GCF_000005575.2	chado	python-chado 2.3.9, Chado 1.31	loaded	0	2318.118	1622.336	1079.100	NA	features	112774	112774	0	0	0	14102	0	NA	91246	91246		0	0	NA	NA
+GCF_002204515.2	chado	python-chado 2.3.9, Chado 1.31	loaded	0	6085.813	4256.626	2028.700	NA	features	296164	282020	0	0	14144	28317	0	NA	273960	259816		10100	0	NA	NA
+GCF_003254395.2	chado	python-chado 2.3.9, Chado 1.31	loaded	0	6456.764	4501.826	2397.000	NA	features	332608	315344	0	0	17264	23471	0	NA	319816	302552		14118	0	NA	NA
+GCF_000002335.3	chado	python-chado 2.3.9, Chado 1.31	loaded	0	4330.796	3031.453	1712.300	NA	features	235950	230799	0	0	5151	22611	0	NA	219139	213988		3787	0	NA	NA
+GCF_002234675.1	chado	python-chado 2.3.9, Chado 1.31	loaded	0	15375.324	10799.315	6083.600	NA	features	811085	792147	0	0	18938	44766	0	NA	783853	764915		14827	0	NA	NA
+GCF_902167145.1	chado	python-chado 2.3.9, Chado 1.31	failed	1	55.434	59.161	3350.000	ValueError: Did not find remapped ID location: gene-ZeamMp186, [[50489, 50874], [320927, 322595], [548713, 548772], [266973, 267232]], [50489, 267232]	features	696928	0	0	0	696928	0	0	NA	644997	0		689123	0	NA	NA
+GCF_000001735.4	chado	python-chado 2.3.9, Chado 1.31	failed	1	51.655	54.227	3238.600	ValueError: End location (234132) must be greater than or equal to start location (450744)	features	472741	0	0	0	472741	0	0	NA	433445	0		468863	0	NA	NA
+GCF_034140825.1	chado	python-chado 2.3.9, Chado 1.31	failed	1	39.824	44.528	2414.400	ValueError: Did not find remapped ID location: gene-OrsajM_p01, [[11023, 11409], [239889, 315294]], [11023, 315294]	features	480764	0	0	0	480764	0	0	NA	440583	0		474212	0	NA	NA
+GCF_000003195.3	chado	python-chado 2.3.9, Chado 1.31	failed	1	39.809	43.398	2037.300	ValueError: Did not find remapped ID location: gene-SobioMp11, [[291405, 293719], [153317, 153339], [417606, 419084]], [153317, 419084]	features	419160	0	0	0	419160	0	0	NA	385170	0		413261	0	NA	NA
+GCF_000004195.4	chado	python-chado 2.3.9, Chado 1.31	loaded	0	16322.674	11709.522	6218.600	NA	features	772745	772745	0	0	0	44562	0	NA	740872	740872		0	0	NA	NA
+GCF_000004515.6	chado	python-chado 2.3.9, Chado 1.31	failed	1	65.450	69.524	4028.300	ValueError: End location (337537) must be greater than or equal to start location (565710)	features	818742	0	0	0	818742	0	0	NA	758820	0		813047	0	NA	NA
+GCF_000188115.5	chado	python-chado 2.3.9, Chado 1.31	failed	1	44.367	47.179	2152.300	ValueError: Did not find remapped ID location: gene-LyesC2p008, [[71635, 71749], [141305, 142099]], [71635, 142099]	features	429766	0	0	0	429766	0	0	NA	395020	0		424557	0	NA	NA
+GCF_030704535.1	chado	python-chado 2.3.9, Chado 1.31	failed	1	38.259	42.582	2317.500	ValueError: Did not find remapped ID location: gene-ViviM_p024, [[107140, 108909], [540666, 544789]], [107140, 544789]	features	440385	0	0	0	440385	0	0	NA	410429	0		438116	0	NA	NA
+GCF_009193385.2	chado	python-chado 2.3.9, Chado 1.31	loaded	0	6941.938	4867.455	3044.200	NA	features	417439	411328	0	0	6111	34173	0	NA	401329	395218		4751	0	NA	NA
+GCF_000146045.2	chado	python-chado 2.3.9, Chado 1.31	loaded	0	349.062	253.814	296.000	NA	features	26776	26776	0	0	0	6027	0	NA	19356	19356		0	0	NA	NA
+GCF_000182965.3	chado	python-chado 2.3.9, Chado 1.31	loaded	0	322.067	236.513	292.000	NA	features	25487	25487	0	0	0	6030	0	NA	19025	19025		0	0	NA	NA
+GCF_000002945.2	chado	python-chado 2.3.9, Chado 1.31	loaded	0	430.699	312.098	358.500	NA	features	48766	34258	0	0	14508	5166	0	NA	35845	21575		7137	0	NA	NA
+GCF_000182925.2	chado	python-chado 2.3.9, Chado 1.31	loaded	0	793.516	568.475	556.300	NA	features	64889	64889	0	0	0	10812	0	NA	54277	54277		0	0	NA	NA
+GCF_000149205.2	chado	python-chado 2.3.9, Chado 1.31	loaded	0	798.148	573.999	562.200	NA	features	64364	64364	0	0	0	9536	0	NA	54499	54499		0	0	NA	NA
+GCF_000240135.3	chado	python-chado 2.3.9, Chado 1.31	loaded	0	987.697	706.496	696.700	NA	features	78715	78715	0	0	0	13312	0	NA	64970	64970		0	0	NA	NA
+GCF_030269925.1	chado	python-chado 2.3.9, Chado 1.31	loaded	0	6156.166	4352.264	3150.300	NA	features	406813	390319	0	0	16494	28341	0	NA	387557	371063		12155	0	NA	NA
+GCF_000328475.2	chado	python-chado 2.3.9, Chado 1.31	loaded	0	378.937	275.501	321.300	NA	features	31054	31054	0	0	0	6780	0	NA	23890	23890		0	0	NA	NA
+GCF_000001635.27	chado	python-chado 2.3.9, Chado 1.31	loaded	0	42491.281	31124.026	14124.500	NA	features	2003886	1894035	0	0	109851	97339	0	NA	1821722	1711871		86216	0	NA	NA
+GCF_000149245.1	chado	python-chado 2.3.9, Chado 1.31	loaded	0	1083.334	777.933	746.500	NA	features	86294	86294	0	0	0	7826	0	NA	77941	77941		0	0	NA	NA
+GCF_000001405.40	chado	python-chado 2.3.9, Chado 1.31	timed_out	124	86401.334	69876.954	23776.600	Malformed Target value (unknown target): NR_164752.1 151 239 +, skipping | Malformed Target value (unknown target): NR_164752.1 240 317 +, skipping | Malformed Target value (unknown target): NR_164752.1 318 354 +, skipping	features	3203237	0	0	0	3203237	0	0	NA	2673724	0		3170034	0	NA	NA
+GCF_002234675.1	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	105.040	95.538	131.100	NA	features	811085	767810	43275	0	0	0	0	NA	783853	783853	split:43275	0	43275	NA	NA
+GCF_000004195.4	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	109.517	95.304	133.000	NA	features	772745	728403	44342	0	0	0	0	NA	740872	740872	split:44342	0	44342	NA	NA
+GCF_000005575.2	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	18.911	12.140	104.400	NA	features	112774	100360	12414	0	0	0	0	NA	91246	91246	split:12414	0	12414	NA	NA
+GCF_000001215.4	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	47.083	34.251	136.200	NA	features	282355	255881	26474	0	0	0	0	NA	256878	256878	split:26474	0	26474	NA	NA
+GCF_000002035.6	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	163.168	128.671	133.300	NA	features	1033297	971961	61336	0	0	0	0	NA	968520	968520	split:61336	0	61336	NA	NA
+GCF_014441545.1	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	160.787	137.362	133.600	NA	features	1274516	1211251	63265	0	0	0	0	NA	1230126	1230126	split:63265	0	63265	NA	NA
+GCF_002204515.2	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	44.128	31.358	142.900	NA	features	296164	269653	26511	0	0	0	0	NA	273960	273960	split:26511	0	26511	NA	NA
+GCF_016699485.2	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	204.851	150.859	133.800	NA	features	1297179	1231063	66116	0	0	0	0	NA	1270629	1270629	split:66116	0	66116	NA	NA
+GCF_015227675.2	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	203.889	150.007	133.300	NA	features	1352739	1284396	68343	0	0	0	0	NA	1308469	1308469	split:68343	0	68343	NA	NA
+GCF_000002335.3	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	40.111	27.842	135.300	NA	features	235950	214576	21374	0	0	0	0	NA	219139	219139	split:21374	0	21374	NA	NA
+GCF_003254395.2	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	54.490	36.704	145.300	NA	features	332608	309633	22975	0	0	0	0	NA	319816	319816	split:22975	0	22975	NA	NA
+GCF_009193385.2	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	75.394	47.780	146.000	NA	features	417439	385062	32377	0	0	0	0	NA	401329	401329	split:32377	0	32377	NA	NA
+GCF_030269925.1	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	72.442	47.559	145.700	NA	features	406813	379737	27076	0	0	0	0	NA	387557	387557	split:27076	0	27076	NA	NA
+GCF_000001635.27	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	253.341	213.915	138.300	NA	features	2003886	1912550	91336	0	0	0	0	NA	1821722	1821722	split:91336	0	91336	NA	NA
+GCF_000003195.3	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	62.408	40.046	146.200	NA	features	419160	387330	31830	0	0	0	0	NA	385170	385170	split:31830	0	31830	NA	NA
+GCF_000146045.2	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	5.626	2.811	64.800	NA	features	26776	26447	329	0	0	0	0	NA	19356	19356	split:329	0	329	NA	NA
+GCF_034140825.1	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	69.432	46.279	146.300	NA	features	480764	446294	34470	0	0	0	0	NA	440583	440583	split:34470	0	34470	NA	NA
+GCF_000182965.3	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	2.520	1.917	60.200	NA	features	25487	25125	362	0	0	0	0	NA	19025	19025	split:362	0	362	NA	NA
+GCF_000002945.2	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	4.425	3.247	81.800	NA	features	48766	46352	2414	0	0	0	0	NA	35845	35845	split:2414	0	2414	NA	NA
+GCF_000001735.4	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	82.431	59.753	131.700	NA	features	472741	432476	40265	0	0	0	0	NA	433445	433445	split:40265	0	40265	NA	NA
+GCF_000182925.2	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	7.533	5.413	93.400	NA	features	64889	56388	8501	0	0	0	0	NA	54277	54277	split:8501	0	8501	NA	NA
+GCF_000149205.2	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	9.036	6.706	94.700	NA	features	64364	55937	8427	0	0	0	0	NA	54499	54499	split:8427	0	8427	NA	NA
+GCF_000240135.3	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	11.539	7.719	97.300	NA	features	78715	68507	10208	0	0	0	0	NA	64970	64970	split:10208	0	10208	NA	NA
+GCF_902167145.1	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	98.730	65.909	133.000	NA	features	696928	648506	48422	0	0	0	0	NA	644997	644997	split:48422	0	48422	NA	NA
+GCF_000328475.2	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	6.077	2.374	66.500	NA	features	31054	29190	1864	0	0	0	0	NA	23890	23890	split:1864	0	1864	NA	NA
+GCF_000149245.1	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	10.888	9.268	100.000	NA	features	86294	78727	7567	0	0	0	0	NA	77941	77941	split:7567	0	7567	NA	NA
+GCF_000188115.5	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	53.800	42.103	147.100	NA	features	429766	397925	31841	0	0	0	0	NA	395020	395020	split:31841	0	31841	NA	NA
+GCF_030704535.1	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	59.651	46.596	146.000	NA	features	440385	406782	33603	0	0	0	0	NA	410429	410429	split:33603	0	33603	NA	NA
+GCF_000004515.6	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	101.757	80.798	132.700	NA	features	818742	755793	62949	0	0	0	0	NA	758820	758820	split:62949	0	62949	NA	NA
+GCF_000001405.40	gffutils	gffutils 0.14 merge_strategy=create_unique	loaded	0	412.329	344.912	140.300	NA	features	3203237	3061378	141859	0	0	0	0	NA	2673724	2673724	split:141859	0	141859	NA	NA

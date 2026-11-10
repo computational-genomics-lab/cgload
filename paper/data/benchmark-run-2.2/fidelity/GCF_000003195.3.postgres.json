@@ -1,0 +1,156 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents",
+  "attrs"
+ ],
+ "totals": {
+  "truth": 419160,
+  "truth_links": 385170,
+  "kept_links": 385170,
+  "kept": 419159,
+  "changed_declared": 1
+ },
+ "stored_features": 419160,
+ "stored_links": 385170,
+ "extra_by_type": {},
+ "field_differences": {
+  "segs": 1
+ },
+ "by_type": {
+  "CDS": {
+   "truth": 39248,
+   "kept": 39248
+  },
+  "cDNA_match": {
+   "truth": 143,
+   "kept": 143
+  },
+  "direct_repeat": {
+   "truth": 6,
+   "kept": 6
+  },
+  "exon": {
+   "truth": 297025,
+   "kept": 297025
+  },
+  "gene": {
+   "truth": 31697,
+   "kept": 31697
+  },
+  "intron": {
+   "truth": 6,
+   "kept": 6
+  },
+  "lnc_RNA": {
+   "truth": 5898,
+   "kept": 5898
+  },
+  "mRNA": {
+   "truth": 39248,
+   "kept": 39247,
+   "changed_declared": 1
+  },
+  "match": {
+   "truth": 10,
+   "kept": 10
+  },
+  "pseudogene": {
+   "truth": 1248,
+   "kept": 1248
+  },
+  "rRNA": {
+   "truth": 11,
+   "kept": 11
+  },
+  "region": {
+   "truth": 869,
+   "kept": 869
+  },
+  "repeat_region": {
+   "truth": 3,
+   "kept": 3
+  },
+  "sequence_feature": {
+   "truth": 14,
+   "kept": 14
+  },
+  "tRNA": {
+   "truth": 569,
+   "kept": 569
+  },
+  "transcript": {
+   "truth": 3165,
+   "kept": 3165
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 31830,
+   "kept": 31830
+  },
+  "trans_spliced": {
+   "truth": 36,
+   "kept": 35,
+   "changed_declared": 1
+  },
+  "strand_unknown": {
+   "truth": 3,
+   "kept": 2,
+   "changed_declared": 1
+  },
+  "crosses_origin": {
+   "truth": 1,
+   "changed_declared": 1
+  },
+  "escapes_parent": {
+   "truth": 6,
+   "changed_declared": 1,
+   "kept": 5
+  },
+  "exon_under_pseudogene": {
+   "truth": 4727,
+   "kept": 4727
+  },
+  "multi_valued": {
+   "truth": 379043,
+   "kept": 379043
+  },
+  "rows_disagree": {
+   "truth": 192,
+   "kept": 192
+  },
+  "organelle": {
+   "truth": 822,
+   "kept": 821,
+   "changed_declared": 1
+  }
+ },
+ "case_field_differences": {
+  "crosses_origin": {
+   "segs": 1
+  },
+  "escapes_parent": {
+   "segs": 1
+  },
+  "organelle": {
+   "segs": 1
+  },
+  "strand_unknown": {
+   "segs": 1
+  },
+  "trans_spliced": {
+   "segs": 1
+  }
+ },
+ "examples": {
+  "changed_declared:segs": [
+   "rna-SobioMp01"
+  ]
+ },
+ "genome": "GCF_000003195.3",
+ "tool": "cgload-postgres"
+}

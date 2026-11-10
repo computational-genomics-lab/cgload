@@ -1,0 +1,6 @@
+  source count      PASS  112,774 features in the file, 112,774 in the database, across 13 type(s); 157,413 rows in each
+  parent edges      PASS  91,246 edge(s), all accounted for (explicit_parent 91,246); the file states 91,246
+  stored assembly   PASS  /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload/sqlite/GCF_000005575.2/data/anopheles_gambiae/reference/agamp3/assembly.fa and its index are present; SHA-256 matches the load
+  cross-parser      ----  no second format supplied; pass --against with a GenBank or GFF3 file describing the same assembly
+  reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
+

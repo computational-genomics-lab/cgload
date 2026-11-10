@@ -1,0 +1,364 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents"
+ ],
+ "totals": {
+  "truth": 3203237,
+  "truth_links": 2673724,
+  "lost": 3203237,
+  "lost_silent": 3170034,
+  "lost_announced": 33203
+ },
+ "stored_features": 0,
+ "stored_links": 0,
+ "extra_by_type": {},
+ "field_differences": {},
+ "by_type": {
+  "CAAT_signal": {
+   "truth": 6,
+   "lost": 6
+  },
+  "CAGE_cluster": {
+   "truth": 96,
+   "lost": 96
+  },
+  "CDS": {
+   "truth": 146337,
+   "lost": 146337
+  },
+  "C_gene_segment": {
+   "truth": 44,
+   "lost": 44
+  },
+  "DNaseI_hypersensitive_site": {
+   "truth": 177,
+   "lost": 177
+  },
+  "D_gene_segment": {
+   "truth": 61,
+   "lost": 61
+  },
+  "D_loop": {
+   "truth": 1,
+   "lost": 1
+  },
+  "GC_rich_promoter_region": {
+   "truth": 15,
+   "lost": 15
+  },
+  "J_gene_segment": {
+   "truth": 128,
+   "lost": 128
+  },
+  "RNase_MRP_RNA": {
+   "truth": 1,
+   "lost": 1
+  },
+  "RNase_P_RNA": {
+   "truth": 2,
+   "lost": 2
+  },
+  "TATA_box": {
+   "truth": 30,
+   "lost": 30
+  },
+  "V_gene_segment": {
+   "truth": 663,
+   "lost": 663
+  },
+  "Y_RNA": {
+   "truth": 4,
+   "lost": 4
+  },
+  "antisense_RNA": {
+   "truth": 42,
+   "lost": 42
+  },
+  "biological_region": {
+   "truth": 137093,
+   "lost": 137093
+  },
+  "cDNA_match": {
+   "truth": 2568,
+   "lost": 2568
+  },
+  "centromere": {
+   "truth": 24,
+   "lost": 24
+  },
+  "chromosome_breakpoint": {
+   "truth": 16,
+   "lost": 16
+  },
+  "conserved_region": {
+   "truth": 138,
+   "lost": 138
+  },
+  "direct_repeat": {
+   "truth": 20,
+   "lost": 20
+  },
+  "dispersed_repeat": {
+   "truth": 5,
+   "lost": 5
+  },
+  "enhancer": {
+   "truth": 115208,
+   "lost": 115208
+  },
+  "enhancer_blocking_element": {
+   "truth": 59,
+   "lost": 59
+  },
+  "epigenetically_modified_region": {
+   "truth": 12,
+   "lost": 12
+  },
+  "exon": {
+   "truth": 2324920,
+   "lost": 2324920
+  },
+  "gene": {
+   "truth": 48173,
+   "lost": 48173
+  },
+  "imprinting_control_region": {
+   "truth": 2,
+   "lost": 2
+  },
+  "insulator": {
+   "truth": 12,
+   "lost": 12
+  },
+  "lnc_RNA": {
+   "truth": 33203,
+   "lost": 33203
+  },
+  "locus_control_region": {
+   "truth": 14,
+   "lost": 14
+  },
+  "mRNA": {
+   "truth": 145477,
+   "lost": 145477
+  },
+  "match": {
+   "truth": 161208,
+   "lost": 161208
+  },
+  "matrix_attachment_site": {
+   "truth": 18,
+   "lost": 18
+  },
+  "meiotic_recombination_region": {
+   "truth": 370,
+   "lost": 370
+  },
+  "miRNA": {
+   "truth": 3218,
+   "lost": 3218
+  },
+  "microsatellite": {
+   "truth": 5,
+   "lost": 5
+  },
+  "minisatellite": {
+   "truth": 13,
+   "lost": 13
+  },
+  "mitotic_recombination_region": {
+   "truth": 54,
+   "lost": 54
+  },
+  "mobile_genetic_element": {
+   "truth": 204,
+   "lost": 204
+  },
+  "non_allelic_homologous_recombination_region": {
+   "truth": 514,
+   "lost": 514
+  },
+  "nucleotide_cleavage_site": {
+   "truth": 4,
+   "lost": 4
+  },
+  "nucleotide_motif": {
+   "truth": 623,
+   "lost": 623
+  },
+  "origin_of_replication": {
+   "truth": 87,
+   "lost": 87
+  },
+  "primary_transcript": {
+   "truth": 2139,
+   "lost": 2139
+  },
+  "promoter": {
+   "truth": 438,
+   "lost": 438
+  },
+  "protein_binding_site": {
+   "truth": 1418,
+   "lost": 1418
+  },
+  "pseudogene": {
+   "truth": 19339,
+   "lost": 19339
+  },
+  "rRNA": {
+   "truth": 80,
+   "lost": 80
+  },
+  "recombination_feature": {
+   "truth": 632,
+   "lost": 632
+  },
+  "region": {
+   "truth": 709,
+   "lost": 709
+  },
+  "regulatory_region": {
+   "truth": 2,
+   "lost": 2
+  },
+  "repeat_instability_region": {
+   "truth": 62,
+   "lost": 62
+  },
+  "repeat_region": {
+   "truth": 10,
+   "lost": 10
+  },
+  "replication_regulatory_region": {
+   "truth": 11,
+   "lost": 11
+  },
+  "replication_start_site": {
+   "truth": 3,
+   "lost": 3
+  },
+  "response_element": {
+   "truth": 20,
+   "lost": 20
+  },
+  "scRNA": {
+   "truth": 4,
+   "lost": 4
+  },
+  "scaRNA": {
+   "truth": 54,
+   "lost": 54
+  },
+  "sequence_alteration": {
+   "truth": 30,
+   "lost": 30
+  },
+  "sequence_alteration_artifact": {
+   "truth": 10,
+   "lost": 10
+  },
+  "sequence_comparison": {
+   "truth": 4,
+   "lost": 4
+  },
+  "sequence_feature": {
+   "truth": 1793,
+   "lost": 1793
+  },
+  "sequence_secondary_structure": {
+   "truth": 14,
+   "lost": 14
+  },
+  "silencer": {
+   "truth": 35932,
+   "lost": 35932
+  },
+  "snRNA": {
+   "truth": 174,
+   "lost": 174
+  },
+  "snoRNA": {
+   "truth": 1300,
+   "lost": 1300
+  },
+  "tRNA": {
+   "truth": 691,
+   "lost": 691
+  },
+  "tandem_repeat": {
+   "truth": 64,
+   "lost": 64
+  },
+  "telomerase_RNA": {
+   "truth": 1,
+   "lost": 1
+  },
+  "transcript": {
+   "truth": 15171,
+   "lost": 15171
+  },
+  "transcriptional_cis_regulatory_region": {
+   "truth": 2259,
+   "lost": 2259
+  },
+  "vault_RNA": {
+   "truth": 4,
+   "lost": 4
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 141859,
+   "lost": 141859,
+   "lost_silent": 141859
+  },
+  "overlapping_rows": {
+   "truth": 3,
+   "lost": 3,
+   "lost_silent": 3
+  },
+  "crosses_origin": {
+   "truth": 1,
+   "lost": 1,
+   "lost_silent": 1
+  },
+  "exon_under_pseudogene": {
+   "truth": 9015,
+   "lost": 9015,
+   "lost_silent": 9015
+  },
+  "multi_valued": {
+   "truth": 2724045,
+   "lost": 2724045,
+   "lost_silent": 2690842,
+   "lost_announced": 33203
+  },
+  "rows_disagree": {
+   "truth": 3573,
+   "lost": 3573,
+   "lost_silent": 3573
+  },
+  "organelle": {
+   "truth": 127,
+   "lost": 127,
+   "lost_silent": 127
+  }
+ },
+ "case_field_differences": {},
+ "examples": {
+  "lost": [
+   "NC_000001.11:1..248956422",
+   "gene-DDX11L1",
+   "rna-NR_046018.2",
+   "exon-NR_046018.2-1",
+   "exon-NR_046018.2-2"
+  ]
+ },
+ "genome": "GCF_000001405.40",
+ "tool": "chado"
+}

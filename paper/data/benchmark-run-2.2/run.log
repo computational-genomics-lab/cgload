@@ -1,0 +1,164 @@
+2026-10-23T08:52:19Z  # cgload benchmark, benchmark-run-2 (8c999e26805c7f59fd48abd9f110beba34514a2e)
+2026-10-23T08:52:20Z  # host: Linux 6.5.0-35-generic x86_64; cpus: 80; RAM 125 GB
+2026-10-23T08:52:20Z  # disk under /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run: 8.1T free of 8.7T
+2026-10-23T08:52:20Z  # genomes: 30
+2026-10-23T08:52:20Z  === environments
+2026-10-23T08:52:33Z  === environments: exit 0
+2026-10-23T08:52:34Z  === postgres
+2026-10-23T08:52:35Z  === postgres: exit 0
+2026-10-23T08:52:35Z  === inputs
+2026-10-23T09:22:22Z  === inputs: exit 0
+2026-10-23T09:22:22Z  === truth
+2026-10-23T09:25:10Z  === truth: exit 0
+2026-10-23T09:25:10Z  === agreement
+2026-10-23T09:28:24Z  === agreement: exit 0
+2026-10-23T09:28:24Z  === scale-sqlite
+2026-10-23T11:12:38Z  === scale-sqlite: exit 0
+2026-10-23T11:12:38Z  === scale-postgres
+2026-10-23T14:56:42Z  === scale-postgres: exit 0
+2026-10-23T14:56:42Z  === faults
+2026-10-23T17:55:40Z  === faults: exit 0
+2026-10-23T17:55:40Z  === kills-cgload
+2026-10-23T19:00:38Z  === kills-cgload: exit 0
+2026-10-23T19:00:38Z  === gffutils-default
+2026-10-23T19:00:41Z  === gffutils-default: exit 0
+2026-10-23T19:00:41Z  === gffutils
+2026-10-23T19:10:27Z  === gffutils: exit 0
+2026-10-23T19:10:27Z  === kills-gffutils
+2026-10-23T19:17:01Z  === kills-gffutils: exit 0
+2026-10-23T19:17:01Z  === txdbmaker
+2026-10-23T19:24:37Z  === txdbmaker: exit 0
+2026-10-23T19:24:37Z  === timing
+2026-10-23T20:48:52Z  === timing: exit 0
+2026-10-23T20:48:52Z  === chado-inputs
+2026-10-23T20:48:52Z  === chado-inputs: exit 0
+2026-10-23T20:48:52Z  === chado
+2026-10-24T02:29:09Z  === chado: exit 0
+2026-10-24T02:29:09Z  === kills-chado
+2026-10-24T04:25:05Z  === kills-chado: exit 0
+2026-10-24T04:25:05Z  === summarise
+2026-10-24T04:25:05Z  === summarise: exit 0
+
+2026-10-24T04:25:05Z  === summary
+environments                 ok
+postgres                     ok
+inputs                       ok
+truth                        ok
+agreement                    ok
+scale-sqlite                 ok
+scale-postgres               ok
+faults                       ok
+kills-cgload                 ok
+gffutils-default             ok
+gffutils                     ok
+kills-gffutils               ok
+txdbmaker                    ok
+timing                       ok
+chado-inputs                 ok
+chado                        ok
+kills-chado                  ok
+case-study                   not run: CASE_STUDY is not set
+summarise                    ok
+2026-10-24T04:25:05Z  send back: /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload-benchmark-results.tar.gz (176K)
+2026-11-04T07:18:51Z  # cgload benchmark, benchmark-run-2.1 (9b971781ac1599999b2412ce3bb862887ac4006a)
+2026-11-04T07:18:51Z  # host: Linux 6.5.0-35-generic x86_64; cpus: 80; RAM 125 GB
+2026-11-04T07:18:51Z  # disk under /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run: 3.4T free of 8.7T
+2026-11-04T07:18:51Z  # genomes: 30
+2026-11-04T07:18:51Z  === environments
+2026-11-04T07:19:07Z  === environments: exit 0
+2026-11-04T07:19:07Z  === postgres
+2026-11-04T07:19:08Z  === postgres: exit 0
+2026-11-04T07:19:08Z  === inputs
+2026-11-04T07:20:38Z  === inputs: exit 0
+2026-11-04T07:20:38Z  === truth
+2026-11-04T07:20:38Z  === truth: exit 0
+2026-11-04T07:20:38Z  === agreement
+2026-11-04T07:20:38Z  === agreement: exit 0
+2026-11-04T07:20:38Z  === scale-sqlite
+2026-11-04T07:20:39Z  === scale-sqlite: exit 0
+2026-11-04T07:20:39Z  === scale-postgres
+2026-11-04T07:20:40Z  === scale-postgres: exit 0
+2026-11-04T07:20:40Z  === faults
+2026-11-04T07:20:41Z  === faults: exit 0
+2026-11-04T07:20:41Z  === kills-cgload
+2026-11-04T07:20:41Z  === kills-cgload: exit 0
+2026-11-04T07:20:41Z  === gffutils-default
+2026-11-04T07:20:41Z  === gffutils-default: exit 0
+2026-11-04T07:20:41Z  === gffutils
+2026-11-04T07:20:41Z  === gffutils: exit 0
+2026-11-04T07:20:41Z  === kills-gffutils
+2026-11-04T07:20:41Z  === kills-gffutils: exit 0
+2026-11-04T07:20:41Z  === txdbmaker
+2026-11-04T07:28:25Z  === txdbmaker: exit 0
+2026-11-04T07:28:25Z  === timing
+2026-11-04T08:32:22Z  === timing: exit 0
+2026-11-04T08:32:22Z  === chado-inputs
+2026-11-04T08:32:22Z  === chado-inputs: exit 0
+2026-11-04T08:32:22Z  === chado
+2026-11-06T10:38:34Z  === chado: exit 0
+2026-11-06T10:38:34Z  === kills-chado
+2026-11-06T10:38:34Z  === kills-chado: exit 0
+2026-11-06T10:38:34Z  === summarise
+2026-11-06T10:38:35Z  === summarise: exit 0
+
+2026-11-06T10:38:36Z  === summary
+environments                 ok
+postgres                     ok
+inputs                       ok
+truth                        ok
+agreement                    ok
+scale-sqlite                 ok
+scale-postgres               ok
+faults                       ok
+kills-cgload                 ok
+gffutils-default             ok
+gffutils                     ok
+kills-gffutils               ok
+txdbmaker                    ok
+timing                       ok
+chado-inputs                 ok
+chado                        ok
+kills-chado                  ok
+case-study                   not run: CASE_STUDY is not set
+summarise                    ok
+2026-11-06T10:38:36Z  send back: /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload-benchmark-results.tar.gz (344K)
+2026-11-10T06:32:02Z  # cgload benchmark, benchmark-run-2.2 (56f6861a1ea3e4db7a0459989e992bd562ae2227)
+2026-11-10T06:32:03Z  # host: Linux 6.5.0-35-generic x86_64; cpus: 80; RAM 125 GB
+2026-11-10T06:32:03Z  # disk under /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run: 7.9T free of 8.7T
+2026-11-10T06:32:03Z  # genomes: 30
+2026-11-10T06:32:03Z  === environments
+2026-11-10T06:32:19Z  === environments: exit 0
+2026-11-10T06:32:20Z  === postgres
+2026-11-10T06:32:21Z  === postgres: exit 0
+2026-11-10T06:32:21Z  === inputs
+2026-11-10T06:33:41Z  === inputs: exit 0
+2026-11-10T06:33:41Z  === truth
+2026-11-10T06:33:41Z  === truth: exit 0
+2026-11-10T06:33:41Z  === agreement
+2026-11-10T06:33:41Z  === agreement: exit 0
+2026-11-10T06:33:41Z  === scale-sqlite
+2026-11-10T06:33:43Z  === scale-sqlite: exit 0
+2026-11-10T06:33:43Z  === scale-postgres
+2026-11-10T06:33:44Z  === scale-postgres: exit 0
+2026-11-10T06:33:44Z  === faults
+2026-11-10T06:33:44Z  === faults: exit 0
+2026-11-10T06:33:44Z  === kills-cgload
+2026-11-10T06:33:44Z  === kills-cgload: exit 0
+2026-11-10T06:33:44Z  === gffutils-default
+2026-11-10T06:33:45Z  === gffutils-default: exit 0
+2026-11-10T06:33:45Z  === gffutils
+2026-11-10T06:43:18Z  === gffutils: exit 0
+2026-11-10T06:43:18Z  === kills-gffutils
+2026-11-10T06:43:18Z  === kills-gffutils: exit 0
+2026-11-10T06:43:18Z  === txdbmaker
+2026-11-10T06:43:19Z  === txdbmaker: exit 0
+2026-11-10T06:43:19Z  === timing
+2026-11-10T06:43:26Z  === timing: exit 0
+2026-11-10T06:43:26Z  === chado-inputs
+2026-11-10T06:43:26Z  === chado-inputs: exit 0
+2026-11-10T06:43:26Z  === chado
+2026-11-10T06:43:26Z  === chado: exit 0
+2026-11-10T06:43:26Z  === kills-chado
+2026-11-10T06:43:27Z  === kills-chado: exit 0
+2026-11-10T06:43:27Z  === summarise
+2026-11-10T06:43:27Z  === summarise: exit 0

@@ -1,0 +1,6 @@
+  source count      PASS  2,003,886 features in the file, 2,003,886 in the database, across 51 type(s); 3,110,422 rows in each
+  parent edges      PASS  1,821,722 edge(s), all accounted for (explicit_parent 1,821,722); the file states 1,821,722
+  stored assembly   PASS  /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload/postgres/GCF_000001635.27/data/mus_musculus/reference/grcm39/assembly.fa and its index are present; SHA-256 matches the load
+  cross-parser      ----  no second format supplied; pass --against with a GenBank or GFF3 file describing the same assembly
+  reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
+

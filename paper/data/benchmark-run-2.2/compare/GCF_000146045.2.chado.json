@@ -1,0 +1,137 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents"
+ ],
+ "totals": {
+  "truth": 26776,
+  "truth_links": 19356,
+  "kept_links": 19356,
+  "kept": 26776
+ },
+ "stored_features": 32803,
+ "stored_links": 25383,
+ "extra_by_type": {
+  "polypeptide": 6027
+ },
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 6027,
+   "kept": 6027
+  },
+  "RNase_MRP_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "RNase_P_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "SRP_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "antisense_RNA": {
+   "truth": 7,
+   "kept": 7
+  },
+  "centromere": {
+   "truth": 64,
+   "kept": 64
+  },
+  "exon": {
+   "truth": 6852,
+   "kept": 6852
+  },
+  "gene": {
+   "truth": 6459,
+   "kept": 6459
+  },
+  "long_terminal_repeat": {
+   "truth": 384,
+   "kept": 384
+  },
+  "mRNA": {
+   "truth": 6039,
+   "kept": 6039
+  },
+  "mobile_genetic_element": {
+   "truth": 50,
+   "kept": 50
+  },
+  "ncRNA": {
+   "truth": 22,
+   "kept": 22
+  },
+  "origin_of_replication": {
+   "truth": 360,
+   "kept": 360
+  },
+  "pseudogene": {
+   "truth": 18,
+   "kept": 18
+  },
+  "rRNA": {
+   "truth": 14,
+   "kept": 14
+  },
+  "region": {
+   "truth": 17,
+   "kept": 17
+  },
+  "regulatory_region": {
+   "truth": 22,
+   "kept": 22
+  },
+  "sequence_feature": {
+   "truth": 14,
+   "kept": 14
+  },
+  "snRNA": {
+   "truth": 6,
+   "kept": 6
+  },
+  "snoRNA": {
+   "truth": 76,
+   "kept": 76
+  },
+  "tRNA": {
+   "truth": 299,
+   "kept": 299
+  },
+  "telomerase_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "telomere": {
+   "truth": 32,
+   "kept": 32
+  },
+  "transcript": {
+   "truth": 10,
+   "kept": 10
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 329,
+   "kept": 329
+  },
+  "multi_valued": {
+   "truth": 25412,
+   "kept": 25412
+  },
+  "organelle": {
+   "truth": 200,
+   "kept": 200
+  }
+ },
+ "case_field_differences": {},
+ "examples": {},
+ "genome": "GCF_000146045.2",
+ "tool": "chado"
+}

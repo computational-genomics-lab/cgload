@@ -1,0 +1,1 @@
+warning: genomic.gff: 1 trans-spliced feature(s) on a circular sequence lie outside their parent only across the origin, and are stored as written (D-091): mRNA rna-SobioMp01 3,484..622,588 lies outside gene gene-SobioMp01 3,484..325,091 (strand '?').

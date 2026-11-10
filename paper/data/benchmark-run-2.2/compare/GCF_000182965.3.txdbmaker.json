@@ -1,0 +1,63 @@
+{
+ "tool": "txdbmaker",
+ "types_from": [
+  "txdbmaker::.CDS_TYPES",
+  "txdbmaker::.EXON_TYPES",
+  "txdbmaker::.GENE_TYPES",
+  "txdbmaker::.STOP_CODON_TYPES",
+  "txdbmaker::.TX_TYPES",
+  "txdbmaker::GFF_FEATURE_TYPES"
+ ],
+ "transcript_names_from": "transcript_id",
+ "gene_ids_from": "Name",
+ "totals": {
+  "truth": 6263,
+  "kept": 6260,
+  "changed": 3,
+  "changed_silent": 3
+ },
+ "extra_transcripts": 0,
+ "paired_by": {
+  "name and span": 6119,
+  "span, strand and type": 144
+ },
+ "field_differences": {
+  "gene": 3
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 362,
+   "kept": 362
+  },
+  "multi_valued": {
+   "truth": 6137,
+   "kept": 6134,
+   "changed": 3,
+   "changed_silent": 3
+  },
+  "rows_disagree": {
+   "truth": 1,
+   "kept": 1
+  }
+ },
+ "genes": {
+  "truth": 6263,
+  "held": 6263
+ },
+ "parts_under_no_transcript": {},
+ "not_modelled_by_type": {
+  "region": 8,
+  "mobile_genetic_element": 12,
+  "long_terminal_repeat": 129,
+  "centromere": 8,
+  "repeat_region": 42
+ },
+ "examples": {
+  "changed:gene": [
+   "rna-XM_708497.2",
+   "rna-XM_712506.2",
+   "rna-XM_718381.2"
+  ]
+ },
+ "genome": "GCF_000182965.3"
+}

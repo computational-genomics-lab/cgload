@@ -1,0 +1,6 @@
+  source count      PASS  811,085 features in the file, 811,085 in the database, across 19 type(s); 1,399,050 rows in each
+  parent edges      PASS  783,853 edge(s), all accounted for (explicit_parent 783,853); the file states 783,853; 24 more named no parent and are top-level (D-069)
+  stored assembly   PASS  /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload/sqlite/GCF_002234675.1/data/oryzias_latipes/reference/asm223467v1/assembly.fa and its index are present; SHA-256 matches the load
+  cross-parser      ----  no second format supplied; pass --against with a GenBank or GFF3 file describing the same assembly
+  reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
+

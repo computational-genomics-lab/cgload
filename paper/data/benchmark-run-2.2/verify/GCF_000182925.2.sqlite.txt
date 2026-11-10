@@ -1,0 +1,6 @@
+  source count      PASS  64,889 features in the file, 64,889 in the database, across 10 type(s); 82,749 rows in each
+  parent edges      PASS  54,277 edge(s), all accounted for (explicit_parent 54,277); the file states 54,277
+  stored assembly   PASS  /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload/sqlite/GCF_000182925.2/data/neurospora_crassa/or74a/nc12/assembly.fa and its index are present; SHA-256 matches the load
+  cross-parser      PASS  GFF3 and GenBank agree on 6 feature types; 28 GFF3 mRNA of genes whose GenBank record states CDS but no mRNA not compared (D-105)
+  reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
+

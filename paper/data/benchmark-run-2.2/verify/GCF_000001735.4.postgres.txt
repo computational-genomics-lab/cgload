@@ -1,0 +1,6 @@
+  source count      PASS  472,741 features in the file, 472,741 in the database, across 22 type(s); 710,747 rows in each
+  parent edges      PASS  433,445 edge(s), all accounted for (explicit_parent 433,445); the file states 433,445; 4 more named no parent and are top-level (D-069)
+  stored assembly   PASS  /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload/postgres/GCF_000001735.4/data/arabidopsis_thaliana/reference/tair10.1/assembly.fa and its index are present; SHA-256 matches the load
+  cross-parser      ----  no second format supplied; pass --against with a GenBank or GFF3 file describing the same assembly
+  reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
+

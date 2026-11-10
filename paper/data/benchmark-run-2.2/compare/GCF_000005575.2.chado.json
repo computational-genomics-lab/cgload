@@ -1,0 +1,101 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents"
+ ],
+ "totals": {
+  "truth": 112774,
+  "truth_links": 91246,
+  "kept_links": 91246,
+  "kept": 112774
+ },
+ "stored_features": 126876,
+ "stored_links": 105348,
+ "extra_by_type": {
+  "polypeptide": 14102
+ },
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 14102,
+   "kept": 14102
+  },
+  "RNase_MRP_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "SRP_RNA": {
+   "truth": 3,
+   "kept": 3
+  },
+  "exon": {
+   "truth": 62374,
+   "kept": 62374
+  },
+  "gene": {
+   "truth": 13271,
+   "kept": 13271
+  },
+  "mRNA": {
+   "truth": 14102,
+   "kept": 14102
+  },
+  "miRNA": {
+   "truth": 121,
+   "kept": 121
+  },
+  "rRNA": {
+   "truth": 37,
+   "kept": 37
+  },
+  "region": {
+   "truth": 8090,
+   "kept": 8090
+  },
+  "sequence_feature": {
+   "truth": 167,
+   "kept": 167
+  },
+  "snRNA": {
+   "truth": 28,
+   "kept": 28
+  },
+  "snoRNA": {
+   "truth": 6,
+   "kept": 6
+  },
+  "tRNA": {
+   "truth": 472,
+   "kept": 472
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 12414,
+   "kept": 12414
+  },
+  "escapes_parent": {
+   "truth": 3,
+   "kept": 3
+  },
+  "multi_valued": {
+   "truth": 104408,
+   "kept": 104408
+  },
+  "rows_disagree": {
+   "truth": 2647,
+   "kept": 2647
+  },
+  "organelle": {
+   "truth": 126,
+   "kept": 126
+  }
+ },
+ "case_field_differences": {},
+ "examples": {},
+ "genome": "GCF_000005575.2",
+ "tool": "chado"
+}

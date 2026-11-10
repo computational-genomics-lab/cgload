@@ -1,0 +1,103 @@
+{
+ "tool": "txdbmaker",
+ "types_from": [
+  "txdbmaker::.CDS_TYPES",
+  "txdbmaker::.EXON_TYPES",
+  "txdbmaker::.GENE_TYPES",
+  "txdbmaker::.STOP_CODON_TYPES",
+  "txdbmaker::.TX_TYPES",
+  "txdbmaker::GFF_FEATURE_TYPES"
+ ],
+ "transcript_names_from": "transcript_id",
+ "gene_ids_from": "ID",
+ "totals": {
+  "truth": 141898,
+  "kept": 141892,
+  "changed": 6,
+  "changed_announced": 6
+ },
+ "extra_transcripts": 0,
+ "paired_by": {
+  "name and span": 136225,
+  "span, strand and type": 5673
+ },
+ "field_differences": {
+  "cds": 6
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 91311,
+   "kept": 91305,
+   "changed": 6,
+   "changed_announced": 6
+  },
+  "overlapping_rows": {
+   "truth": 1,
+   "changed": 1,
+   "changed_announced": 1
+  },
+  "exon_under_pseudogene": {
+   "truth": 2448,
+   "kept": 2448
+  },
+  "multi_valued": {
+   "truth": 141836,
+   "kept": 141830,
+   "changed": 6,
+   "changed_announced": 6
+  },
+  "rows_disagree": {
+   "truth": 28,
+   "kept": 28
+  },
+  "organelle": {
+   "truth": 37,
+   "kept": 37
+  }
+ },
+ "genes": {
+  "truth": 50766,
+  "held": 43527,
+  "absent": 7239
+ },
+ "parts_under_no_transcript": {},
+ "not_modelled_by_type": {
+  "region": 61,
+  "enhancer": 42433,
+  "biological_region": 40210,
+  "conserved_region": 80,
+  "mobile_genetic_element": 5,
+  "protein_binding_site": 691,
+  "transcriptional_cis_regulatory_region": 140,
+  "silencer": 15,
+  "promoter": 138,
+  "TATA_box": 14,
+  "response_element": 6,
+  "match": 47402,
+  "DNaseI_hypersensitive_site": 118,
+  "matrix_attachment_site": 4,
+  "enhancer_blocking_element": 7,
+  "TSS": 3,
+  "origin_of_replication": 11,
+  "cDNA_match": 26,
+  "nucleotide_motif": 11,
+  "CAAT_signal": 5,
+  "locus_control_region": 5,
+  "imprinting_control_region": 1,
+  "replication_regulatory_region": 1,
+  "centromere": 1,
+  "sequence_alteration": 6,
+  "sequence_feature": 6,
+  "D_loop": 1
+ },
+ "examples": {
+  "changed:cds": [
+   "rna-NM_001301034.1",
+   "rna-NM_001301307.1",
+   "rna-NM_008753.4",
+   "rna-NM_010952.3",
+   "rna-NM_016901.3"
+  ]
+ },
+ "genome": "GCF_000001635.27"
+}

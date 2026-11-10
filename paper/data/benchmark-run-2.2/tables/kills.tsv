@@ -1,0 +1,8 @@
+tool	accession	trials	state_empty	state_partial	state_complete	state_intact	state_damaged	state_no_file	state_unreadable	state_setup_failed	partial_opens	file_left_does_not_open	partial_records_min_pct	partial_records_max_pct	finished_before_kill	orphan_directory	reload_failed	verify_failed_after	max_leftover_mb
+cgload	GCF_000001735.4	10	10	0	0	0	0	0	0	0	0	0			0	0	0	0	130.4
+cgload	GCF_000240135.3	10	10	0	0	0	0	0	0	0	0	0			0	0	0	0	36.9
+cgload-force	GCF_000001735.4	10	0	0	0	10	0	0	0	0	0	0			0	0	0	0	121.2
+cgload-force	GCF_000240135.3	10	0	0	0	10	0	0	0	0	0	0			0	0	0	0	36.9
+chado	GCF_000240135.3	5	5	0	0	0	0	0	0	0	0	0			0	0	0	0	0.0
+gffutils	GCF_000001735.4	10	10	0	0	0	0	0	0	0	0	0			0	0	0	0	0.0
+gffutils	GCF_000240135.3	10	7	0	3	0	0	0	0	0	0	3			0	0	0	0	0.0

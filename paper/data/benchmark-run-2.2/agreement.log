@@ -1,0 +1,90 @@
+GCF_002234675.1: {'accession': 'GCF_002234675.1', 'file_md5': 'db602118b6d3d858ed0f09750d3afb86', 'survey_md5': 'db602118b6d3d858ed0f09750d3afb86', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_000004195.4: {'accession': 'GCF_000004195.4', 'file_md5': 'd2369652e9275a145a39e2297098d325', 'survey_md5': 'd2369652e9275a145a39e2297098d325', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_000005575.2: {'accession': 'GCF_000005575.2', 'file_md5': '36aaacb27aca9a6c64596bc41661457d', 'survey_md5': '36aaacb27aca9a6c64596bc41661457d', 'same_file': True, 'survey_rows': 3, 'cgload_features': 4, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 3, 'survey_error_cgload_accepts': 0, 'cgload_only': 1, 'note': ''}
+GCF_000001215.4: {'accession': 'GCF_000001215.4', 'file_md5': '399b4ac37cc123b724895334be589fdc', 'survey_md5': '399b4ac37cc123b724895334be589fdc', 'same_file': True, 'survey_rows': 9, 'cgload_features': 0, 'both_accept': 9, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_000002035.6: {'accession': 'GCF_000002035.6', 'file_md5': '086cf1261daf8936a411d5fc6111e63e', 'survey_md5': '086cf1261daf8936a411d5fc6111e63e', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_002204515.2: {'accession': 'GCF_002204515.2', 'file_md5': '4d47cd307240414f4902d2d45f1d1786', 'survey_md5': '4d47cd307240414f4902d2d45f1d1786', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_014441545.1: {'accession': 'GCF_014441545.1', 'file_md5': 'edeea87dca669256dc3c668d50b7a730', 'survey_md5': 'edeea87dca669256dc3c668d50b7a730', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_016699485.2: {'accession': 'GCF_016699485.2', 'file_md5': 'd365e1e9ab3af33a9598640a4792c6d2', 'survey_md5': 'd365e1e9ab3af33a9598640a4792c6d2', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_015227675.2: {'accession': 'GCF_015227675.2', 'file_md5': 'c7533383cdb32b04dd414d7cebf55644', 'survey_md5': 'c7533383cdb32b04dd414d7cebf55644', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_000002335.3: {'accession': 'GCF_000002335.3', 'file_md5': '943f13495e92d044af1b8a276abef2a3', 'survey_md5': '943f13495e92d044af1b8a276abef2a3', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_003254395.2: {'accession': 'GCF_003254395.2', 'file_md5': '3d4826d3d6fe1946c428651e2621533e', 'survey_md5': '3d4826d3d6fe1946c428651e2621533e', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_009193385.2: {'accession': 'GCF_009193385.2', 'file_md5': '25bb4f0763af38dba6a941ad003f7e74', 'survey_md5': '25bb4f0763af38dba6a941ad003f7e74', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_030269925.1: {'accession': 'GCF_030269925.1', 'file_md5': '94b7983e1eb75b3ad919d096b22c876b', 'survey_md5': '94b7983e1eb75b3ad919d096b22c876b', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_034140825.1: {'accession': 'GCF_034140825.1', 'file_md5': 'eb9aebec640d7477a5d01906a40e94a4', 'survey_md5': 'eb9aebec640d7477a5d01906a40e94a4', 'same_file': True, 'survey_rows': 13, 'cgload_features': 11, 'both_accept': 2, 'both_object': 2, 'survey_documented_cgload_objects': 9, 'survey_error_cgload_accepts': 0, 'cgload_only': 1, 'note': ''}
+GCF_000003195.3: {'accession': 'GCF_000003195.3', 'file_md5': 'd6b197da0334cc16bdc0aa243c56d671', 'survey_md5': 'd6b197da0334cc16bdc0aa243c56d671', 'same_file': True, 'survey_rows': 11, 'cgload_features': 7, 'both_accept': 2, 'both_object': 0, 'survey_documented_cgload_objects': 9, 'survey_error_cgload_accepts': 0, 'cgload_only': 1, 'note': ''}
+GCF_000146045.2: {'accession': 'GCF_000146045.2', 'file_md5': '93830ef7ada0a900d5fe3405555cea82', 'survey_md5': '93830ef7ada0a900d5fe3405555cea82', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_000001735.4: {'accession': 'GCF_000001735.4', 'file_md5': '373a2f1b047a198abe5367800375fbe6', 'survey_md5': '373a2f1b047a198abe5367800375fbe6', 'same_file': True, 'survey_rows': 26, 'cgload_features': 18, 'both_accept': 3, 'both_object': 5, 'survey_documented_cgload_objects': 18, 'survey_error_cgload_accepts': 0, 'cgload_only': 2, 'note': ''}
+GCF_000001635.27: {'accession': 'GCF_000001635.27', 'file_md5': '5498a8cb9e5ab340633652d358a384a5', 'survey_md5': '5498a8cb9e5ab340633652d358a384a5', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_000002945.2: {'accession': 'GCF_000002945.2', 'file_md5': 'dddaab9e3ec23315d7815a2175f0d70b', 'survey_md5': 'dddaab9e3ec23315d7815a2175f0d70b', 'same_file': True, 'survey_rows': 4, 'cgload_features': 7, 'both_accept': 0, 'both_object': 4, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 3, 'note': ''}
+GCF_000182965.3: {'accession': 'GCF_000182965.3', 'file_md5': '876733070068a53dc49bf0582b00cbf0', 'survey_md5': '876733070068a53dc49bf0582b00cbf0', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_902167145.1: {'accession': 'GCF_902167145.1', 'file_md5': 'f611efa2c8d8dae129c105791a491b0a', 'survey_md5': 'f611efa2c8d8dae129c105791a491b0a', 'same_file': True, 'survey_rows': 21, 'cgload_features': 12, 'both_accept': 3, 'both_object': 1, 'survey_documented_cgload_objects': 17, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_000182925.2: {'accession': 'GCF_000182925.2', 'file_md5': '10c6e751e1b1cbeaa1039fe543755b33', 'survey_md5': '10c6e751e1b1cbeaa1039fe543755b33', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_000149205.2: {'accession': 'GCF_000149205.2', 'file_md5': 'ba7d4767ad636260893e7830bac9a58b', 'survey_md5': 'ba7d4767ad636260893e7830bac9a58b', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_000240135.3: {'accession': 'GCF_000240135.3', 'file_md5': '1a402bed1da4bac75e3f5f3dacb7df3b', 'survey_md5': '1a402bed1da4bac75e3f5f3dacb7df3b', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_000188115.5: {'accession': 'GCF_000188115.5', 'file_md5': '46a2e9a5932d11d4c07275ae0a47065f', 'survey_md5': '46a2e9a5932d11d4c07275ae0a47065f', 'same_file': True, 'survey_rows': 1, 'cgload_features': 0, 'both_accept': 1, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_000328475.2: {'accession': 'GCF_000328475.2', 'file_md5': '5b3be2705d092700dd31969ac3cca04b', 'survey_md5': '5b3be2705d092700dd31969ac3cca04b', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_000149245.1: {'accession': 'GCF_000149245.1', 'file_md5': 'd235c44a69dddfb40a7901b39d19ced9', 'survey_md5': 'd235c44a69dddfb40a7901b39d19ced9', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_030704535.1: {'accession': 'GCF_030704535.1', 'file_md5': '804c2db388386d5d878ae871312c508f', 'survey_md5': '804c2db388386d5d878ae871312c508f', 'same_file': True, 'survey_rows': 2, 'cgload_features': 0, 'both_accept': 2, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_000004515.6: {'accession': 'GCF_000004515.6', 'file_md5': 'a95bfb445b6e5ae58f793e68eb912bd5', 'survey_md5': 'a95bfb445b6e5ae58f793e68eb912bd5', 'same_file': True, 'survey_rows': 12, 'cgload_features': 7, 'both_accept': 1, 'both_object': 1, 'survey_documented_cgload_objects': 10, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_000001405.40: {'accession': 'GCF_000001405.40', 'file_md5': '99c39a02df7339a96d57f5072a90c5a9', 'survey_md5': '99c39a02df7339a96d57f5072a90c5a9', 'same_file': True, 'survey_rows': 0, 'cgload_features': 0, 'both_accept': 0, 'both_object': 0, 'survey_documented_cgload_objects': 0, 'survey_error_cgload_accepts': 0, 'cgload_only': 0, 'note': ''}
+GCF_002234675.1: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_014441545.1: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_016699485.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000002035.6: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000004195.4: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000001405.40: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_015227675.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000001635.27: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000005575.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_009193385.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000001215.4: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_002204515.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_003254395.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000002335.3: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_030269925.1: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_902167145.1: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000003195.3: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000004515.6: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_034140825.1: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000188115.5: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000001735.4: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_030704535.1: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000146045.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000002945.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000182965.3: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000182925.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000240135.3: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000149205.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000149245.1: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000328475.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_002234675.1: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_015227675.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000001405.40: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000001635.27: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000002035.6: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000004195.4: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_014441545.1: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_016699485.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000002335.3: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000005575.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000001215.4: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_002204515.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_003254395.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_902167145.1: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_030269925.1: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_009193385.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_034140825.1: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000001735.4: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000003195.3: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000004515.6: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000188115.5: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000146045.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_030704535.1: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000002945.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000182925.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000182965.3: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000149205.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000149245.1: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000240135.3: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped
+GCF_000328475.2: already in /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/results/agreement_summary.tsv, skipped

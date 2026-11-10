@@ -1,0 +1,6 @@
+  source count      PASS  25,487 features in the file, 25,487 in the database, across 16 type(s); 25,889 rows in each
+  parent edges      PASS  19,025 edge(s), all accounted for (explicit_parent 19,025); the file states 19,025
+  stored assembly   PASS  /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload/sqlite/GCF_000182965.3/data/candida_albicans/sc5314/asm18296v3/assembly.fa and its index are present; SHA-256 matches the load
+  cross-parser      PASS  GFF3 and GenBank agree on 10 feature types
+  reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
+

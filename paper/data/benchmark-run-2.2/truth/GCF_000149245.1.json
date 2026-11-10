@@ -1,0 +1,51 @@
+{
+ "input": "/home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/inputs/GCF_000149245.1/genomic.gff",
+ "md5": "d235c44a69dddfb40a7901b39d19ced9",
+ "rows": 127543,
+ "features": 86294,
+ "parent_links": 77941,
+ "features_with_parent": 77941,
+ "sequences": 15,
+ "circular_sequences": 1,
+ "organelle_sequences": 1,
+ "id_conflicts": 0,
+ "non_numeric_rows": 0,
+ "types": {
+  "CDS": 7826,
+  "exon": 54811,
+  "gene": 8334,
+  "mRNA": 7826,
+  "ncRNA": 1197,
+  "polyA_site": 6115,
+  "pseudogene": 4,
+  "rRNA": 4,
+  "region": 15,
+  "tRNA": 162
+ },
+ "with_parent_by_type": {
+  "CDS": 7826,
+  "exon": 54811,
+  "mRNA": 7826,
+  "ncRNA": 1197,
+  "polyA_site": 6115,
+  "rRNA": 4,
+  "tRNA": 162
+ },
+ "hard_cases": {
+  "multi_row": 7567,
+  "overlapping_rows": 0,
+  "trans_spliced": 0,
+  "strand_unknown": 0,
+  "crosses_origin": 0,
+  "past_end": 0,
+  "inverted": 0,
+  "escapes_parent": 0,
+  "exon_under_pseudogene": 0,
+  "multi_parent": 0,
+  "dangling_parent": 0,
+  "no_id": 0,
+  "multi_valued": 72019,
+  "rows_disagree": 7,
+  "organelle": 98
+ }
+}

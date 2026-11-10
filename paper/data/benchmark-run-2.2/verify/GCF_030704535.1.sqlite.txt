@@ -1,0 +1,6 @@
+  source count      PASS  440,385 features in the file, 440,385 in the database, across 18 type(s); 651,270 rows in each
+  parent edges      PASS  410,429 edge(s), all accounted for (explicit_parent 410,429); the file states 410,429
+  stored assembly   PASS  /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload/sqlite/GCF_030704535.1/data/vitis_vinifera/reference/asm3070453v1/assembly.fa and its index are present; SHA-256 matches the load
+  cross-parser      ----  no second format supplied; pass --against with a GenBank or GFF3 file describing the same assembly
+  reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
+

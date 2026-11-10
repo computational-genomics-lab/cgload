@@ -1,0 +1,140 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents",
+  "attrs"
+ ],
+ "totals": {
+  "truth": 282355,
+  "truth_links": 256878,
+  "kept_links": 256878,
+  "kept": 282355
+ },
+ "stored_features": 282355,
+ "stored_links": 256878,
+ "extra_by_type": {},
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 30802,
+   "kept": 30802
+  },
+  "RNase_MRP_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "RNase_P_RNA": {
+   "truth": 2,
+   "kept": 2
+  },
+  "SRP_RNA": {
+   "truth": 2,
+   "kept": 2
+  },
+  "antisense_RNA": {
+   "truth": 621,
+   "kept": 621
+  },
+  "exon": {
+   "truth": 190710,
+   "kept": 190710
+  },
+  "gene": {
+   "truth": 17533,
+   "kept": 17533
+  },
+  "lnc_RNA": {
+   "truth": 2374,
+   "kept": 2374
+  },
+  "mRNA": {
+   "truth": 30802,
+   "kept": 30802
+  },
+  "miRNA": {
+   "truth": 485,
+   "kept": 485
+  },
+  "mobile_genetic_element": {
+   "truth": 5734,
+   "kept": 5734
+  },
+  "ncRNA": {
+   "truth": 60,
+   "kept": 60
+  },
+  "primary_transcript": {
+   "truth": 266,
+   "kept": 266
+  },
+  "pseudogene": {
+   "truth": 339,
+   "kept": 339
+  },
+  "rRNA": {
+   "truth": 134,
+   "kept": 134
+  },
+  "region": {
+   "truth": 1870,
+   "kept": 1870
+  },
+  "sequence_feature": {
+   "truth": 1,
+   "kept": 1
+  },
+  "snRNA": {
+   "truth": 32,
+   "kept": 32
+  },
+  "snoRNA": {
+   "truth": 270,
+   "kept": 270
+  },
+  "tRNA": {
+   "truth": 317,
+   "kept": 317
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 26474,
+   "kept": 26474
+  },
+  "overlapping_rows": {
+   "truth": 2,
+   "kept": 2
+  },
+  "trans_spliced": {
+   "truth": 170,
+   "kept": 170
+  },
+  "strand_unknown": {
+   "truth": 9,
+   "kept": 9
+  },
+  "exon_under_pseudogene": {
+   "truth": 563,
+   "kept": 563
+  },
+  "multi_valued": {
+   "truth": 276181,
+   "kept": 276181
+  },
+  "rows_disagree": {
+   "truth": 36,
+   "kept": 36
+  },
+  "organelle": {
+   "truth": 126,
+   "kept": 126
+  }
+ },
+ "case_field_differences": {},
+ "examples": {},
+ "genome": "GCF_000001215.4",
+ "tool": "cgload-sqlite"
+}

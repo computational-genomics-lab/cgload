@@ -1,0 +1,132 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents",
+  "attrs"
+ ],
+ "totals": {
+  "truth": 235950,
+  "truth_links": 219139,
+  "kept_links": 219139,
+  "kept": 214576,
+  "changed": 21374,
+  "changed_silent": 21374
+ },
+ "stored_features": 235950,
+ "stored_links": 219139,
+ "extra_by_type": {},
+ "field_differences": {
+  "split": 21374
+ },
+ "by_type": {
+  "CDS": {
+   "truth": 22611,
+   "changed": 21189,
+   "kept": 1422
+  },
+  "cDNA_match": {
+   "truth": 201,
+   "changed": 185,
+   "kept": 16
+  },
+  "exon": {
+   "truth": 171333,
+   "kept": 171333
+  },
+  "gene": {
+   "truth": 14491,
+   "kept": 14491
+  },
+  "lnc_RNA": {
+   "truth": 1364,
+   "kept": 1364
+  },
+  "mRNA": {
+   "truth": 22611,
+   "kept": 22611
+  },
+  "miRNA": {
+   "truth": 434,
+   "kept": 434
+  },
+  "origin_of_replication": {
+   "truth": 1,
+   "kept": 1
+  },
+  "primary_transcript": {
+   "truth": 220,
+   "kept": 220
+  },
+  "pseudogene": {
+   "truth": 36,
+   "kept": 36
+  },
+  "rRNA": {
+   "truth": 2,
+   "kept": 2
+  },
+  "region": {
+   "truth": 2082,
+   "kept": 2082
+  },
+  "tRNA": {
+   "truth": 247,
+   "kept": 247
+  },
+  "transcript": {
+   "truth": 317,
+   "kept": 317
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 21374,
+   "changed": 21374,
+   "changed_silent": 21374
+  },
+  "exon_under_pseudogene": {
+   "truth": 105,
+   "kept": 105
+  },
+  "multi_valued": {
+   "truth": 219513,
+   "kept": 198324,
+   "changed": 21189,
+   "changed_silent": 21189
+  },
+  "rows_disagree": {
+   "truth": 293,
+   "changed": 293,
+   "changed_silent": 293
+  },
+  "organelle": {
+   "truth": 126,
+   "kept": 126
+  }
+ },
+ "case_field_differences": {
+  "multi_row": {
+   "split": 21374
+  },
+  "multi_valued": {
+   "split": 21189
+  },
+  "rows_disagree": {
+   "split": 293
+  }
+ },
+ "examples": {
+  "changed:split": [
+   "cds-XP_008190819.1",
+   "cds-XP_015833329.1",
+   "cds-XP_015833363.1",
+   "cds-XP_015833407.1",
+   "cds-XP_015834406.1"
+  ]
+ },
+ "genome": "GCF_000002335.3",
+ "tool": "gffutils"
+}

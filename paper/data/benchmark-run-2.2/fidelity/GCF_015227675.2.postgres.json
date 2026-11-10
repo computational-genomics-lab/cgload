@@ -1,0 +1,152 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents",
+  "attrs"
+ ],
+ "totals": {
+  "truth": 1352739,
+  "truth_links": 1308469,
+  "kept_links": 1308469,
+  "kept": 1352739
+ },
+ "stored_features": 1352739,
+ "stored_links": 1308469,
+ "extra_by_type": {},
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 73715,
+   "kept": 73715
+  },
+  "C_gene_segment": {
+   "truth": 9,
+   "kept": 9
+  },
+  "D_loop": {
+   "truth": 1,
+   "kept": 1
+  },
+  "RNase_MRP_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "SRP_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "V_gene_segment": {
+   "truth": 291,
+   "kept": 291
+  },
+  "antisense_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "cDNA_match": {
+   "truth": 612,
+   "kept": 612
+  },
+  "exon": {
+   "truth": 1135497,
+   "kept": 1135497
+  },
+  "gene": {
+   "truth": 33887,
+   "kept": 33887
+  },
+  "lnc_RNA": {
+   "truth": 16266,
+   "kept": 16266
+  },
+  "mRNA": {
+   "truth": 73415,
+   "kept": 73415
+  },
+  "match": {
+   "truth": 1431,
+   "kept": 1431
+  },
+  "miRNA": {
+   "truth": 796,
+   "kept": 796
+  },
+  "ncRNA": {
+   "truth": 34,
+   "kept": 34
+  },
+  "origin_of_replication": {
+   "truth": 1,
+   "kept": 1
+  },
+  "primary_transcript": {
+   "truth": 466,
+   "kept": 466
+  },
+  "pseudogene": {
+   "truth": 8162,
+   "kept": 8162
+  },
+  "rRNA": {
+   "truth": 139,
+   "kept": 139
+  },
+  "region": {
+   "truth": 176,
+   "kept": 176
+  },
+  "snRNA": {
+   "truth": 1026,
+   "kept": 1026
+  },
+  "snoRNA": {
+   "truth": 1288,
+   "kept": 1288
+  },
+  "tRNA": {
+   "truth": 727,
+   "kept": 727
+  },
+  "telomerase_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "transcript": {
+   "truth": 4796,
+   "kept": 4796
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 68343,
+   "kept": 68343
+  },
+  "overlapping_rows": {
+   "truth": 1,
+   "kept": 1
+  },
+  "exon_under_pseudogene": {
+   "truth": 10061,
+   "kept": 10061
+  },
+  "multi_valued": {
+   "truth": 1347101,
+   "kept": 1347101
+  },
+  "rows_disagree": {
+   "truth": 602,
+   "kept": 602
+  },
+  "organelle": {
+   "truth": 127,
+   "kept": 127
+  }
+ },
+ "case_field_differences": {},
+ "examples": {},
+ "genome": "GCF_015227675.2",
+ "tool": "cgload-postgres"
+}

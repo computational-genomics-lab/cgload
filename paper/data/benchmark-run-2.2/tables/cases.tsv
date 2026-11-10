@@ -1,0 +1,59 @@
+tool	case	truth	kept	changed	changed_declared	lost	changed_silent	lost_silent	fields_changed
+cgload-postgres	crosses_origin	14	9	0	5	0	0	0	segs:5
+cgload-postgres	escapes_parent	46	41	0	5	0	0	0	segs:5
+cgload-postgres	exon_under_pseudogene	91009	91009	0	0	0	0	0	
+cgload-postgres	inverted	3	0	0	3	0	0	0	segs:3
+cgload-postgres	multi_row	1072125	1072125	0	0	0	0	0	
+cgload-postgres	multi_valued	16832658	16832657	0	1	0	0	0	segs:1
+cgload-postgres	organelle	11665	11657	0	8	0	0	0	segs:8
+cgload-postgres	overlapping_rows	26	26	0	0	0	0	0	
+cgload-postgres	past_end	3	3	0	0	0	0	0	
+cgload-postgres	rows_disagree	25886	25886	0	0	0	0	0	
+cgload-postgres	strand_unknown	30	22	0	8	0	0	0	segs:8
+cgload-postgres	trans_spliced	401	393	0	8	0	0	0	segs:8
+cgload-sqlite	crosses_origin	14	9	0	5	0	0	0	segs:5
+cgload-sqlite	escapes_parent	46	41	0	5	0	0	0	segs:5
+cgload-sqlite	exon_under_pseudogene	91009	91009	0	0	0	0	0	
+cgload-sqlite	inverted	3	0	0	3	0	0	0	segs:3
+cgload-sqlite	multi_row	1072125	1072125	0	0	0	0	0	
+cgload-sqlite	multi_valued	16832658	16832657	0	1	0	0	0	segs:1
+cgload-sqlite	organelle	11665	11657	0	8	0	0	0	segs:8
+cgload-sqlite	overlapping_rows	26	26	0	0	0	0	0	
+cgload-sqlite	past_end	3	3	0	0	0	0	0	
+cgload-sqlite	rows_disagree	25886	25886	0	0	0	0	0	
+cgload-sqlite	strand_unknown	30	22	0	8	0	0	0	segs:8
+cgload-sqlite	trans_spliced	401	393	0	8	0	0	0	segs:8
+chado	crosses_origin	14	4	0	0	10	0	10	
+chado	escapes_parent	46	7	0	0	39	0	39	
+chado	exon_under_pseudogene	91009	27914	0	0	63095	0	63095	
+chado	inverted	3	0	0	0	3	0	3	
+chado	multi_row	1072125	620412	0	0	451713	0	451707	
+chado	multi_valued	16832658	9840419	0	0	6992239	0	6810172	
+chado	organelle	11665	2206	0	0	9459	0	9454	
+chado	overlapping_rows	26	21	0	0	5	0	4	
+chado	past_end	3	0	0	0	3	0	3	
+chado	rows_disagree	25886	19144	0	0	6742	0	6737	
+chado	strand_unknown	30	0	0	0	30	0	30	
+chado	trans_spliced	401	0	0	0	401	0	395	
+gffutils	crosses_origin	14	12	2	0	0	2	0	split:2
+gffutils	escapes_parent	46	38	8	0	0	8	0	split:8
+gffutils	exon_under_pseudogene	91009	91009	0	0	0	0	0	
+gffutils	inverted	3	3	0	0	0	0	0	
+gffutils	multi_row	1072125	0	1072125	0	0	1072125	0	split:1072125
+gffutils	multi_valued	16832658	15779620	1053038	0	0	1053038	0	split:1053038
+gffutils	organelle	11665	11443	222	0	0	222	0	split:222
+gffutils	overlapping_rows	26	0	26	0	0	26	0	split:26
+gffutils	past_end	3	3	0	0	0	0	0	
+gffutils	rows_disagree	25886	0	25886	0	0	25886	0	split:25886
+gffutils	strand_unknown	30	29	1	0	0	1	0	split:1
+gffutils	trans_spliced	401	311	90	0	0	90	0	split:90
+txdbmaker	crosses_origin	2	1	0	0	1	0	0	
+txdbmaker	escapes_parent	4	3	0	0	1	0	0	
+txdbmaker	exon_under_pseudogene	22510	22510	0	0	0	0	0	
+txdbmaker	multi_row	804294	804160	101	0	33	0	0	
+txdbmaker	multi_valued	1143602	1143465	104	0	33	3	0	
+txdbmaker	organelle	937	931	0	0	6	0	0	
+txdbmaker	overlapping_rows	25	0	7	0	18	0	0	
+txdbmaker	rows_disagree	6840	6815	10	0	15	0	0	
+txdbmaker	strand_unknown	12	0	0	0	12	0	0	
+txdbmaker	trans_spliced	33	18	0	0	15	0	0	

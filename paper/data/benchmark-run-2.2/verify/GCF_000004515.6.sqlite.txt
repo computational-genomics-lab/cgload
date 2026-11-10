@@ -1,0 +1,6 @@
+  source count      PASS  818,742 features in the file, 818,742 in the database, across 17 type(s); 1,202,434 rows in each
+  parent edges      PASS  758,820 edge(s), all accounted for (explicit_parent 758,820); the file states 758,820; 2 more named no parent and are top-level (D-069)
+  stored assembly   PASS  /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload/sqlite/GCF_000004515.6/data/glycine_max/reference/glycine_max_v4.0/assembly.fa and its index are present; SHA-256 matches the load
+  cross-parser      ----  no second format supplied; pass --against with a GenBank or GFF3 file describing the same assembly
+  reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
+

@@ -1,0 +1,112 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents",
+  "attrs"
+ ],
+ "totals": {
+  "truth": 417439,
+  "truth_links": 401329,
+  "kept_links": 401329,
+  "kept": 417439
+ },
+ "stored_features": 417439,
+ "stored_links": 401329,
+ "extra_by_type": {},
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 34173,
+   "kept": 34173
+  },
+  "cDNA_match": {
+   "truth": 87,
+   "kept": 87
+  },
+  "exon": {
+   "truth": 329538,
+   "kept": 329538
+  },
+  "gene": {
+   "truth": 15259,
+   "kept": 15259
+  },
+  "guide_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "lnc_RNA": {
+   "truth": 1360,
+   "kept": 1360
+  },
+  "mRNA": {
+   "truth": 34173,
+   "kept": 34173
+  },
+  "match": {
+   "truth": 86,
+   "kept": 86
+  },
+  "miRNA": {
+   "truth": 53,
+   "kept": 53
+  },
+  "primary_transcript": {
+   "truth": 53,
+   "kept": 53
+  },
+  "pseudogene": {
+   "truth": 242,
+   "kept": 242
+  },
+  "rRNA": {
+   "truth": 245,
+   "kept": 245
+  },
+  "region": {
+   "truth": 436,
+   "kept": 436
+  },
+  "snRNA": {
+   "truth": 41,
+   "kept": 41
+  },
+  "snoRNA": {
+   "truth": 21,
+   "kept": 21
+  },
+  "tRNA": {
+   "truth": 241,
+   "kept": 241
+  },
+  "transcript": {
+   "truth": 1430,
+   "kept": 1430
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 32377,
+   "kept": 32377
+  },
+  "exon_under_pseudogene": {
+   "truth": 533,
+   "kept": 533
+  },
+  "multi_valued": {
+   "truth": 408726,
+   "kept": 408726
+  },
+  "rows_disagree": {
+   "truth": 106,
+   "kept": 106
+  }
+ },
+ "case_field_differences": {},
+ "examples": {},
+ "genome": "GCF_009193385.2",
+ "tool": "cgload-postgres"
+}

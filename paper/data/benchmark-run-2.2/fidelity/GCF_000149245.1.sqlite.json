@@ -1,0 +1,84 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents",
+  "attrs"
+ ],
+ "totals": {
+  "truth": 86294,
+  "truth_links": 77941,
+  "kept_links": 77941,
+  "kept": 86294
+ },
+ "stored_features": 86294,
+ "stored_links": 77941,
+ "extra_by_type": {},
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 7826,
+   "kept": 7826
+  },
+  "exon": {
+   "truth": 54811,
+   "kept": 54811
+  },
+  "gene": {
+   "truth": 8334,
+   "kept": 8334
+  },
+  "mRNA": {
+   "truth": 7826,
+   "kept": 7826
+  },
+  "ncRNA": {
+   "truth": 1197,
+   "kept": 1197
+  },
+  "polyA_site": {
+   "truth": 6115,
+   "kept": 6115
+  },
+  "pseudogene": {
+   "truth": 4,
+   "kept": 4
+  },
+  "rRNA": {
+   "truth": 4,
+   "kept": 4
+  },
+  "region": {
+   "truth": 15,
+   "kept": 15
+  },
+  "tRNA": {
+   "truth": 162,
+   "kept": 162
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 7567,
+   "kept": 7567
+  },
+  "multi_valued": {
+   "truth": 72019,
+   "kept": 72019
+  },
+  "rows_disagree": {
+   "truth": 7,
+   "kept": 7
+  },
+  "organelle": {
+   "truth": 98,
+   "kept": 98
+  }
+ },
+ "case_field_differences": {},
+ "examples": {},
+ "genome": "GCF_000149245.1",
+ "tool": "cgload-sqlite"
+}

@@ -1,0 +1,108 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents"
+ ],
+ "totals": {
+  "truth": 296164,
+  "truth_links": 273960,
+  "kept_links": 259816,
+  "kept": 282020,
+  "lost": 14144,
+  "lost_announced": 4044,
+  "lost_silent": 10100
+ },
+ "stored_features": 310337,
+ "stored_links": 288133,
+ "extra_by_type": {
+  "polypeptide": 28317
+ },
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 28317,
+   "kept": 28317
+  },
+  "cDNA_match": {
+   "truth": 271,
+   "kept": 271
+  },
+  "exon": {
+   "truth": 211682,
+   "lost": 10100,
+   "kept": 201582
+  },
+  "gene": {
+   "truth": 19241,
+   "kept": 19241
+  },
+  "lnc_RNA": {
+   "truth": 4044,
+   "lost": 4044
+  },
+  "mRNA": {
+   "truth": 28317,
+   "kept": 28317
+  },
+  "pseudogene": {
+   "truth": 382,
+   "kept": 382
+  },
+  "rRNA": {
+   "truth": 2,
+   "kept": 2
+  },
+  "region": {
+   "truth": 2310,
+   "kept": 2310
+  },
+  "tRNA": {
+   "truth": 933,
+   "kept": 933
+  },
+  "transcript": {
+   "truth": 665,
+   "kept": 665
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 26511,
+   "kept": 26511
+  },
+  "exon_under_pseudogene": {
+   "truth": 739,
+   "kept": 739
+  },
+  "multi_valued": {
+   "truth": 271474,
+   "lost": 14144,
+   "lost_announced": 4044,
+   "lost_silent": 10100,
+   "kept": 257330
+  },
+  "rows_disagree": {
+   "truth": 378,
+   "kept": 378
+  },
+  "organelle": {
+   "truth": 128,
+   "kept": 128
+  }
+ },
+ "case_field_differences": {},
+ "examples": {
+  "lost": [
+   "rna-XR_002498777.1",
+   "exon-XR_002498777.1-1",
+   "exon-XR_002498777.1-2",
+   "rna-XR_002498778.1",
+   "exon-XR_002498778.1-1"
+  ]
+ },
+ "genome": "GCF_002204515.2",
+ "tool": "chado"
+}

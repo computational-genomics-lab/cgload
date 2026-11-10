@@ -1,0 +1,104 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents",
+  "attrs"
+ ],
+ "totals": {
+  "truth": 235950,
+  "truth_links": 219139,
+  "kept_links": 219139,
+  "kept": 235950
+ },
+ "stored_features": 235950,
+ "stored_links": 219139,
+ "extra_by_type": {},
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 22611,
+   "kept": 22611
+  },
+  "cDNA_match": {
+   "truth": 201,
+   "kept": 201
+  },
+  "exon": {
+   "truth": 171333,
+   "kept": 171333
+  },
+  "gene": {
+   "truth": 14491,
+   "kept": 14491
+  },
+  "lnc_RNA": {
+   "truth": 1364,
+   "kept": 1364
+  },
+  "mRNA": {
+   "truth": 22611,
+   "kept": 22611
+  },
+  "miRNA": {
+   "truth": 434,
+   "kept": 434
+  },
+  "origin_of_replication": {
+   "truth": 1,
+   "kept": 1
+  },
+  "primary_transcript": {
+   "truth": 220,
+   "kept": 220
+  },
+  "pseudogene": {
+   "truth": 36,
+   "kept": 36
+  },
+  "rRNA": {
+   "truth": 2,
+   "kept": 2
+  },
+  "region": {
+   "truth": 2082,
+   "kept": 2082
+  },
+  "tRNA": {
+   "truth": 247,
+   "kept": 247
+  },
+  "transcript": {
+   "truth": 317,
+   "kept": 317
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 21374,
+   "kept": 21374
+  },
+  "exon_under_pseudogene": {
+   "truth": 105,
+   "kept": 105
+  },
+  "multi_valued": {
+   "truth": 219513,
+   "kept": 219513
+  },
+  "rows_disagree": {
+   "truth": 293,
+   "kept": 293
+  },
+  "organelle": {
+   "truth": 126,
+   "kept": 126
+  }
+ },
+ "case_field_differences": {},
+ "examples": {},
+ "genome": "GCF_000002335.3",
+ "tool": "cgload-sqlite"
+}

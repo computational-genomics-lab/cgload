@@ -1,0 +1,184 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents",
+  "attrs"
+ ],
+ "totals": {
+  "truth": 696928,
+  "truth_links": 644997,
+  "kept_links": 644997,
+  "kept": 696926,
+  "changed_declared": 2
+ },
+ "stored_features": 696928,
+ "stored_links": 644997,
+ "extra_by_type": {},
+ "field_differences": {
+  "segs": 2
+ },
+ "by_type": {
+  "CDS": {
+   "truth": 57345,
+   "kept": 57345
+  },
+  "antisense_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "cDNA_match": {
+   "truth": 1056,
+   "kept": 1056
+  },
+  "exon": {
+   "truth": 509115,
+   "kept": 509115
+  },
+  "gene": {
+   "truth": 44666,
+   "kept": 44666
+  },
+  "intron": {
+   "truth": 21,
+   "kept": 21
+  },
+  "lnc_RNA": {
+   "truth": 7804,
+   "kept": 7804
+  },
+  "mRNA": {
+   "truth": 57345,
+   "kept": 57343,
+   "changed_declared": 2
+  },
+  "match": {
+   "truth": 101,
+   "kept": 101
+  },
+  "miRNA": {
+   "truth": 310,
+   "kept": 310
+  },
+  "primary_transcript": {
+   "truth": 164,
+   "kept": 164
+  },
+  "pseudogene": {
+   "truth": 5222,
+   "kept": 5222
+  },
+  "rRNA": {
+   "truth": 2439,
+   "kept": 2439
+  },
+  "region": {
+   "truth": 687,
+   "kept": 687
+  },
+  "sequence_conflict": {
+   "truth": 2,
+   "kept": 2
+  },
+  "sequence_difference": {
+   "truth": 79,
+   "kept": 79
+  },
+  "sequence_feature": {
+   "truth": 115,
+   "kept": 115
+  },
+  "snRNA": {
+   "truth": 241,
+   "kept": 241
+  },
+  "snoRNA": {
+   "truth": 655,
+   "kept": 655
+  },
+  "tRNA": {
+   "truth": 1374,
+   "kept": 1374
+  },
+  "transcript": {
+   "truth": 8186,
+   "kept": 8186
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 48422,
+   "kept": 48422
+  },
+  "trans_spliced": {
+   "truth": 51,
+   "kept": 49,
+   "changed_declared": 2
+  },
+  "strand_unknown": {
+   "truth": 5,
+   "changed_declared": 2,
+   "kept": 3
+  },
+  "crosses_origin": {
+   "truth": 1,
+   "changed_declared": 1
+  },
+  "inverted": {
+   "truth": 1,
+   "changed_declared": 1
+  },
+  "escapes_parent": {
+   "truth": 8,
+   "kept": 7,
+   "changed_declared": 1
+  },
+  "exon_under_pseudogene": {
+   "truth": 12763,
+   "kept": 12763
+  },
+  "multi_valued": {
+   "truth": 636194,
+   "kept": 636194
+  },
+  "rows_disagree": {
+   "truth": 1070,
+   "kept": 1070
+  },
+  "organelle": {
+   "truth": 1710,
+   "kept": 1708,
+   "changed_declared": 2
+  }
+ },
+ "case_field_differences": {
+  "organelle": {
+   "segs": 2
+  },
+  "strand_unknown": {
+   "segs": 2
+  },
+  "trans_spliced": {
+   "segs": 2
+  },
+  "crosses_origin": {
+   "segs": 1
+  },
+  "escapes_parent": {
+   "segs": 1
+  },
+  "inverted": {
+   "segs": 1
+  }
+ },
+ "examples": {
+  "changed_declared:segs": [
+   "rna-ZeamMp186",
+   "rna-ZeamMp017"
+  ]
+ },
+ "genome": "GCF_902167145.1",
+ "tool": "cgload-postgres"
+}

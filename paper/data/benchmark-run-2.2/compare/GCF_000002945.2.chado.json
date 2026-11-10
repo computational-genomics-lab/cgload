@@ -1,0 +1,136 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents"
+ ],
+ "totals": {
+  "truth": 48766,
+  "truth_links": 35845,
+  "kept_links": 21575,
+  "kept": 34258,
+  "lost": 14508,
+  "lost_announced": 7371,
+  "lost_silent": 7137
+ },
+ "stored_features": 39424,
+ "stored_links": 26741,
+ "extra_by_type": {
+  "polypeptide": 5166
+ },
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 5166,
+   "kept": 5166
+  },
+  "LONG_TERMINAL_REPEAT": {
+   "truth": 238,
+   "lost": 238
+  },
+  "RNase_P_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "exon": {
+   "truth": 18017,
+   "kept": 10880,
+   "lost": 7137
+  },
+  "five_prime_UTR": {
+   "truth": 2,
+   "kept": 2
+  },
+  "gene": {
+   "truth": 12613,
+   "kept": 12613
+  },
+  "intron": {
+   "truth": 3,
+   "kept": 3
+  },
+  "lnc_RNA": {
+   "truth": 7133,
+   "lost": 7133
+  },
+  "mRNA": {
+   "truth": 5166,
+   "kept": 5166
+  },
+  "ncRNA": {
+   "truth": 38,
+   "kept": 38
+  },
+  "pseudogene": {
+   "truth": 32,
+   "kept": 32
+  },
+  "rRNA": {
+   "truth": 49,
+   "kept": 49
+  },
+  "region": {
+   "truth": 4,
+   "kept": 4
+  },
+  "sequence_feature": {
+   "truth": 34,
+   "kept": 34
+  },
+  "snRNA": {
+   "truth": 6,
+   "kept": 6
+  },
+  "snoRNA": {
+   "truth": 66,
+   "kept": 66
+  },
+  "tRNA": {
+   "truth": 196,
+   "kept": 196
+  },
+  "three_prime_UTR": {
+   "truth": 2,
+   "kept": 2
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 2414,
+   "kept": 2414
+  },
+  "overlapping_rows": {
+   "truth": 18,
+   "kept": 18
+  },
+  "escapes_parent": {
+   "truth": 4,
+   "kept": 4
+  },
+  "multi_valued": {
+   "truth": 47638,
+   "kept": 33363,
+   "lost": 14275,
+   "lost_announced": 7138,
+   "lost_silent": 7137
+  },
+  "organelle": {
+   "truth": 140,
+   "kept": 140
+  }
+ },
+ "case_field_differences": {},
+ "examples": {
+  "lost": [
+   "rna-NR_191368.1",
+   "exon-NR_191368.1-1",
+   "rna-NR_191369.1",
+   "exon-NR_191369.1-1",
+   "rna-NR_191370.1"
+  ]
+ },
+ "genome": "GCF_000002945.2",
+ "tool": "chado"
+}

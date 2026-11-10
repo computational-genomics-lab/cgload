@@ -1,0 +1,111 @@
+accession	side	line	feature	type	survey_kind	survey_class	cgload_plain	cgload_repair	agreement	detail
+GCF_000005575.2	survey	83690	rna-XM_024811304.1	mRNA	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside gene-AgaP_AGAP003509
+GCF_000005575.2	survey	83702	rna-XM_024811303.1	mRNA	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside gene-AgaP_AGAP003509
+GCF_000005575.2	survey	83712	rna-XM_024811302.1	mRNA	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside gene-AgaP_AGAP003509
+GCF_000005575.2	cgload		gene-AgaP_AGAP003509	gene			refused	repaired	cgload only	excludes rna-XM_024811302.1; excludes rna-XM_024811303.1; excludes rna-XM_024811304.1
+GCF_000001215.4	survey	370260	rna-NM_176521.1	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000001215.4	survey	370272	rna-NM_176522.1	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000001215.4	survey	370326	rna-NM_176523.1	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000001215.4	survey	370336	rna-NM_176524.1	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000001215.4	survey	370346	rna-NM_001260300.1	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000001215.4	survey	370356	rna-NM_001260299.1	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000001215.4	survey	370366	rna-NM_176525.1	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000001215.4	survey	370376	rna-NM_176526.1	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000001215.4	survey	370386	rna-NM_176527.1	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_034140825.1	survey	680276	rna-OrsajM_p01	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_034140825.1	survey	680335	rna-OrsajM_p05	mRNA	strand-?	A	refused	repaired	survey: documented; cgload objects	excludes cds-YP_002000552.1; excludes exon-OrsajM_p05-3; excludes exon-OrsajM_p05-4
+GCF_034140825.1	survey	680338	exon-OrsajM_p05-3	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-OrsajM_p05
+GCF_034140825.1	survey	680339	exon-OrsajM_p05-4	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-OrsajM_p05
+GCF_034140825.1	survey	680343	cds-YP_002000552.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-OrsajM_p05
+GCF_034140825.1	survey	680344	cds-YP_002000552.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-OrsajM_p05
+GCF_034140825.1	survey	680992	rna-OrsajM_p52	mRNA	strand-?	A	refused	repaired	survey: documented; cgload objects	excludes cds-YP_002000596.1; excludes exon-OrsajM_p52-4
+GCF_034140825.1	survey	680996	exon-OrsajM_p52-4	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-OrsajM_p52
+GCF_034140825.1	survey	681001	cds-YP_002000596.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-OrsajM_p52
+GCF_034140825.1	survey	681387	rna-OrsajCp102	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_034140825.1	survey	681522	rna-OrsajCp001	mRNA	escapes-parent	B	refused	stored as written (D-091)	survey: documented; cgload objects	outside gene-OrsajCp001
+GCF_034140825.1	survey	681523	exon-OrsajCp001-1	exon	out-of-range	C	accepted with a warning	stored as written, with a warning	both object	wholly past the end of a circular sequence
+GCF_034140825.1	survey	681526	cds-NP_039359.1	CDS	out-of-range	C	accepted with a warning	stored as written, with a warning	both object	wholly past the end of a circular sequence
+GCF_034140825.1	cgload		gene-OrsajCp001	gene			refused	stored as written (D-091)	cgload only	excludes rna-OrsajCp001
+GCF_000003195.3	survey	601533	rna-SobioMp11	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000003195.3	survey	601579	rna-SobioMp01	mRNA	escapes-parent	B	refused	repaired	survey: documented; cgload objects	excludes cds-YP_762324.1; excludes exon-SobioMp01-2; excludes exon-SobioMp01-3; excludes exon-SobioMp01-4; excludes exon-SobioMp01-5; outside gene-SobioMp01
+GCF_000003195.3	survey	601581	exon-SobioMp01-2	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-SobioMp01
+GCF_000003195.3	survey	601582	exon-SobioMp01-3	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-SobioMp01
+GCF_000003195.3	survey	601583	exon-SobioMp01-4	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-SobioMp01
+GCF_000003195.3	survey	601584	exon-SobioMp01-5	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-SobioMp01
+GCF_000003195.3	survey	601586	cds-YP_762324.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-SobioMp01
+GCF_000003195.3	survey	601587	cds-YP_762324.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-SobioMp01
+GCF_000003195.3	survey	601588	cds-YP_762324.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-SobioMp01
+GCF_000003195.3	survey	601589	cds-YP_762324.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-SobioMp01
+GCF_000003195.3	survey	601660	rna-SobioMp21	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000003195.3	cgload		gene-SobioMp01	gene			refused	stored as written (D-091)	cgload only	excludes rna-SobioMp01
+GCF_000001735.4	survey	708792	gene-DA397_mgp34	gene	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000001735.4	survey	708793	gene-DA397_mgp34	gene	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000001735.4	survey	708794	rna-DA397_mgp34	mRNA	inverted	C	refused	repaired	both object	excludes cds-YP_009472104.2; excludes exon-DA397_mgp34-1; excludes exon-DA397_mgp34-2; excludes exon-DA397_mgp34-3; excludes exon-DA397_mgp34-4; excludes exon-DA397_mgp34-5; written backwards
+GCF_000001735.4	survey	708795	exon-DA397_mgp34-1	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp34
+GCF_000001735.4	survey	708796	exon-DA397_mgp34-2	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp34
+GCF_000001735.4	survey	708797	exon-DA397_mgp34-3	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp34
+GCF_000001735.4	survey	708798	exon-DA397_mgp34-4	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp34
+GCF_000001735.4	survey	708799	exon-DA397_mgp34-5	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp34
+GCF_000001735.4	survey	708800	cds-YP_009472104.2	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp34
+GCF_000001735.4	survey	708801	cds-YP_009472104.2	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp34
+GCF_000001735.4	survey	708802	cds-YP_009472104.2	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp34
+GCF_000001735.4	survey	708803	cds-YP_009472104.2	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp34
+GCF_000001735.4	survey	708804	cds-YP_009472104.2	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp34
+GCF_000001735.4	survey	709070	rna-DA397_mgp31	mRNA	escapes-parent	B	refused	repaired	survey: documented; cgload objects	excludes cds-YP_009472107.2; excludes exon-DA397_mgp31-3; excludes exon-DA397_mgp31-4; excludes exon-DA397_mgp31-5; outside gene-DA397_mgp31
+GCF_000001735.4	survey	709073	exon-DA397_mgp31-3	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp31
+GCF_000001735.4	survey	709074	exon-DA397_mgp31-4	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp31
+GCF_000001735.4	survey	709075	exon-DA397_mgp31-5	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp31
+GCF_000001735.4	survey	709078	cds-YP_009472107.2	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp31
+GCF_000001735.4	survey	709079	cds-YP_009472107.2	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp31
+GCF_000001735.4	survey	709080	cds-YP_009472107.2	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-DA397_mgp31
+GCF_000001735.4	survey	709511	rna-DA397_mgp37	mRNA	escapes-parent	B	refused	stored as written (D-091)	survey: documented; cgload objects	outside gene-DA397_mgp37
+GCF_000001735.4	survey	709515	exon-DA397_mgp37-4	exon	out-of-range	C	accepted with a warning	stored as written, with a warning	both object	wholly past the end of a circular sequence
+GCF_000001735.4	survey	709516	exon-DA397_mgp37-5	exon	out-of-range	C	accepted with a warning	stored as written, with a warning	both object	wholly past the end of a circular sequence
+GCF_000001735.4	survey	709520	cds-YP_009472097.2	CDS	out-of-range	C	accepted with a warning	stored as written, with a warning	both object	wholly past the end of a circular sequence
+GCF_000001735.4	survey	709521	cds-YP_009472097.2	CDS	out-of-range	C	accepted with a warning	stored as written, with a warning	both object	wholly past the end of a circular sequence
+GCF_000001735.4	survey	710506	rna-ArthCp047	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000001735.4	cgload		gene-DA397_mgp31	gene			refused	stored as written (D-091)	cgload only	excludes rna-DA397_mgp31
+GCF_000001735.4	cgload		gene-DA397_mgp37	gene			refused	stored as written (D-091)	cgload only	excludes rna-DA397_mgp37
+GCF_000002945.2	survey	18615	id-NC_003424.3:4344572..4344751	three_prime_UTR	escapes-parent	D	refused	accepted once its parent is repaired	both object	outside gene-SPOM_SPAC23D3.05C
+GCF_000002945.2	survey	18616	id-NC_003424.3:4345775..4346238	five_prime_UTR	escapes-parent	D	refused	accepted once its parent is repaired	both object	outside gene-SPOM_SPAC23D3.05C
+GCF_000002945.2	survey	24096	id-NC_003423.3:72040..72344	five_prime_UTR	escapes-parent	D	refused	accepted once its parent is repaired	both object	outside gene-SPOM_SPBPB21E7.08
+GCF_000002945.2	survey	49251	id-NC_003421.2:1338711..1338730	three_prime_UTR	escapes-parent	D	refused	accepted once its parent is repaired	both object	outside gene-SPOM_SPCC132.05C
+GCF_000002945.2	cgload		gene-SPOM_SPAC23D3.05C	pseudogene			refused	repaired	cgload only	excludes id-NC_003424.3:4344572..4344751; excludes id-NC_003424.3:4345775..4346238
+GCF_000002945.2	cgload		gene-SPOM_SPBPB21E7.08	pseudogene			refused	repaired	cgload only	excludes id-NC_003423.3:72040..72344
+GCF_000002945.2	cgload		gene-SPOM_SPCC132.05C	pseudogene			refused	repaired	cgload only	excludes id-NC_003421.2:1338711..1338730
+GCF_902167145.1	survey	990470	rna-ZeamMp186	mRNA	strand-?	A	refused	repaired	survey: documented; cgload objects	excludes cds-YP_588282.1; excludes exon-ZeamMp186-2; excludes exon-ZeamMp186-3; excludes exon-ZeamMp186-4
+GCF_902167145.1	survey	990472	exon-ZeamMp186-2	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp186
+GCF_902167145.1	survey	990473	exon-ZeamMp186-3	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp186
+GCF_902167145.1	survey	990474	exon-ZeamMp186-4	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp186
+GCF_902167145.1	survey	990477	cds-YP_588282.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp186
+GCF_902167145.1	survey	990478	cds-YP_588282.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp186
+GCF_902167145.1	survey	990479	cds-YP_588282.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp186
+GCF_902167145.1	survey	990621	rna-ZeamMp017	mRNA	inverted	C	refused	repaired	both object	excludes cds-YP_588310.1; excludes exon-ZeamMp017-1; excludes exon-ZeamMp017-2; excludes exon-ZeamMp017-3; excludes exon-ZeamMp017-4; excludes exon-ZeamMp017-5; written backwards
+GCF_902167145.1	survey	990622	exon-ZeamMp017-1	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp017
+GCF_902167145.1	survey	990623	exon-ZeamMp017-2	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp017
+GCF_902167145.1	survey	990624	exon-ZeamMp017-3	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp017
+GCF_902167145.1	survey	990625	exon-ZeamMp017-4	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp017
+GCF_902167145.1	survey	990626	exon-ZeamMp017-5	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp017
+GCF_902167145.1	survey	990627	cds-YP_588310.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp017
+GCF_902167145.1	survey	990628	cds-YP_588310.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp017
+GCF_902167145.1	survey	990629	cds-YP_588310.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp017
+GCF_902167145.1	survey	990630	cds-YP_588310.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp017
+GCF_902167145.1	survey	990631	cds-YP_588310.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-ZeamMp017
+GCF_902167145.1	survey	990786	rna-ZeamMp071	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_902167145.1	survey	991279	rna-ZeamMp016	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_902167145.1	survey	991295	rna-ZeamMp019	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000188115.5	survey	635275	rna-LyesC2p008	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_030704535.1	survey	650665	rna-ViviM_p002	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_030704535.1	survey	651050	rna-ViviCp046	mRNA	strand-?	A	accepted	accepted	both accept as valid	
+GCF_000004515.6	survey	1202115	rna-I638_mgp071	mRNA	inverted	C	refused	repaired	both object	excludes cds-YP_007516869.1; excludes exon-I638_mgp071-1; excludes exon-I638_mgp071-2; excludes exon-I638_mgp071-3; excludes exon-I638_mgp071-4; excludes exon-I638_mgp071-5; written backwards
+GCF_000004515.6	survey	1202116	exon-I638_mgp071-1	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-I638_mgp071
+GCF_000004515.6	survey	1202117	exon-I638_mgp071-2	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-I638_mgp071
+GCF_000004515.6	survey	1202118	exon-I638_mgp071-3	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-I638_mgp071
+GCF_000004515.6	survey	1202119	exon-I638_mgp071-4	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-I638_mgp071
+GCF_000004515.6	survey	1202120	exon-I638_mgp071-5	exon	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-I638_mgp071
+GCF_000004515.6	survey	1202121	cds-YP_007516869.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-I638_mgp071
+GCF_000004515.6	survey	1202122	cds-YP_007516869.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-I638_mgp071
+GCF_000004515.6	survey	1202123	cds-YP_007516869.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-I638_mgp071
+GCF_000004515.6	survey	1202124	cds-YP_007516869.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-I638_mgp071
+GCF_000004515.6	survey	1202125	cds-YP_007516869.1	CDS	escapes-parent	B	refused	accepted once its parent is repaired	survey: documented; cgload objects	outside rna-I638_mgp071
+GCF_000004515.6	survey	1202701	rna-GlmaCp044	mRNA	strand-?	A	accepted	accepted	both accept as valid	

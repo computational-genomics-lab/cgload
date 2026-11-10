@@ -361,6 +361,8 @@ The 133 *S. pombe* attribute changes were the comparison's own. NCBI ends some
 gffutils' did not. `run_gffutils.py` now reads values as `truth.py` does and
 no longer decodes escapes twice (tested with gffutils on the *S. pombe* rows).
 gffutils is measured again on all 30 at `benchmark-run-2.2`.
+Result (10 November): 1,072,125 changed, all split multi-row features; no
+attribute change anywhere; every other table identical.
 
 ## Open
 

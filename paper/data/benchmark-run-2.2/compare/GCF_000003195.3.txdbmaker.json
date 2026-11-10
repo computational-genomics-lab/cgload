@@ -1,0 +1,101 @@
+{
+ "tool": "txdbmaker",
+ "types_from": [
+  "txdbmaker::.CDS_TYPES",
+  "txdbmaker::.EXON_TYPES",
+  "txdbmaker::.GENE_TYPES",
+  "txdbmaker::.STOP_CODON_TYPES",
+  "txdbmaker::.TX_TYPES",
+  "txdbmaker::GFF_FEATURE_TYPES"
+ ],
+ "transcript_names_from": "transcript_id",
+ "gene_ids_from": "ID",
+ "totals": {
+  "truth": 50116,
+  "kept": 50110,
+  "lost": 6,
+  "lost_announced": 6
+ },
+ "extra_transcripts": 0,
+ "paired_by": {
+  "name and span": 48195,
+  "span, strand and type": 1915
+ },
+ "field_differences": {},
+ "by_case": {
+  "multi_row": {
+   "truth": 31713,
+   "kept": 31707,
+   "lost": 6,
+   "lost_announced": 6
+  },
+  "trans_spliced": {
+   "truth": 10,
+   "kept": 4,
+   "lost": 6,
+   "lost_announced": 6
+  },
+  "strand_unknown": {
+   "truth": 3,
+   "lost": 3,
+   "lost_announced": 3
+  },
+  "crosses_origin": {
+   "truth": 1,
+   "lost": 1,
+   "lost_announced": 1
+  },
+  "escapes_parent": {
+   "truth": 1,
+   "lost": 1,
+   "lost_announced": 1
+  },
+  "exon_under_pseudogene": {
+   "truth": 1204,
+   "kept": 1204
+  },
+  "multi_valued": {
+   "truth": 48311,
+   "kept": 48308,
+   "lost": 3,
+   "lost_announced": 3
+  },
+  "rows_disagree": {
+   "truth": 75,
+   "kept": 69,
+   "lost": 6,
+   "lost_announced": 6
+  },
+  "organelle": {
+   "truth": 214,
+   "kept": 208,
+   "lost": 6,
+   "lost_announced": 6
+  }
+ },
+ "genes": {
+  "truth": 32945,
+  "held": 32941,
+  "absent": 4
+ },
+ "parts_under_no_transcript": {},
+ "not_modelled_by_type": {
+  "region": 869,
+  "match": 10,
+  "cDNA_match": 143,
+  "repeat_region": 3,
+  "direct_repeat": 6,
+  "sequence_feature": 14,
+  "intron": 6
+ },
+ "examples": {
+  "lost": [
+   "gene-SobioMp01",
+   "gene-SobioMp11",
+   "gene-SobioMp21",
+   "rna-SobioMp01",
+   "rna-SobioMp11"
+  ]
+ },
+ "genome": "GCF_000003195.3"
+}

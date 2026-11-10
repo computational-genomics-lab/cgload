@@ -387,3 +387,16 @@ trims the file's. It also stops decoding escapes a second time, since gffutils
 decodes them itself. Only the gffutils comparison runs this code, and it is
 measured again on all 30 genomes at `benchmark-run-2.2`, so that every gffutils
 result comes from the same scripts.
+Result (10 November): gffutils changes 1,072,125 features, each one a
+multi-row feature that `create_unique` stores as several records. It changes
+no attribute in any genome, *S. pombe* included. Every other table is the same
+as before, byte for byte.
+
+**The results the paper reports.** They come from three tags:
+`benchmark-run-2` (`8c999e2`) for cgload, the faults, the interrupted loads,
+the agreement with the survey and gffutils with its default settings;
+`benchmark-run-2.1` (`9b97178`) for Chado, txdbmaker and the query timing, with
+the human Chado comparison filled in at `44c2ca5`; and `benchmark-run-2.2`
+(`56f6861`) for gffutils with `create_unique`. Their tables are in
+`paper/data/benchmark-run-2.2/`. The full results, superseded ones included,
+are deposited with the paper.

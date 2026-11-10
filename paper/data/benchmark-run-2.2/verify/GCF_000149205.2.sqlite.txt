@@ -1,0 +1,6 @@
+  source count      PASS  64,364 features in the file, 64,364 in the database, across 7 type(s); 89,946 rows in each
+  parent edges      PASS  54,499 edge(s), all accounted for (explicit_parent 54,499); the file states 54,499; 188 more named no parent and are top-level (D-069)
+  stored assembly   PASS  /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload/sqlite/GCF_000149205.2/data/aspergillus_nidulans/fgsc_a4/asm14920v2/assembly.fa and its index are present; SHA-256 matches the load
+  cross-parser      PASS  GFF3 and GenBank agree on 5 feature types; 20 GFF3 mRNA of genes whose GenBank record states CDS but no mRNA not compared (D-105)
+  reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
+

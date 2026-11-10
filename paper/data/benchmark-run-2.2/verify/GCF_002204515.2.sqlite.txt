@@ -1,0 +1,6 @@
+  source count      PASS  296,164 features in the file, 296,164 in the database, across 11 type(s); 442,376 rows in each
+  parent edges      PASS  273,960 edge(s), all accounted for (explicit_parent 273,960); the file states 273,960
+  stored assembly   PASS  /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload/sqlite/GCF_002204515.2/data/aedes_aegypti/reference/aaegl5.0/assembly.fa and its index are present; SHA-256 matches the load
+  cross-parser      ----  no second format supplied; pass --against with a GenBank or GFF3 file describing the same assembly
+  reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
+

@@ -1,0 +1,7 @@
+tool	unit	genomes	loaded	loaded_with_repair	refused	failed	timed_out	setup_failed	not_run	truth	kept	changed	changed_declared	lost	lost_silent	changed_silent	extra	not_modelled	parts_unattached	truth_links	kept_links	genes_truth	genes_held
+cgload-postgres	features	30	23	7	0	0	0	0	0	18017618	18017606	0	12	0	0	0	0	0	0	16566107	16566107	0	0
+cgload-sqlite	features	30	23	7	0	0	0	0	0	18017618	18017606	0	12	0	0	0	0	0	0	16566107	16566107	0	0
+chado	features	30	21	0	0	8	1	0	0	18017618	10233285	0	0	7784333	7602028	0	670102	0	0	16566107	9627024	0	0
+gffutils	features	30	30	0	0	0	0	0	0	18017618	16945493	1072125	0	0	0	1072125	0	0	0	16566107	16566107	0	0
+gffutils-default		30	0	0	0	30	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+txdbmaker	transcripts	30	24	0	0	6	0	0	0	1169826	1169686	104	0	36	0	3	0	647583	10846	0	0	557043	533049

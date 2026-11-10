@@ -1,0 +1,136 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents"
+ ],
+ "totals": {
+  "truth": 406813,
+  "truth_links": 387557,
+  "kept_links": 371063,
+  "kept": 390319,
+  "lost": 16494,
+  "lost_announced": 4339,
+  "lost_silent": 12155
+ },
+ "stored_features": 418660,
+ "stored_links": 399404,
+ "extra_by_type": {
+  "polypeptide": 28341
+ },
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 28341,
+   "kept": 28341
+  },
+  "cDNA_match": {
+   "truth": 1014,
+   "kept": 1014
+  },
+  "exon": {
+   "truth": 323944,
+   "kept": 311789,
+   "lost": 12155
+  },
+  "gene": {
+   "truth": 18127,
+   "kept": 18127
+  },
+  "lnc_RNA": {
+   "truth": 4339,
+   "lost": 4339
+  },
+  "mRNA": {
+   "truth": 28347,
+   "kept": 28347
+  },
+  "match": {
+   "truth": 1,
+   "kept": 1
+  },
+  "miRNA": {
+   "truth": 508,
+   "kept": 508
+  },
+  "origin_of_replication": {
+   "truth": 1,
+   "kept": 1
+  },
+  "primary_transcript": {
+   "truth": 407,
+   "kept": 407
+  },
+  "pseudogene": {
+   "truth": 83,
+   "kept": 83
+  },
+  "rRNA": {
+   "truth": 132,
+   "kept": 132
+  },
+  "region": {
+   "truth": 30,
+   "kept": 30
+  },
+  "snRNA": {
+   "truth": 100,
+   "kept": 100
+  },
+  "snoRNA": {
+   "truth": 16,
+   "kept": 16
+  },
+  "tRNA": {
+   "truth": 431,
+   "kept": 431
+  },
+  "transcript": {
+   "truth": 992,
+   "kept": 992
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 27076,
+   "kept": 27076
+  },
+  "crosses_origin": {
+   "truth": 4,
+   "kept": 4
+  },
+  "exon_under_pseudogene": {
+   "truth": 159,
+   "kept": 159
+  },
+  "multi_valued": {
+   "truth": 387470,
+   "kept": 370976,
+   "lost": 16494,
+   "lost_announced": 4339,
+   "lost_silent": 12155
+  },
+  "rows_disagree": {
+   "truth": 975,
+   "kept": 975
+  },
+  "organelle": {
+   "truth": 126,
+   "kept": 126
+  }
+ },
+ "case_field_differences": {},
+ "examples": {
+  "lost": [
+   "rna-XR_009974442.1",
+   "exon-XR_009974442.1-1",
+   "exon-XR_009974442.1-2",
+   "rna-XR_009974444.1",
+   "exon-XR_009974444.1-1"
+  ]
+ },
+ "genome": "GCF_030269925.1",
+ "tool": "chado"
+}

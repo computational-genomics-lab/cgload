@@ -1,0 +1,347 @@
+genome	tool	case	truth	kept	changed	changed_declared	lost	changed_silent	lost_silent	fields_changed
+GCF_000001405.40	cgload-sqlite	multi_row	141859	141859	0	0	0	0	0	
+GCF_000001405.40	cgload-sqlite	overlapping_rows	3	3	0	0	0	0	0	
+GCF_000001405.40	cgload-sqlite	crosses_origin	1	1	0	0	0	0	0	
+GCF_000001405.40	cgload-sqlite	exon_under_pseudogene	9015	9015	0	0	0	0	0	
+GCF_000001405.40	cgload-sqlite	multi_valued	2724045	2724045	0	0	0	0	0	
+GCF_000001405.40	cgload-sqlite	rows_disagree	3573	3573	0	0	0	0	0	
+GCF_000001405.40	cgload-sqlite	organelle	127	127	0	0	0	0	0	
+GCF_000001635.27	cgload-sqlite	multi_row	91336	91336	0	0	0	0	0	
+GCF_000001635.27	cgload-sqlite	overlapping_rows	1	1	0	0	0	0	0	
+GCF_000001635.27	cgload-sqlite	exon_under_pseudogene	4069	4069	0	0	0	0	0	
+GCF_000001635.27	cgload-sqlite	multi_valued	1872798	1872798	0	0	0	0	0	
+GCF_000001635.27	cgload-sqlite	rows_disagree	53	53	0	0	0	0	0	
+GCF_000001635.27	cgload-sqlite	organelle	139	139	0	0	0	0	0	
+GCF_015227675.2	cgload-sqlite	multi_row	68343	68343	0	0	0	0	0	
+GCF_015227675.2	cgload-sqlite	overlapping_rows	1	1	0	0	0	0	0	
+GCF_015227675.2	cgload-sqlite	exon_under_pseudogene	10061	10061	0	0	0	0	0	
+GCF_015227675.2	cgload-sqlite	multi_valued	1347101	1347101	0	0	0	0	0	
+GCF_015227675.2	cgload-sqlite	rows_disagree	602	602	0	0	0	0	0	
+GCF_015227675.2	cgload-sqlite	organelle	127	127	0	0	0	0	0	
+GCF_000002035.6	cgload-sqlite	multi_row	61336	61336	0	0	0	0	0	
+GCF_000002035.6	cgload-sqlite	exon_under_pseudogene	1375	1375	0	0	0	0	0	
+GCF_000002035.6	cgload-sqlite	multi_valued	977647	977647	0	0	0	0	0	
+GCF_000002035.6	cgload-sqlite	rows_disagree	8359	8359	0	0	0	0	0	
+GCF_000002035.6	cgload-sqlite	organelle	127	127	0	0	0	0	0	
+GCF_016699485.2	cgload-sqlite	multi_row	66116	66116	0	0	0	0	0	
+GCF_016699485.2	cgload-sqlite	exon_under_pseudogene	541	541	0	0	0	0	0	
+GCF_016699485.2	cgload-sqlite	multi_valued	1294029	1294029	0	0	0	0	0	
+GCF_016699485.2	cgload-sqlite	rows_disagree	797	797	0	0	0	0	0	
+GCF_016699485.2	cgload-sqlite	organelle	127	127	0	0	0	0	0	
+GCF_014441545.1	cgload-sqlite	multi_row	63265	63265	0	0	0	0	0	
+GCF_014441545.1	cgload-sqlite	overlapping_rows	1	1	0	0	0	0	0	
+GCF_014441545.1	cgload-sqlite	exon_under_pseudogene	7910	7910	0	0	0	0	0	
+GCF_014441545.1	cgload-sqlite	multi_valued	1236610	1236610	0	0	0	0	0	
+GCF_014441545.1	cgload-sqlite	rows_disagree	1249	1249	0	0	0	0	0	
+GCF_000004195.4	cgload-sqlite	multi_row	44342	44342	0	0	0	0	0	
+GCF_000004195.4	cgload-sqlite	exon_under_pseudogene	1589	1589	0	0	0	0	0	
+GCF_000004195.4	cgload-sqlite	multi_valued	756289	756289	0	0	0	0	0	
+GCF_000004195.4	cgload-sqlite	rows_disagree	2902	2902	0	0	0	0	0	
+GCF_000004195.4	cgload-sqlite	organelle	127	127	0	0	0	0	0	
+GCF_002234675.1	cgload-sqlite	multi_row	43275	43275	0	0	0	0	0	
+GCF_002234675.1	cgload-sqlite	exon_under_pseudogene	669	669	0	0	0	0	0	
+GCF_002234675.1	cgload-sqlite	multi_valued	781410	781410	0	0	0	0	0	
+GCF_002234675.1	cgload-sqlite	rows_disagree	459	459	0	0	0	0	0	
+GCF_002234675.1	cgload-sqlite	organelle	102	102	0	0	0	0	0	
+GCF_000001215.4	cgload-sqlite	multi_row	26474	26474	0	0	0	0	0	
+GCF_000001215.4	cgload-sqlite	overlapping_rows	2	2	0	0	0	0	0	
+GCF_000001215.4	cgload-sqlite	trans_spliced	170	170	0	0	0	0	0	
+GCF_000001215.4	cgload-sqlite	strand_unknown	9	9	0	0	0	0	0	
+GCF_000001215.4	cgload-sqlite	exon_under_pseudogene	563	563	0	0	0	0	0	
+GCF_000001215.4	cgload-sqlite	multi_valued	276181	276181	0	0	0	0	0	
+GCF_000001215.4	cgload-sqlite	rows_disagree	36	36	0	0	0	0	0	
+GCF_000001215.4	cgload-sqlite	organelle	126	126	0	0	0	0	0	
+GCF_000005575.2	cgload-sqlite	multi_row	12414	12414	0	0	0	0	0	
+GCF_000005575.2	cgload-sqlite	escapes_parent	3	3	0	0	0	0	0	
+GCF_000005575.2	cgload-sqlite	multi_valued	104408	104407	0	1	0	0	0	segs:1
+GCF_000005575.2	cgload-sqlite	rows_disagree	2647	2647	0	0	0	0	0	
+GCF_000005575.2	cgload-sqlite	organelle	126	126	0	0	0	0	0	
+GCF_002204515.2	cgload-sqlite	multi_row	26511	26511	0	0	0	0	0	
+GCF_002204515.2	cgload-sqlite	exon_under_pseudogene	739	739	0	0	0	0	0	
+GCF_002204515.2	cgload-sqlite	multi_valued	271474	271474	0	0	0	0	0	
+GCF_002204515.2	cgload-sqlite	rows_disagree	378	378	0	0	0	0	0	
+GCF_002204515.2	cgload-sqlite	organelle	128	128	0	0	0	0	0	
+GCF_003254395.2	cgload-sqlite	multi_row	22975	22975	0	0	0	0	0	
+GCF_003254395.2	cgload-sqlite	exon_under_pseudogene	164	164	0	0	0	0	0	
+GCF_003254395.2	cgload-sqlite	multi_valued	327975	327975	0	0	0	0	0	
+GCF_003254395.2	cgload-sqlite	rows_disagree	270	270	0	0	0	0	0	
+GCF_003254395.2	cgload-sqlite	organelle	126	126	0	0	0	0	0	
+GCF_000002335.3	cgload-sqlite	multi_row	21374	21374	0	0	0	0	0	
+GCF_000002335.3	cgload-sqlite	exon_under_pseudogene	105	105	0	0	0	0	0	
+GCF_000002335.3	cgload-sqlite	multi_valued	219513	219513	0	0	0	0	0	
+GCF_000002335.3	cgload-sqlite	rows_disagree	293	293	0	0	0	0	0	
+GCF_000002335.3	cgload-sqlite	organelle	126	126	0	0	0	0	0	
+GCF_009193385.2	cgload-sqlite	multi_row	32377	32377	0	0	0	0	0	
+GCF_009193385.2	cgload-sqlite	exon_under_pseudogene	533	533	0	0	0	0	0	
+GCF_009193385.2	cgload-sqlite	multi_valued	408726	408726	0	0	0	0	0	
+GCF_009193385.2	cgload-sqlite	rows_disagree	106	106	0	0	0	0	0	
+GCF_030269925.1	cgload-sqlite	multi_row	27076	27076	0	0	0	0	0	
+GCF_030269925.1	cgload-sqlite	crosses_origin	4	4	0	0	0	0	0	
+GCF_030269925.1	cgload-sqlite	exon_under_pseudogene	159	159	0	0	0	0	0	
+GCF_030269925.1	cgload-sqlite	multi_valued	387470	387470	0	0	0	0	0	
+GCF_030269925.1	cgload-sqlite	rows_disagree	975	975	0	0	0	0	0	
+GCF_030269925.1	cgload-sqlite	organelle	126	126	0	0	0	0	0	
+GCF_902167145.1	cgload-sqlite	multi_row	48422	48422	0	0	0	0	0	
+GCF_902167145.1	cgload-sqlite	trans_spliced	51	49	0	2	0	0	0	segs:2
+GCF_902167145.1	cgload-sqlite	strand_unknown	5	3	0	2	0	0	0	segs:2
+GCF_902167145.1	cgload-sqlite	crosses_origin	1	0	0	1	0	0	0	segs:1
+GCF_902167145.1	cgload-sqlite	inverted	1	0	0	1	0	0	0	segs:1
+GCF_902167145.1	cgload-sqlite	escapes_parent	8	7	0	1	0	0	0	segs:1
+GCF_902167145.1	cgload-sqlite	exon_under_pseudogene	12763	12763	0	0	0	0	0	
+GCF_902167145.1	cgload-sqlite	multi_valued	636194	636194	0	0	0	0	0	
+GCF_902167145.1	cgload-sqlite	rows_disagree	1070	1070	0	0	0	0	0	
+GCF_902167145.1	cgload-sqlite	organelle	1710	1708	0	2	0	0	0	segs:2
+GCF_000001735.4	cgload-sqlite	multi_row	40265	40265	0	0	0	0	0	
+GCF_000001735.4	cgload-sqlite	trans_spliced	29	27	0	2	0	0	0	segs:2
+GCF_000001735.4	cgload-sqlite	strand_unknown	4	2	0	2	0	0	0	segs:2
+GCF_000001735.4	cgload-sqlite	crosses_origin	4	2	0	2	0	0	0	segs:2
+GCF_000001735.4	cgload-sqlite	past_end	2	2	0	0	0	0	0	
+GCF_000001735.4	cgload-sqlite	inverted	1	0	0	1	0	0	0	segs:1
+GCF_000001735.4	cgload-sqlite	escapes_parent	13	11	0	2	0	0	0	segs:2
+GCF_000001735.4	cgload-sqlite	multi_valued	470500	470500	0	0	0	0	0	
+GCF_000001735.4	cgload-sqlite	rows_disagree	85	85	0	0	0	0	0	
+GCF_000001735.4	cgload-sqlite	organelle	2359	2357	0	2	0	0	0	segs:2
+GCF_034140825.1	cgload-sqlite	multi_row	34470	34470	0	0	0	0	0	
+GCF_034140825.1	cgload-sqlite	trans_spliced	31	29	0	2	0	0	0	segs:2
+GCF_034140825.1	cgload-sqlite	strand_unknown	4	2	0	2	0	0	0	segs:2
+GCF_034140825.1	cgload-sqlite	crosses_origin	2	2	0	0	0	0	0	
+GCF_034140825.1	cgload-sqlite	past_end	1	1	0	0	0	0	0	
+GCF_034140825.1	cgload-sqlite	escapes_parent	6	6	0	0	0	0	0	
+GCF_034140825.1	cgload-sqlite	exon_under_pseudogene	5991	5991	0	0	0	0	0	
+GCF_034140825.1	cgload-sqlite	multi_valued	435481	435481	0	0	0	0	0	
+GCF_034140825.1	cgload-sqlite	rows_disagree	292	292	0	0	0	0	0	
+GCF_034140825.1	cgload-sqlite	organelle	1436	1434	0	2	0	0	0	segs:2
+GCF_000003195.3	cgload-sqlite	multi_row	31830	31830	0	0	0	0	0	
+GCF_000003195.3	cgload-sqlite	trans_spliced	36	35	0	1	0	0	0	segs:1
+GCF_000003195.3	cgload-sqlite	strand_unknown	3	2	0	1	0	0	0	segs:1
+GCF_000003195.3	cgload-sqlite	crosses_origin	1	0	0	1	0	0	0	segs:1
+GCF_000003195.3	cgload-sqlite	escapes_parent	6	5	0	1	0	0	0	segs:1
+GCF_000003195.3	cgload-sqlite	exon_under_pseudogene	4727	4727	0	0	0	0	0	
+GCF_000003195.3	cgload-sqlite	multi_valued	379043	379043	0	0	0	0	0	
+GCF_000003195.3	cgload-sqlite	rows_disagree	192	192	0	0	0	0	0	
+GCF_000003195.3	cgload-sqlite	organelle	822	821	0	1	0	0	0	segs:1
+GCF_000004515.6	cgload-sqlite	multi_row	62949	62949	0	0	0	0	0	
+GCF_000004515.6	cgload-sqlite	trans_spliced	36	35	0	1	0	0	0	segs:1
+GCF_000004515.6	cgload-sqlite	strand_unknown	2	1	0	1	0	0	0	segs:1
+GCF_000004515.6	cgload-sqlite	crosses_origin	1	0	0	1	0	0	0	segs:1
+GCF_000004515.6	cgload-sqlite	inverted	1	0	0	1	0	0	0	segs:1
+GCF_000004515.6	cgload-sqlite	escapes_parent	6	5	0	1	0	0	0	segs:1
+GCF_000004515.6	cgload-sqlite	exon_under_pseudogene	20440	20440	0	0	0	0	0	
+GCF_000004515.6	cgload-sqlite	multi_valued	737554	737554	0	0	0	0	0	
+GCF_000004515.6	cgload-sqlite	rows_disagree	653	653	0	0	0	0	0	
+GCF_000004515.6	cgload-sqlite	organelle	1013	1012	0	1	0	0	0	segs:1
+GCF_000188115.5	cgload-sqlite	multi_row	31841	31841	0	0	0	0	0	
+GCF_000188115.5	cgload-sqlite	trans_spliced	12	12	0	0	0	0	0	
+GCF_000188115.5	cgload-sqlite	strand_unknown	1	1	0	0	0	0	0	
+GCF_000188115.5	cgload-sqlite	exon_under_pseudogene	4148	4148	0	0	0	0	0	
+GCF_000188115.5	cgload-sqlite	multi_valued	389334	389334	0	0	0	0	0	
+GCF_000188115.5	cgload-sqlite	rows_disagree	518	518	0	0	0	0	0	
+GCF_000188115.5	cgload-sqlite	organelle	827	827	0	0	0	0	0	
+GCF_030704535.1	cgload-sqlite	multi_row	33603	33603	0	0	0	0	0	
+GCF_030704535.1	cgload-sqlite	trans_spliced	36	36	0	0	0	0	0	
+GCF_030704535.1	cgload-sqlite	strand_unknown	2	2	0	0	0	0	0	
+GCF_030704535.1	cgload-sqlite	exon_under_pseudogene	5448	5448	0	0	0	0	0	
+GCF_030704535.1	cgload-sqlite	multi_valued	403885	403885	0	0	0	0	0	
+GCF_030704535.1	cgload-sqlite	rows_disagree	323	323	0	0	0	0	0	
+GCF_030704535.1	cgload-sqlite	organelle	1039	1039	0	0	0	0	0	
+GCF_000146045.2	cgload-sqlite	multi_row	329	329	0	0	0	0	0	
+GCF_000146045.2	cgload-sqlite	multi_valued	25412	25412	0	0	0	0	0	
+GCF_000146045.2	cgload-sqlite	organelle	200	200	0	0	0	0	0	
+GCF_000002945.2	cgload-sqlite	multi_row	2414	2414	0	0	0	0	0	
+GCF_000002945.2	cgload-sqlite	overlapping_rows	18	18	0	0	0	0	0	
+GCF_000002945.2	cgload-sqlite	escapes_parent	4	4	0	0	0	0	0	
+GCF_000002945.2	cgload-sqlite	multi_valued	47638	47638	0	0	0	0	0	
+GCF_000002945.2	cgload-sqlite	organelle	140	140	0	0	0	0	0	
+GCF_000182965.3	cgload-sqlite	multi_row	362	362	0	0	0	0	0	
+GCF_000182965.3	cgload-sqlite	multi_valued	24754	24754	0	0	0	0	0	
+GCF_000182965.3	cgload-sqlite	rows_disagree	1	1	0	0	0	0	0	
+GCF_000182925.2	cgload-sqlite	multi_row	8501	8501	0	0	0	0	0	
+GCF_000182925.2	cgload-sqlite	multi_valued	55797	55797	0	0	0	0	0	
+GCF_000182925.2	cgload-sqlite	rows_disagree	4	4	0	0	0	0	0	
+GCF_000182925.2	cgload-sqlite	organelle	210	210	0	0	0	0	0	
+GCF_000240135.3	cgload-sqlite	multi_row	10208	10208	0	0	0	0	0	
+GCF_000240135.3	cgload-sqlite	multi_valued	75501	75501	0	0	0	0	0	
+GCF_000240135.3	cgload-sqlite	rows_disagree	35	35	0	0	0	0	0	
+GCF_000149205.2	cgload-sqlite	multi_row	8427	8427	0	0	0	0	0	
+GCF_000149205.2	cgload-sqlite	multi_valued	63741	63741	0	0	0	0	0	
+GCF_000149205.2	cgload-sqlite	organelle	177	177	0	0	0	0	0	
+GCF_000149245.1	cgload-sqlite	multi_row	7567	7567	0	0	0	0	0	
+GCF_000149245.1	cgload-sqlite	multi_valued	72019	72019	0	0	0	0	0	
+GCF_000149245.1	cgload-sqlite	rows_disagree	7	7	0	0	0	0	0	
+GCF_000149245.1	cgload-sqlite	organelle	98	98	0	0	0	0	0	
+GCF_000328475.2	cgload-sqlite	multi_row	1864	1864	0	0	0	0	0	
+GCF_000328475.2	cgload-sqlite	multi_valued	30129	30129	0	0	0	0	0	
+GCF_000328475.2	cgload-sqlite	rows_disagree	7	7	0	0	0	0	0	
+GCF_000001405.40	cgload-postgres	multi_row	141859	141859	0	0	0	0	0	
+GCF_000001405.40	cgload-postgres	overlapping_rows	3	3	0	0	0	0	0	
+GCF_000001405.40	cgload-postgres	crosses_origin	1	1	0	0	0	0	0	
+GCF_000001405.40	cgload-postgres	exon_under_pseudogene	9015	9015	0	0	0	0	0	
+GCF_000001405.40	cgload-postgres	multi_valued	2724045	2724045	0	0	0	0	0	
+GCF_000001405.40	cgload-postgres	rows_disagree	3573	3573	0	0	0	0	0	
+GCF_000001405.40	cgload-postgres	organelle	127	127	0	0	0	0	0	
+GCF_000001635.27	cgload-postgres	multi_row	91336	91336	0	0	0	0	0	
+GCF_000001635.27	cgload-postgres	overlapping_rows	1	1	0	0	0	0	0	
+GCF_000001635.27	cgload-postgres	exon_under_pseudogene	4069	4069	0	0	0	0	0	
+GCF_000001635.27	cgload-postgres	multi_valued	1872798	1872798	0	0	0	0	0	
+GCF_000001635.27	cgload-postgres	rows_disagree	53	53	0	0	0	0	0	
+GCF_000001635.27	cgload-postgres	organelle	139	139	0	0	0	0	0	
+GCF_015227675.2	cgload-postgres	multi_row	68343	68343	0	0	0	0	0	
+GCF_015227675.2	cgload-postgres	overlapping_rows	1	1	0	0	0	0	0	
+GCF_015227675.2	cgload-postgres	exon_under_pseudogene	10061	10061	0	0	0	0	0	
+GCF_015227675.2	cgload-postgres	multi_valued	1347101	1347101	0	0	0	0	0	
+GCF_015227675.2	cgload-postgres	rows_disagree	602	602	0	0	0	0	0	
+GCF_015227675.2	cgload-postgres	organelle	127	127	0	0	0	0	0	
+GCF_000002035.6	cgload-postgres	multi_row	61336	61336	0	0	0	0	0	
+GCF_000002035.6	cgload-postgres	exon_under_pseudogene	1375	1375	0	0	0	0	0	
+GCF_000002035.6	cgload-postgres	multi_valued	977647	977647	0	0	0	0	0	
+GCF_000002035.6	cgload-postgres	rows_disagree	8359	8359	0	0	0	0	0	
+GCF_000002035.6	cgload-postgres	organelle	127	127	0	0	0	0	0	
+GCF_016699485.2	cgload-postgres	multi_row	66116	66116	0	0	0	0	0	
+GCF_016699485.2	cgload-postgres	exon_under_pseudogene	541	541	0	0	0	0	0	
+GCF_016699485.2	cgload-postgres	multi_valued	1294029	1294029	0	0	0	0	0	
+GCF_016699485.2	cgload-postgres	rows_disagree	797	797	0	0	0	0	0	
+GCF_016699485.2	cgload-postgres	organelle	127	127	0	0	0	0	0	
+GCF_014441545.1	cgload-postgres	multi_row	63265	63265	0	0	0	0	0	
+GCF_014441545.1	cgload-postgres	overlapping_rows	1	1	0	0	0	0	0	
+GCF_014441545.1	cgload-postgres	exon_under_pseudogene	7910	7910	0	0	0	0	0	
+GCF_014441545.1	cgload-postgres	multi_valued	1236610	1236610	0	0	0	0	0	
+GCF_014441545.1	cgload-postgres	rows_disagree	1249	1249	0	0	0	0	0	
+GCF_000004195.4	cgload-postgres	multi_row	44342	44342	0	0	0	0	0	
+GCF_000004195.4	cgload-postgres	exon_under_pseudogene	1589	1589	0	0	0	0	0	
+GCF_000004195.4	cgload-postgres	multi_valued	756289	756289	0	0	0	0	0	
+GCF_000004195.4	cgload-postgres	rows_disagree	2902	2902	0	0	0	0	0	
+GCF_000004195.4	cgload-postgres	organelle	127	127	0	0	0	0	0	
+GCF_002234675.1	cgload-postgres	multi_row	43275	43275	0	0	0	0	0	
+GCF_002234675.1	cgload-postgres	exon_under_pseudogene	669	669	0	0	0	0	0	
+GCF_002234675.1	cgload-postgres	multi_valued	781410	781410	0	0	0	0	0	
+GCF_002234675.1	cgload-postgres	rows_disagree	459	459	0	0	0	0	0	
+GCF_002234675.1	cgload-postgres	organelle	102	102	0	0	0	0	0	
+GCF_000001215.4	cgload-postgres	multi_row	26474	26474	0	0	0	0	0	
+GCF_000001215.4	cgload-postgres	overlapping_rows	2	2	0	0	0	0	0	
+GCF_000001215.4	cgload-postgres	trans_spliced	170	170	0	0	0	0	0	
+GCF_000001215.4	cgload-postgres	strand_unknown	9	9	0	0	0	0	0	
+GCF_000001215.4	cgload-postgres	exon_under_pseudogene	563	563	0	0	0	0	0	
+GCF_000001215.4	cgload-postgres	multi_valued	276181	276181	0	0	0	0	0	
+GCF_000001215.4	cgload-postgres	rows_disagree	36	36	0	0	0	0	0	
+GCF_000001215.4	cgload-postgres	organelle	126	126	0	0	0	0	0	
+GCF_000005575.2	cgload-postgres	multi_row	12414	12414	0	0	0	0	0	
+GCF_000005575.2	cgload-postgres	escapes_parent	3	3	0	0	0	0	0	
+GCF_000005575.2	cgload-postgres	multi_valued	104408	104407	0	1	0	0	0	segs:1
+GCF_000005575.2	cgload-postgres	rows_disagree	2647	2647	0	0	0	0	0	
+GCF_000005575.2	cgload-postgres	organelle	126	126	0	0	0	0	0	
+GCF_002204515.2	cgload-postgres	multi_row	26511	26511	0	0	0	0	0	
+GCF_002204515.2	cgload-postgres	exon_under_pseudogene	739	739	0	0	0	0	0	
+GCF_002204515.2	cgload-postgres	multi_valued	271474	271474	0	0	0	0	0	
+GCF_002204515.2	cgload-postgres	rows_disagree	378	378	0	0	0	0	0	
+GCF_002204515.2	cgload-postgres	organelle	128	128	0	0	0	0	0	
+GCF_003254395.2	cgload-postgres	multi_row	22975	22975	0	0	0	0	0	
+GCF_003254395.2	cgload-postgres	exon_under_pseudogene	164	164	0	0	0	0	0	
+GCF_003254395.2	cgload-postgres	multi_valued	327975	327975	0	0	0	0	0	
+GCF_003254395.2	cgload-postgres	rows_disagree	270	270	0	0	0	0	0	
+GCF_003254395.2	cgload-postgres	organelle	126	126	0	0	0	0	0	
+GCF_000002335.3	cgload-postgres	multi_row	21374	21374	0	0	0	0	0	
+GCF_000002335.3	cgload-postgres	exon_under_pseudogene	105	105	0	0	0	0	0	
+GCF_000002335.3	cgload-postgres	multi_valued	219513	219513	0	0	0	0	0	
+GCF_000002335.3	cgload-postgres	rows_disagree	293	293	0	0	0	0	0	
+GCF_000002335.3	cgload-postgres	organelle	126	126	0	0	0	0	0	
+GCF_009193385.2	cgload-postgres	multi_row	32377	32377	0	0	0	0	0	
+GCF_009193385.2	cgload-postgres	exon_under_pseudogene	533	533	0	0	0	0	0	
+GCF_009193385.2	cgload-postgres	multi_valued	408726	408726	0	0	0	0	0	
+GCF_009193385.2	cgload-postgres	rows_disagree	106	106	0	0	0	0	0	
+GCF_030269925.1	cgload-postgres	multi_row	27076	27076	0	0	0	0	0	
+GCF_030269925.1	cgload-postgres	crosses_origin	4	4	0	0	0	0	0	
+GCF_030269925.1	cgload-postgres	exon_under_pseudogene	159	159	0	0	0	0	0	
+GCF_030269925.1	cgload-postgres	multi_valued	387470	387470	0	0	0	0	0	
+GCF_030269925.1	cgload-postgres	rows_disagree	975	975	0	0	0	0	0	
+GCF_030269925.1	cgload-postgres	organelle	126	126	0	0	0	0	0	
+GCF_902167145.1	cgload-postgres	multi_row	48422	48422	0	0	0	0	0	
+GCF_902167145.1	cgload-postgres	trans_spliced	51	49	0	2	0	0	0	segs:2
+GCF_902167145.1	cgload-postgres	strand_unknown	5	3	0	2	0	0	0	segs:2
+GCF_902167145.1	cgload-postgres	crosses_origin	1	0	0	1	0	0	0	segs:1
+GCF_902167145.1	cgload-postgres	inverted	1	0	0	1	0	0	0	segs:1
+GCF_902167145.1	cgload-postgres	escapes_parent	8	7	0	1	0	0	0	segs:1
+GCF_902167145.1	cgload-postgres	exon_under_pseudogene	12763	12763	0	0	0	0	0	
+GCF_902167145.1	cgload-postgres	multi_valued	636194	636194	0	0	0	0	0	
+GCF_902167145.1	cgload-postgres	rows_disagree	1070	1070	0	0	0	0	0	
+GCF_902167145.1	cgload-postgres	organelle	1710	1708	0	2	0	0	0	segs:2
+GCF_000001735.4	cgload-postgres	multi_row	40265	40265	0	0	0	0	0	
+GCF_000001735.4	cgload-postgres	trans_spliced	29	27	0	2	0	0	0	segs:2
+GCF_000001735.4	cgload-postgres	strand_unknown	4	2	0	2	0	0	0	segs:2
+GCF_000001735.4	cgload-postgres	crosses_origin	4	2	0	2	0	0	0	segs:2
+GCF_000001735.4	cgload-postgres	past_end	2	2	0	0	0	0	0	
+GCF_000001735.4	cgload-postgres	inverted	1	0	0	1	0	0	0	segs:1
+GCF_000001735.4	cgload-postgres	escapes_parent	13	11	0	2	0	0	0	segs:2
+GCF_000001735.4	cgload-postgres	multi_valued	470500	470500	0	0	0	0	0	
+GCF_000001735.4	cgload-postgres	rows_disagree	85	85	0	0	0	0	0	
+GCF_000001735.4	cgload-postgres	organelle	2359	2357	0	2	0	0	0	segs:2
+GCF_034140825.1	cgload-postgres	multi_row	34470	34470	0	0	0	0	0	
+GCF_034140825.1	cgload-postgres	trans_spliced	31	29	0	2	0	0	0	segs:2
+GCF_034140825.1	cgload-postgres	strand_unknown	4	2	0	2	0	0	0	segs:2
+GCF_034140825.1	cgload-postgres	crosses_origin	2	2	0	0	0	0	0	
+GCF_034140825.1	cgload-postgres	past_end	1	1	0	0	0	0	0	
+GCF_034140825.1	cgload-postgres	escapes_parent	6	6	0	0	0	0	0	
+GCF_034140825.1	cgload-postgres	exon_under_pseudogene	5991	5991	0	0	0	0	0	
+GCF_034140825.1	cgload-postgres	multi_valued	435481	435481	0	0	0	0	0	
+GCF_034140825.1	cgload-postgres	rows_disagree	292	292	0	0	0	0	0	
+GCF_034140825.1	cgload-postgres	organelle	1436	1434	0	2	0	0	0	segs:2
+GCF_000003195.3	cgload-postgres	multi_row	31830	31830	0	0	0	0	0	
+GCF_000003195.3	cgload-postgres	trans_spliced	36	35	0	1	0	0	0	segs:1
+GCF_000003195.3	cgload-postgres	strand_unknown	3	2	0	1	0	0	0	segs:1
+GCF_000003195.3	cgload-postgres	crosses_origin	1	0	0	1	0	0	0	segs:1
+GCF_000003195.3	cgload-postgres	escapes_parent	6	5	0	1	0	0	0	segs:1
+GCF_000003195.3	cgload-postgres	exon_under_pseudogene	4727	4727	0	0	0	0	0	
+GCF_000003195.3	cgload-postgres	multi_valued	379043	379043	0	0	0	0	0	
+GCF_000003195.3	cgload-postgres	rows_disagree	192	192	0	0	0	0	0	
+GCF_000003195.3	cgload-postgres	organelle	822	821	0	1	0	0	0	segs:1
+GCF_000004515.6	cgload-postgres	multi_row	62949	62949	0	0	0	0	0	
+GCF_000004515.6	cgload-postgres	trans_spliced	36	35	0	1	0	0	0	segs:1
+GCF_000004515.6	cgload-postgres	strand_unknown	2	1	0	1	0	0	0	segs:1
+GCF_000004515.6	cgload-postgres	crosses_origin	1	0	0	1	0	0	0	segs:1
+GCF_000004515.6	cgload-postgres	inverted	1	0	0	1	0	0	0	segs:1
+GCF_000004515.6	cgload-postgres	escapes_parent	6	5	0	1	0	0	0	segs:1
+GCF_000004515.6	cgload-postgres	exon_under_pseudogene	20440	20440	0	0	0	0	0	
+GCF_000004515.6	cgload-postgres	multi_valued	737554	737554	0	0	0	0	0	
+GCF_000004515.6	cgload-postgres	rows_disagree	653	653	0	0	0	0	0	
+GCF_000004515.6	cgload-postgres	organelle	1013	1012	0	1	0	0	0	segs:1
+GCF_000188115.5	cgload-postgres	multi_row	31841	31841	0	0	0	0	0	
+GCF_000188115.5	cgload-postgres	trans_spliced	12	12	0	0	0	0	0	
+GCF_000188115.5	cgload-postgres	strand_unknown	1	1	0	0	0	0	0	
+GCF_000188115.5	cgload-postgres	exon_under_pseudogene	4148	4148	0	0	0	0	0	
+GCF_000188115.5	cgload-postgres	multi_valued	389334	389334	0	0	0	0	0	
+GCF_000188115.5	cgload-postgres	rows_disagree	518	518	0	0	0	0	0	
+GCF_000188115.5	cgload-postgres	organelle	827	827	0	0	0	0	0	
+GCF_030704535.1	cgload-postgres	multi_row	33603	33603	0	0	0	0	0	
+GCF_030704535.1	cgload-postgres	trans_spliced	36	36	0	0	0	0	0	
+GCF_030704535.1	cgload-postgres	strand_unknown	2	2	0	0	0	0	0	
+GCF_030704535.1	cgload-postgres	exon_under_pseudogene	5448	5448	0	0	0	0	0	
+GCF_030704535.1	cgload-postgres	multi_valued	403885	403885	0	0	0	0	0	
+GCF_030704535.1	cgload-postgres	rows_disagree	323	323	0	0	0	0	0	
+GCF_030704535.1	cgload-postgres	organelle	1039	1039	0	0	0	0	0	
+GCF_000146045.2	cgload-postgres	multi_row	329	329	0	0	0	0	0	
+GCF_000146045.2	cgload-postgres	multi_valued	25412	25412	0	0	0	0	0	
+GCF_000146045.2	cgload-postgres	organelle	200	200	0	0	0	0	0	
+GCF_000002945.2	cgload-postgres	multi_row	2414	2414	0	0	0	0	0	
+GCF_000002945.2	cgload-postgres	overlapping_rows	18	18	0	0	0	0	0	
+GCF_000002945.2	cgload-postgres	escapes_parent	4	4	0	0	0	0	0	
+GCF_000002945.2	cgload-postgres	multi_valued	47638	47638	0	0	0	0	0	
+GCF_000002945.2	cgload-postgres	organelle	140	140	0	0	0	0	0	
+GCF_000182965.3	cgload-postgres	multi_row	362	362	0	0	0	0	0	
+GCF_000182965.3	cgload-postgres	multi_valued	24754	24754	0	0	0	0	0	
+GCF_000182965.3	cgload-postgres	rows_disagree	1	1	0	0	0	0	0	
+GCF_000182925.2	cgload-postgres	multi_row	8501	8501	0	0	0	0	0	
+GCF_000182925.2	cgload-postgres	multi_valued	55797	55797	0	0	0	0	0	
+GCF_000182925.2	cgload-postgres	rows_disagree	4	4	0	0	0	0	0	
+GCF_000182925.2	cgload-postgres	organelle	210	210	0	0	0	0	0	
+GCF_000240135.3	cgload-postgres	multi_row	10208	10208	0	0	0	0	0	
+GCF_000240135.3	cgload-postgres	multi_valued	75501	75501	0	0	0	0	0	
+GCF_000240135.3	cgload-postgres	rows_disagree	35	35	0	0	0	0	0	
+GCF_000149205.2	cgload-postgres	multi_row	8427	8427	0	0	0	0	0	
+GCF_000149205.2	cgload-postgres	multi_valued	63741	63741	0	0	0	0	0	
+GCF_000149205.2	cgload-postgres	organelle	177	177	0	0	0	0	0	
+GCF_000149245.1	cgload-postgres	multi_row	7567	7567	0	0	0	0	0	
+GCF_000149245.1	cgload-postgres	multi_valued	72019	72019	0	0	0	0	0	
+GCF_000149245.1	cgload-postgres	rows_disagree	7	7	0	0	0	0	0	
+GCF_000149245.1	cgload-postgres	organelle	98	98	0	0	0	0	0	
+GCF_000328475.2	cgload-postgres	multi_row	1864	1864	0	0	0	0	0	
+GCF_000328475.2	cgload-postgres	multi_valued	30129	30129	0	0	0	0	0	
+GCF_000328475.2	cgload-postgres	rows_disagree	7	7	0	0	0	0	0	

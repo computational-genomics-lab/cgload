@@ -1,0 +1,76 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents",
+  "attrs"
+ ],
+ "totals": {
+  "truth": 31054,
+  "truth_links": 23890,
+  "kept_links": 23890,
+  "kept": 31054
+ },
+ "stored_features": 31054,
+ "stored_links": 23890,
+ "extra_by_type": {},
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 6780,
+   "kept": 6780
+  },
+  "exon": {
+   "truth": 10185,
+   "kept": 10185
+  },
+  "gap": {
+   "truth": 227,
+   "kept": 227
+  },
+  "gene": {
+   "truth": 6907,
+   "kept": 6907
+  },
+  "mRNA": {
+   "truth": 6780,
+   "kept": 6780
+  },
+  "rRNA": {
+   "truth": 34,
+   "kept": 34
+  },
+  "region": {
+   "truth": 27,
+   "kept": 27
+  },
+  "sequence_feature": {
+   "truth": 3,
+   "kept": 3
+  },
+  "tRNA": {
+   "truth": 111,
+   "kept": 111
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 1864,
+   "kept": 1864
+  },
+  "multi_valued": {
+   "truth": 30129,
+   "kept": 30129
+  },
+  "rows_disagree": {
+   "truth": 7,
+   "kept": 7
+  }
+ },
+ "case_field_differences": {},
+ "examples": {},
+ "genome": "GCF_000328475.2",
+ "tool": "cgload-sqlite"
+}

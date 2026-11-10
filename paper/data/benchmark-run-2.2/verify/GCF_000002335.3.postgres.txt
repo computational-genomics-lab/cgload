@@ -1,0 +1,6 @@
+  source count      PASS  235,950 features in the file, 235,950 in the database, across 14 type(s); 368,299 rows in each
+  parent edges      PASS  219,139 edge(s), all accounted for (explicit_parent 219,139); the file states 219,139
+  stored assembly   PASS  /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload/postgres/GCF_000002335.3/data/tribolium_castaneum/reference/tcas5.2/assembly.fa and its index are present; SHA-256 matches the load
+  cross-parser      ----  no second format supplied; pass --against with a GenBank or GFF3 file describing the same assembly
+  reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
+

@@ -1,0 +1,70 @@
+{
+ "tool": "txdbmaker",
+ "types_from": [
+  "txdbmaker::.CDS_TYPES",
+  "txdbmaker::.EXON_TYPES",
+  "txdbmaker::.GENE_TYPES",
+  "txdbmaker::.STOP_CODON_TYPES",
+  "txdbmaker::.TX_TYPES",
+  "txdbmaker::GFF_FEATURE_TYPES"
+ ],
+ "transcript_names_from": "transcript_id",
+ "gene_ids_from": "Name",
+ "totals": {
+  "truth": 6478,
+  "kept": 6431,
+  "changed": 47,
+  "changed_announced": 47
+ },
+ "extra_transcripts": 0,
+ "paired_by": {
+  "name and span": 6138,
+  "span, strand and type": 340
+ },
+ "field_differences": {
+  "cds": 47
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 329,
+   "kept": 282,
+   "changed": 47,
+   "changed_announced": 47
+  },
+  "multi_valued": {
+   "truth": 6478,
+   "kept": 6431,
+   "changed": 47,
+   "changed_announced": 47
+  },
+  "organelle": {
+   "truth": 47,
+   "kept": 47
+  }
+ },
+ "genes": {
+  "truth": 6477,
+  "held": 6477
+ },
+ "parts_under_no_transcript": {},
+ "not_modelled_by_type": {
+  "region": 17,
+  "telomere": 32,
+  "origin_of_replication": 360,
+  "long_terminal_repeat": 384,
+  "regulatory_region": 22,
+  "centromere": 64,
+  "mobile_genetic_element": 50,
+  "sequence_feature": 14
+ },
+ "examples": {
+  "changed:cds": [
+   "rna-NM_001178666.2",
+   "rna-NM_001179028.4",
+   "rna-NM_001179050.4",
+   "rna-NM_001180048.2",
+   "rna-NM_001180050.2"
+  ]
+ },
+ "genome": "GCF_000146045.2"
+}

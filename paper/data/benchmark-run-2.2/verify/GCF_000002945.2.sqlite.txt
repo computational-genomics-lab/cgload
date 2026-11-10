@@ -1,0 +1,6 @@
+  source count      PASS  48,766 features in the file, 48,766 in the database, across 18 type(s); 53,910 rows in each
+  parent edges      PASS  35,845 edge(s), all accounted for (explicit_parent 35,845); the file states 35,845
+  stored assembly   PASS  /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload/sqlite/GCF_000002945.2/data/schizosaccharomyces_pombe/reference/asm294v3/assembly.fa and its index are present; SHA-256 matches the load
+  cross-parser      PASS  GFF3 and GenBank agree on 10 feature types; 43 GFF3 mRNA of genes whose GenBank record states CDS but no mRNA not compared (D-105)
+  reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
+

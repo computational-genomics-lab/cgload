@@ -1,0 +1,106 @@
+{
+ "tool": "txdbmaker",
+ "types_from": [
+  "txdbmaker::.CDS_TYPES",
+  "txdbmaker::.EXON_TYPES",
+  "txdbmaker::.GENE_TYPES",
+  "txdbmaker::.STOP_CODON_TYPES",
+  "txdbmaker::.TX_TYPES",
+  "txdbmaker::GFF_FEATURE_TYPES"
+ ],
+ "transcript_names_from": "transcript_id",
+ "gene_ids_from": "Name",
+ "totals": {
+  "truth": 35677,
+  "kept": 35654,
+  "lost": 9,
+  "lost_announced": 9,
+  "changed": 14,
+  "changed_announced": 14
+ },
+ "extra_transcripts": 0,
+ "paired_by": {
+  "name and span": 34517,
+  "span, strand and type": 1151
+ },
+ "field_differences": {
+  "cds": 14
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 26473,
+   "kept": 26450,
+   "lost": 9,
+   "lost_announced": 9,
+   "changed": 14,
+   "changed_announced": 14
+  },
+  "overlapping_rows": {
+   "truth": 1,
+   "changed": 1,
+   "changed_announced": 1
+  },
+  "trans_spliced": {
+   "truth": 23,
+   "kept": 14,
+   "lost": 9,
+   "lost_announced": 9
+  },
+  "strand_unknown": {
+   "truth": 9,
+   "lost": 9,
+   "lost_announced": 9
+  },
+  "exon_under_pseudogene": {
+   "truth": 311,
+   "kept": 311
+  },
+  "multi_valued": {
+   "truth": 35677,
+   "kept": 35654,
+   "lost": 9,
+   "lost_announced": 9,
+   "changed": 14,
+   "changed_announced": 14
+  },
+  "rows_disagree": {
+   "truth": 35,
+   "kept": 16,
+   "lost": 9,
+   "lost_announced": 9,
+   "changed": 10,
+   "changed_announced": 10
+  },
+  "organelle": {
+   "truth": 37,
+   "kept": 37
+  }
+ },
+ "genes": {
+  "truth": 17872,
+  "held": 17872
+ },
+ "parts_under_no_transcript": {},
+ "not_modelled_by_type": {
+  "region": 1870,
+  "mobile_genetic_element": 5734,
+  "sequence_feature": 1
+ },
+ "examples": {
+  "lost": [
+   "rna-NM_001260299.1",
+   "rna-NM_001260300.1",
+   "rna-NM_176521.1",
+   "rna-NM_176522.1",
+   "rna-NM_176523.1"
+  ],
+  "changed:cds": [
+   "rna-NM_001316494.1",
+   "rna-NM_001414082.1",
+   "rna-NM_001414083.1",
+   "rna-NM_001414084.1",
+   "rna-NM_001414085.1"
+  ]
+ },
+ "genome": "GCF_000001215.4"
+}

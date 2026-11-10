@@ -1,0 +1,66 @@
+accession	tool	trial	full_load_s	kill_at_s	finished_first	state	opens	assemblies	records_left	records_complete	links_left	links_complete	verify_after	reload_ok	leftover_bytes	orphan_directory	leftover_after_reload	note
+GCF_000001735.4	cgload	1	109.128	73.290	False	empty	NA	0	0	710747	0	671444	NA	True	121165196	False	121165196	NA
+GCF_000001735.4	cgload	2	109.128	56.100	False	empty	NA	0	0	710747	0	671444	NA	True	121165196	False	121165196	NA
+GCF_000001735.4	cgload	3	109.128	98.490	False	empty	NA	0	0	710747	0	671444	NA	True	130419466	False	130419466	NA
+GCF_000001735.4	cgload	4	109.128	44.780	False	empty	NA	0	0	710747	0	671444	NA	True	121165196	False	121165196	NA
+GCF_000001735.4	cgload	5	109.128	81.660	False	empty	NA	0	0	710747	0	671444	NA	True	121165196	False	121165196	NA
+GCF_000001735.4	cgload	6	109.128	36.930	False	empty	NA	0	0	710747	0	671444	NA	True	121165196	False	121165196	NA
+GCF_000001735.4	cgload	7	109.128	47.390	False	empty	NA	0	0	710747	0	671444	NA	True	121165196	False	121165196	NA
+GCF_000001735.4	cgload	8	109.128	10.420	False	empty	NA	0	0	710747	0	671444	NA	True	0	False	0	NA
+GCF_000001735.4	cgload	9	109.128	49.040	False	empty	NA	0	0	710747	0	671444	NA	True	121165196	False	121165196	NA
+GCF_000001735.4	cgload	10	109.128	81.430	False	empty	NA	0	0	710747	0	671444	NA	True	121165196	False	121165196	NA
+GCF_000240135.3	cgload	1	14.148	11.550	False	empty	NA	0	0	102635	0	88889	NA	True	36916336	False	36916336	NA
+GCF_000240135.3	cgload	2	14.148	8.040	False	empty	NA	0	0	102635	0	88889	NA	True	36916336	False	36916336	NA
+GCF_000240135.3	cgload	3	14.148	2.070	False	empty	NA	0	0	102635	0	88889	NA	True	0	False	0	NA
+GCF_000240135.3	cgload	4	14.148	4.220	False	empty	NA	0	0	102635	0	88889	NA	True	36916336	False	36916336	NA
+GCF_000240135.3	cgload	5	14.148	2.170	False	empty	NA	0	0	102635	0	88889	NA	True	0	False	0	NA
+GCF_000240135.3	cgload	6	14.148	11.320	False	empty	NA	0	0	102635	0	88889	NA	True	36916336	False	36916336	NA
+GCF_000240135.3	cgload	7	14.148	4.840	False	empty	NA	0	0	102635	0	88889	NA	True	36916336	False	36916336	NA
+GCF_000240135.3	cgload	8	14.148	6.560	False	empty	NA	0	0	102635	0	88889	NA	True	36916336	False	36916336	NA
+GCF_000240135.3	cgload	9	14.148	5.240	False	empty	NA	0	0	102635	0	88889	NA	True	36916336	False	36916336	NA
+GCF_000240135.3	cgload	10	14.148	3.050	False	empty	NA	0	0	102635	0	88889	NA	True	0	False	0	NA
+GCF_000001735.4	cgload-force	1	109.128	30.260	False	intact	NA	1	710747	710747	671444	671444	pass	NA	0	NA	NA	NA
+GCF_000001735.4	cgload-force	2	109.128	9.920	False	intact	NA	1	710747	710747	671444	671444	pass	NA	0	NA	NA	NA
+GCF_000001735.4	cgload-force	3	109.128	47.460	False	intact	NA	1	710747	710747	671444	671444	pass	NA	121165196	NA	NA	NA
+GCF_000001735.4	cgload-force	4	109.128	58.560	False	intact	NA	1	710747	710747	671444	671444	pass	NA	121165196	NA	NA	NA
+GCF_000001735.4	cgload-force	5	109.128	62.080	False	intact	NA	1	710747	710747	671444	671444	pass	NA	121165196	NA	NA	NA
+GCF_000001735.4	cgload-force	6	109.128	97.440	False	intact	NA	1	710747	710747	671444	671444	pass	NA	121165196	NA	NA	NA
+GCF_000001735.4	cgload-force	7	109.128	30.930	False	intact	NA	1	710747	710747	671444	671444	pass	NA	0	NA	NA	NA
+GCF_000001735.4	cgload-force	8	109.128	82.370	False	intact	NA	1	710747	710747	671444	671444	pass	NA	121165196	NA	NA	NA
+GCF_000001735.4	cgload-force	9	109.128	50.640	False	intact	NA	1	710747	710747	671444	671444	pass	NA	121165196	NA	NA	NA
+GCF_000001735.4	cgload-force	10	109.128	25.040	False	intact	NA	1	710747	710747	671444	671444	pass	NA	0	NA	NA	NA
+GCF_000240135.3	cgload-force	1	14.148	4.750	False	intact	NA	1	102635	102635	88889	88889	pass	NA	36916336	NA	NA	NA
+GCF_000240135.3	cgload-force	2	14.148	6.250	False	intact	NA	1	102635	102635	88889	88889	pass	NA	36916336	NA	NA	NA
+GCF_000240135.3	cgload-force	3	14.148	1.910	False	intact	NA	1	102635	102635	88889	88889	pass	NA	0	NA	NA	NA
+GCF_000240135.3	cgload-force	4	14.148	8.510	False	intact	NA	1	102635	102635	88889	88889	pass	NA	36916336	NA	NA	NA
+GCF_000240135.3	cgload-force	5	14.148	5.800	False	intact	NA	1	102635	102635	88889	88889	pass	NA	36916336	NA	NA	NA
+GCF_000240135.3	cgload-force	6	14.148	3.270	False	intact	NA	1	102635	102635	88889	88889	pass	NA	0	NA	NA	NA
+GCF_000240135.3	cgload-force	7	14.148	3.780	False	intact	NA	1	102635	102635	88889	88889	pass	NA	36915673	NA	NA	NA
+GCF_000240135.3	cgload-force	8	14.148	2.800	False	intact	NA	1	102635	102635	88889	88889	pass	NA	0	NA	NA	NA
+GCF_000240135.3	cgload-force	9	14.148	7.340	False	intact	NA	1	102635	102635	88889	88889	pass	NA	36916336	NA	NA	NA
+GCF_000240135.3	cgload-force	10	14.148	3.060	False	intact	NA	1	102635	102635	88889	88889	pass	NA	0	NA	NA	NA
+GCF_000001735.4	gffutils	1	61.366	19.710	False	empty	False	NA	0	710747	0	671444	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000001735.4	gffutils	2	61.366	11.050	False	empty	False	NA	0	710747	0	671444	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000001735.4	gffutils	3	61.366	27.340	False	empty	False	NA	0	710747	0	671444	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000001735.4	gffutils	4	61.366	5.170	False	empty	False	NA	0	710747	0	671444	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000001735.4	gffutils	5	61.366	51.500	False	empty	False	NA	0	710747	0	671444	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000001735.4	gffutils	6	61.366	40.750	False	empty	False	NA	0	710747	0	671444	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000001735.4	gffutils	7	61.366	28.920	False	empty	False	NA	0	710747	0	671444	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000001735.4	gffutils	8	61.366	30.480	False	empty	False	NA	0	710747	0	671444	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000001735.4	gffutils	9	61.366	29.620	False	empty	False	NA	0	710747	0	671444	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000001735.4	gffutils	10	61.366	35.690	False	empty	False	NA	0	710747	0	671444	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000240135.3	gffutils	1	8.192	6.670	False	complete	False	NA	102635	102635	88889	88889	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000240135.3	gffutils	2	8.192	7.100	False	complete	False	NA	102635	102635	88889	88889	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000240135.3	gffutils	3	8.192	1.150	False	empty	False	NA	0	102635	0	88889	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000240135.3	gffutils	4	8.192	4.430	False	empty	False	NA	0	102635	0	88889	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000240135.3	gffutils	5	8.192	2.530	False	empty	False	NA	0	102635	0	88889	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000240135.3	gffutils	6	8.192	2.930	False	empty	False	NA	0	102635	0	88889	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000240135.3	gffutils	7	8.192	2.290	False	empty	False	NA	0	102635	0	88889	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000240135.3	gffutils	8	8.192	6.740	False	complete	False	NA	102635	102635	88889	88889	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000240135.3	gffutils	9	8.192	3.730	False	empty	False	NA	0	102635	0	88889	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000240135.3	gffutils	10	8.192	4.630	False	empty	False	NA	0	102635	0	88889	NA	NA	NA	NA	NA	TypeError: cannot unpack non-iterable NoneType object
+GCF_000240135.3	chado	1	1905.235	1753.630	False	empty	NA	NA	0	92046	0	78282	NA	NA	NA	NA	NA	NA
+GCF_000240135.3	chado	2	1905.235	1612.430	False	empty	NA	NA	0	92046	0	78282	NA	NA	NA	NA	NA	NA
+GCF_000240135.3	chado	3	1905.235	133.180	False	empty	NA	NA	0	92046	0	78282	NA	NA	NA	NA	NA	NA
+GCF_000240135.3	chado	4	1905.235	179.630	False	empty	NA	NA	0	92046	0	78282	NA	NA	NA	NA	NA	NA
+GCF_000240135.3	chado	5	1905.235	926.900	False	empty	NA	NA	0	92046	0	78282	NA	NA	NA	NA	NA	NA

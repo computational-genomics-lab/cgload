@@ -1,0 +1,6 @@
+  source count      PASS  772,745 features in the file, 772,745 in the database, across 21 type(s); 1,338,095 rows in each
+  parent edges      PASS  740,872 edge(s), all accounted for (explicit_parent 740,872); the file states 740,872
+  stored assembly   PASS  /home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/cgload/sqlite/GCF_000004195.4/data/xenopus_tropicalis/reference/ucb_xtro_10.0/assembly.fa and its index are present; SHA-256 matches the load
+  cross-parser      ----  no second format supplied; pass --against with a GenBank or GFF3 file describing the same assembly
+  reference (NCBI)  ----  no published counts supplied; pass --reference-counts and --accession
+

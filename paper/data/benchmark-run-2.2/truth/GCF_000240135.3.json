@@ -1,0 +1,48 @@
+{
+ "input": "/home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/inputs/GCF_000240135.3/genomic.gff",
+ "md5": "1a402bed1da4bac75e3f5f3dacb7df3b",
+ "rows": 102635,
+ "features": 78715,
+ "parent_links": 64970,
+ "features_with_parent": 64970,
+ "sequences": 19,
+ "circular_sequences": 0,
+ "organelle_sequences": 0,
+ "id_conflicts": 0,
+ "non_numeric_rows": 0,
+ "types": {
+  "CDS": 13312,
+  "exon": 37933,
+  "gene": 13714,
+  "mRNA": 13315,
+  "pseudogene": 11,
+  "rRNA": 88,
+  "region": 19,
+  "sequence_feature": 1,
+  "tRNA": 322
+ },
+ "with_parent_by_type": {
+  "CDS": 13312,
+  "exon": 37933,
+  "mRNA": 13315,
+  "rRNA": 88,
+  "tRNA": 322
+ },
+ "hard_cases": {
+  "multi_row": 10208,
+  "overlapping_rows": 0,
+  "trans_spliced": 0,
+  "strand_unknown": 0,
+  "crosses_origin": 0,
+  "past_end": 0,
+  "inverted": 0,
+  "escapes_parent": 0,
+  "exon_under_pseudogene": 0,
+  "multi_parent": 0,
+  "dangling_parent": 0,
+  "no_id": 0,
+  "multi_valued": 75501,
+  "rows_disagree": 35,
+  "organelle": 0
+ }
+}

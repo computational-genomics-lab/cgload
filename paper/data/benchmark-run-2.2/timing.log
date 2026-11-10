@@ -1,0 +1,152 @@
+GCF_000001405.40 command cgload-sqlite gene: 100 runs
+GCF_000001405.40 command cgload-sqlite region: 100 runs
+GCF_000001405.40 command cgload-sqlite count: 5 runs
+GCF_000001405.40 command cgload-sqlite sequence: 15 runs
+GCF_000001405.40 command cgload-postgres gene: 100 runs
+GCF_000001405.40 command cgload-postgres region: 100 runs
+GCF_000001405.40 command cgload-postgres count: 5 runs
+GCF_000001405.40 command cgload-postgres sequence: 15 runs
+GCF_000001405.40 command gffutils gene: 100 runs
+GCF_000001405.40 command gffutils region: 100 runs
+GCF_000001405.40 command gffutils count: 5 runs
+GCF_000001405.40 command gffutils sequence: 15 runs
+GCF_000001405.40 command tabix gene: 20 runs
+GCF_000001405.40 command tabix region: 100 runs
+GCF_000001405.40 command tabix count: 5 runs
+GCF_000001405.40 command tabix sequence: 15 runs
+GCF_000001405.40 library cgload-sqlite: 205 runs
+GCF_000001405.40 library cgload-postgres: 205 runs
+GCF_000001405.40 library gffutils: 205 runs
+GCF_902167145.1 command cgload-sqlite gene: 100 runs
+GCF_902167145.1 command cgload-sqlite region: 100 runs
+GCF_902167145.1 command cgload-sqlite count: 5 runs
+GCF_902167145.1 command cgload-sqlite sequence: 15 runs
+GCF_902167145.1 command cgload-postgres gene: 100 runs
+GCF_902167145.1 command cgload-postgres region: 100 runs
+GCF_902167145.1 command cgload-postgres count: 5 runs
+GCF_902167145.1 command cgload-postgres sequence: 15 runs
+GCF_902167145.1 command gffutils gene: 100 runs
+GCF_902167145.1 command gffutils region: 100 runs
+GCF_902167145.1 command gffutils count: 5 runs
+GCF_902167145.1 command gffutils sequence: 15 runs
+GCF_902167145.1 command tabix gene: 20 runs
+GCF_902167145.1 command tabix region: 100 runs
+GCF_902167145.1 command tabix count: 5 runs
+GCF_902167145.1 command tabix sequence: 15 runs
+GCF_902167145.1 library cgload-sqlite: 205 runs
+GCF_902167145.1 library cgload-postgres: 205 runs
+GCF_902167145.1 library gffutils: 205 runs
+GCF_000001735.4 command cgload-sqlite gene: 100 runs
+GCF_000001735.4 command cgload-sqlite region: 100 runs
+GCF_000001735.4 command cgload-sqlite count: 5 runs
+GCF_000001735.4 command cgload-sqlite sequence: 15 runs
+GCF_000001735.4 command cgload-postgres gene: 100 runs
+GCF_000001735.4 command cgload-postgres region: 100 runs
+GCF_000001735.4 command cgload-postgres count: 5 runs
+GCF_000001735.4 command cgload-postgres sequence: 15 runs
+GCF_000001735.4 command gffutils gene: 100 runs
+GCF_000001735.4 command gffutils region: 100 runs
+GCF_000001735.4 command gffutils count: 5 runs
+GCF_000001735.4 command gffutils sequence: 15 runs
+GCF_000001735.4 command tabix gene: 20 runs
+GCF_000001735.4 command tabix region: 100 runs
+GCF_000001735.4 command tabix count: 5 runs
+GCF_000001735.4 command tabix sequence: 15 runs
+GCF_000001735.4 library cgload-sqlite: 205 runs
+GCF_000001735.4 library cgload-postgres: 205 runs
+GCF_000001735.4 library gffutils: 205 runs
+GCF_000240135.3 command cgload-sqlite gene: 100 runs
+GCF_000240135.3 command cgload-sqlite region: 100 runs
+GCF_000240135.3 command cgload-sqlite count: 5 runs
+GCF_000240135.3 command cgload-sqlite sequence: 15 runs
+GCF_000240135.3 command cgload-postgres gene: 100 runs
+GCF_000240135.3 command cgload-postgres region: 100 runs
+GCF_000240135.3 command cgload-postgres count: 5 runs
+GCF_000240135.3 command cgload-postgres sequence: 15 runs
+GCF_000240135.3 command gffutils gene: 100 runs
+GCF_000240135.3 command gffutils region: 100 runs
+GCF_000240135.3 command gffutils count: 5 runs
+GCF_000240135.3 command gffutils sequence: 15 runs
+GCF_000240135.3 command tabix gene: 20 runs
+GCF_000240135.3 command tabix region: 100 runs
+GCF_000240135.3 command tabix count: 5 runs
+GCF_000240135.3 command tabix sequence: 15 runs
+GCF_000240135.3 library cgload-sqlite: 205 runs
+GCF_000240135.3 library cgload-postgres: 205 runs
+GCF_000240135.3 library gffutils: 205 runs
+GCF_000001405.40 command cgload-sqlite gene: 100 runs
+GCF_000001405.40 command cgload-sqlite region: 100 runs
+GCF_000001405.40 command cgload-sqlite count: 5 runs
+GCF_000001405.40 command cgload-sqlite sequence: 15 runs
+GCF_000001405.40 command cgload-postgres gene: 100 runs
+GCF_000001405.40 command cgload-postgres region: 100 runs
+GCF_000001405.40 command cgload-postgres count: 5 runs
+GCF_000001405.40 command cgload-postgres sequence: 15 runs
+GCF_000001405.40 command gffutils gene: 100 runs
+GCF_000001405.40 command gffutils region: 100 runs
+GCF_000001405.40 command gffutils count: 5 runs
+GCF_000001405.40 command gffutils sequence: 15 runs
+GCF_000001405.40 command tabix gene: 20 runs
+GCF_000001405.40 command tabix region: 100 runs
+GCF_000001405.40 command tabix count: 5 runs
+GCF_000001405.40 command tabix sequence: 15 runs
+GCF_000001405.40 library cgload-sqlite: 205 runs
+GCF_000001405.40 library cgload-postgres: 205 runs
+GCF_000001405.40 library gffutils: 205 runs
+GCF_902167145.1 command cgload-sqlite gene: 100 runs
+GCF_902167145.1 command cgload-sqlite region: 100 runs
+GCF_902167145.1 command cgload-sqlite count: 5 runs
+GCF_902167145.1 command cgload-sqlite sequence: 15 runs
+GCF_902167145.1 command cgload-postgres gene: 100 runs
+GCF_902167145.1 command cgload-postgres region: 100 runs
+GCF_902167145.1 command cgload-postgres count: 5 runs
+GCF_902167145.1 command cgload-postgres sequence: 15 runs
+GCF_902167145.1 command gffutils gene: 100 runs
+GCF_902167145.1 command gffutils region: 100 runs
+GCF_902167145.1 command gffutils count: 5 runs
+GCF_902167145.1 command gffutils sequence: 15 runs
+GCF_902167145.1 command tabix gene: 20 runs
+GCF_902167145.1 command tabix region: 100 runs
+GCF_902167145.1 command tabix count: 5 runs
+GCF_902167145.1 command tabix sequence: 15 runs
+GCF_902167145.1 library cgload-sqlite: 205 runs
+GCF_902167145.1 library cgload-postgres: 205 runs
+GCF_902167145.1 library gffutils: 205 runs
+GCF_000001735.4 command cgload-sqlite gene: 100 runs
+GCF_000001735.4 command cgload-sqlite region: 100 runs
+GCF_000001735.4 command cgload-sqlite count: 5 runs
+GCF_000001735.4 command cgload-sqlite sequence: 15 runs
+GCF_000001735.4 command cgload-postgres gene: 100 runs
+GCF_000001735.4 command cgload-postgres region: 100 runs
+GCF_000001735.4 command cgload-postgres count: 5 runs
+GCF_000001735.4 command cgload-postgres sequence: 15 runs
+GCF_000001735.4 command gffutils gene: 100 runs
+GCF_000001735.4 command gffutils region: 100 runs
+GCF_000001735.4 command gffutils count: 5 runs
+GCF_000001735.4 command gffutils sequence: 15 runs
+GCF_000001735.4 command tabix gene: 20 runs
+GCF_000001735.4 command tabix region: 100 runs
+GCF_000001735.4 command tabix count: 5 runs
+GCF_000001735.4 command tabix sequence: 15 runs
+GCF_000001735.4 library cgload-sqlite: 205 runs
+GCF_000001735.4 library cgload-postgres: 205 runs
+GCF_000001735.4 library gffutils: 205 runs
+GCF_000240135.3 command cgload-sqlite gene: 100 runs
+GCF_000240135.3 command cgload-sqlite region: 100 runs
+GCF_000240135.3 command cgload-sqlite count: 5 runs
+GCF_000240135.3 command cgload-sqlite sequence: 15 runs
+GCF_000240135.3 command cgload-postgres gene: 100 runs
+GCF_000240135.3 command cgload-postgres region: 100 runs
+GCF_000240135.3 command cgload-postgres count: 5 runs
+GCF_000240135.3 command cgload-postgres sequence: 15 runs
+GCF_000240135.3 command gffutils gene: 100 runs
+GCF_000240135.3 command gffutils region: 100 runs
+GCF_000240135.3 command gffutils count: 5 runs
+GCF_000240135.3 command gffutils sequence: 15 runs
+GCF_000240135.3 command tabix gene: 20 runs
+GCF_000240135.3 command tabix region: 100 runs
+GCF_000240135.3 command tabix count: 5 runs
+GCF_000240135.3 command tabix sequence: 15 runs
+GCF_000240135.3 library cgload-sqlite: 205 runs
+GCF_000240135.3 library cgload-postgres: 205 runs
+GCF_000240135.3 library gffutils: 205 runs

@@ -1,0 +1,116 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents",
+  "attrs"
+ ],
+ "totals": {
+  "truth": 86294,
+  "truth_links": 77941,
+  "kept_links": 77941,
+  "kept": 78727,
+  "changed": 7567,
+  "changed_silent": 7567
+ },
+ "stored_features": 86294,
+ "stored_links": 77941,
+ "extra_by_type": {},
+ "field_differences": {
+  "split": 7567
+ },
+ "by_type": {
+  "CDS": {
+   "truth": 7826,
+   "changed": 7567,
+   "kept": 259
+  },
+  "exon": {
+   "truth": 54811,
+   "kept": 54811
+  },
+  "gene": {
+   "truth": 8334,
+   "kept": 8334
+  },
+  "mRNA": {
+   "truth": 7826,
+   "kept": 7826
+  },
+  "ncRNA": {
+   "truth": 1197,
+   "kept": 1197
+  },
+  "polyA_site": {
+   "truth": 6115,
+   "kept": 6115
+  },
+  "pseudogene": {
+   "truth": 4,
+   "kept": 4
+  },
+  "rRNA": {
+   "truth": 4,
+   "kept": 4
+  },
+  "region": {
+   "truth": 15,
+   "kept": 15
+  },
+  "tRNA": {
+   "truth": 162,
+   "kept": 162
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 7567,
+   "changed": 7567,
+   "changed_silent": 7567
+  },
+  "multi_valued": {
+   "truth": 72019,
+   "kept": 64452,
+   "changed": 7567,
+   "changed_silent": 7567
+  },
+  "rows_disagree": {
+   "truth": 7,
+   "changed": 7,
+   "changed_silent": 7
+  },
+  "organelle": {
+   "truth": 98,
+   "kept": 96,
+   "changed": 2,
+   "changed_silent": 2
+  }
+ },
+ "case_field_differences": {
+  "multi_row": {
+   "split": 7567
+  },
+  "multi_valued": {
+   "split": 7567
+  },
+  "rows_disagree": {
+   "split": 7
+  },
+  "organelle": {
+   "split": 2
+  }
+ },
+ "examples": {
+  "changed:split": [
+   "cds-XP_012046141.1",
+   "cds-XP_012047013.1",
+   "cds-XP_012047012.1",
+   "cds-XP_012046142.1",
+   "cds-XP_012046143.1"
+  ]
+ },
+ "genome": "GCF_000149245.1",
+ "tool": "gffutils"
+}

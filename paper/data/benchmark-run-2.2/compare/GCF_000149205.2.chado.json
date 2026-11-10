@@ -1,0 +1,69 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents"
+ ],
+ "totals": {
+  "truth": 64364,
+  "truth_links": 54499,
+  "kept_links": 54499,
+  "kept": 64364
+ },
+ "stored_features": 73900,
+ "stored_links": 64035,
+ "extra_by_type": {
+  "polypeptide": 9536
+ },
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 9556,
+   "kept": 9556
+  },
+  "exon": {
+   "truth": 35357,
+   "kept": 35357
+  },
+  "gene": {
+   "truth": 9586,
+   "kept": 9586
+  },
+  "mRNA": {
+   "truth": 9556,
+   "kept": 9556
+  },
+  "rRNA": {
+   "truth": 2,
+   "kept": 2
+  },
+  "region": {
+   "truth": 91,
+   "kept": 91
+  },
+  "tRNA": {
+   "truth": 216,
+   "kept": 216
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 8427,
+   "kept": 8427
+  },
+  "multi_valued": {
+   "truth": 63741,
+   "kept": 63741
+  },
+  "organelle": {
+   "truth": 177,
+   "kept": 177
+  }
+ },
+ "case_field_differences": {},
+ "examples": {},
+ "genome": "GCF_000149205.2",
+ "tool": "chado"
+}

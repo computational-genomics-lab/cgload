@@ -1,0 +1,162 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents",
+  "attrs"
+ ],
+ "totals": {
+  "truth": 480764,
+  "truth_links": 440583,
+  "kept_links": 440583,
+  "kept": 480762,
+  "changed_declared": 2
+ },
+ "stored_features": 480764,
+ "stored_links": 440583,
+ "extra_by_type": {},
+ "field_differences": {
+  "segs": 2
+ },
+ "by_type": {
+  "CDS": {
+   "truth": 42933,
+   "kept": 42933
+  },
+  "cDNA_match": {
+   "truth": 285,
+   "kept": 285
+  },
+  "exon": {
+   "truth": 341091,
+   "kept": 341091
+  },
+  "gene": {
+   "truth": 37477,
+   "kept": 37477
+  },
+  "intron": {
+   "truth": 1,
+   "kept": 1
+  },
+  "inverted_repeat": {
+   "truth": 2,
+   "kept": 2
+  },
+  "lnc_RNA": {
+   "truth": 6551,
+   "kept": 6551
+  },
+  "mRNA": {
+   "truth": 42933,
+   "kept": 42931,
+   "changed_declared": 2
+  },
+  "match": {
+   "truth": 1,
+   "kept": 1
+  },
+  "pseudogene": {
+   "truth": 1910,
+   "kept": 1910
+  },
+  "pseudogenic_tRNA": {
+   "truth": 3,
+   "kept": 3
+  },
+  "rRNA": {
+   "truth": 1756,
+   "kept": 1756
+  },
+  "region": {
+   "truth": 15,
+   "kept": 15
+  },
+  "sequence_feature": {
+   "truth": 489,
+   "kept": 489
+  },
+  "snRNA": {
+   "truth": 71,
+   "kept": 71
+  },
+  "snoRNA": {
+   "truth": 611,
+   "kept": 611
+  },
+  "tRNA": {
+   "truth": 708,
+   "kept": 708
+  },
+  "transcript": {
+   "truth": 3927,
+   "kept": 3927
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 34470,
+   "kept": 34470
+  },
+  "trans_spliced": {
+   "truth": 31,
+   "kept": 29,
+   "changed_declared": 2
+  },
+  "strand_unknown": {
+   "truth": 4,
+   "kept": 2,
+   "changed_declared": 2
+  },
+  "crosses_origin": {
+   "truth": 2,
+   "kept": 2
+  },
+  "past_end": {
+   "truth": 1,
+   "kept": 1
+  },
+  "escapes_parent": {
+   "truth": 6,
+   "kept": 6
+  },
+  "exon_under_pseudogene": {
+   "truth": 5991,
+   "kept": 5991
+  },
+  "multi_valued": {
+   "truth": 435481,
+   "kept": 435481
+  },
+  "rows_disagree": {
+   "truth": 292,
+   "kept": 292
+  },
+  "organelle": {
+   "truth": 1436,
+   "kept": 1434,
+   "changed_declared": 2
+  }
+ },
+ "case_field_differences": {
+  "organelle": {
+   "segs": 2
+  },
+  "strand_unknown": {
+   "segs": 2
+  },
+  "trans_spliced": {
+   "segs": 2
+  }
+ },
+ "examples": {
+  "changed_declared:segs": [
+   "rna-OrsajM_p05",
+   "rna-OrsajM_p52"
+  ]
+ },
+ "genome": "GCF_034140825.1",
+ "tool": "cgload-postgres"
+}

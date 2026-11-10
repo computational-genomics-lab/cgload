@@ -1,0 +1,14 @@
+bcbio-gff==0.7.1
+biopython==1.81
+chado==2.3.9
+click==7.1.2
+future==1.0.0
+greenlet==3.5.6
+numpy==2.4.6
+packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1785888127/work
+psycopg2-binary==2.9.13
+PyMySQL==1.1.2
+PyYAML==6.0.3
+six==1.17.0
+SQLAlchemy==1.4.54
+wrapt==2.5.1

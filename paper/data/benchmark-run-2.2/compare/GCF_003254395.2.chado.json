@@ -1,0 +1,132 @@
+{
+ "fields_compared": [
+  "seqid",
+  "type",
+  "strand",
+  "segs",
+  "parents"
+ ],
+ "totals": {
+  "truth": 332608,
+  "truth_links": 319816,
+  "kept_links": 302552,
+  "kept": 315344,
+  "lost": 17264,
+  "lost_announced": 3146,
+  "lost_silent": 14118
+ },
+ "stored_features": 338815,
+ "stored_links": 326023,
+ "extra_by_type": {
+  "polypeptide": 23471
+ },
+ "field_differences": {},
+ "by_type": {
+  "CDS": {
+   "truth": 23471,
+   "kept": 23471
+  },
+  "cDNA_match": {
+   "truth": 216,
+   "kept": 216
+  },
+  "exon": {
+   "truth": 267977,
+   "kept": 253859,
+   "lost": 14118
+  },
+  "gene": {
+   "truth": 12356,
+   "kept": 12356
+  },
+  "guide_RNA": {
+   "truth": 1,
+   "kept": 1
+  },
+  "lnc_RNA": {
+   "truth": 3146,
+   "lost": 3146
+  },
+  "mRNA": {
+   "truth": 23471,
+   "kept": 23471
+  },
+  "miRNA": {
+   "truth": 248,
+   "kept": 248
+  },
+  "primary_transcript": {
+   "truth": 238,
+   "kept": 238
+  },
+  "pseudogene": {
+   "truth": 42,
+   "kept": 42
+  },
+  "rRNA": {
+   "truth": 57,
+   "kept": 57
+  },
+  "region": {
+   "truth": 177,
+   "kept": 177
+  },
+  "sequence_feature": {
+   "truth": 1,
+   "kept": 1
+  },
+  "snRNA": {
+   "truth": 26,
+   "kept": 26
+  },
+  "snoRNA": {
+   "truth": 14,
+   "kept": 14
+  },
+  "tRNA": {
+   "truth": 218,
+   "kept": 218
+  },
+  "transcript": {
+   "truth": 949,
+   "kept": 949
+  }
+ },
+ "by_case": {
+  "multi_row": {
+   "truth": 22975,
+   "kept": 22975
+  },
+  "exon_under_pseudogene": {
+   "truth": 164,
+   "kept": 164
+  },
+  "multi_valued": {
+   "truth": 327975,
+   "kept": 310711,
+   "lost": 17264,
+   "lost_announced": 3146,
+   "lost_silent": 14118
+  },
+  "rows_disagree": {
+   "truth": 270,
+   "kept": 270
+  },
+  "organelle": {
+   "truth": 126,
+   "kept": 126
+  }
+ },
+ "case_field_differences": {},
+ "examples": {
+  "lost": [
+   "rna-XR_001702207.2",
+   "exon-XR_001702207.2-1",
+   "exon-XR_001702207.2-2",
+   "rna-XR_001702201.2",
+   "exon-XR_001702201.2-1"
+  ]
+ },
+ "genome": "GCF_003254395.2",
+ "tool": "chado"
+}
