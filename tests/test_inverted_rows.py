@@ -138,7 +138,7 @@ def test_repaired_extent_lies_inside_the_molecule(zeam_mp017):
 
 def test_repair_propagates_upward(zeam_mp017):
     """The gene envelope is also wrong, and is repaired from the repaired mRNA
-    rather than the broken one -- the same bottom-up requirement as D-046."""
+    rather than the broken one -- the same bottom-up requirement as D-046b."""
     features, _repairs, _remaining = apply_policy(zeam_mp017, repair=True)
     gene = next(f for f in features if f.source_id == "gene-ZeamMp017")
     assert (gene.start, gene.end) == (122146, 548772)

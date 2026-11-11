@@ -1,5 +1,15 @@
 # Scalability
 
+> **Two early runs, kept as a worked example.** They were made on one
+> workstation core, on SQLite, before release 0.2.0, and the maize run also
+> loaded eggNOG-mapper output. The benchmark has since measured 30 genomes on
+> SQLite and PostgreSQL ([benchmark/PROTOCOL.md](../benchmark/PROTOCOL.md),
+> results in [paper/data/benchmark-run-2.2/](../paper/data/benchmark-run-2.2/)).
+> Where the two differ, the benchmark is the measurement of the released code:
+> there maize loads in 132 s at 5.3 GB without functional annotation, `verify`
+> takes 7.3 s because it now checksums the stored assembly, and memory is about
+> 5.7 KB per GFF3 row, which is 7.5 to 12.2 GB per million features.
+
 Measured, not projected. Every number here comes from a run recorded below with
 the command that produced it, so it can be reproduced or contradicted.
 
@@ -169,7 +179,7 @@ Elapsed (wall clock) time: 0:00.47
 Maximum resident set size: 65,920 kbytes
 ```
 
-Both unmet tiers are **reported rather than omitted** (D-033). A check that
+Both unmet tiers are **reported rather than omitted** (D-033b). A check that
 vanishes when it cannot run is indistinguishable from one that passed.
 
 ### 5. Export
@@ -252,7 +262,7 @@ file this size a load takes minutes; this takes seconds, and it lists all
 problems rather than stopping at the first.
 
 ```console
-python3 preflight_gff3.py genomic.gff
+python3 tools/preflight_gff3.py genomic.gff
 ```
 
 For this assembly it reports 36 problems: 34 `escapes-parent`, one `inverted`,
@@ -348,8 +358,8 @@ with 4 GB will not. *Fusarium* completes comfortably in 2 GB.
   measured only on *Fusarium*, where it reached 460 MB. Projected at roughly 4 GB
   for maize, untested.
 - **Concurrent access.** Single-process loads only.
-- **MySQL and PostgreSQL at scale.** The code path is shared and tested, but both
-  large runs above are SQLite.
-- **Genomes above 700,000 features.** Extrapolating from 7 GB per million is
-  reasonable but untested, and two measurements cannot separate a linear trend
-  from a mildly superlinear one.
+- **MySQL at scale.** The code path is shared and tested, but no large run used
+  it. PostgreSQL has since been measured on all 30 genomes of the benchmark.
+- **Genomes above 700,000 features** were not part of these two runs. The
+  benchmark went up to human (3.2 million features, 29.5 GB on SQLite), and
+  memory there grew in proportion to the number of GFF3 rows.

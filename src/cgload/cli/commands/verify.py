@@ -143,7 +143,7 @@ def run_verification(
     """Run every applicable check and return one result per tier.
 
     Every tier is returned, including skipped ones. A check that vanishes when it
-    cannot run is indistinguishable from one that passed (D-033).
+    cannot run is indistinguishable from one that passed (D-033b).
     """
     described = annotation_files_with_format(connection, assembly_id)
     if not described:
@@ -278,7 +278,7 @@ def run_verification(
             # `loaded == loaded`, always true, so the tier can no longer skip --
             # a partial load is then compared against whole-assembly totals and
             # either passes by luck or fails for a reason cgload already
-            # classifies as innocent. A precondition that cannot fail is D-033
+            # classifies as innocent. A precondition that cannot fail is D-033b
             # inverted (D-067).
             raise VerifyError(
                 "--reference-counts needs --sequences-in-assembly: without it the "

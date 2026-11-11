@@ -337,7 +337,7 @@ def test_verify_exits_two_when_the_database_was_tampered_with(engine, tmp_path):
 def test_verify_skips_the_reference_check_on_a_partial_assembly(engine, tmp_path):
     """Two of twenty-three sequences loaded. Disagreement with published totals
     has an innocent explanation, so the tier reports why it did not run rather
-    than failing (D-033)."""
+    than failing (D-033b)."""
     config = _prepare(tmp_path, MYCMAY_GFF)
     report = load_organism(engine, load_config(config), tmp_path / "data")
 
@@ -560,7 +560,7 @@ def test_the_reference_tier_cannot_run_without_the_assembly_size(engine, tmp_pat
     `sequences_in_assembly=sequences_in_assembly or loaded` made the check
     `loaded == loaded` -- always true, so the tier could never skip and a partial
     load was silently compared against totals that may describe the whole
-    assembly. A precondition that cannot fail is D-033 inverted.
+    assembly. A precondition that cannot fail is D-033b inverted.
     """
     config = _prepare(tmp_path, MYCMAY_GFF)
     report = load_organism(engine, load_config(config), tmp_path / "data")

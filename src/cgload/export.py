@@ -4,7 +4,7 @@ cgload exports **its own dialect**, not the one the data came in as. Emitting
 AUGUSTUS would mean synthesising the exon rows stage 5 deliberately refused to
 invent; emitting RefSeq would mean fabricating `gbkey` and `Dbxref` values that
 were never in the input. A file claiming to be RefSeq that is not is the same
-class of dishonesty as a load reporting a success it cannot back up (D-035).
+class of dishonesty as a load reporting a success it cannot back up (D-035b).
 
 Four rules, and each one exists to keep the round trip exact:
 

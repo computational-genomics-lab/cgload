@@ -22,7 +22,7 @@ downstream is shared with the GFF3 dialects unchanged.
 not needed. The flat-file grammar exercised here is small and fully covered by
 the fixtures, and dropping the dependency keeps the runtime budget at three
 packages (P4) and removes a compiled-extension install risk on another
-machine. Recorded as D-028.
+machine. Recorded as D-028b.
 """
 
 from __future__ import annotations
@@ -240,7 +240,7 @@ def _identifier(record: _Record) -> str | None:
 
     When only ``locus_tag`` is available the record type is appended, giving
     ``MAE_RS31305:CDS``. Both halves come from the file -- this is a compound
-    key, not an invented identifier (D-030). It is necessary because a
+    key, not an invented identifier (D-030b). It is necessary because a
     prokaryotic pseudogene's CDS carries no ``protein_id`` (526 of 5,808 loci in
     *M. aeruginosa* NIES-843), so it would otherwise take its own gene's
     ``locus_tag`` and the two rows would be merged into one feature. Genes keep

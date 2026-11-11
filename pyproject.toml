@@ -31,7 +31,7 @@ classifiers = [
 
 # The dependency budget: four, plus biopython admitted deliberately in D-009.
 # Three. tomllib is standard library because the floor is 3.11 (D-010), and
-# biopython was dropped in D-028 when the GenBank reader turned out not to need
+# biopython was dropped in D-028b when the GenBank reader turned out not to need
 # it -- the declaration outlived the import. A fourth requires a new entry in
 # docs/decisions.md before the import is written.
 dependencies = [

@@ -2,7 +2,7 @@
 
 Found by loading the maize *mitochondrion*, which the earlier scale run had
 excluded. Third form of the same NCBI trans-splicing converter defect: after
-too-small envelopes (D-046) and one inverted row (D-056), a gene written as two
+too-small envelopes (D-046b) and one inverted row (D-056), a gene written as two
 rows sharing an ID and differing only in strand.
 """
 

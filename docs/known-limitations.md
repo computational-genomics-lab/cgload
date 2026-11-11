@@ -30,7 +30,7 @@ rna-ZeamMp186 by 281,540 bp.
 mitochondrion, in three genes. Repair clears 11. The other two are mRNAs that
 NCBI writes past the origin of the circular sequence, with its length added,
 under genes written in plain coordinates on several rows. A parent written on
-several rows is never recomputed (D-046), so these two are stored as written,
+several rows is never recomputed (D-046b), so these two are stored as written,
 named in a warning and recorded in the manifest (D-091).
 
 `--repair-envelopes` is off by default. Every repair is printed at load time and
@@ -95,15 +95,23 @@ sequence in it.
 
 ## Operational
 
-- **Peak memory is roughly 7 GB per million features, plus about 200 MB**
-  (docs/scalability.md). Every feature is
-  parsed before any row is written, so that cross-file identifier collisions are
-  detected before the database is touched. A machine with 8 GB completes a
-  700,000-feature genome; one with 4 GB does not.
+- **Peak memory is about 5.7 KB per GFF3 row on SQLite and 6.9 KB on
+  PostgreSQL** (medians over the 30 genomes of the benchmark), which is 7.5 to
+  12.2 GB per million features on SQLite. Every feature is parsed before any
+  row is written, so that cross-file identifier collisions are detected before
+  the database is touched. A machine with 8 GB completes maize (5.3 GB); the
+  human annotation needs 29.5 GB on SQLite and 36.4 GB on PostgreSQL.
+- **Counting and exporting are slow on PostgreSQL.** Counting the features of
+  the human annotation by type took 19.5 s, and writing out one *A. thaliana*
+  chromosome 30.6 s (benchmark, query timing).
 - **Single-process only.** Concurrent loads against one database are untested.
-- **MySQL and PostgreSQL are untested at scale.** PostgreSQL 16 runs a small
-  end-to-end test in CI (`tests/test_postgresql.py`); MySQL has no test at all.
-  The large runs were SQLite.
+- **MySQL is untested at scale** and has no test at all. PostgreSQL 16 loaded
+  and verified all 30 genomes of the benchmark, and runs a small end-to-end
+  test in CI (`tests/test_postgresql.py`).
+- **`verify` exits 0 when it cannot count the source.** If the input file has
+  changed since the load, `verify` names it, says so and skips the source
+  count; a skipped tier is not a failure (D-086), so a script that reads only
+  the exit status does not see the change.
 - **The tabix index covers positions below 2^29.** A longer sequence gets its
   `annotation.gff3.gz` but no `.tbi`; the load says so, and
   `tabix --csi -p gff` indexes it (D-082).

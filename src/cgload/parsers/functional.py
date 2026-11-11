@@ -169,12 +169,12 @@ def parse_eggnog(path: Path) -> FunctionalFile:
 #: uses in `KEGG_ko` and the one KEGG documents as the ortholog pathway; a `map`
 #: entry with no `ko` counterpart is kept rather than dropped, since that case
 #: does not occur in the measured file and silently discarding it would be the
-#: kind of assumption this project exists to avoid. Recorded as D-031.
+#: kind of assumption this project exists to avoid. Recorded as D-031b.
 def canonical_kegg_pathway(term: str) -> str:
     """Return the stored form of a KEGG pathway identifier.
 
     KEGG publishes every pathway twice: `ko00362` (ortholog reference pathway)
-    and `map00362` (the map). cgload stores the `ko` form (D-031), but
+    and `map00362` (the map). cgload stores the `ko` form (D-031b), but
     **`map00362` is the form that appears in KEGG's own URLs and in most
     published papers**, so it is what a user will paste into a search box. Any
     code that accepts a pathway identifier from a human must send it through
@@ -183,7 +183,7 @@ def canonical_kegg_pathway(term: str) -> str:
 
     This lives beside the parser rather than in the query layer because the
     ko/map equivalence is a fact about the source format, and a second copy of
-    it in a different module would drift. Recorded as D-032.
+    it in a different module would drift. Recorded as D-032b.
     """
     stripped = term.strip()
     if stripped.startswith("map") and stripped[3:].isdigit():

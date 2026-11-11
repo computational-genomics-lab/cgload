@@ -24,7 +24,7 @@ Four tiers, and they are not equally authoritative:
    Fails the command.
 4. **Reference counts** — NCBI's published per-assembly totals. Disagreement can
    have innocent causes, so this fails only when the preconditions rule those
-   causes out, and is otherwise skipped with the reason stated (D-033).
+   causes out, and is otherwise skipped with the reason stated (D-033b).
 
 A check may fail the command only when disagreement implies cgload is wrong. A
 check that reports concerns it cannot stand behind trains people to ignore it,
@@ -603,7 +603,7 @@ def compare_with_reference(
 ) -> TierResult:
     """Compare against NCBI, but only when the comparison can mean something.
 
-    Four innocent causes of disagreement (D-033): a partial assembly was loaded;
+    Four innocent causes of disagreement (D-033b): a partial assembly was loaded;
     the annotation release differs from the one the counts describe; NCBI tallies
     non-coding and pseudogenes under different classes; and re-annotation happens
     without the accession changing.

@@ -406,3 +406,12 @@ models, eggNOG-mapper and InterProScan output was available, so the case study
 (step 9, section 7.7) was not run and is not reported. `run.sh` still has its
 step, which does nothing while `CASE_STUDY` is unset. With it goes the only
 file from outside RefSeq (section 11): every result here is on RefSeq GFF3.
+
+**Reporting, 11 November 2026.** No measurement changed. Three things changed
+in how the paper reports them, after an outside review of its draft. Table 1
+counts each loader's features over the genomes it loaded, and counts a genome
+it did not load as not loaded, no longer as so many lost features. Figure 4
+shows T4 for the largest sequence of each genome, with all three in a table:
+the median over the three hid the cost in human, where two of the three are
+small scaffolds. And the paper says how the census's rows map to the reference
+reader's features in each hard case.

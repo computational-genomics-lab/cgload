@@ -366,43 +366,36 @@ attribute change anywhere; every other table identical.
 
 ## Open
 
-- The paper's draft is `paper/manuscript.md` (Briefings in Bioinformatics,
-  Problem Solving Protocol); `paper/build.py` makes a Word file and shows each
-  note to the authors in it. The journal follows the ISCB policy on large
-  language models: an LLM may help with code, documentation and analysis, and
-  may not draft the paper. This draft's prose was drafted by an LLM, so it is a
-  working document. The authors must write the submitted text themselves; the
-  facts, numbers, structure and citations are all here. Still to add: funding,
-  contributions, biographies, the corresponding e-mail, the log of LLM use for
-  the supplementary materials, and a check of every reference.
-- The census of the 30 files (`survey/`) is now part of this paper, not a
-  separate manuscript: the Database draft was never submitted, because it did
-  not describe cgload's features. Its findings are the Methods section "Census
-  of the files" and the Results section "What the files contain". The old
-  `survey/` manuscript zip in outputs is superseded.
+- The paper's draft is `paper/manuscript.md`, now a GigaScience Technical Note
+  (see the entry of 11 November). `paper/build.py` makes the Word file, the
+  five additional files and the figure files in `paper/build/`. Still the
+  authors' to add: e-mail addresses, funding, contributions,
+  acknowledgements, an RRID (SciCrunch) and a bio.tools ID for cgload, the two
+  Zenodo DOIs, and their own statements in the AI disclosure and in
+  `paper/llm_use.md`.
+- Zenodo. The software record made for v0.2.0 needs a new version for v0.2.1.
+  The dataset record's licence should become CC0, which GigaScience asks for.
+  The older record 10.5281/zenodo.23232512 (the 30 input GFF3 files) says
+  "submitted to Database" in its title and holds the incomplete medaka file;
+  a new version with the complete file and a fitting title would let the paper
+  cite an archive of its exact inputs, which NCBI may replace.
+- gffbase and GFFx were found after the runs and are not benchmarked; the
+  paper says so. gffbase treats a multi-row feature as one feature and is the
+  comparison a reviewer is most likely to ask for.
+- No held-out genomes: cgload was corrected on the 30 it is measured on.
 - `verify` exits 0 when it skips the source count because the input file has
   changed (F16): the report names the file, but a script that reads only the
-  exit status misses it. Decide before the release whether this should fail.
+  exit status misses it. Unchanged in 0.2.1; the paper says so.
 - A killed load leaves its staging files, and the next load does not remove
   them (28 of 40 kill trials, up to 124 MB; already in known limitations).
-- `paper/paper.md`, the JOSS draft, is superseded by `paper/manuscript.md`. It
-  still has the old maize numbers and a wrong note about the name on PyPI; fix
-  or remove it before any JOSS submission.
-- Release 0.2.0 is prepared (version, changelog, `CITATION.cff`, docs output).
-  Tag `v0.2.0` and push the tag; then `paper/deposit_zenodo.py` makes two
-  Zenodo drafts with reserved DOIs (software, and the results with the
-  census), for the manuscript's two "[DOI]" places. Publish both drafts when
-  the paper is submitted; publishing is permanent. A GitHub release would also
-  publish 0.2.0 to PyPI through `release.yml`, which is permanent too, and is
-  not needed for the paper.
-- `paper/llm_use.md` is the supplementary note on LLM use that the journal's
-  policy asks for; two statements in it are the authors' to make.
-- MySQL has no test. No MySQL server could be started in this session.
+- cgload is not on PyPI. A GitHub release would publish to PyPI through
+  `release.yml`, which is permanent; the paper installs from GitHub.
+- MySQL has no test; the paper no longer claims it.
 - The system Python of Ubuntu 22.04 is 3.10, which cgload does not support.
   The README and tutorial say how to get 3.11 or newer; a bioconda package
-  would make it one command (release phase).
-- Changing the vocabulary hash and the schema means databases made before this
-  branch are refused, with a message saying why. Reload into a new database.
+  would make it one command.
+- Changing the vocabulary hash and the schema means databases made before
+  0.2.0 are refused, with a message saying why. Reload into a new database.
 
 Settled since the last list: memory was measured (median 5.7 KB per GFF3 row on
 SQLite, 6.9 KB on PostgreSQL; human 29.5 and 36.4 GB); the three files with an
@@ -421,4 +414,54 @@ the README and tutorial, which still showed 43 terms from before D-107 (now 46,
 `10bf08715e85`). 566 tests pass in the default tier, and the 20 of the
 benchmark. `paper/deposit_zenodo.py` was rehearsed against a local stand-in for
 Zenodo's API; it has not met the real one.
+
+## 11 November 2026: outside review, GigaScience, version 0.2.1
+
+The authors had the draft reviewed by another AI agent and chose GigaScience
+(Technical Note) over Briefings in Bioinformatics. What was checked and done:
+
+- **Journal.** GigaScience allows generative AI in writing when it is declared,
+  cited with tool, model, dates and user, summarised in a section at the end of
+  the paper and in the cover letter, and its output kept in an open repository.
+  It forbids listing or thanking the tool as a contributor, and AI-made or
+  AI-altered images. Abstract in three parts, at most 250 words; figures 170 mm
+  wide, text at least 7 pt, as separate files, with alt text; an "Availability
+  of supporting source code and requirements" section with RRID and bio.tools
+  ID; CC0 for supporting data.
+- **The reviewer read a stale copy of the GitHub page** (3 commits, `query` not
+  implemented, a README sentence from the rename). GitHub's `main` had the full
+  history and every tag. True of the repository at v0.2.0, and fixed in 0.2.1:
+  the README's Scale section still gave one early maize run; `rename.py` and
+  `preflight_gff3.py` sat in the root; nine decision numbers were used twice
+  (the later of each pair is now D-0xxb); the superseded JOSS draft
+  `paper/paper.md` was still there.
+- **Three citations in the authors' copy pointed at the wrong reference**, and
+  one in the draft did (NCBI Datasets, after a renumbering). Citations are now
+  written by key and numbered by `paper/build.py`.
+- **Census rows and Table 2 features.** The census counts rows as written; the
+  reference reader counts features with coordinates put in order. 31 strand-?
+  rows are 30 features (one gene on two rows); 67 rows outside their parent
+  are 47 features, and the reference reader counts 46 (maize 8 against 10,
+  *A. thaliana* 13 against 12); the census's 9 out-of-range rows are all on
+  circular organelle sequences and become 5 origin-crossing features (3
+  inverted mRNAs, 2 multi-row CDS) and 3 past-end exons, which with the 9
+  origin-spanning rows gives the reference reader's 14 and 3.
+- **Table 1** has one column per loader and counts only the genomes each
+  loaded. The 72,886 "announced" losses once shown for Chado's failed loads
+  were the lnc_RNA type, named in each log before the load stopped.
+- **T4.** The protocol draws the sequence with most features and two others
+  with at least 1,000. In human the two are small scaffolds, so the median hid
+  the cost: chromosome 1 takes 25.0 s (SQLite), 88.6 s (PostgreSQL), 14.4 s
+  (gffutils) and 0.5 s (tabix). Figure 4 shows the largest sequence; Table S4
+  lists all twelve.
+- **Repairs.** 12 repaired features are the parents of 63 flagged rows, up to
+  10 under one transcript. The "34 in maize" of D-046b was a count of raw rows
+  from August, before multi-row parents were merged.
+- **The schema keeps the parent on each row** (`parent_id`), not in a table of
+  its own, as the draft had said; a feature with several parents is refused.
+- **Versions** of every tool are in Table 6, from the recorded environments.
+  Only two RRIDs could be confirmed: GenomicFeatures (SCR_016960) and SAMtools
+  with HTSlib (SCR_002105). SCR_018965 is gffread, not gffutils.
+- **Version 0.2.1**: no change in behaviour; `src/` differs from the benchmarked
+  commit 9b97178 only in the version string and decision numbers in comments.
 

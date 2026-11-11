@@ -1,0 +1,28 @@
+ID,Fault,Layer,Expected,Detected,As expected,Caught by
+F01,delete one feature,database,detected,3 of 3,3 of 3,"source count, parent links"
+F02,delete one percent,database,detected,3 of 3,3 of 3,"source count, parent links"
+F03,delete gene model,database,detected,3 of 3,3 of 3,"source count, parent links"
+F04,unlink one,database,detected,3 of 3,3 of 3,parent links
+F05,unlink and unrecord,database,detected,3 of 3,3 of 3,parent links
+F06,repoint parent,database,not detected,0 of 3,3 of 3,–
+F07,flip strand,database,not detected,0 of 3,3 of 3,–
+F08,shift start,database,not detected,0 of 3,3 of 3,–
+F09,change type,database,detected,3 of 3,3 of 3,"source count, parent links"
+F10,rename feature,database,not detected,0 of 3,3 of 3,–
+F11,duplicate feature,database,detected,3 of 3,3 of 3,"source count, parent links"
+F12,delete attribute,database,not detected,0 of 3,3 of 3,–
+F13,truncate fasta,data,detected,3 of 3,3 of 3,stored assembly
+F14,delete fai,data,detected,3 of 3,3 of 3,stored assembly
+F15,change one base,data,detected,3 of 3,3 of 3,stored assembly
+F16,input edited,input,detected,3 of 3,3 of 3,"input's SHA-256 (count skipped, exit 0)"
+F17,data dir moved,data,detected,3 of 3,3 of 3,stored assembly
+F18,unlink all,database,detected,3 of 3,3 of 3,parent links
+F19,delete one row,database,detected,3 of 3,3 of 3,source count
+P01,drop rows,parser,detected,3 of 3,3 of 3,load refused: parent not defined
+P02,drop one segment,parser,detected,3 of 3,3 of 3,load rolled back: counts short
+P03,drop parent,parser,detected,3 of 3,3 of 3,load rolled back: links short
+P04,retype row,parser,detected,3 of 3,3 of 3,load rolled back: counts short
+P05,flip strand,parser,not detected,0 of 3,3 of 3,–
+P06,invent feature,parser,detected,3 of 3,3 of 3,load rolled back: row stored twice
+P07,shift start,parser,not detected,0 of 3,3 of 3,–
+P08,swap ids,parser,not detected,0 of 3,3 of 3,–

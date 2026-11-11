@@ -158,7 +158,7 @@ def term_variants(term: str) -> list[str]:
 
     eggNOG writes KEGG orthologs as ``ko:K00799`` and people type ``K00799``;
     KEGG pathways are stored in their ``ko`` form and people paste the ``map``
-    form (D-032); GO and EC identifiers arrive with or without their prefix in
+    form (D-032b); GO and EC identifiers arrive with or without their prefix in
     either case. Nothing else is rewritten, and nothing is matched by prefix or
     similarity: a Pfam name from eggNOG (``Pkinase``) and a Pfam accession from
     InterProScan (``PF00069``) are different strings, and cgload has no table

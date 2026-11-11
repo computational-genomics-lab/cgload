@@ -7,11 +7,19 @@
 1. Software: the source archive of the release tag (git archive), MIT.
 2. Dataset: the benchmark results tarball as benchmark/run.sh packed it,
    superseded results and the PostgreSQL server log included, and the census
-   results (survey/results at the same tag), under CC BY 4.0.
+   results (survey/results at the same tag), under CC0, which GigaScience
+   asks for where a repository offers it.
 
 Nothing is published. A draft can be edited or discarded at zenodo.org, and
 its DOI is only reserved; publishing makes it permanent, and is done by hand
-when the paper is submitted. The token is read from the environment and never
+when the paper is submitted.
+
+This makes NEW records. The records made for v0.2.0 on 10 November 2026 exist
+already: for a later tag, open the software record at zenodo.org and choose
+"New version" (or, while it is still a draft, replace its file), with the
+archive that `git archive --format=tar.gz --prefix=cgload-X.Y.Z/ vX.Y.Z` makes.
+The results did not change after v0.2.0, so the dataset record needs no new
+file. The token is read from the environment and never
 printed or written anywhere. Python standard library only.
 """
 
@@ -112,7 +120,7 @@ def main(argv=None) -> int:
     parser.add_argument("--repo", type=Path, required=True, help="the cgload clone")
     parser.add_argument("--results", type=Path, required=True,
                         help="cgload-benchmark-results.tar.gz from the last run")
-    parser.add_argument("--tag", default="v0.2.0")
+    parser.add_argument("--tag", default="v0.2.1")
     parser.add_argument("--zenodo", default="https://zenodo.org/api",
                         help="use https://sandbox.zenodo.org/api to rehearse")
     args = parser.parse_args(argv)
@@ -174,7 +182,7 @@ def main(argv=None) -> int:
                 f"tag {args.tag}. PROTOCOL.md section 12 says which tag each result "
                 "comes from.</p>"),
             "version": "benchmark-run-2.2",
-            "license": "cc-by-4.0",
+            "license": "cc0-1.0",
             "access_right": "open",
             "keywords": ["genome annotation", "GFF3", "benchmark", "RefSeq"],
             "related_identifiers": [

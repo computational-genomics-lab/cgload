@@ -4,6 +4,27 @@ Decisions referred to as D-0xx are in [docs/decisions.md](docs/decisions.md).
 
 ## Unreleased
 
+## 0.2.1 (11 November 2026)
+
+No change in behaviour: the code that loads, verifies, exports and queries is
+that of 0.2.0. This is the version the paper describes.
+
+### Changed
+
+- The README's Scale section gives the benchmark's measurements on 30 genomes
+  in place of one early maize run, and `docs/known-limitations.md` and
+  `docs/scalability.md` follow it.
+- Nine decision numbers were used twice (D-028 to D-036). The later decision of
+  each pair is now D-028b to D-036b, in `docs/decisions.md` and in every comment
+  that cites it.
+- `preflight_gff3.py` moved from the repository root to `tools/`.
+
+### Removed
+
+- `rename.py`, the script that renamed the package once, and `paper/paper.md`,
+  an early draft superseded by `paper/manuscript.md`. Both remain in the
+  history (`git show v0.2.0:rename.py`).
+
 ## 0.2.0 (10 November 2026)
 
 Databases made by 0.1.0 are refused: the schema and the vocabulary changed.

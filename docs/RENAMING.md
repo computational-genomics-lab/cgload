@@ -22,13 +22,14 @@ yourself before the first release; see the six checks below.
 
 ## Renaming
 
-If the name must change again, use `rename.py` rather than a sed one-liner:
+The name is fixed as of release 0.2.0: it is in the on-disk format strings, in
+the benchmark's results and in the paper. `rename.py`, the script that made the
+earlier renames, was removed after that release, because it rewrote every text
+file in the repository and would now rewrite the recorded results too. It is in
+the history (`git show v0.2.0:rename.py`) for whoever needs to see how a rename
+was done.
 
-```console
-python3 rename.py <newname>
-```
-
-## Why a script
+## Why it was a script
 
 Occurrences fall into three classes, in increasing order of how quietly a miss
 breaks things.

@@ -143,7 +143,7 @@ def test_reference_check_is_skipped_for_a_partial_assembly():
     """Published totals describe the whole assembly. Every fixture in this
     repository is one or two sequences of many, so on fixtures this tier must
     skip -- and say so, rather than reporting a discrepancy it cannot stand
-    behind (D-033)."""
+    behind (D-033b)."""
     result = compare_with_reference(
         Counter({"gene": 15}),
         Counter({"gene": 6907}),

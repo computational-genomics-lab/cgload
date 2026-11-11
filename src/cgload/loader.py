@@ -357,7 +357,7 @@ def load_organism(
         # exactly that, and loaded with a PASS. The statements are counted by the
         # naive pass above, not taken from the parser, so a parser that dropped a
         # Parent attribute is caught too (D-092). GenBank edges are computed, and
-        # an unlinked feature there need not be cgload's fault (D-033), so for
+        # an unlinked feature there need not be cgload's fault (D-033b), so for
         # GenBank the tier is left to `verify`.
         for parse in parsed:
             if parse.is_genbank:
@@ -800,7 +800,7 @@ def _split_origin_artefacts(features, violations) -> tuple[list[dict], list]:
     the sequence length added. *Arabidopsis* nad5 is written that way. The two
     describe the same bases, but a comparison of numbers says the mRNA lies
     outside its gene, and --repair-envelopes never widens a parent written on
-    several rows (D-046).
+    several rows (D-046b).
 
     Such a disagreement is stored as written, named in a warning and recorded
     in the manifest, when all of these hold: the sequence's region row says

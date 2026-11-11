@@ -178,28 +178,29 @@ its index are written by cgload itself, with no external tools (D-082).
 
 ## Scale
 
-*Zea mays* B73 (GCF_902167145.1), complete assembly including organelles, with
-eggNOG functional annotation:
+Measured on 30 RefSeq genomes, from *Candida albicans* (25,889 GFF3 rows) to
+human (4.9 million), on SQLite and on PostgreSQL 16, on one server with 80
+cores and 125 GB of memory. Three of them:
 
-| | |
-|---|---|
-| sequences | 687, 2.18 Gb |
-| features | 696,928 across 21 source types |
-| load | 2 min 34 s, peak 5.4 GB RSS |
-| verify | 0.3 s |
-| database | 1.03 GB; sequence 2.1 GB on disk |
-| source count | **PASS**, exact |
+| | rows | features | load, SQLite | load, PostgreSQL | peak memory | `verify` | database |
+|---|--:|--:|--:|--:|--:|--:|--:|
+| *Fusarium graminearum* | 102,635 | 78,715 | 14 s | 43 s | 0.8 / 0.9 GB | 1.7 / 2.9 s | 0.07 / 0.15 GB |
+| *Zea mays* | 990,782 | 696,928 | 132 s | 366 s | 5.3 / 6.5 GB | 7.3 / 10.3 s | 0.52 / 1.10 GB |
+| *Homo sapiens* | 4,932,571 | 3,203,237 | 641 s | 1,978 s | 29.5 / 36.4 GB | 29.1 / 47.8 s | 3.00 / 5.86 GB |
 
-Memory scales with feature count, not genome size — sequence is never held in
-memory. Budget roughly 7 GB per million features, plus about 200 MB. Protocol:
-[docs/scalability.md](docs/scalability.md).
+Where two values are given, the first is SQLite and the second PostgreSQL.
 
-The table was measured before cgload wrote the indexed annotation itself
-(D-082). Measured again on 15 October 2026 on a lab server (80 cores, 125 GB
-RAM), with the indexed annotation and without eggNOG-mapper output: the load
-took 2 min 18 s (with `--repair-envelopes`) at a peak of 5.4 GB, and `verify`
-5.5 s, since it now also checksums the 2.1 GB FASTA. The database was 697 MB
-without the functional annotation.
+Time and memory grow with the number of GFF3 rows, not with the size of the
+genome: the sequence is never held in memory. A load holds the whole
+annotation, about 5.7 KB per row on SQLite and 6.9 KB on PostgreSQL (medians
+over the 30 genomes), so a human-sized annotation needs 30 to 37 GB. SQLite
+loads about 8,000 rows a second and PostgreSQL about 2,700.
+
+All 30 genomes, the protocol and the comparison with other loaders are in
+[benchmark/PROTOCOL.md](benchmark/PROTOCOL.md) and
+[paper/data/benchmark-run-2.2/](paper/data/benchmark-run-2.2/).
+[docs/scalability.md](docs/scalability.md) records two earlier runs, step by
+step, with eggNOG-mapper output loaded as well.
 
 ## Commands
 

@@ -120,7 +120,7 @@ def test_prokaryote_links_every_child_to_its_gene():
 def test_pseudogene_cds_does_not_collide_with_its_own_gene():
     """526 of 5,808 M. aeruginosa loci are pseudogenes whose CDS has no
     protein_id. Identified by locus_tag alone, such a CDS would take its own
-    gene's identifier and the two rows would merge into one feature (D-030)."""
+    gene's identifier and the two rows would merge into one feature (D-030b)."""
     tokenized = tokenize_genbank(PROKARYOTE)
     pseudo_cds = [
         f

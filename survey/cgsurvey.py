@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Per-genome structural-defect tally for RefSeq GFF3, one row per genome.
 
-Extends cgload's preflight_gff3.py in four ways that the survey needs and the
+Extends cgload's tools/preflight_gff3.py in four ways that the survey needs and the
 single-file version does not have:
 
   1. Per-genome tallies emitted as a machine-readable row, not a printout.

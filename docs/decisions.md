@@ -5,6 +5,11 @@ why. Write the entry when the decision is made, not afterwards — the act of
 writing it is how you find out whether you actually understood it. These
 entries are also the raw material for the paper's design rationale.
 
+Ten numbers were given out twice while two lines of work ran side by side
+(D-028 to D-036, and D-046). The later entry of each pair carries the suffix
+`b` (D-028b, ..., D-046b), here and wherever the code and tests refer to it, so
+every identifier names one decision.
+
 ---
 
 ## D-001 — Silent partial loading is the failure mode to design against
@@ -25,7 +30,7 @@ Per-row validation cannot see any of them. Start-before-end, strand in the
 permitted set, coordinates within the sequence — all satisfied by a file that has
 lost half its exons. What catches them is comparing independently derived counts
 (D-008) and checking relationships between features rather than properties of
-one (D-046).
+one (D-046b).
 
 **Rejected:** treating completeness as a post-hoc audit the user may run. It is
 part of loading, it is not optional, and it can roll a load back (D-046).
@@ -202,6 +207,10 @@ commands match the roadmap exactly, so the two cannot drift.
 
 **Decided:** `paper/paper.md` exists from the start and is revised as
 milestones land.
+
+*Later:* that draft was written for a software journal and was removed after
+release 0.2.0. The paper is `paper/manuscript.md`, with the benchmark's results
+in `paper/data/`.
 
 The statement of need determines whether the scope is publishable. That is
 worth discovering while the scope can still change, rather than after eleven
@@ -570,7 +579,7 @@ the evidence for it.
 behaviour stays under test using a synthetic profile rather than by holding a
 real dialect back to keep a test passing.
 
-## D-028 — no biopython; the GenBank tokenizer is written directly
+## D-028b — no biopython; the GenBank tokenizer is written directly
 
 D-009 reserved a biopython dependency for `parsers/genbank.py`. Not taken. The
 flat-file grammar cgload needs (LOCUS, VERSION, the feature table, and the
@@ -582,7 +591,7 @@ package is installed from scratch rather than from a curated environment.
 Reversible: if a later milestone needs GenBank features beyond the feature
 table, biopython goes back in behind the same module boundary D-009 defined.
 
-## D-029 — GenBank linkage strategy is declared, not inferred at load time
+## D-029b — GenBank linkage strategy is declared, not inferred at load time
 
 GenBank carries no `Parent`, so every parent edge is computed. Which computation
 is correct depends on the annotation, and choosing wrong is silent, so it is a
@@ -606,7 +615,7 @@ therefore sort differently from their own coding sequences. Measured wrong for
 2 of 79 on Dscam1, silently. `test_positional_pairing_is_not_used` fails if it
 returns.
 
-## D-030 — GenBank identifiers may be a compound of two file-provided fields
+## D-030b — GenBank identifiers may be a compound of two file-provided fields
 
 Identifier order is `protein_id`, `transcript_id`, then `locus_tag`. Where only
 `locus_tag` is available and the record is not the gene row, the record type is
@@ -828,7 +837,7 @@ copies drift and the third is always the one nobody updates. An explicit
 `partial=false` is *not* an exemption: reading it as one would silently disable the
 check on a feature that should have it.
 
-## D-031 — KEGG `map` pathway identifiers are dropped when the `ko` form is present
+## D-031b — KEGG `map` pathway identifiers are dropped when the `ko` form is present
 
 eggNOG's `KEGG_Pathway` column emits each pathway under both KEGG identifiers:
 `ko00362` (the ortholog reference pathway) and `map00362` (the same pathway's
@@ -848,9 +857,9 @@ rather than a finding.
 Found only by running real tool output; the constructed fixture milestone 7 was
 built against contained no `map` identifiers at all.
 
-## D-032 — a KEGG pathway search term is canonicalised before lookup
+## D-032b — a KEGG pathway search term is canonicalised before lookup
 
-D-031 stores the `ko` form and drops the redundant `map` form. That creates a
+D-031b stores the `ko` form and drops the redundant `map` form. That creates a
 search hole: **`map00362` is the identifier in KEGG's own URLs and in most
 published papers**, so it is what a user pastes into a search box. Without
 normalisation, a pathway that is in the database returns nothing and the user
@@ -950,7 +959,7 @@ Three tests pin this: the alias resolves, unrelated identifiers are untouched,
 and everything the parser stores is already canonical — so normalisation can
 never produce a form that is absent from the database.
 
-## D-033 — a check may fail the command only when disagreement implies cgload is wrong
+## D-033b — a check may fail the command only when disagreement implies cgload is wrong
 
 Three tiers, not equally authoritative:
 
@@ -982,7 +991,7 @@ column-3 counts -- measured on GCF_000328475.2, all five types match, with CDS
 matching at feature level (6,780) rather than row level (9,739) and thereby
 independently validating segment grouping.
 
-## D-034 — three traps in the NCBI feature-count format
+## D-034b — three traps in the NCBI feature-count format
 
 All three are present in a real seven-line file (GCF_000328475.2) and each would
 silently break the tier-3 comparison:
@@ -1128,7 +1137,7 @@ rRNA 88 — and on genes once the naming difference is accounted for: GFF3 repor
 13,714 genes plus 11 pseudogenes, GenBank reports 13,725 genes and marks the
 pseudogenes with a note. 13,714 + 11 = 13,725. Accessions and commands are in
 `PROVENANCE.md`.
-## D-035 — export emits a cgload dialect, never the source dialect
+## D-035b — export emits a cgload dialect, never the source dialect
 
 Round-tripping back into the original dialect is where export quietly becomes
 dishonest. Emitting AUGUSTUS would require synthesising the `exon` rows stage 5
@@ -1165,7 +1174,7 @@ assertion is on feature counts per source type, never on identifier sets.** The
 stricter assertion fails, and the obvious fix is to synthesise IDs — the exact
 thing this decision forbids.
 
-## D-036 — the `cgload` profile must outrank column 2 in detection
+## D-036b — the `cgload` profile must outrank column 2 in detection
 
 Measured: an export of an AUGUSTUS load still carries `AUGUSTUS` in column 2, so
 `detect()` returns the `augustus` profile and applies AUGUSTUS's rules to a file
@@ -1241,7 +1250,7 @@ code.
 **`--format tsv`** writes functional annotation, one assignment per row, with a
 header comment recording that GO rows include inherited ancestors (D-045). Anyone
 summing that column needs to know before they do it.
-## D-046 — a parent envelope must contain its children; repair is opt-in and bottom-up
+## D-046b — a parent envelope must contain its children; repair is opt-in and bottom-up
 
 Every other structural rule in cgload is per-row. A row can satisfy all of them
 and still be wrong, and nothing downstream can tell.
@@ -1295,7 +1304,7 @@ not contain a feature claiming it is a load error. `--repair-envelopes`
 recomputes each parent's extent from its contents, leaves-first, and every change
 is printed and written to `manifest.json`.
 
-The check itself is the delivered work (D-046); this is the wiring, and three
+The check itself is the delivered work (D-046b); this is the wiring, and three
 properties of it are load-bearing.
 
 **Refusing is the default.** A tool that loads coordinates it knows are
@@ -1325,7 +1334,7 @@ assumed.
     NC_007982.1  RefSeq  mRNA  691776  267232  .  ?  .  ID=rna-ZeamMp017;...
 
 This is not a distinct defect. It is the same NCBI trans-splicing converter bug
-as the 34 too-small envelopes (D-046), arriving in the one form a per-row check
+as the 34 too-small envelopes (D-046b), arriving in the one form a per-row check
 happens to catch. Neither number is an extent: 267,232 is the end of one
 segment, and 691,776 is not a coordinate on this molecule at all — NC_007982.1
 is 569,630 bp. The feature's children span 122,146..548,772, which is correct
@@ -1789,7 +1798,7 @@ Both references cgload compares against fold pseudogenes into `gene`:
 - **NCBI's feature-count file** reports `Feature=gene, Class=pseudogene`.
 
 cgload keeps `pseudogene` as a distinct `source_type`, because that is what the
-GFF3 said and D-035 requires the source term to survive.
+GFF3 said and D-035b requires the source term to survive.
 
 The cross-parser tier already applied this fold. The reference tier did not, so a
 correct maize load reported a 5,195-gene shortfall — exactly its pseudogene
@@ -1824,7 +1833,7 @@ could therefore never skip, and a partial load was compared against totals that
 may describe the whole assembly: it would pass by luck, or fail for a reason
 cgload already classifies as innocent.
 
-That is D-033 inverted. D-033 says a check that vanishes when it cannot run is
+That is D-033b inverted. D-033b says a check that vanishes when it cannot run is
 indistinguishable from one that passed, which is why every tier is always
 reported. The same argument applies to a precondition: one that cannot fail is
 indistinguishable from one that is not being evaluated.
@@ -1861,7 +1870,7 @@ strand, and carry `exception=trans-splicing`, they merge into one feature whose
 strand becomes `?`. Without the qualifier a strand disagreement is still two
 features sharing an ID, and is still refused.
 
-**Third form of the same provider defect.** After 34 too-small envelopes (D-046)
+**Third form of the same provider defect.** After 34 too-small envelopes (D-046b)
 and one inverted row (D-056), NCBI's GFF3 converter writes a trans-spliced gene as
 several rows sharing one ID with differing strands — `gene-ZeamMp186` (*nad1*) at
 lines 990,466 and 990,469 of the maize annotation, `+` then `-`.
@@ -1908,7 +1917,7 @@ the second exon block of a trans-spliced chloroplast gene whose first exon lies
 elsewhere; NCBI's converter could not express the link and emitted them
 unparented. **Two exons in 1.2 M features, both organellar** — the fourth
 manifestation of the same converter defect, after 34 too-small envelopes
-(D-046), one inverted row (D-056) and the both-strand gene rows (D-068).
+(D-046b), one inverted row (D-056) and the both-strand gene rows (D-068).
 
 Naming a disallowed parent is still refused, unchanged.
 
@@ -1962,7 +1971,7 @@ $ awk -F'\t' '!/^#/ && $3=="mRNA" && ($1=="NC_007982.1" || $1=="NC_001666.2")' \
 the source-count tier independently confirms is in the file.
 
 **Consequence for the tiers.** The reference tier is correctly reporting a
-disagreement; the disagreement is between two NCBI products. This is why D-033
+disagreement; the disagreement is between two NCBI products. This is why D-033b
 ranks the tiers as it does — the cross-parser check compares two *primary*
 representations of an assembly, while the reference check compares against a
 derived summary that can be wrong in ways the primary data is not.
@@ -2125,7 +2134,7 @@ The tier also runs inside every GFF3 load, next to the source count (D-046),
 and a failure rolls the load back: a test that drops the anonymous rows'
 parents, the AUDIT-2 bug, now fails the load instead of storing an unlinked
 hierarchy. For GenBank the load leaves the tier to `verify`, because an
-unlinked GenBank feature need not be cgload's fault (D-033).
+unlinked GenBank feature need not be cgload's fault (D-033b).
 
 ## D-079 — `verify` checks the stored assembly; the assembly row records the data root
 
@@ -2145,7 +2154,7 @@ works.
 absolute paths. `source_file.path` already held absolute input paths, which the
 source-count tier reads; the alternative, making the user always name the data
 directory, would have meant the tier silently skipped in every ordinary run,
-which is D-033's failure.
+which is D-033b's failure.
 
 **Cost:** hashing the stored FASTA. About as long as reading it once: a few
 seconds for a 2 Gb assembly, where the other tiers take under a second.
@@ -2212,7 +2221,7 @@ annotation, which is what a real download has.
 code from us, and nothing wrote either file.
 
 **Decided:** every load writes the normalised annotation as cgload-dialect GFF3
-(D-035), its rows sorted for tabix, compressed as BGZF and indexed as `.tbi`,
+(D-035b), its rows sorted for tabix, compressed as BGZF and indexed as `.tbi`,
 inside the staging directory so it lands with the rows or not at all. Both
 formats are written by `cgload.bgzf` with `zlib` and `struct`.
 
@@ -2322,7 +2331,7 @@ gene with its children, the features in a region, the genes carrying a domain.
   hang from the first row.
 - Accessions match exactly. The only rewrites are spellings of one identifier
   that the source formats are known to differ on: `K00799` and `ko:K00799`,
-  KEGG `map` and `ko` pathways (D-032), and GO and EC prefixes. Nothing is
+  KEGG `map` and `ko` pathways (D-032b), and GO and EC prefixes. Nothing is
   matched by prefix or similarity. GO matches include the ancestor terms
   eggNOG-mapper adds (D-045), and the TSV says so when GO rows are present.
 - `--type` keeps only features of the given canonical types. It is refused with
@@ -2331,7 +2340,7 @@ gene with its children, the features in a region, the genes carrying a domain.
 - TSV has one row per feature (one per assignment with `--term`), with the
   parent and the identifier at the top of the parent chain. GFF3 adds every
   ancestor, so each `Parent` resolves inside the file, and it carries the
-  `##cgload-export` header (D-035) plus a comment naming the question.
+  `##cgload-export` header (D-035b) plus a comment naming the question.
 - Every value the user types is a bound parameter. Sets of rows pass between
   steps as subqueries, never as IN lists built in Python (AUDIT-8); a test runs
   a whole-sequence query under a parameter limit of 10. The parent chain is
@@ -2360,7 +2369,7 @@ every count the same, such as a moved coordinate, passed.
 **Decided:** before counting, `verify` compares the file's SHA-256 with the one
 recorded at load. If they differ, the tier is skipped with a reason that names
 the file and says how to recover: restore the original, or reload with
-`--force`. A skipped tier is reported, never hidden (D-033). The cost is one
+`--force`. A skipped tier is reported, never hidden (D-033b). The cost is one
 extra read of each input file, next to the read the count already makes.
 
 ## D-087 — `load --strict-vocabulary` refuses the types the load summary names
@@ -2450,7 +2459,7 @@ trans-spliced genes in plain coordinates, each on several rows, and their
 mRNAs past the origin with the sequence length added: rna-DA397_mgp37 is
 234,352..396,144 under a gene spanning 26,817..360,128. Both describe the same
 bases, but compared as numbers the mRNA lies outside its gene, and a parent
-written on several rows is never recomputed (D-046).
+written on several rows is never recomputed (D-046b).
 
 **Decided:** with `--repair-envelopes`, a disagreement that remains after
 repair is stored as written when the sequence's region row says
@@ -2460,7 +2469,7 @@ warning and recorded in `manifest.json` under `envelope_exceptions`. Anything
 else still refuses, and without the flag nothing changes.
 
 **Rejected:** recomputing the gene, which means choosing which of its rows to
-widen, the guess D-046 forbids; and comparing positions modulo the sequence
+widen, the guess D-046b forbids; and comparing positions modulo the sequence
 length. A parent and a child written in different conventions can describe
 different arcs of the circle (rna-DA397_mgp31 is written the long way round,
 161,832..460,814), so arithmetic alone does not settle containment, and

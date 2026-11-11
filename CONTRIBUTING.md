@@ -13,7 +13,7 @@ If the file is large, the useful part is small: run the pre-flight scanner and
 send its output plus twenty lines around the offending row.
 
 ```console
-python3 preflight_gff3.py your_annotation.gff3
+python3 tools/preflight_gff3.py your_annotation.gff3
 ```
 
 Please include the accession if it is public, so the case can be reproduced.

@@ -76,7 +76,7 @@ def test_kegg_pathway_map_duplicates_are_not_stored_twice(parsed):
     """KEGG publishes each pathway as both `ko00362` and `map00362`, and eggNOG
     emits both. Measured on the full file: 2,253 rows carry pathway data and in
     all 2,253 the two sets are identical, so half of the 17,226 emitted rows
-    were the same pathway written twice (D-031).
+    were the same pathway written twice (D-031b).
     """
     pathways = [hit.accession for hit in parsed.hits if hit.analysis == "KEGG_Pathway"]
     assert pathways, "fixture carries no KEGG_Pathway data"
@@ -215,7 +215,7 @@ def test_genes_without_annotation_are_not_an_error():
 
 def test_map_form_resolves_to_the_stored_ko_form():
     """`map00362` is what KEGG's own URLs and most papers use, so it is what a
-    user pastes into a search box. cgload stores `ko00362` (D-031), so an
+    user pastes into a search box. cgload stores `ko00362` (D-031b), so an
     un-normalised search would report a pathway missing that is present."""
     from cgload.parsers.functional import canonical_kegg_pathway
 
@@ -360,7 +360,7 @@ def test_the_matched_pair_loads_end_to_end(tmp_path):
 
 
 def test_no_map_form_pathway_is_stored_from_the_real_file():
-    """D-031 through the whole pipeline, on real output."""
+    """D-031b through the whole pipeline, on real output."""
     stored = {
         hit.accession
         for hit in parse_eggnog(FIXTURE).hits

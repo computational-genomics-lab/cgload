@@ -52,7 +52,7 @@ class ParentInference(Enum):
 
 
 class LinkageStrategy(Enum):
-    """How a GenBank child finds its parent (D-029).
+    """How a GenBank child finds its parent (D-029b).
 
     GenBank carries no ``Parent``, so the edge is computed. Which computation is
     correct depends on the annotation, and getting it wrong is silent, so it is
@@ -97,7 +97,7 @@ class Profile:
     #: Optional header corroboration, matched against comment lines.
     header_signature: re.Pattern[str] | None
     parent_inference: ParentInference
-    #: Only meaningful when ``parent_inference`` is STRUCTURAL (D-029).
+    #: Only meaningful when ``parent_inference`` is STRUCTURAL (D-029b).
     linkage_strategy: LinkageStrategy
     stop_codon: StopCodonConvention
     #: Feature types this dialect is expected to emit. Absence of a declared

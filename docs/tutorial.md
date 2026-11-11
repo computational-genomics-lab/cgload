@@ -281,7 +281,7 @@ exon DEMO_000001-T1.exon1
   parent      mRNA DEMO_000001-T1
   linked by   explicit_parent — the file stated it (GFF3 Parent attribute)
               this link was stated by the file
-  recorded by cgload 0.2.0 under vocabulary version 1
+  recorded by cgload 0.2.1 under vocabulary version 1
 ```
 
 `explain` shows how one feature was linked and which rule produced the link.
@@ -341,7 +341,7 @@ head -8 roundtrip.gff3
 
 ```
 ##gff-version 3
-##cgload-export 0.2.0
+##cgload-export 0.2.1
 ##cgload-vocabulary 10bf08715e85e1497870a92bd10f72193f827d785a435dcb42f6766134782491
 ##sequence-region demo_scaffold_1 1 5000
 # The source dialect does not emit these types, so their absence is a property of the input and not a loss during loading:

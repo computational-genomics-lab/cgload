@@ -160,7 +160,7 @@ Rows were selected to carry one trap each, not at random:
 Measured on the **full** file, not the fixture:
 
 - 6,509 queries, all with `XP_` RefSeq protein accessions as the query ID
-- 380,022 hits before the D-031 pathway fix, 371,409 after
+- 380,022 hits before the D-031b pathway fix, 371,409 after
 - GO is 286,671 of those — mean 89.7 terms per annotated protein, max 570
 - 61,425 cells contain `-`; zero contain an empty string
 - 97 of 121 distinct `COG_category` values are multi-letter
@@ -238,7 +238,7 @@ NCBI's published per-assembly feature totals for *Mycosarcoma maydis*
 GCF_000328475.2, verbatim -- seven data rows, unmodified. Downloaded from the
 assembly's FTP directory alongside the GFF3.
 
-Carries all three format traps documented in D-034: `gene` split across three
+Carries all three format traps documented in D-034b: `gene` split across three
 `Class` rows, `na` in the `Unique Ids` column of the `tRNA` row, and an
 `Assembly-unit accession` (GCF_000328485.2) that differs from the assembly
 accession by one digit.

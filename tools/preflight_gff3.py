@@ -8,7 +8,7 @@ file once, checks four things, and prints everything wrong.
 It shares no code with cgload's parser, deliberately (D-008): a pre-flight
 check that used the parser could only find what the parser already refuses.
 
-    python preflight_gff3.py genomic.gff
+    python tools/preflight_gff3.py genomic.gff
 
 Checks, in order of how quietly they fail:
 

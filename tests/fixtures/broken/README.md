@@ -11,7 +11,7 @@ until they stopped asserting anything.
 
 | File | Defect | Decision |
 |---|---|---|
-| `trans_spliced_envelope.gff3` | gene envelope excludes its own exons; two levels wrong | D-046, D-055 |
+| `trans_spliced_envelope.gff3` | gene envelope excludes its own exons; two levels wrong | D-046b, D-055 |
 | `inverted_row_envelope.gff3` | row written start > end, with neither number an extent | D-056 |
 
 Both are reduced from *Zea mays* B73 GCF_902167145.1, organellar genes, where
