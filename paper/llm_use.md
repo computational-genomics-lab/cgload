@@ -13,7 +13,7 @@ there.
 
 Claude (Anthropic), mostly the model Claude Opus 5.5, used through Claude
 Code in two working sessions that the commit messages link to, from 14 October
-to 11 November 2026. The model worked in a cloud workspace on a copy of the
+to 12 November 2026. The model worked in a cloud workspace on a copy of the
 repository. It could not reach the lab server: every benchmark run was started
 by the authors on that server, and the authors sent the results back to the
 model. Every change the model made was committed under the name of the first

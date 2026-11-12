@@ -1,6 +1,6 @@
 ---
 title: "cgload: loading genome annotations into a database and checking that every feature arrived"
-subtitle: "Technical Note, for GigaScience. Working draft of 11 November 2026."
+subtitle: "Technical Note, for GigaScience. Working draft of 12 November 2026."
 ---
 
 <!--
@@ -765,18 +765,25 @@ written with the same large language model as cgload [@claude].
   version 16) with psycopg 3
 - License: MIT
 - Version described: 0.2.1 (tag `v0.2.1`)
-- RRID: [to be added]
-- bio.tools ID: [to be added]
+- RRID:SCR_029282
+- bio.tools ID: biotools:cgload
 
-<!-- AUTHORS: register cgload at SciCrunch (scicrunch.org/resources) for an
-RRID and at bio.tools for an ID; the journal asks for both, and only you can
-register. cgload is not on PyPI: the README installs it from GitHub. Say here
-how to install it, or publish 0.2.1 to PyPI first. -->
+cgload is installed with pip from its repository, at the version described
+here:
+
+    pip install "git+https://github.com/computational-genomics-lab/cgload@v0.2.1"
+
+For PostgreSQL, add the driver:
+
+    pip install "cgload[postgres] @ git+https://github.com/computational-genomics-lab/cgload@v0.2.1"
+
+`examples/minimal/` in the repository loads and verifies a small genome in
+under a minute, as a check that the installation works.
 
 The repository holds test data (`examples/minimal/`, `tests/fixtures/`) with
 expected outputs, a test suite of 573 tests, and the benchmark protocol and
 scripts (`benchmark/`). `paper/figures.py` makes every figure and table of this
-paper from those results.
+paper from the benchmark results.
 
 # Data availability
 
@@ -788,8 +795,9 @@ in `survey/`. The reference readings are not included, because
 public RefSeq releases, identified by accession and MD5 in
 `paper/data/benchmark-run-2.2/inputs.tsv`.
 
-<!-- AUTHORS: GigaScience asks for supporting data in a public repository, and
-its curators may offer to put a copy in GigaDB under CC0; that would serve. -->
+<!-- AUTHORS: GitHub is not an archive. Save the repository at Software
+Heritage (archive.softwareheritage.org/save) and add the SWHID of tag v0.2.1
+to the list above; if the curators ask for GigaDB, accept. -->
 
 # Additional files
 
@@ -861,7 +869,7 @@ second says what you did: change it until it describes what you actually did.
 The journal also asks for this disclosure in the cover letter. -->
 
 We used Claude, a large language model made by Anthropic, through Claude Code
-[@claude], from 14 October to 11 November 2026. Under the authors' direction it
+[@claude], from 14 October to 12 November 2026. Under the authors' direction it
 wrote and changed code, tests and documentation of cgload; drafted the
 benchmark protocol with us and wrote the benchmark scripts; analysed the
 results of each run; wrote the scripts that draw every figure and table of
@@ -908,7 +916,7 @@ draft of this manuscript is `paper/manuscript.md` in the repository. Additional 
 [@pychado]: Galaxy Genome Annotation. python-chado: a Python library for interacting with Chado. Version 2.3.9. https://github.com/galaxy-genome-annotation/python-chado. Accessed 10 Nov 2026.
 [@so]: Eilbeck K, Lewis SE, Mungall CJ, et al. The Sequence Ontology: a tool for the unification of genome annotations. Genome Biol. 2005;6:R44. https://doi.org/10.1186/gb-2005-6-5-r44.
 [@biopython]: Cock PJA, Antao T, Chang JT, et al. Biopython: freely available Python tools for computational molecular biology and bioinformatics. Bioinformatics. 2009;25:1422–3. https://doi.org/10.1093/bioinformatics/btp163.
-[@claude]: Anthropic. Claude [large language model], models Claude Opus 5.5 and others, used through Claude Code by A. Upadhyay, 14 October to 11 November 2026. https://www.anthropic.com/claude.
+[@claude]: Anthropic. Claude [large language model], models Claude Opus 5.5 and others, used through Claude Code by A. Upadhyay, 14 October to 12 November 2026. https://www.anthropic.com/claude.
 
 <!-- AUTHORS: check every reference against the journal's style. The pages of
 the Ensembl 2025 paper and the article number of Buchka et al. were written
