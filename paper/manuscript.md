@@ -764,7 +764,7 @@ written with the same large language model as cgload [@claude].
   or later; SQLite 3.8.3 or later (part of Python), or PostgreSQL (tested with
   version 16) with psycopg 3
 - License: MIT
-- Version described: 0.2.1 (tag `v0.2.1`), archived at Zenodo [@zenodo-code]
+- Version described: 0.2.1 (tag `v0.2.1`)
 - RRID: [to be added]
 - bio.tools ID: [to be added]
 
@@ -776,27 +776,20 @@ how to install it, or publish 0.2.1 to PyPI first. -->
 The repository holds test data (`examples/minimal/`, `tests/fixtures/`) with
 expected outputs, a test suite of 573 tests, and the benchmark protocol and
 scripts (`benchmark/`). `paper/figures.py` makes every figure and table of this
-paper from the deposited results.
+paper from those results.
 
 # Data availability
 
-The dataset supporting the results of this article is available in the Zenodo
-repository [@zenodo-data]: the benchmark's results folder, with the results
-that later repeats replaced and the PostgreSQL server log, and the census
-results. The reference readings are not deposited, because `benchmark/truth.py`
-rebuilds them from the input files. The results reported here are also in
-`paper/data/benchmark-run-2.2/` of the code repository, and the census scripts
-and results in `survey/`. All input files are public RefSeq releases,
-identified by accession and MD5 in `paper/data/benchmark-run-2.2/inputs.tsv`.
+The results reported here are in Additional files 1 to 4 and, in full, in
+`paper/data/benchmark-run-2.2/` of the code repository: the results folder of
+the benchmark as its scripts left it. The census scripts and their results are
+in `survey/`. The reference readings are not included, because
+`benchmark/truth.py` rebuilds them from the input files. All input files are
+public RefSeq releases, identified by accession and MD5 in
+`paper/data/benchmark-run-2.2/inputs.tsv`.
 
-<!-- AUTHORS: (1) The journal asks for CC0 on supporting data where the
-repository offers it; the Zenodo dataset is CC BY 4.0 now. (2) NCBI replaces
-annotation files under the same accession, so a reader may not be able to
-fetch these exact files later. Your Zenodo record 10.5281/zenodo.23232512
-already holds the 30 GFF3 files, but its medaka file is the incomplete one and
-its title says "submitted to Database". Publish a new version of it with the
-complete medaka file and a title that fits this paper, and cite it here.
-(3) Put both DOIs into the two Zenodo references. -->
+<!-- AUTHORS: GigaScience asks for supporting data in a public repository, and
+its curators may offer to put a copy in GigaDB under CC0; that would serve. -->
 
 # Additional files
 
@@ -872,7 +865,7 @@ We used Claude, a large language model made by Anthropic, through Claude Code
 wrote and changed code, tests and documentation of cgload; drafted the
 benchmark protocol with us and wrote the benchmark scripts; analysed the
 results of each run; wrote the scripts that draw every figure and table of
-this paper from the deposited results; searched the literature for related
+this paper from the benchmark results; searched the literature for related
 tools; and drafted the text of this manuscript. No figure or number was made
 by asking the model for it directly: figures and tables are the output of
 `paper/figures.py`, and the model did not create or alter any image.
@@ -916,8 +909,6 @@ draft of this manuscript is `paper/manuscript.md` in the repository. Additional 
 [@so]: Eilbeck K, Lewis SE, Mungall CJ, et al. The Sequence Ontology: a tool for the unification of genome annotations. Genome Biol. 2005;6:R44. https://doi.org/10.1186/gb-2005-6-5-r44.
 [@biopython]: Cock PJA, Antao T, Chang JT, et al. Biopython: freely available Python tools for computational molecular biology and bioinformatics. Bioinformatics. 2009;25:1422–3. https://doi.org/10.1093/bioinformatics/btp163.
 [@claude]: Anthropic. Claude [large language model], models Claude Opus 5.5 and others, used through Claude Code by A. Upadhyay, 14 October to 11 November 2026. https://www.anthropic.com/claude.
-[@zenodo-code]: Upadhyay A, Panda A, Tripathy S. cgload, version 0.2.1. Zenodo. 2026. [DOI to be added].
-[@zenodo-data]: Upadhyay A, Panda A, Tripathy S. Benchmark of cgload and three other GFF3 loaders on 30 RefSeq genomes: results. Zenodo. 2026. [DOI to be added].
 
 <!-- AUTHORS: check every reference against the journal's style. The pages of
 the Ensembl 2025 paper and the article number of Buchka et al. were written

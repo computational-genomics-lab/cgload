@@ -370,15 +370,13 @@ attribute change anywhere; every other table identical.
   (see the entry of 11 November). `paper/build.py` makes the Word file, the
   five additional files and the figure files in `paper/build/`. Still the
   authors' to add: e-mail addresses, funding, contributions,
-  acknowledgements, an RRID (SciCrunch) and a bio.tools ID for cgload, the two
-  Zenodo DOIs, and their own statements in the AI disclosure and in
+  acknowledgements, an RRID (SciCrunch) and a bio.tools ID for cgload, and their own statements in the AI disclosure and in
   `paper/llm_use.md`.
-- Zenodo. The software record made for v0.2.0 needs a new version for v0.2.1.
-  The dataset record's licence should become CC0, which GigaScience asks for.
-  The older record 10.5281/zenodo.23232512 (the 30 input GFF3 files) says
-  "submitted to Database" in its title and holds the incomplete medaka file;
-  a new version with the complete file and a fitting title would let the paper
-  cite an archive of its exact inputs, which NCBI may replace.
+- Zenodo is not used: the authors give the results as additional files and
+  in `paper/data/` of the repository (12 November). `paper/deposit_zenodo.py`
+  is removed. Any Zenodo drafts made with it can be discarded at zenodo.org.
+  The older record 10.5281/zenodo.23232512 still says "submitted to Database"
+  in its public title.
 - gffbase and GFFx were found after the runs and are not benchmarked; the
   paper says so. gffbase treats a multi-row feature as one feature and is the
   comparison a reviewer is most likely to ask for.

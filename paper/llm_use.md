@@ -39,7 +39,7 @@ trailer, from 14 October to 10 November 2026. The other 11, from 20 August to
 - **Figures and tables.** It wrote `paper/figures.py`, which draws every figure
   and table of the paper from the committed results. No figure or number was
   made by asking the model for it directly, and the model created or altered no
-  image. It also wrote `paper/build.py` and `paper/deposit_zenodo.py`.
+  image. It also wrote `paper/build.py`.
 - **Checking.** It checked every number in the manuscript against the results
   with a script, and searched the literature for related tools.
 - **The manuscript.** It drafted the text of the manuscript, from the results
@@ -52,8 +52,7 @@ trailer, from 14 October to 10 November 2026. The other 11, from 20 August to
 In the public repository, https://github.com/computational-genomics-lab/cgload:
 the code it wrote is in the commits that name it; its draft of the manuscript
 is `paper/manuscript.md`, with every earlier version in the history; and the
-figures and tables are the output of `paper/figures.py`. The same commits are
-in the source archive deposited at Zenodo.
+figures and tables are the output of `paper/figures.py`. 
 
 ## How the authors checked the work
 
