@@ -37,7 +37,7 @@ NOTHING, FAILED = "#f0efec", "#d6d5cf"
 RAMP = ["#cde2fb", "#b7d3f6", "#9ec5f4", "#86b6ef", "#6da7ec", "#5598e7", "#3987e5",
         "#2a78d6", "#256abf", "#1c5cab", "#184f95", "#104281", "#0d366b"]
 
-FULL_WIDTH = 170 / 25.4  # inches: a full page width of GigaScience, 170 mm
+FULL_WIDTH = 170 / 25.4  # inches: a full page width of BMC Bioinformatics, 170 mm
 SMALL = 7  # points: the journal's smallest text
 
 plt.rcParams.update({

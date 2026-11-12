@@ -463,3 +463,20 @@ The authors had the draft reviewed by another AI agent and chose GigaScience
 - **Version 0.2.1**: no change in behaviour; `src/` differs from the benchmarked
   commit 9b97178 only in the version string and decision numbers in comments.
 
+## 12 November 2026: BMC Bioinformatics, Software article
+
+The authors chose BMC Bioinformatics over GigaScience (journal access under
+ONOS). Nothing in cgload changed; version 0.2.1 stands.
+
+- **Manuscript.** `paper/manuscript.md` is now a BMC Software article:
+  Background, Implementation (with the benchmark design and the use of the
+  language model, which Springer Nature asks for in the Methods), Results,
+  Discussion, Conclusions, Availability and requirements, List of
+  abbreviations, Declarations (data availability moved here), References,
+  Figure legends, Additional files. The text of each part is unchanged; tables
+  are renumbered in their new order (versions first).
+- **No Zenodo.** The data are Additional files 1 to 4 and
+  `paper/data/benchmark-run-2.2/`; the source archive of v0.2.1 is Additional
+  file 6.
+- **Build.** `paper/build.py` gives the Word file A4 pages, double spacing,
+  line numbers and page numbers, and no longer embeds the figures.

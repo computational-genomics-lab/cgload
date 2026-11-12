@@ -1,10 +1,10 @@
 # Additional file 5: use of a large language model
 
-GigaScience allows generative AI tools when their use is disclosed, cited, and
-summarised at the end of the paper, with the tool's output kept in an open
-repository. This note is the detailed record behind the paper's disclosure
-section. Its counts come from the repository's git history and can be checked
-there.
+Springer Nature's policy, which BMC Bioinformatics follows, does not accept a
+large language model as an author and asks that its use be documented in the
+Methods section of the paper. This note is the detailed record behind the
+section "Use of a large language model" of the paper. Its counts come from the
+repository's git history and can be checked there.
 
 <!-- AUTHORS: the facts below are from the git history. The two places marked
 "to be completed" need your own statement before submission. -->

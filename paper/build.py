@@ -16,7 +16,10 @@ manuscript.md is the source. This script
 * shows each note to the authors (`<!-- AUTHORS: ... -->`) in bold, where
   pandoc would drop the comment;
 * makes a Word file with pandoc, with typographic substitution off, so that
-  `--force` stays two hyphens.
+  `--force` stays two hyphens, and gives it what BMC Bioinformatics asks of a
+  submission: A4 pages, double line spacing in the text, line numbers and page
+  numbers. Figures are not embedded: the journal takes them as separate files,
+  and their legends are a section of the manuscript.
 """
 
 from __future__ import annotations
@@ -25,6 +28,7 @@ import re
 import shutil
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -94,6 +98,50 @@ def assemble(source: Path) -> str:
     return number_citations(text)
 
 
+W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+FOOTER = (f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="{W}">'
+          '<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:fldChar w:fldCharType="begin"/></w:r>'
+          '<w:r><w:instrText xml:space="preserve"> PAGE </w:instrText></w:r>'
+          '<w:r><w:fldChar w:fldCharType="end"/></w:r></w:p></w:ftr>')
+SECTION = ('<w:sectPr><w:footerReference w:type="default" r:id="rIdPageFooter"/>'
+           '<w:pgSz w:w="11906" w:h="16838"/>'
+           '<w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" '
+           'w:header="720" w:footer="720" w:gutter="0"/>'
+           '<w:lnNumType w:countBy="1" w:restart="continuous"/></w:sectPr>')
+
+
+def journal_layout(docx: Path) -> None:
+    """Double spacing in body text, line numbers and page numbers, on A4."""
+    with zipfile.ZipFile(docx) as archive:
+        parts = {name: archive.read(name) for name in archive.namelist()}
+
+    def edit(name: str, old: str, new: str) -> None:
+        text = parts[name].decode("utf-8")
+        if text.count(old) != 1:
+            raise SystemExit(f"{name}: expected one {old!r} in pandoc's output")
+        parts[name] = text.replace(old, new).encode("utf-8")
+
+    document = re.sub(r"<w:sectPr\b.*?</w:sectPr>|<w:sectPr\b[^>]*/>", "",
+                      parts["word/document.xml"].decode("utf-8"), flags=re.S)
+    parts["word/document.xml"] = document.encode("utf-8")
+    edit("word/document.xml", "</w:body>", SECTION + "</w:body>")
+    # Body Text carries the prose; tables, lists and references are Compact.
+    edit("word/styles.xml", '<w:spacing w:after="180" w:before="180" />',
+         '<w:spacing w:after="180" w:before="180" w:line="480" w:lineRule="auto" />')
+    edit("word/styles.xml", '<w:spacing w:after="36" w:before="36" />',
+         '<w:spacing w:after="36" w:before="36" w:line="240" w:lineRule="auto" />')
+    parts["word/footer1.xml"] = FOOTER.encode("utf-8")
+    edit("word/_rels/document.xml.rels", "</Relationships>",
+         '<Relationship Id="rIdPageFooter" Type="http://schemas.openxmlformats.org/officeDocument/'
+         '2006/relationships/footer" Target="footer1.xml"/></Relationships>')
+    edit("[Content_Types].xml", "</Types>",
+         '<Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-'
+         'officedocument.wordprocessingml.footer+xml"/></Types>')
+    with zipfile.ZipFile(docx, "w", zipfile.ZIP_DEFLATED) as archive:
+        for name, data in parts.items():
+            archive.writestr(name, data)
+
+
 def main() -> int:
     out = HERE / "build"
     out.mkdir(exist_ok=True)
@@ -107,6 +155,7 @@ def main() -> int:
     subprocess.run([pandoc, str(built), "--from", "markdown-smart", "--to", "docx",  # noqa: S603
                     "--resource-path", str(HERE), "--output", str(out / "manuscript.docx")],
                    check=True)
+    journal_layout(out / "manuscript.docx")
     # The additional files, under the names the manuscript gives them.
     extras = {"tables/tableS1_genomes.csv": "additional_file_1_table_S1.csv",
               "tables/tableS2_faults.csv": "additional_file_2_table_S2.csv",
