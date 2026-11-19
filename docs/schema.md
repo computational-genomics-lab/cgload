@@ -165,9 +165,10 @@ That is also its danger: a row insert changes what `feature_type` means, and
 rows already stored are not re-mapped. So `vocabulary_meta` carries a version
 and a content hash — over the terms, the parent-child rules and the linkage
 method vocabulary, since any of the three changes linkage semantics — and every
-assembly records the hash it was loaded under. `load`, `verify`, `query` and
-`export` call `assert_vocabulary_current()` first and refuse a mismatch,
-directing the user to `cgload remap`.
+assembly records the hash it was loaded under. `load`, `query`, `stats` and
+`remove` call `assert_vocabulary_current()` first and refuse a mismatch.
+`verify` does not need to: it counts `source_type`, which no vocabulary
+changes.
 
 The same single row carries `database_id`, a UUID written by `init`. Every
 assembly directory's `manifest.json` records it, so a directory that a load

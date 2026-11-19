@@ -27,6 +27,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.font_manager import FontProperties  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.patches import Rectangle  # noqa: E402
 
@@ -215,56 +216,251 @@ def arrow(axis, start, end, colour=MUTED):
 
 
 def figure_design(out: Path) -> None:
-    width, height = FULL_WIDTH, 3.55
+    """Figure 1: every step of a load and of `verify`, with what stops each and
+    what each writes. The step numbers 1 to 9 are those of the paper's list."""
+    width, height = FULL_WIDTH, 8.5
     figure = plt.figure(figsize=(width, height))
     axis = figure.add_axes((0, 0, 1, 1))
     axis.set_xlim(0, width)
     axis.set_ylim(0, height)
     axis.axis("off")
-    margin, gap = 0.06, 0.155
-    w = (width - 2 * margin - 4 * gap) / 5
-    xs = [margin + i * (w + gap) for i in range(5)]
-    top, h = 2.47, 1.03
-    box(axis, xs[0], top, w, h, "Input files",
-        "GFF3 and FASTA\nGenBank (optional)\neggNOG-mapper,\nInterProScan (optional)", STEP)
-    box(axis, xs[1], top, w, h, "Read, normalise",
-        "Detect the dialect:\nRefSeq, funannotate,\nAUGUSTUS, GenBank.\nRefuse an unknown file.",
-        STEP)
-    box(axis, xs[2], top, w, h, "Structural checks",
-        "Child inside its parent,\nstart not after end,\nrow inside its sequence.\n"
-        "Refuse, or repair and\nrecord each repair.", CHECK)
-    box(axis, xs[3], top, w, h, "One transaction",
-        "Rows into SQLite or\nPostgreSQL. FASTA and\nannotation indexed in\na staging folder, "
-        "moved\nin before the commit.", STEP)
-    box(axis, xs[4], top, w, h, "End-of-load check",
-        "Stored counts against\nthe independent count.\nShort: roll back, and\nthe database is as\n"
-        "it was before.", CHECK)
-    for a, b in zip(xs, xs[1:], strict=False):
-        arrow(axis, (a + w, top + h / 2), (b, top + h / 2))
+    line = 0.112                       # inches per line: 7-point text, 115% leading
+    pad_top, pad_bottom = 0.055, 0.045
+    stop_fill = "#fdeee8"           # a light tint of ORANGE, for what stops a load
+    left, right = 0.04, width - 0.17   # the right margin carries one connector
+    corridor = width - 0.085
 
-    mid, mh = 1.42, 0.72
-    box(axis, xs[1], mid, 2 * w + gap, mh, "Independent count of the file",
-        "Separate code that imports nothing from cgload\ncounts features by type, rows "
-        "of multi-row\nfeatures and Parent= statements.", CHECK)
-    box(axis, xs[4], mid, w, mh, "Database", "and data folder,\nchecksums recorded", STEP)
-    arrow(axis, (xs[0] + w / 2, top), (xs[1], mid + mh / 2))
-    arrow(axis, (xs[2] + w, mid + mh / 2 + 0.12), (xs[4] + 0.25, top))
-    arrow(axis, (xs[4] + w / 2, top), (xs[4] + w / 2, mid + mh))
+    renderer = figure.canvas.get_renderer()
+    pad = 0.07                         # inches between a box's edge and its text
 
-    low, lh = 0.08, 0.74
-    rule = low + lh + 0.08
-    axis.plot([xs[0], xs[4] + w], [rule, rule], color=AXIS, linewidth=0.6)
-    axis.text(xs[1] + 0.08, rule + 0.05, "cgload verify, at any later time", ha="left",
-              va="bottom", fontsize=7, fontweight="bold", color=INK)
-    tiers = [("Source count", "Independent count\nagainst the database"),
-             ("Parent links", "Every Parent= is a\nstored link"),
-             ("Stored assembly", "FASTA and index\nagainst their checksums"),
-             ("Cross-parser", "GFF3 against GenBank\n(optional)"),
-             ("Reference", "File against NCBI's\npublished totals\n(optional)")]
-    for x, (title, body) in zip(xs, tiers, strict=True):
-        box(axis, x, low, w, lh, title, body, CHECK)
-    arrow(axis, (xs[1] + 0.3, mid), (xs[0] + w / 2, low + lh))
-    arrow(axis, (xs[4] + w / 2, mid), (xs[4] + w / 2, rule))
+    def wrap(text: str, room: float, weight: str = "normal") -> list[str]:
+        """Break ``text`` into lines no wider than ``room`` inches, as drawn."""
+        font = FontProperties(family="sans-serif", size=SMALL, weight=weight)
+        lines: list[str] = []
+        for word in text.split():
+            trial = f"{lines[-1]} {word}" if lines else word
+            wide, _, _ = renderer.get_text_width_height_descent(trial, font, ismath=False)
+            if lines and wide / figure.dpi <= room:
+                lines[-1] = trial
+            else:
+                lines.append(word)
+        return lines
+
+    def rect(x, top, w, h, fill, edge=None):
+        axis.add_patch(Rectangle((x, top - h), w, h, facecolor=fill,
+                                 edgecolor=edge or "none", linewidth=0.6))
+
+    def write(x, top, rows):
+        """rows: (text, colour, weight); one line each, from the top down."""
+        y = top - pad_top
+        for text, colour, weight in rows:
+            if text:
+                axis.text(x, y, text, ha="left", va="top", fontsize=SMALL, color=colour,
+                          fontweight=weight)
+            y -= line
+        return y
+
+    def heading(y, label, title):
+        axis.text(left, y, label, ha="left", va="top", fontsize=9, fontweight="bold",
+                  color=INK)
+        axis.text(left + 0.2, y - 0.01, title, ha="left", va="top", fontsize=8,
+                  fontweight="bold", color=INK)
+
+    def flow(x, top, bottom):
+        axis.annotate("", xy=(x, bottom), xytext=(x, top),
+                      arrowprops={"arrowstyle": "-|>", "color": MUTED, "linewidth": 0.8,
+                                  "shrinkA": 0, "shrinkB": 0, "mutation_scale": 7})
+
+    # --- a: the load ---------------------------------------------------------------
+    y = height - 0.05
+    heading(y, "a", "cgload load: from the input files to a committed genome")
+    y -= 0.28
+
+    inputs = [
+        ("Configuration (TOML)", "organism, strain, assembly and the files to load"),
+        ("Assembly", "FASTA, one record per sequence"),
+        ("Functional annotation", "eggNOG-mapper or InterProScan output (optional)"),
+        ("Annotation", "GFF3 (RefSeq, funannotate, AUGUSTUS) or GenBank"),
+    ]
+    gap = 0.08
+    w_in = (right - left - 3 * gap) / 4
+    h_in = pad_top + pad_bottom + 3 * line
+    for i, (title, body) in enumerate(inputs):
+        x = left + i * (w_in + gap)
+        rect(x, y, w_in, h_in, "white", AXIS)
+        write(x + pad, y, [(title, INK, "bold")]
+              + [(text, INK2, "normal") for text in wrap(body, w_in - 2 * pad)])
+    annotation_box = (left + 3 * (w_in + gap), y, w_in, h_in)
+    under = y - h_in - 0.06
+    axis.plot([left + w_in / 2, left + w_in / 2, right - w_in / 2, right - w_in / 2],
+              [y - h_in, under, under, y - h_in], color=MUTED, linewidth=0.8)
+    flow(width / 2, under, under - 0.12)
+    y -= h_in + 0.21
+
+    # Phase 1: five checks that read the files and write nothing.
+    axis.text(left, y, "Read and check every file. Nothing is written yet.", ha="left",
+              va="top", fontsize=7.5, fontweight="bold", color=INK)
+    y -= 0.2
+    reads = [
+        ("Tokenise", "Split each line into nine columns and attributes.",
+         "a line without nine columns; a bad coordinate, strand or phase",
+         "declared lengths"),
+        ("Detect the dialect", "Match column 2 and the header with the five dialect "
+         "profiles.", "no profile matches, or several do", "the dialect and its evidence"),
+        ("Normalise", "Join rows that share an ID; order segments; map types; find "
+         "parents.", "two parents; a missing or wrong-typed parent; one ID on two features",
+         "how parents were found"),
+        ("Check parent spans", "A child must lie inside its parent; no row may run "
+         "backwards.", "a violation, unless --repair-envelopes fixes the parent",
+         "each repair, old and new"),
+        ("Check across files", "Compare the files of a genome; check AUGUSTUS proteins.",
+         "an ID in two files; a file listed twice; a protein that does not fit its CDS",
+         "types no profile declares"),
+    ]
+    w_r = (right - left - 4 * gap) / 5
+    room = w_r - 2 * pad
+    blocks = []
+    for title, body, stops, records in reads:
+        rows = [(text, INK, "bold") for text in wrap(title, room, "bold")]
+        rows += [(text, INK, "normal") for text in wrap(body, room)]
+        rows += [("Stops the load if", ORANGE, "bold")]
+        rows += [(text, INK, "normal") for text in wrap(stops, room)]
+        rows += [("Records", INK2, "bold")]
+        rows += [(text, INK2, "normal") for text in wrap(records, room)]
+        blocks.append(rows)
+    h_r = pad_top + pad_bottom + max(len(rows) for rows in blocks) * line
+    for i, rows in enumerate(blocks):
+        x = left + i * (w_r + gap)
+        rect(x, y, w_r, h_r, CHECK)
+        write(x + pad, y, rows)
+        if i:
+            arrow(axis, (x - gap, y - pad_top - line / 2), (x, y - pad_top - line / 2))
+    y -= h_r + 0.06
+    axis.text(left, y, "A stop names the file, the line and, where one exists, the option "
+              "that would help. All files are read and checked before anything is "
+              "written.", ha="left", va="top", fontsize=SMALL, color=INK2)
+    flow(width / 2, y - 0.13, y - 0.25)
+    y -= 0.27
+
+    # Phase 2: the nine steps of the transaction.
+    axis.text(left, y, "One transaction: rows into the database, files into a staging "
+              "folder", ha="left", va="top", fontsize=7.5, fontweight="bold", color=INK)
+    y -= 0.2
+    w_stop, w_write = 1.78, 1.45
+    x_step = left + w_stop + 0.1
+    x_write = right - w_write
+    w_step = x_write - 0.1 - x_step
+    rail = x_step + 0.11                       # the line that joins the step numbers
+    x_box = x_step + 0.24
+    w_box = x_step + w_step - x_box
+    for x, label, colour in ((left, "Stops the load if", ORANGE), (x_box, "Step", INK),
+                             (x_write, "Writes", INK)):
+        axis.text(x, y, label, ha="left", va="top", fontsize=SMALL, fontweight="bold",
+                  color=colour)
+    y -= 0.16
+    steps = [
+        ("Stage the assembly", "Copy the FASTA to a staging folder; index it with pyfaidx.",
+         "a duplicate or empty sequence", "assembly.fa, assembly.fa.fai"),
+        ("Write the genome rows", "Find or add the organism and strain; add the assembly "
+         "with its checksum, and a row per file and per sequence.",
+         "the assembly is already loaded, unless --force",
+         "organism, strain, assembly, source_file, sequence_region"),
+        ("Write the features", "Bulk insert: one row per segment, each with its bin.",
+         "a sequence the FASTA lacks; a row past the end of a linear sequence",
+         "feature"),
+        ("Link the parents", "Second pass: point each child at its parent's first row.",
+         "a stated parent with no stored row", "feature.parent_id"),
+        ("Write the attributes", "Column 9 except ID and Parent, one row per value.",
+         "", "feature_attribute; proteins.faa (AUGUSTUS)"),
+        ("Attach functional annotation", "Match each protein name to one feature: by ID, "
+         "or by protein_id, transcript_id, locus_tag and others.",
+         "a name fitting two features; too few matches (default: all)",
+         "annotation_run, protein_annotation"),
+        ("End-of-load checks", "Compare the stored counts with the independent count: "
+         "features by type, rows, and Parent= links.", "any count short", None),
+        ("Write out", "Planner statistics (PostgreSQL); the annotation as GFF3, with bgzip "
+         "and tabix; the manifest.", "",
+         "annotation.gff3.gz, .tbi, manifest.json"),
+        ("Commit", "Rename the staging folder into place, then commit.",
+         "the commit fails (the folder is then moved back)",
+         "the assembly's folder in the data folder"),
+    ]
+    first_rail = None
+    for number, (title, body, stops, writes) in enumerate(steps, 1):
+        body_rows = wrap(body, w_box - 2 * pad)
+        stop_rows = wrap(stops, w_stop - 2 * pad) if stops else []
+        write_rows = wrap(writes, w_write - 2 * pad) if writes else []
+        n = max(1 + len(body_rows), len(stop_rows), len(write_rows), 2)
+        h = pad_top + pad_bottom + n * line
+        check = number == 7
+        rect(x_box, y, w_box, h, CHECK if check else STEP)
+        write(x_box + pad, y, [(title, INK, "bold")]
+              + [(text, INK, "normal") for text in body_rows])
+        mid = y - pad_top - line / 2
+        if first_rail is None:
+            first_rail = mid
+        axis.add_patch(matplotlib.patches.Circle((rail, mid), 0.085, facecolor="white",
+                                                 edgecolor=INK2, linewidth=0.6, zorder=3))
+        axis.text(rail, mid, str(number), ha="center", va="center", fontsize=SMALL,
+                  fontweight="bold", color=INK, zorder=4)
+        last_rail = mid
+        if stop_rows:
+            rect(left, y, w_stop, h, stop_fill)
+            write(left + pad, y, [(text, INK, "normal") for text in stop_rows])
+            arrow(axis, (rail - 0.085, mid), (left + w_stop, mid), colour=ORANGE)
+        if write_rows:
+            rect(x_write, y, w_write, h, "white", AXIS)
+            write(x_write + pad, y, [(text, INK2, "normal") for text in write_rows])
+            arrow(axis, (x_box + w_box, mid), (x_write, mid))
+        if check:
+            # The independent count: separate code, reading the annotation file
+            # itself, delivers the numbers that step 7 compares.
+            rect(x_write, y, w_write, h, RAMP[2])
+            write(x_write + pad, y, [("Independent count", INK, "bold")]
+                  + [(text, INK, "normal")
+                     for text in wrap("separate code reads each annotation file again",
+                                      w_write - 2 * pad)])
+            arrow(axis, (x_write, mid), (x_box + w_box, mid))
+            ax, atop, aw, ah = annotation_box
+            start = atop - ah / 2
+            axis.plot([ax + aw, corridor, corridor], [start, start, y - 0.05],
+                      color=MUTED, linewidth=0.8)
+            arrow(axis, (corridor, y - 0.05), (x_write + w_write, y - 0.05))
+        y -= h + 0.05
+    axis.plot([rail, rail], [first_rail, last_rail], color=INK2, linewidth=0.6, zorder=2)
+    rect(left, y, right - left, pad_top + pad_bottom + line, stop_fill)
+    write(left + pad, y, [
+        ("Any stop in steps 1 to 9, or a killed process: the transaction is rolled back "
+         "and the staging folder deleted. Nothing changes.", INK, "normal")])
+    y -= pad_top + pad_bottom + line + 0.16
+
+    # --- b: verify -----------------------------------------------------------------
+    heading(y, "b", "cgload verify, at any later time: five tiers")
+    y -= 0.26
+    tiers = [
+        ("Source count", "The independent count of the file equals the database's."),
+        ("Parent links", "Every Parent= statement in the file is a stored link."),
+        ("Stored assembly", "FASTA and index present, SHA-256 as at the load."),
+        ("Cross-parser (optional)", "Counts per type in the GFF3 equal those of a "
+         "GenBank file."),
+        ("Reference (optional)", "Counts per type equal NCBI's published totals."),
+    ]
+    rows = [[(title, INK, "bold")] + [(text, INK, "normal") for text in wrap(body, room)]
+            for title, body in tiers]
+    # (the same column width and wrap as the five checks of panel a)
+    h_t = pad_top + pad_bottom + max(len(r) for r in rows) * line
+    for i, block in enumerate(rows):
+        x = left + i * (w_r + gap)
+        rect(x, y, w_r, h_t, CHECK)
+        write(x + pad, y, block)
+    y -= h_t + 0.06
+    axis.text(left, y, "verify reads the database, the data folder and the input files, "
+              "and changes nothing. Each tier prints PASS, FAIL, or why it could not run;",
+              ha="left", va="top", fontsize=SMALL, color=INK2)
+    y -= line
+    axis.text(left, y, "the command exits with status 2 if a tier fails, and 0 otherwise.",
+              ha="left", va="top", fontsize=SMALL, color=INK2)
+    print(f"Figure 1: {y - line - 0.05:.2f} in to spare")
     save(figure, out, "fig1")
 
 
@@ -293,6 +489,16 @@ SCHEMA_COLUMNS = {
     "vocabulary": ["term", "canonical_term", "tier"],
     "vocabulary_meta": ["version", "content_hash", "database_id"],
 }
+#: What one row of each table stands for, printed under its name.
+SCHEMA_GRAIN = {
+    "organism": "one row per species", "strain": "one row per strain",
+    "assembly": "one row per loaded assembly", "source_file": "one row per input file",
+    "sequence_region": "one row per FASTA sequence", "feature": "one row per segment",
+    "feature_attribute": "one row per attribute value",
+    "annotation_run": "one row per functional file",
+    "protein_annotation": "one row per assignment",
+    "vocabulary": "one row per type term", "vocabulary_meta": "a single row",
+}
 SCHEMA_GROUPS = {   # fill of each box: genome and provenance, features, function, seed
     "organism": NOTHING, "strain": NOTHING, "assembly": NOTHING, "source_file": NOTHING,
     "sequence_region": NOTHING, "feature": RAMP[2], "feature_attribute": RAMP[2],
@@ -306,7 +512,7 @@ def figure_schema(out: Path) -> None:
     if set(SCHEMA_COLUMNS) != set(SCHEMA.tables):
         raise SystemExit(f"the schema has {sorted(SCHEMA.tables)}; the figure draws "
                          f"{sorted(SCHEMA_COLUMNS)}")
-    width, height = FULL_WIDTH, 4.3
+    width, height = FULL_WIDTH, 4.6
     figure = plt.figure(figsize=(width, height))
     axis = figure.add_axes((0, 0, 1, 1))
     axis.set_xlim(0, width)
@@ -316,12 +522,12 @@ def figure_schema(out: Path) -> None:
     col = [0.04, 1.70, 3.36, 5.12]
     last = width - col[3] - 0.02   # the right column holds the longest names
     place = {   # table: (column, top)
-        "organism": (0, 4.22), "strain": (0, 3.42), "vocabulary": (0, 1.55),
-        "vocabulary_meta": (0, 0.88),
-        "assembly": (1, 4.22), "source_file": (1, 2.92), "sequence_region": (1, 1.95),
-        "feature": (2, 4.22),
-        "feature_attribute": (3, 4.22), "protein_annotation": (3, 3.28),
-        "annotation_run": (3, 1.95),
+        "organism": (0, 4.52), "strain": (0, 3.58), "vocabulary": (0, 1.62),
+        "vocabulary_meta": (0, 0.80),
+        "assembly": (1, 4.52), "source_file": (1, 3.10), "sequence_region": (1, 2.04),
+        "feature": (2, 4.52),
+        "feature_attribute": (3, 4.52), "protein_annotation": (3, 3.58),
+        "annotation_run": (3, 2.28),
     }
     boxes = {}
     for name, columns in SCHEMA_COLUMNS.items():
@@ -332,7 +538,7 @@ def figure_schema(out: Path) -> None:
         c, top = place[name]
         x = col[c]
         bw = last if c == 3 else w
-        h = (len(columns) + 1) * ROW + 0.1
+        h = (len(columns) + 2) * ROW + 0.1
         y = top - h
         boxes[name] = (x, y, bw, h)
         fill = SCHEMA_GROUPS[name]
@@ -341,10 +547,12 @@ def figure_schema(out: Path) -> None:
                                  linewidth=0.6))
         axis.text(x + 0.06, top - 0.05, name, ha="left", va="top", fontsize=7,
                   fontweight="bold", color=INK)
+        axis.text(x + 0.06, top - 0.05 - ROW, SCHEMA_GRAIN[name], ha="left", va="top",
+                  fontsize=SMALL, style="italic", color=INK2)
         for i, column_name in enumerate(columns):
             column = table.c[column_name]
             mark = "PK" if column.primary_key else ("FK" if column.foreign_keys else "")
-            yy = top - 0.05 - (i + 1) * ROW
+            yy = top - 0.05 - (i + 2) * ROW
             axis.text(x + 0.1, yy, column_name, ha="left", va="top", fontsize=SMALL,
                       color=INK if mark else INK2, family="monospace")
             if mark:
@@ -355,7 +563,7 @@ def figure_schema(out: Path) -> None:
         x, y, w_, h = boxes[name]
         top = y + h
         index = SCHEMA_COLUMNS[name].index(column_name)
-        return top - 0.05 - (index + 1) * ROW - ROW / 2
+        return top - 0.05 - (index + 2) * ROW - ROW / 2
 
     def link(child, column_name, parent, route=None):
         """child.column -> parent's key, from the side facing the parent."""
@@ -396,7 +604,7 @@ def figure_schema(out: Path) -> None:
 
     legend = [(NOTHING, "Genome and provenance"), (RAMP[2], "Annotation features"),
               (RAMP[0], "Functional annotation"), ("white", "Written by cgload init")]
-    lx, ly = col[1], 0.42
+    lx, ly = col[1], 0.62
     for i, (fill, label) in enumerate(legend):
         x = lx + (i % 2) * 2.0
         y = ly - 0.17 - (i // 2) * 0.19

@@ -112,8 +112,9 @@ passes through four commands. `cgload init` creates an empty database.
 annotation files, and writes them into the database in one transaction.
 `cgload verify` checks a loaded genome against its input files at any later
 time. `cgload query`, `export`, `explain` and `stats` read the database, and
-`cgload remove` deletes a genome from it. Figure 1 shows the path of a load
-and its checks; the sections below describe each step.
+`cgload remove` deletes a genome from it. Figure 1a shows every step of a load,
+what stops it and what it writes, and Figure 1b the checks of `cgload verify`;
+the sections below follow the figure.
 
 The database is reached through SQLAlchemy, and the same code runs on SQLite
 and PostgreSQL. SQLAlchemy also reaches MySQL, but cgload has no test on
@@ -135,8 +136,9 @@ records every input file, with its checksum and the dialect cgload detected in
 it. `sequence_region` holds one row per sequence of the assembly, with its
 length and whether it is circular.
 
-The annotation itself is in two tables. `feature` holds one row per row of the
-input file. A feature written on several rows, such as a CDS split by introns,
+The annotation itself is in two tables. `feature` holds one row per row of a
+GFF3 file (for a GenBank file, one row per segment of a feature's location).
+A feature written on several rows, such as a CDS split by introns,
 keeps one stored row per segment: the rows share the feature's ID, and
 `segment_index` numbers them in coordinate order. Each row records its file,
 its sequence, its coordinates (1-based and inclusive, as in GFF3), strand,
@@ -155,8 +157,8 @@ differ keeps its own. `ID` and `Parent` are not repeated there, because they
 are columns.
 
 Constraints in the schema refuse some impossible rows outright: a start below
-1, an end before its start, an unknown strand, or a phase other than 0, 1 or
-2. On SQLite, foreign keys are switched on for every connection, so a row
+1, an end before its start, a strand other than `+`, `-`, `.` or `?`, or a
+phase other than 0, 1 or 2. On SQLite, foreign keys are switched on for every connection, so a row
 cannot name a parent, file or sequence that does not exist. The indexes are
 plain B-trees, the only kind that both database systems share. To find the
 rows in a region quickly, each row also stores a `bin`: the smallest bin that
@@ -166,8 +168,9 @@ holds it whole, in the hierarchical binning scheme of the SAM and CSI indexes
 Two tables hold functional annotation. `annotation_run` records each output
 file of eggNOG-mapper [@eggnog] or InterProScan [@interproscan], with how many
 of its proteins matched a stored feature. `protein_annotation` holds one row
-per assignment (a GO term, KEGG ortholog, Pfam domain or EC number), linked
-to the feature it describes. The last two tables, `vocabulary` and
+per assignment, such as a GO term, an EC number, a KEGG ortholog or pathway,
+or a Pfam domain with its position in the protein, linked to the feature it
+describes. The last two tables, `vocabulary` and
 `vocabulary_meta`, are written when the database is created and hold the map
 of type synonyms with its version and checksum.
 
@@ -175,10 +178,11 @@ of type synonyms with its version and checksum.
 
 `cgload init` creates the 11 tables, writes the 46 terms of the type
 vocabulary, and gives the database a random identifier. It refuses a database
-that already holds cgload's tables, unless told to replace them. Every later
-command first checks that the vocabulary stored in the database is the one the
-installed cgload expects, and stops if it is not, because a changed synonym
-map would change what earlier loads mean.
+that already holds cgload's tables, unless told to replace them. `load`,
+`query`, `stats` and `remove` first check that the vocabulary stored in the
+database is the one the installed cgload expects, and stop if it is not,
+because a changed synonym map would change what earlier loads mean. `verify`
+needs no such check, because it counts the types as the file wrote them.
 
 A genome is described in a TOML file. It names the organism (genus, species,
 strain and, optionally, the NCBI taxon), the assembly (name, version,
@@ -186,72 +190,108 @@ accession and FASTA file), one or more annotation files, and any functional
 annotation files. The repository's `examples/minimal/` holds such a file with
 a small genome; Table 1 shows how cgload stores its first gene.
 
-## Reading annotation files
+## Reading and checking the files
 
-Annotation pipelines write GFF3 differently. cgload reads RefSeq GFF3, the GFF3
-of funannotate [@funannotate] and AUGUSTUS [@augustus], and GenBank flat files.
-Each dialect is a declared profile that says which feature types it provides,
-how a child finds its parent, and how the file identifies itself. A file that
-matches no profile is refused with the names of the profiles that were tried,
-and the profile chosen is recorded in `source_file`. Every dialect is then
-normalised to one representation: rows that share an ID are joined into one
-feature and their segments put in coordinate order, and each feature's parent
-is resolved. In GFF3 the parent is the one named by `Parent=`. GenBank has no
-such attribute, so the parent is computed, by `locus_tag` in prokaryotic files
-and by exon containment in eukaryotic ones, and a CDS that fits no transcript
-is refused rather than guessed.
+`cgload load` first reads and checks every annotation file named in the
+configuration, and writes nothing while it does so (Figure 1a, top). A stop at
+this stage names the file and the line, and the option that would help where
+one exists. There are five steps.
 
-Before anything is written, cgload checks the structure of the file. A feature
-must lie inside the span of the parent that claims it, a start must not exceed
-its end, and a row must not run past the end of its sequence unless the
-sequence is circular. By default a file that breaks these rules is refused,
-and the message names each offending feature and the option that repairs it.
-With `--repair-envelopes`, cgload recomputes each parent's span from its
-children, leaves first, and writes every change to the load's manifest. A
-disagreement that exists only across the origin of a circular sequence is
-stored as written. All files of a genome are read and checked before the
-database is opened, so a file that cannot be read stops the load before
-anything changes.
+*Tokenise.* Each line is split into its nine columns and its attributes. A
+line without nine columns, a coordinate, strand or phase that is not valid, or
+a start below 1 or after its end stops the load. GenBank flat files are read
+by a parser of their own into the same rows.
+
+*Detect the dialect.* Annotation pipelines write GFF3 differently. cgload reads
+RefSeq GFF3, the GFF3 of funannotate [@funannotate] and AUGUSTUS [@augustus],
+GenBank flat files, and its own export. Each dialect is a declared profile that
+says which feature types it provides, how a child finds its parent, and how a
+file identifies itself: by the program named in column 2 of a GFF3 file, by the
+LOCUS line of a GenBank file, or by the header line of a cgload export. A file
+that no profile claims, or that two profiles claim, is refused with the names
+of the profiles tried; the configuration can name the dialect instead. The
+dialect, the confidence of the match and its evidence are recorded in
+`source_file` and in the manifest.
+
+*Normalise.* Every dialect is brought to one representation. Rows that share an
+ID become one feature, with its segments in coordinate order, types are mapped
+to canonical terms, and each feature's parent is found. In GFF3 the parent is
+the one named by `Parent=`. GenBank has no such attribute, so the parent is
+computed: from a `/locus_tag` or `/gene` that parent and child share, from a
+`/transcript_id` that an mRNA and its CDS both carry, from a note that names
+the transcript, or by exon containment. `linkage_method` records which, and a
+CDS that fits no transcript is refused rather than guessed. Normalisation also
+refuses a feature with two parents, a parent that is not in the file, a parent
+of a type that may not hold the child, a parent on another sequence, and one
+ID used for two different features.
+
+*Check parent spans.* A feature must lie inside the span of the parent that
+claims it, and no row may run backwards. By default a file that breaks these
+rules is refused, and the message names each offending feature and the option
+that repairs it. With `--repair-envelopes`, cgload recomputes each parent's
+span from its children, leaves first, and writes every change to the load's
+manifest. A disagreement that exists only across the origin of a circular
+sequence is stored as written and named in a warning.
+
+*Check across files.* An ID defined in two files of one genome, or a file
+listed twice, stops the load; an `id_prefix` in the configuration keeps the IDs
+of two files apart. In an AUGUSTUS file, each protein written in the comments
+must have the length that its CDS implies. Types that the dialect's profile
+does not declare are loaded and named in a warning, or refused with
+`--strict-vocabulary`.
 
 ## Populating the database
 
-`cgload load` then fills the database in one transaction, in this order:
+`cgload load` then writes the genome in one transaction, in nine steps (Figure
+1a, bottom):
 
-1. A staging directory is made inside the data folder. The FASTA file is copied
-   into it and indexed with pyfaidx, which writes a samtools-compatible `.fai`
-   index; a FASTA file with a duplicate or empty sequence is refused.
-2. The organism and strain rows are found or created, and the assembly row is
-   written with the FASTA checksum. A row for each input file follows, then a
-   row for each sequence of the FASTA index.
-3. The features of each file are written in bulk, one row per segment, each
-   with its bin. Any sequence name that the FASTA file does not contain stops
-   the load, because the annotation then describes another assembly.
-4. The parent links are set in a second pass. A child may come before its
-   parent in the file, so the parent's row may not exist when the child is
-   written. Each stored row is found again by its input line, segment and span,
-   and every row of a child is pointed at the first row of its parent.
-5. The attributes are written to `feature_attribute`.
-6. Functional annotation, if any, is attached. eggNOG-mapper and InterProScan
+1. *Stage the assembly.* A staging directory is made inside the data folder.
+   The FASTA file is copied into it, or hard-linked with `--link`, and indexed
+   with pyfaidx, which writes a samtools-compatible `.fai` index. A duplicate
+   or empty sequence stops the load.
+2. *Write the genome rows.* The organism and strain rows are found or created,
+   and the assembly row is written with the checksum of the FASTA file, the
+   cgload version and the vocabulary checksum. An assembly already loaded under
+   the same name stops the load, unless `--force` is given. A row for each input
+   file follows, then a row for each sequence of the FASTA index.
+3. *Write the features.* The features of each file are written in bulk, one row
+   per segment, each with its bin. A sequence name that the FASTA file does not
+   contain stops the load, because the annotation then describes another
+   assembly, and so does a row that runs past the end of a linear sequence. On
+   a circular sequence, a feature that crosses the origin may end past the
+   sequence length, as GFF3 allows.
+4. *Link the parents.* The parent links are set in a second pass. A child may
+   come before its parent in the file, so the parent's row may not exist when
+   the child is written. Each stored row is found again by its input line,
+   segment and span, and every row of a child is pointed at the first row of
+   its parent.
+5. *Write the attributes* to `feature_attribute`. The proteins that an
+   AUGUSTUS file writes in its comments go to the staging directory as FASTA.
+6. *Attach functional annotation*, if any. eggNOG-mapper and InterProScan
    report the protein names they were given, which may be a transcript ID, a
    protein ID or a locus tag, so each name is looked up among the stored IDs
    and the attributes `protein_id`, `transcript_id`, `locus_tag` and a few
-   others. A name that matches two features is an error. By default every
-   protein must match, and the configuration can lower that threshold.
-7. The end-of-load checks run (next section). If one fails, the load stops.
-8. On PostgreSQL, the planner's statistics are collected for the new rows.
-   The annotation is written back out as GFF3, compressed with bgzip and
-   indexed with tabix [@tabix; @htslib] in the staging directory, for genome
-   browsers. A manifest records the input files and their checksums, the
-   detected dialects, the feature counts, every repair and the results of the
-   checks.
-9. The staging directory is renamed into place, and the transaction is
-   committed.
+   others. A name that matches two features stops the load. By default every
+   protein must match, and the configuration can lower that threshold;
+   `annotation_run` records how many matched.
+7. *End-of-load checks.* The stored counts are compared with the independent
+   count of each file (see "Verification"). A short count stops the load.
+8. *Write out.* On PostgreSQL, the planner's statistics are collected for the
+   new rows. The annotation is written back out as GFF3, compressed with bgzip
+   and indexed with tabix [@tabix; @htslib] in the staging directory, for
+   genome browsers. A manifest records the input files and their checksums, the detected
+   dialects, the feature counts, every repair and the results of the checks.
+9. *Commit.* The staging directory is renamed into place, and the transaction
+   is committed. If the commit fails, the directory is moved back.
 
 Any error at any step, including a killed process, rolls the transaction back
 and removes the staging directory, so the database and the data folder are
 left as they were. With `--force`, an assembly already loaded under the same
 name is replaced; its folder is moved aside only at step 9 and deleted only
-after the commit.
+after the commit. A successful load prints the assembly's identifier, the
+number and total length of its sequences, and for each file the dialect, the
+confidence of the match and the features by type, followed by any warnings. A
+stopped load prints the reason and exits with status 2.
 
 **Table 1. How cgload stores the first gene of the example genome.** The rows
 of table `feature` for gene `DEMO_000001` of `examples/minimal/`, made by
@@ -271,10 +311,11 @@ with an independent count of the file. If any count is short, it rolls the
 transaction back. A load therefore stores the whole file or leaves the
 database as it was.
 
-The command `cgload verify` repeats these checks at any later time, in tiers
-(Figure 1). The source-count tier counts the file again with code that imports
-nothing from cgload: features of each type, rows of each feature written on
-several rows, and parent statements. These counts must equal the database's,
+The command `cgload verify` repeats these checks at any later time, in five
+tiers (Figure 1b). The source-count tier counts the file again with a module
+that imports no other part of cgload, so it shares no code with the parser:
+features of each type, rows of each feature written on several rows, and
+parent statements. The end-of-load check of step 7 uses the same count. These counts must equal the database's,
 counted by `source_type`. The parent-edge tier requires every `Parent=`
 statement in the file to be a stored link. The stored-assembly tier compares
 the FASTA and its index with the checksums taken at load. Two optional tiers
@@ -297,8 +338,8 @@ the rows whose bin overlaps the region and keeps those that overlap it; on a
 circular sequence it also finds the rows that cross the origin. `cgload export`
 writes an assembly's annotation back out as GFF3. It writes column 3 as the
 file had it, from `source_type`, and adds no row that the input did not have.
-`cgload explain` shows where a feature came from: its file, line, dialect and
-how its parent was found. `cgload stats` counts features by their original and
+`cgload explain` shows where a feature came from: its segments, the file and
+the dialect detected in it, its parent, and how the parent was found. `cgload stats` counts features by their original and
 canonical types, and `cgload remove` deletes an assembly's rows and folder in
 one transaction. Because the database is plain SQL, it can also be read with
 any SQL client.
@@ -997,14 +1038,20 @@ checked. Confirm who used the language model and the model names. -->
 
 # Figure legends
 
-**Figure 1. How cgload loads and verifies an annotation.** Grey boxes load and
-blue boxes check. A separate reader counts the input file with code that
-imports nothing from cgload. At the end of the load its counts decide whether
-the transaction is committed or rolled back, and `cgload verify` compares them
-with the database again at any later time.
+**Figure 1. The steps of a cgload load and of cgload verify.** (a) `cgload
+load` first reads and checks every annotation file and writes nothing (top,
+blue). It then writes the genome in one transaction, in the nine steps of the
+text (bottom): grey steps write and the blue step checks. Left of each step,
+in orange, is what stops the load at that step; right of it is what the step
+writes. The independent count is made from each annotation file by separate
+code and gives the numbers that step 7 compares with the database. Any stop in
+the transaction, or a killed process, rolls the database back and deletes the
+staging folder. (b) The five tiers of `cgload verify`, which can be run at any
+later time.
 
 **Figure 2. The database schema of cgload.** The 11 tables, with selected
 columns; `src/cgload/db/schema.py` defines every column, constraint and index.
+The italic line under each name says what one row of the table stands for.
 Grey tables describe the genome and its input files, dark blue tables hold the
 annotation, and light blue tables hold functional annotation. The two outlined
 tables are written by `cgload init`. A line joins each foreign key to the key

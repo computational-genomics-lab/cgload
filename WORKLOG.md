@@ -496,3 +496,18 @@ ONOS). Nothing in cgload changed; version 0.2.1 stands.
   took Table S2, whose first cell is `ID`, for a SYLK file, and read the en
   dash as `â€“`.
 - `docs/schema.md` said nine tables and no functional tables; it says eleven.
+
+## 19 November 2026, later: the workflow in full
+
+- **Figure 1 redrawn** as the whole workflow: the five read-and-check steps
+  (nothing written), the nine steps of the transaction with, for each, what
+  stops the load and what it writes, the independent count feeding step 7, the
+  rollback, and the five tiers of `verify` (panel b). Text is wrapped by its
+  measured width, so no line leaves its box; 170 x 216 mm.
+- **Figure 2** says under each table what one row stands for.
+- **Implementation** follows Figure 1 step by step. Corrected against the code:
+  a row past the end of a sequence is refused inside the transaction (step 3),
+  not before it; GenBank linkage has four methods, not two; `verify`,
+  `export` and `explain` do not check the vocabulary; the strand constraint
+  allows `?`; `explain` shows no line number; a `feature` row is a GenBank
+  location segment as well as a GFF3 row.
