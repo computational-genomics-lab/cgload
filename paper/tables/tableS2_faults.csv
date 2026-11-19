@@ -1,4 +1,4 @@
-ID,Fault,Layer,Expected,Detected,As expected,Caught by
+﻿ID,Fault,Layer,Expected,Detected,As expected,Caught by
 F01,delete one feature,database,detected,3 of 3,3 of 3,"source count, parent links"
 F02,delete one percent,database,detected,3 of 3,3 of 3,"source count, parent links"
 F03,delete gene model,database,detected,3 of 3,3 of 3,"source count, parent links"

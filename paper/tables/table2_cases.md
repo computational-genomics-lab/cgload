@@ -10,5 +10,5 @@
 | Strand unknown (?) | 30 | 8 repaired, declared | 1, all silent | – | 12 of 12, all announced |
 | Rows overlap | 26 | none | 26, all silent | 0 of 21 | 25 of 25, all announced |
 | Crosses the origin | 14 | 5 repaired, declared | 2, all silent | 0 of 4 | 1 of 2, all announced |
-| Past the end of its sequence | 3 | none | none | – | – |
 | Start after end | 3 | 3 repaired, declared | none | – | – |
+| Past the end of its sequence | 3 | none | none | – | – |

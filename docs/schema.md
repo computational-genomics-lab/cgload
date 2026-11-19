@@ -1,7 +1,7 @@
 # Schema
 
-Nine tables. Three of them exist because of decisions taken after the original
-eight-table design, and each has to be justified in the paper:
+Eleven tables. Three of them exist because of decisions taken after the
+original eight-table design:
 
 | Table | Why it exists |
 |---|---|
@@ -9,8 +9,11 @@ eight-table design, and each has to be justified in the paper:
 | `vocabulary` | D-017: the type map is versioned data, so extending it is a row rather than a release |
 | `vocabulary_meta` | D-017: the version and content hash that every assembly records, so a changed vocabulary cannot silently alter the meaning of rows loaded earlier; also the database's identity (D-095) |
 
-Functional annotation (eggNOG, InterProScan) has **no table yet** — it arrives
-at milestone 7 and is deliberately outside the feature-graph engine (D-013).
+Functional annotation (eggNOG-mapper, InterProScan) has two tables of its own,
+`annotation_run` and `protein_annotation`, outside the feature-graph engine
+(D-013): it attaches to features rather than becoming them, so `verify`'s
+feature counts do not depend on it. The diagram below leaves them out; Figure 2
+of the paper (`paper/figures/fig2.pdf`) shows all eleven.
 
 The definitive statement is `src/cgload/db/schema.py`, which is
 written to be read; this page explains the four choices that are not obvious

@@ -15,7 +15,11 @@ import argparse
 import csv
 import json
 import re
+import sqlite3
 import statistics
+import subprocess
+import sys
+import tempfile
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -27,6 +31,8 @@ from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.patches import Rectangle  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent / "src"))
+from cgload.db.schema import metadata as SCHEMA  # noqa: E402
 
 # Colours: the light-mode reference palette of the dataviz method (slots 1 to 3,
 # checked together on white: worst colour-blind distance 9.2, normal 24.0).
@@ -228,7 +234,7 @@ def figure_design(out: Path) -> None:
         "Child inside its parent,\nstart not after end,\nrow inside its sequence.\n"
         "Refuse, or repair and\nrecord each repair.", CHECK)
     box(axis, xs[3], top, w, h, "One transaction",
-        "Rows into SQLite or\nPostgreSQL. FASTA\nbgzipped and indexed in\na staging folder, "
+        "Rows into SQLite or\nPostgreSQL. FASTA and\nannotation indexed in\na staging folder, "
         "moved\nin before the commit.", STEP)
     box(axis, xs[4], top, w, h, "End-of-load check",
         "Stored counts against\nthe independent count.\nShort: roll back, and\nthe database is as\n"
@@ -262,7 +268,182 @@ def figure_design(out: Path) -> None:
     save(figure, out, "fig1")
 
 
-# --- Figure 2: the cost of a load (Q1) ------------------------------------------------
+# --- Figure 2: the schema, drawn from cgload.db.schema ---------------------------------
+
+#: Columns shown for each table, in the box's order. The figure fails if one of
+#: them is not in the schema; columns left out are named in the legend's pointer
+#: to src/cgload/db/schema.py.
+SCHEMA_COLUMNS = {
+    "organism": ["organism_id", "ncbi_taxon_id", "genus", "species"],
+    "strain": ["strain_id", "organism_id", "name"],
+    "assembly": ["assembly_id", "strain_id", "name", "accession", "fasta_path",
+                 "fasta_sha256", "vocabulary_hash", "cgload_version"],
+    "source_file": ["source_file_id", "assembly_id", "path", "sha256", "detected_dialect"],
+    "sequence_region": ["sequence_region_id", "assembly_id", "source_id", "length",
+                        "circular"],
+    "feature": ["feature_id", "assembly_id", "sequence_region_id", "source_file_id",
+                "source_id", "source_type", "feature_type", "start", "end", "strand",
+                "phase", "segment_index", "parent_id", "linkage_method", "source_line",
+                "bin"],
+    "feature_attribute": ["feature_attribute_id", "feature_id", "key", "value"],
+    "annotation_run": ["annotation_run_id", "assembly_id", "tool", "sha256", "query_count",
+                       "matched_count"],
+    "protein_annotation": ["protein_annotation_id", "annotation_run_id", "feature_id",
+                           "analysis", "accession", "protein_start", "protein_end"],
+    "vocabulary": ["term", "canonical_term", "tier"],
+    "vocabulary_meta": ["version", "content_hash", "database_id"],
+}
+SCHEMA_GROUPS = {   # fill of each box: genome and provenance, features, function, seed
+    "organism": NOTHING, "strain": NOTHING, "assembly": NOTHING, "source_file": NOTHING,
+    "sequence_region": NOTHING, "feature": RAMP[2], "feature_attribute": RAMP[2],
+    "annotation_run": RAMP[0], "protein_annotation": RAMP[0],
+    "vocabulary": "white", "vocabulary_meta": "white",
+}
+ROW = 0.118   # inches per column line at 7 pt
+
+
+def figure_schema(out: Path) -> None:
+    if set(SCHEMA_COLUMNS) != set(SCHEMA.tables):
+        raise SystemExit(f"the schema has {sorted(SCHEMA.tables)}; the figure draws "
+                         f"{sorted(SCHEMA_COLUMNS)}")
+    width, height = FULL_WIDTH, 4.3
+    figure = plt.figure(figsize=(width, height))
+    axis = figure.add_axes((0, 0, 1, 1))
+    axis.set_xlim(0, width)
+    axis.set_ylim(0, height)
+    axis.axis("off")
+    w = 1.5
+    col = [0.04, 1.70, 3.36, 5.12]
+    last = width - col[3] - 0.02   # the right column holds the longest names
+    place = {   # table: (column, top)
+        "organism": (0, 4.22), "strain": (0, 3.42), "vocabulary": (0, 1.55),
+        "vocabulary_meta": (0, 0.88),
+        "assembly": (1, 4.22), "source_file": (1, 2.92), "sequence_region": (1, 1.95),
+        "feature": (2, 4.22),
+        "feature_attribute": (3, 4.22), "protein_annotation": (3, 3.28),
+        "annotation_run": (3, 1.95),
+    }
+    boxes = {}
+    for name, columns in SCHEMA_COLUMNS.items():
+        table = SCHEMA.tables[name]
+        missing = [c for c in columns if c not in table.c]
+        if missing:
+            raise SystemExit(f"{name} has no column {missing}")
+        c, top = place[name]
+        x = col[c]
+        bw = last if c == 3 else w
+        h = (len(columns) + 1) * ROW + 0.1
+        y = top - h
+        boxes[name] = (x, y, bw, h)
+        fill = SCHEMA_GROUPS[name]
+        axis.add_patch(Rectangle((x, y), bw, h, facecolor=fill,
+                                 edgecolor=AXIS if fill == "white" else "none",
+                                 linewidth=0.6))
+        axis.text(x + 0.06, top - 0.05, name, ha="left", va="top", fontsize=7,
+                  fontweight="bold", color=INK)
+        for i, column_name in enumerate(columns):
+            column = table.c[column_name]
+            mark = "PK" if column.primary_key else ("FK" if column.foreign_keys else "")
+            yy = top - 0.05 - (i + 1) * ROW
+            axis.text(x + 0.1, yy, column_name, ha="left", va="top", fontsize=SMALL,
+                      color=INK if mark else INK2, family="monospace")
+            if mark:
+                axis.text(x + bw - 0.03, yy, mark, ha="right", va="top", fontsize=SMALL,
+                          color=MUTED)
+
+    def row_y(name, column_name):
+        x, y, w_, h = boxes[name]
+        top = y + h
+        index = SCHEMA_COLUMNS[name].index(column_name)
+        return top - 0.05 - (index + 1) * ROW - ROW / 2
+
+    def link(child, column_name, parent, route=None):
+        """child.column -> parent's key, from the side facing the parent."""
+        cx, _, cw, _ = boxes[child]
+        px, _, pw, _ = boxes[parent]
+        key = next(c.name for c in SCHEMA.tables[parent].primary_key.columns)
+        y0, y1 = row_y(child, column_name), row_y(parent, key)
+        if px > cx:
+            x0, x1 = cx + cw, px
+        elif px < cx:
+            x0, x1 = cx, px + pw
+        else:   # same column: go round the left side
+            x0 = x1 = cx
+        if route is None:
+            route = (x0 + x1) / 2 if x0 != x1 else x0 - 0.04
+        axis.plot([x0, route, route, x1], [y0, y0, y1, y1], color=MUTED, linewidth=0.6,
+                  solid_joinstyle="miter")
+        axis.plot([x1], [y1], marker="o", markersize=2.2, color=MUTED)
+
+    link("strain", "organism_id", "organism")
+    link("assembly", "strain_id", "strain")
+    link("source_file", "assembly_id", "assembly", route=1.665)
+    link("sequence_region", "assembly_id", "assembly", route=1.665)
+    link("feature", "assembly_id", "assembly", route=3.245)
+    link("feature", "source_file_id", "source_file", route=3.285)
+    link("feature", "sequence_region_id", "sequence_region", route=3.325)
+    link("feature_attribute", "feature_id", "feature", route=5.0)
+    link("protein_annotation", "feature_id", "feature", route=5.0)
+    link("protein_annotation", "annotation_run_id", "annotation_run", route=5.09)
+    link("annotation_run", "assembly_id", "assembly", route=3.245)
+    # parent_id points at a row of the same table
+    fx, _, fw, _ = boxes["feature"]
+    y0, y1 = row_y("feature", "parent_id"), row_y("feature", "feature_id")
+    right = fx + fw + 0.06
+    axis.plot([fx + fw, right, right, fx + fw], [y0, y0, y1, y1], color=MUTED,
+              linewidth=0.6)
+    axis.plot([fx + fw], [y1], marker="o", markersize=2.2, color=MUTED)
+
+    legend = [(NOTHING, "Genome and provenance"), (RAMP[2], "Annotation features"),
+              (RAMP[0], "Functional annotation"), ("white", "Written by cgload init")]
+    lx, ly = col[1], 0.42
+    for i, (fill, label) in enumerate(legend):
+        x = lx + (i % 2) * 2.0
+        y = ly - 0.17 - (i // 2) * 0.19
+        axis.add_patch(Rectangle((x, y), 0.16, 0.11, facecolor=fill,
+                                 edgecolor=AXIS if fill == "white" else "none",
+                                 linewidth=0.6))
+        axis.text(x + 0.22, y + 0.055, label, ha="left", va="center", fontsize=SMALL,
+                  color=INK2)
+    axis.text(lx, ly + 0.08, "PK: primary key. FK: foreign key; a line joins it to the "
+              "key it names, marked with a dot.", ha="left", va="center", fontsize=SMALL,
+              color=INK2)
+    save(figure, out, "fig2")
+
+
+# --- Table 1: how the example file is stored, by running cgload on it -----------------
+
+def table_example() -> str:
+    """Load examples/minimal into a new SQLite database and show its first gene."""
+    example = HERE.parent / "examples" / "minimal"
+    with tempfile.TemporaryDirectory() as scratch:
+        database = Path(scratch) / "example.db"
+        environment = {"CGLOAD_DB_URL": f"sqlite:///{database}", "PATH": "/usr/bin:/bin",
+                       "PYTHONPATH": str(HERE.parent / "src")}
+        command = [sys.executable, "-m", "cgload"]
+        for args in (["init"], ["load", "--config", str(example / "organism.toml"),
+                                "--data-dir", str(Path(scratch) / "data")]):
+            subprocess.run(command + args, check=True, cwd=example, env=environment,  # noqa: S603
+                           capture_output=True)
+        with sqlite3.connect(database) as connection:
+            rows = connection.execute(
+                "SELECT feature_id, source_id, source_type, start, \"end\", phase, "
+                "segment_index, parent_id FROM feature "
+                "WHERE source_id LIKE 'DEMO_000001%' ORDER BY feature_id").fetchall()
+    body = []
+    for row in rows:
+        cells = ["" if value is None else str(value) for value in row]
+        cells[1] = f"`{cells[1]}`"
+        body.append(cells)
+    header = ["feature_id", "source_id", "source_type", "start", "end", "phase",
+              "segment_index", "parent_id"]
+    # Break the long names after the underscore, so Word does not break them
+    # inside a word.
+    header = [name.replace("_", "_\u200b") for name in header]
+    return md_table(header, body, "rllrrrrr", widths=[9, 22, 11, 9, 9, 7, 11, 9])
+
+
+# --- Figure 3: the cost of a load (Q1) ------------------------------------------------
 
 def figure_scale(results: Results, out: Path) -> None:
     panels = [
@@ -314,10 +495,10 @@ def figure_scale(results: Results, out: Path) -> None:
     figure.legend(handles=handles, loc="upper center", ncol=2, frameon=False,
                   bbox_to_anchor=(0.5, 1.0), handletextpad=0.3, columnspacing=1.5)
     figure.tight_layout(rect=(0, 0, 1, 0.95), h_pad=1.6, w_pad=2.0)
-    save(figure, out, "fig2")
+    save(figure, out, "fig3")
 
 
-# --- Figure 3: what each loader did with each genome (Q3) -----------------------------
+# --- Figure 4: what each loader did with each genome (Q3) -----------------------------
 
 LOADER_COLUMNS = [
     ("cgload-sqlite", "cgload", "SQLite and PostgreSQL"),
@@ -428,10 +609,10 @@ def figure_loaders(results: Results, out: Path) -> None:
         axis.text(chip_x + 0.24, key_y + bar_h / 2, text, ha="left", va="center",
                   fontsize=SMALL, color=INK2)
         chip_x += 0.24 + 0.08 * len(text) + 0.25
-    save(figure, out, "fig3")
+    save(figure, out, "fig4")
 
 
-# --- Figure 4: query waits (Q6) -------------------------------------------------------
+# --- Figure 5: query waits (Q6) -------------------------------------------------------
 
 TASKS = [("gene", "T1  A gene and its parts"),
          ("region", "T2  A 1 Mb window"),
@@ -540,16 +721,24 @@ def figure_queries(results: Results, out: Path) -> None:
         box = axes[row_index][0].get_position()
         figure.text(0.012, (box.y0 + box.y1) / 2, view_title, rotation=90, ha="left",
                     va="center", fontsize=7, fontweight="bold", color=INK)
-    save(figure, out, "fig4")
+    save(figure, out, "fig5")
 
 
 # --- tables ----------------------------------------------------------------------------
 
-def md_table(header: list[str], rows: list[list[str]], align: str | None = None) -> str:
+def md_table(header: list[str], rows: list[list[str]], align: str | None = None,
+             widths: list[int] | None = None) -> str:
+    """A pipe table. ``widths`` sets the relative column widths in the Word file:
+    pandoc sizes the columns of a wide table by the dashes under each header."""
     align = align or "l" + "r" * (len(header) - 1)
-    marks = {"l": ":--", "r": "--:", "c": ":-:"}
+    widths = widths or [1] * len(header)
+
+    def mark(a: str, w: int) -> str:
+        dashes = "-" * (2 * w)
+        return {"l": ":" + dashes, "r": dashes + ":", "c": ":" + dashes + ":"}[a]
+
     lines = ["| " + " | ".join(header) + " |",
-             "| " + " | ".join(marks[a] for a in align) + " |"]
+             "| " + " | ".join(mark(a, w) for a, w in zip(align, widths, strict=True)) + " |"]
     lines += ["| " + " | ".join(row) + " |" for row in rows]
     return "\n".join(lines) + "\n"
 
@@ -557,7 +746,9 @@ def md_table(header: list[str], rows: list[list[str]], align: str | None = None)
 def write_csv(table: str, path: Path) -> None:
     """A Markdown table as CSV: emphasis marks off, thousands separators off."""
     lines = [line for line in table.splitlines() if line.startswith("|")]
-    with path.open("w", newline="") as handle:
+    # With a byte-order mark Excel reads the file as UTF-8, so a dash survives,
+    # and does not take a file that starts with "ID" for a SYLK file.
+    with path.open("w", newline="", encoding="utf-8-sig") as handle:
         writer = csv.writer(handle)
         for index, line in enumerate(lines):
             if index == 1:              # the alignment row
@@ -637,9 +828,10 @@ def table_cases(results: Results) -> str:
     carry their own totals."""
     by = {(r["tool"], r["case"]): r for r in results.cases}
     finished, chado = chado_cases_finished(results)
+    # Most features first; ties by name, so that drawing again changes nothing.
     cases = sorted({r["case"] for r in results.cases},
-                   key=lambda c: -number(by[("cgload-sqlite", c)]["truth"])
-                   if ("cgload-sqlite", c) in by else 0)
+                   key=lambda c: (-number(by[("cgload-sqlite", c)]["truth"])
+                                  if ("cgload-sqlite", c) in by else 0, c))
 
     def counts(tool, case) -> dict | None:
         if tool == "chado":
@@ -930,6 +1122,7 @@ def table_timing(results: Results) -> str:
 def write_tables(results: Results, out: Path) -> None:
     out.mkdir(parents=True, exist_ok=True)
     tables = {
+        "table0_example.md": table_example(),
         "table1_loaders.md": table_loaders(results),
         "table2_cases.md": table_cases(results),
         "table3_faults.md": table_faults(results),
@@ -956,6 +1149,7 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     results = Results(args.results)
     figure_design(args.out / "figures")
+    figure_schema(args.out / "figures")
     figure_scale(results, args.out / "figures")
     figure_loaders(results, args.out / "figures")
     figure_queries(results, args.out / "figures")

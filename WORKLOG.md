@@ -480,3 +480,19 @@ ONOS). Nothing in cgload changed; version 0.2.1 stands.
   file 6.
 - **Build.** `paper/build.py` gives the Word file A4 pages, double spacing,
   line numbers and page numbers, and no longer embeds the figures.
+
+## 19 November 2026: the Implementation section, and the CSV files
+
+- **Implementation rewritten** at the supervisor's request: an overview of the
+  commands, the database (Figure 2, a schema diagram drawn from
+  `cgload.db.schema`), creating a database and describing a genome, reading
+  files, populating the database step by step (Table 1, the first gene of
+  `examples/minimal/` as stored, made by loading it), verification, reading
+  the database. Figures 2 to 4 are now 3 to 5 and Tables 1 to 6 are now 2 to 7.
+- **Corrected:** the paper and Figure 1 said the assembly FASTA is bgzipped.
+  It is copied and indexed with pyfaidx; the annotation GFF3 is the file that
+  is bgzipped and tabix-indexed.
+- **CSV additional files** are written as UTF-8 with a byte-order mark. Excel
+  took Table S2, whose first cell is `ID`, for a SYLK file, and read the en
+  dash as `â€“`.
+- `docs/schema.md` said nine tables and no functional tables; it says eleven.

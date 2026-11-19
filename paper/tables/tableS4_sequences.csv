@@ -1,4 +1,4 @@
-Genome,Sequence,Rows written,"cgload (SQLite), s","cgload (PostgreSQL), s","gffutils, create_unique, s","tabix, s"
+﻿Genome,Sequence,Rows written,"cgload (SQLite), s","cgload (PostgreSQL), s","gffutils, create_unique, s","tabix, s"
 Fusarium graminearum,NC_026474.1,31851,2.17,7.88,1.09,0.06
 Fusarium graminearum,NC_026475.1,26172,1.87,6.59,0.90,0.05
 Fusarium graminearum,NC_026477.1,22407,1.53,5.65,0.79,0.06

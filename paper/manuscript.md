@@ -103,64 +103,209 @@ cgload and other loaders behave on real files.
 
 # Implementation
 
+## Overview
+
 cgload is a Python package (3.11 or later) with three runtime dependencies:
-SQLAlchemy, pyfaidx and click. It stores a genome in a relational database
-through SQLAlchemy, on SQLite or PostgreSQL. SQLAlchemy also reaches MySQL, but
-cgload has no test on MySQL, and we do not claim it works there. The schema has
-11 tables. A feature written on several rows keeps one stored row per segment,
-each with its own attributes, and the rows of a feature share its ID. Each
-stored row refers to its parent, so a feature that names more than one parent
-cannot be stored, and cgload refuses a file that has one. The assembly FASTA is
-compressed with bgzip and indexed [@tabix; @htslib] in a data folder beside the
-database, and the database records its checksum. Functional annotation from
-eggNOG-mapper [@eggnog] and InterProScan [@interproscan] becomes one row per GO
-term, KEGG ortholog, Pfam domain or EC number.
+SQLAlchemy, pyfaidx and click. It is used from the command line, and a genome
+passes through four commands. `cgload init` creates an empty database.
+`cgload load` reads a short configuration file that names an assembly and its
+annotation files, and writes them into the database in one transaction.
+`cgload verify` checks a loaded genome against its input files at any later
+time. `cgload query`, `export`, `explain` and `stats` read the database, and
+`cgload remove` deletes a genome from it. Figure 1 shows the path of a load
+and its checks; the sections below describe each step.
+
+The database is reached through SQLAlchemy, and the same code runs on SQLite
+and PostgreSQL. SQLAlchemy also reaches MySQL, but cgload has no test on
+MySQL, and we do not claim it works there. Beside the database, cgload keeps a
+data folder that holds, for each assembly, a copy of the FASTA file with its
+index, the annotation as cgload stored it, and a manifest of the load. A
+genome is therefore a set of database rows and a folder, and cgload treats the
+two as one unit.
+
+## The database
+
+The schema has 11 tables (Figure 2). It is written once, in
+`src/cgload/db/schema.py`, and SQLAlchemy creates it on either database system.
+Five tables describe the genome and where it came from. `organism`, `strain`
+and `assembly` name the genome; the assembly row also records the path and
+SHA-256 checksum of the stored FASTA file, the cgload version that loaded it,
+and the version of the type vocabulary in force at the time. `source_file`
+records every input file, with its checksum and the dialect cgload detected in
+it. `sequence_region` holds one row per sequence of the assembly, with its
+length and whether it is circular.
+
+The annotation itself is in two tables. `feature` holds one row per row of the
+input file. A feature written on several rows, such as a CDS split by introns,
+keeps one stored row per segment: the rows share the feature's ID, and
+`segment_index` numbers them in coordinate order. Each row records its file,
+its sequence, its coordinates (1-based and inclusive, as in GFF3), strand,
+phase and score, and the input line it came from. Each row also has two type
+columns. `source_type` is column 3 of the file exactly as written, and is what
+`verify` counts. `feature_type` is the canonical term after synonyms are
+mapped (for example, an AUGUSTUS `transcript` is an `mRNA`), and is what
+queries use. The hierarchy is stored in `parent_id`, which points at the first
+segment of the feature's parent. Because `parent_id` holds one value, a
+feature that names more than one parent cannot be stored, and cgload refuses a
+file that has one. `linkage_method` records how the parent was found: stated
+by `Parent=`, or computed, as it must be for GenBank files. The other
+attributes of column 9 are rows of `feature_attribute`, one per key and value,
+held against the feature's first segment; a later segment whose attributes
+differ keeps its own. `ID` and `Parent` are not repeated there, because they
+are columns.
+
+Constraints in the schema refuse some impossible rows outright: a start below
+1, an end before its start, an unknown strand, or a phase other than 0, 1 or
+2. On SQLite, foreign keys are switched on for every connection, so a row
+cannot name a parent, file or sequence that does not exist. The indexes are
+plain B-trees, the only kind that both database systems share. To find the
+rows in a region quickly, each row also stores a `bin`: the smallest bin that
+holds it whole, in the hierarchical binning scheme of the SAM and CSI indexes
+[@htslib]. A region query reads only the rows whose bins overlap the region.
+
+Two tables hold functional annotation. `annotation_run` records each output
+file of eggNOG-mapper [@eggnog] or InterProScan [@interproscan], with how many
+of its proteins matched a stored feature. `protein_annotation` holds one row
+per assignment (a GO term, KEGG ortholog, Pfam domain or EC number), linked
+to the feature it describes. The last two tables, `vocabulary` and
+`vocabulary_meta`, are written when the database is created and hold the map
+of type synonyms with its version and checksum.
+
+## Creating a database and describing a genome
+
+`cgload init` creates the 11 tables, writes the 46 terms of the type
+vocabulary, and gives the database a random identifier. It refuses a database
+that already holds cgload's tables, unless told to replace them. Every later
+command first checks that the vocabulary stored in the database is the one the
+installed cgload expects, and stops if it is not, because a changed synonym
+map would change what earlier loads mean.
+
+A genome is described in a TOML file. It names the organism (genus, species,
+strain and, optionally, the NCBI taxon), the assembly (name, version,
+accession and FASTA file), one or more annotation files, and any functional
+annotation files. The repository's `examples/minimal/` holds such a file with
+a small genome; Table 1 shows how cgload stores its first gene.
+
+## Reading annotation files
 
 Annotation pipelines write GFF3 differently. cgload reads RefSeq GFF3, the GFF3
 of funannotate [@funannotate] and AUGUSTUS [@augustus], and GenBank flat files.
-Each dialect is a declared profile that says which feature types it provides
-and how the file identifies itself, and a file that matches no profile is
-refused with the names of the profiles that were tried. Every dialect is
-normalised to one representation before anything reaches the database.
+Each dialect is a declared profile that says which feature types it provides,
+how a child finds its parent, and how the file identifies itself. A file that
+matches no profile is refused with the names of the profiles that were tried,
+and the profile chosen is recorded in `source_file`. Every dialect is then
+normalised to one representation: rows that share an ID are joined into one
+feature and their segments put in coordinate order, and each feature's parent
+is resolved. In GFF3 the parent is the one named by `Parent=`. GenBank has no
+such attribute, so the parent is computed, by `locus_tag` in prokaryotic files
+and by exon containment in eukaryotic ones, and a CDS that fits no transcript
+is refused rather than guessed.
 
-Before it writes anything, cgload checks the structure of the file. A feature
+Before anything is written, cgload checks the structure of the file. A feature
 must lie inside the span of the parent that claims it, a start must not exceed
 its end, and a row must not run past the end of its sequence unless the
-sequence is circular. By default a file that breaks these rules is refused, and
-the message names each offending feature and the option that repairs it. With
-`--repair-envelopes`, cgload recomputes each parent's span from its children,
-leaves first, and writes every change to the load's manifest. A disagreement
-that exists only across the origin of a circular sequence is stored as written.
+sequence is circular. By default a file that breaks these rules is refused,
+and the message names each offending feature and the option that repairs it.
+With `--repair-envelopes`, cgload recomputes each parent's span from its
+children, leaves first, and writes every change to the load's manifest. A
+disagreement that exists only across the origin of a circular sequence is
+stored as written. All files of a genome are read and checked before the
+database is opened, so a file that cannot be read stops the load before
+anything changes.
 
-The load is one database transaction. The data folder is prepared in a staging
-directory and renamed into place just before the commit. At the end of the
-load, cgload counts what it stored and compares the counts with an independent
-count of the file. If any count is short, it rolls the transaction back. A load
-therefore stores the whole file or leaves the database as it was.
+## Populating the database
+
+`cgload load` then fills the database in one transaction, in this order:
+
+1. A staging directory is made inside the data folder. The FASTA file is copied
+   into it and indexed with pyfaidx, which writes a samtools-compatible `.fai`
+   index; a FASTA file with a duplicate or empty sequence is refused.
+2. The organism and strain rows are found or created, and the assembly row is
+   written with the FASTA checksum. A row for each input file follows, then a
+   row for each sequence of the FASTA index.
+3. The features of each file are written in bulk, one row per segment, each
+   with its bin. Any sequence name that the FASTA file does not contain stops
+   the load, because the annotation then describes another assembly.
+4. The parent links are set in a second pass. A child may come before its
+   parent in the file, so the parent's row may not exist when the child is
+   written. Each stored row is found again by its input line, segment and span,
+   and every row of a child is pointed at the first row of its parent.
+5. The attributes are written to `feature_attribute`.
+6. Functional annotation, if any, is attached. eggNOG-mapper and InterProScan
+   report the protein names they were given, which may be a transcript ID, a
+   protein ID or a locus tag, so each name is looked up among the stored IDs
+   and the attributes `protein_id`, `transcript_id`, `locus_tag` and a few
+   others. A name that matches two features is an error. By default every
+   protein must match, and the configuration can lower that threshold.
+7. The end-of-load checks run (next section). If one fails, the load stops.
+8. On PostgreSQL, the planner's statistics are collected for the new rows.
+   The annotation is written back out as GFF3, compressed with bgzip and
+   indexed with tabix [@tabix; @htslib] in the staging directory, for genome
+   browsers. A manifest records the input files and their checksums, the
+   detected dialects, the feature counts, every repair and the results of the
+   checks.
+9. The staging directory is renamed into place, and the transaction is
+   committed.
+
+Any error at any step, including a killed process, rolls the transaction back
+and removes the staging directory, so the database and the data folder are
+left as they were. With `--force`, an assembly already loaded under the same
+name is replaced; its folder is moved aside only at step 9 and deleted only
+after the commit.
+
+**Table 1. How cgload stores the first gene of the example genome.** The rows
+of table `feature` for gene `DEMO_000001` of `examples/minimal/`, made by
+loading that example into a new SQLite database. The CDS is written on two
+rows of the file, so it is stored as two rows that share its ID, numbered by
+`segment_index`. Each row's `parent_id` is the `feature_id` of its parent's
+first row. The mRNA's attribute `product=hypothetical protein` is stored as a
+row of `feature_attribute` with `feature_id` 2. All rows are on the + strand;
+columns not shown are listed in Figure 2.
+
+<!-- include tables/table0_example.md -->
+
+## Verification
+
+At the end of the load, cgload counts what it stored and compares the counts
+with an independent count of the file. If any count is short, it rolls the
+transaction back. A load therefore stores the whole file or leaves the
+database as it was.
 
 The command `cgload verify` repeats these checks at any later time, in tiers
 (Figure 1). The source-count tier counts the file again with code that imports
 nothing from cgload: features of each type, rows of each feature written on
-several rows, and parent statements. These counts must equal the database's.
-The parent-edge tier requires every `Parent=` statement in the file to be a
-stored link. The stored-assembly tier compares the FASTA and its index with the
-checksums taken at load. Two optional tiers compare the file with other
-descriptions of the same assembly: the GenBank file (cross-parser tier) and
-the totals NCBI publishes for the annotation release (reference tier). A tier
-that cannot run says so and gives the reason. `verify` exits with status 2 when
-a tier fails and 0 otherwise.
+several rows, and parent statements. These counts must equal the database's,
+counted by `source_type`. The parent-edge tier requires every `Parent=`
+statement in the file to be a stored link. The stored-assembly tier compares
+the FASTA and its index with the checksums taken at load. Two optional tiers
+compare the file with other descriptions of the same assembly: the GenBank
+file (cross-parser tier) and the totals NCBI publishes for the annotation
+release (reference tier). A tier that cannot run says so and gives the reason.
+`verify` exits with status 2 when a tier fails and 0 otherwise.
 
 These checks establish completeness: every feature, every row and every stated
 parent link is present, and nothing was invented. They do not establish that a
 value is right. A wrong strand or a shifted coordinate keeps every count the
 same, so these checks cannot see it.
 
-Other commands read the database. `cgload query` returns features by ID, with
-everything below them if asked, by region or by functional annotation term,
-`cgload stats` counts features, and `cgload export` writes an assembly's
-annotation back out as GFF3. Much of the code, its tests and its documentation
-were written with a large language model, under the authors' direction
-[@claude]; see "Use of a large language model" below.
+## Reading the database
+
+`cgload query` returns features by ID, by region or by functional annotation
+term, as a table or as GFF3, and with `--descendants` also everything below
+each match, such as a gene's transcripts, exons and CDS. A region query reads
+the rows whose bin overlaps the region and keeps those that overlap it; on a
+circular sequence it also finds the rows that cross the origin. `cgload export`
+writes an assembly's annotation back out as GFF3. It writes column 3 as the
+file had it, from `source_type`, and adds no row that the input did not have.
+`cgload explain` shows where a feature came from: its file, line, dialect and
+how its parent was found. `cgload stats` counts features by their original and
+canonical types, and `cgload remove` deletes an assembly's rows and folder in
+one transaction. Because the database is plain SQL, it can also be read with
+any SQL client.
+
+Much of the code, its tests and its documentation were written with a large
+language model, under the authors' direction [@claude]; see "Use of a large
+language model" below.
 
 ## Benchmark design
 
@@ -262,7 +407,7 @@ these cases occur in the 30 files.
 
 ### Loaders and versions
 
-Table 1 lists the versions used. gffutils was run twice: with its default merge
+Table 2 lists the versions used. gffutils was run twice: with its default merge
 strategy, which is what a user who changes nothing gets, and with
 `create_unique`, the documented way to load a file whose rows repeat an ID
 [@gffutils]. txdbmaker's `makeTxDbFromGFF` was told which sequences are
@@ -281,7 +426,7 @@ exports is the same in all three, apart from the version string and comments.
 The query code changed between the two commits (see "Changes after the first
 run"), and the timing was measured after that change.
 
-**Table 1. Software versions used in the benchmark.**
+**Table 2. Software versions used in the benchmark.**
 
 <!-- include tables/table6_versions.md -->
 
@@ -433,7 +578,7 @@ the repaired ones, changed in their spans as the manifest declared. No feature
 was lost, none changed without a declaration, and all 16,566,107 parent links
 came back. SQLite and PostgreSQL gave the same result for every genome.
 
-Load time, memory and size grew in proportion to the number of rows (Figure 2).
+Load time, memory and size grew in proportion to the number of rows (Figure 3).
 On SQLite, cgload loaded a median 7,961 rows per second; the quickest load, *S.
 cerevisiae*, took 4.8 s and human took 641 s. PostgreSQL was about three times
 slower (median 2,700 rows per second; human 1,978 s). `verify` took 0.8 to 29 s
@@ -444,9 +589,9 @@ PostgreSQL, and its data folder 3.2 GB.
 
 ## What other loaders keep, change and lose (Q3)
 
-Table 2 sums up the results and Figure 3 shows them per genome.
+Table 3 sums up the results and Figure 4 shows them per genome.
 
-**Table 2. What each loader kept, changed and lost.**
+**Table 3. What each loader kept, changed and lost.**
 
 <!-- include tables/table1_loaders.md -->
 
@@ -489,11 +634,11 @@ Sequence Ontology now names lncRNA (SO:0001877) [@so], and its log named the
 type. It dropped their 430,836 exons without a message. It also dropped 238
 long terminal repeats that the *S. pombe* file writes in capitals, and named
 that type too. So four in five of its losses were silent, from none in 9
-genomes to 14.6% of the features in *S. pombe* (Figure 3). These loads kept
+genomes to 14.6% of the features in *S. pombe* (Figure 4). These loads kept
 9,627,024 of 10,167,041 parent links, and python-chado added 670,102
 polypeptide features that the files do not contain.
 
-The hard cases show where the alterations come from (Table 3). gffutils split
+The hard cases show where the alterations come from (Table 4). gffutils split
 every feature written on several rows, and these include the features of most
 other hard cases. txdbmaker's changes and losses fell on rows that overlap, on
 unknown strands and on trans-spliced and organelle transcripts, and its
@@ -502,7 +647,7 @@ hard-case feature; the genomes with trans-spliced genes or unknown strands were
 the ones on which it stopped. cgload kept every hard-case feature or declared
 its repair.
 
-**Table 3. Hard cases and what each loader altered.**
+**Table 4. Hard cases and what each loader altered.**
 
 <!-- include tables/table2_cases.md -->
 
@@ -513,9 +658,9 @@ feature has an attribute with several values. Chado's counts cover its 21
 finished loads and txdbmaker's the transcripts of the 24 genomes it loaded,
 each with its own total; a dash means the case does not occur there.
 
-Table 3 counts features, and the census above counts rows, so their numbers
+Table 4 counts features, and the census above counts rows, so their numbers
 differ for the same cases. The census reads rows as they are written. The
-reference reader behind Table 3 first joins the rows of each feature and puts
+reference reader behind Table 4 first joins the rows of each feature and puts
 each row's coordinates in order. The 31 rows with strand `?` belong to 30
 features, because one gene is written on two rows. The 67 rows outside their
 parent belong to 47 features, since coding sequences written on several rows
@@ -537,7 +682,7 @@ exons written wholly beyond it.
 ## Faults (Q4)
 
 All 81 fault trials (27 faults in 3 genomes) ended as the protocol predicted
-(Table 4, Additional file 2). `verify` detected every fault that deleted,
+(Table 5, Additional file 2). `verify` detected every fault that deleted,
 duplicated or retyped a feature, removed a parent link, or damaged or moved
 the stored assembly. Every fault planted in the parser that dropped, added or
 retyped a row stopped the load: one by its structural check (a child whose
@@ -552,7 +697,7 @@ One fault needs a caveat. When the input file was edited after the load
 the source count. It still exited with status 0, because a skipped tier is not
 a failure. A script that reads only the exit status would miss this edit.
 
-**Table 4. Planted faults, grouped by what they do.**
+**Table 5. Planted faults, grouped by what they do.**
 
 <!-- include tables/table3_faults.md -->
 
@@ -561,7 +706,7 @@ Each fault was planted in *Fusarium graminearum*, *A. thaliana* and human.
 
 ## Interrupted loads (Q5)
 
-Every killed cgload load left the database as it was (Table 5). After the 20
+Every killed cgload load left the database as it was (Table 6). After the 20
 killed new loads the database was empty, and the same load then succeeded each
 time. After the 20 killed `--force` reloads, the earlier load was intact and
 passed `verify`. In 28 of the 40 trials, cgload left files on disk outside any
@@ -575,7 +720,7 @@ open none of them. Seventeen were empty. Three held every record of a complete
 load, because the kill came after the last insert but before gffutils wrote the
 metadata it needs to open the file.
 
-**Table 5. What a killed load left behind.**
+**Table 6. What a killed load left behind.**
 
 <!-- include tables/table4_kills.md -->
 
@@ -583,7 +728,7 @@ Each kill came at a random time between 5% and 95% of an uninterrupted load.
 
 ## Query waits (Q6)
 
-cgload answered everyday questions more slowly than gffutils (Figure 4,
+cgload answered everyday questions more slowly than gffutils (Figure 5,
 Additional file 3). One
 gene with its parts took 0.26 to 0.30 s as a command on SQLite and 0.37 to 0.41
 s on PostgreSQL, against 0.13 to 0.24 s for gffutils. Most of that time is
@@ -599,7 +744,7 @@ counts records and cgload counts features.
 For T4, writing out every feature on one sequence, the protocol takes the
 sequence with the most features in each genome and two others drawn at random
 from those with at least 1,000 features. In human the two drawn were small
-scaffolds, so a median over its three sequences would hide the cost. Figure 4
+scaffolds, so a median over its three sequences would hide the cost. Figure 5
 therefore shows the largest sequence of each genome, and Additional file 4
 all twelve. Writing human chromosome 1 (437,536 rows) took 25.0 s on SQLite,
 88.6 s on PostgreSQL, 14.4 s with gffutils and 0.5 s with tabix.
@@ -608,7 +753,7 @@ all twelve. Writing human chromosome 1 (437,536 rows) took 25.0 s on SQLite,
 
 The census flagged 110 findings on 102 distinct rows, and counted 9 more that
 cross the origin of a circular sequence. cgload accepts rows of that last kind,
-as GFF3 allows. On the 102 rows (Table 6), both checkers accepted the 23 rows
+as GFF3 allows. On the 102 rows (Table 7), both checkers accepted the 23 rows
 whose only finding is the strand `?`, and both objected to the 13 the census
 classed as errors or unexplained, though cgload loaded 6 of these with a
 warning. For the other 66 rows, nearly all in trans-spliced organelle genes,
@@ -621,7 +766,7 @@ cgload objected to 8 features that the census did not flag. Each is a gene or
 pseudogene whose span leaves out a child that the census did flag, so the two
 found the same 11 parent and child pairs from opposite ends.
 
-**Table 6. cgload's structural checks and the census on the same rows.**
+**Table 7. cgload's structural checks and the census on the same rows.**
 
 <!-- include tables/table5_agreement.md -->
 
@@ -858,20 +1003,28 @@ imports nothing from cgload. At the end of the load its counts decide whether
 the transaction is committed or rolled back, and `cgload verify` compares them
 with the database again at any later time.
 
-**Figure 2. The cost of loading the 30 genomes with cgload.** Against the
+**Figure 2. The database schema of cgload.** The 11 tables, with selected
+columns; `src/cgload/db/schema.py` defines every column, constraint and index.
+Grey tables describe the genome and its input files, dark blue tables hold the
+annotation, and light blue tables hold functional annotation. The two outlined
+tables are written by `cgload init`. A line joins each foreign key to the key
+it names, marked with a dot; `feature.parent_id` names a row of the same table.
+The figure is drawn from the schema itself by `paper/figures.py`.
+
+**Figure 3. The cost of loading the 30 genomes with cgload.** Against the
 number of GFF3 rows: (a) load time, (b) time of `cgload verify`, (c) peak
 memory of the load and (d) size of the database. Each point is one genome on
 one database system. Both axes are logarithmic. The values for human, the
 largest genome, are labelled.
 
-**Figure 3. Features changed or lost without a message, per genome and
+**Figure 4. Features changed or lost without a message, per genome and
 loader.** Each cell gives the percentage of the genome's features (for
 txdbmaker, transcripts) that the loader changed or lost without a message.
 Dark grey cells mark genomes a loader did not load. cgload's results were
 identical on SQLite and PostgreSQL. † cgload loaded these genomes with
 `--repair-envelopes` and declared every repair.
 
-**Figure 4. Time to answer four everyday tasks on four genomes.** Median time
+**Figure 5. Time to answer four everyday tasks on four genomes.** Median time
 of repeated asks, on genomes from 0.1 to 4.9 million rows. Top: one new process
 per answer, as a user typing a command waits. Bottom: one process asking T1 to
 T3 in turn, as a script waits. T4 is shown for the largest sequence of each

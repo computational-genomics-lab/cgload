@@ -1,4 +1,4 @@
-View,Task,Genome,Tool,Targets,"First ask, median s","Repeated asks, median s"
+﻿View,Task,Genome,Tool,Targets,"First ask, median s","Repeated asks, median s"
 command,T3,Fusarium graminearum,cgload (PostgreSQL),1,1.227,1.125
 command,T3,Fusarium graminearum,cgload (SQLite),1,0.333,0.304
 command,T3,Fusarium graminearum,"gffutils, create_unique",1,0.17,0.091
