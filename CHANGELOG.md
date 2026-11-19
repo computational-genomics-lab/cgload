@@ -4,6 +4,32 @@ Decisions referred to as D-0xx are in [docs/decisions.md](docs/decisions.md).
 
 ## Unreleased
 
+## 0.2.2 (19 November 2026)
+
+`cgload export` now writes GFF3 columns 2 and 6 exactly as they were loaded.
+Loading, `verify` and queries are those of 0.2.1, which the paper's benchmark
+ran. Databases made by 0.2.1 are accepted, and features whose rows all name
+one program export as before.
+
+### Fixed
+
+- Scores were written with six significant digits (`%g`), so 1234567.5 came
+  back as 1.23457e+06 and 0.123456789 as 0.123457. Each score is now written as
+  the shortest text that reads back as the stored number (D-109).
+- A feature written on several rows kept only its first row's column 2, and
+  `export` wrote it on every row, so a later row from another program lost its
+  name. Each row now keeps and exports its own (D-110). Rows loaded by 0.2.1
+  hold the first row's value; load them again to get each row's own.
+
+Neither change alters a count, so neither could be seen by `verify` or by the
+benchmark's round-trip comparison, which did not read columns 2, 6 and 8. A
+row-by-row comparison of those columns (`benchmark/columns.py`) found both.
+
+### Added
+
+- `benchmark/columns.py` and `benchmark/run_columns.py`: the round trip of
+  columns 2, 6 and 8, row by row, on the 30 genomes of the benchmark.
+
 ## 0.2.1 (11 November 2026)
 
 No change in behaviour: the code that loads, verifies, exports and queries is

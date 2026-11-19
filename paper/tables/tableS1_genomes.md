@@ -1,4 +1,4 @@
-| Organism | Accession | Clade | Rows | Features | cgload | Load s, SQLite | Load s, PostgreSQL | Peak GB, SQLite | Peak GB, PostgreSQL | Verify s, SQLite | Verify s, PostgreSQL | Database GB, SQLite | Database GB, PostgreSQL | Data folder GB |
+| Organism | Accession | Clade | Rows | Features | cgload | Load s, SQLite | Load s, PostgreSQL | Peak GiB, SQLite | Peak GiB, PostgreSQL | Verify s, SQLite | Verify s, PostgreSQL | Database GiB, SQLite | Database GiB, PostgreSQL | Data folder GiB |
 | :-- | :-- | :-- | --: | --: | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: |
 | *Homo sapiens* | GCF_000001405.40 | vertebrate | 4,932,571 | 3,203,237 | loaded | 641.1 | 1,978.3 | 29.5 | 36.4 | 29.1 | 47.8 | 3.00 | 5.86 | 3.23 |
 | *Mus musculus* | GCF_000001635.27 | vertebrate | 3,110,422 | 2,003,886 | loaded | 386.8 | 1,180.6 | 16.8 | 19.8 | 18.4 | 30.1 | 1.70 | 3.42 | 2.63 |

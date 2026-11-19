@@ -949,7 +949,10 @@ def _insert_features(
                     "segment_index": segment.segment_index,
                     "parent_id": None,
                     "linkage_method": item.linkage_method,
-                    "source_program": item.source_program,
+                    # Each row's own column 2: the rows of one feature may
+                    # name different programs (D-110).
+                    "source_program": getattr(segment, "source", None)
+                    or item.source_program,
                     "source_line": segment.line_number,
                     "bin": bin_of(segment.start, segment.end),
                 }

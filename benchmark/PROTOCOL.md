@@ -398,8 +398,9 @@ the agreement with the survey and gffutils with its default settings;
 `benchmark-run-2.1` (`9b97178`) for Chado, txdbmaker and the query timing, with
 the human Chado comparison filled in at `44c2ca5`; and `benchmark-run-2.2`
 (`56f6861`) for gffutils with `create_unique`. Their tables are in
-`paper/data/benchmark-run-2.2/`. The full results, superseded ones included,
-are deposited with the paper.
+`paper/data/benchmark-run-2.2/`. What is left out there (the PostgreSQL
+server log, the reference databases, which `truth.py` rebuilds, and the
+superseded results) is kept on the lab server.
 
 **Q8 dropped, 10 November 2026.** No genome of ours with funannotate gene
 models, eggNOG-mapper and InterProScan output was available, so the case study
@@ -415,3 +416,14 @@ shows T4 for the largest sequence of each genome, with all three in a table:
 the median over the three hid the cost in human, where two of the three are
 small scaffolds. And the paper says how the census's rows map to the reference
 reader's features in each hard case.
+
+**Columns 2, 6 and 8, 19 November 2026.** Not in the protocol. A review of the
+paper's draft by another language model (ChatGPT) pointed out that the
+reference reader leaves out each row's source, score and phase, so the round
+trip (section 6) never compared them. `benchmark/columns.py` compares them row
+by row between an input file and cgload's export, and
+`benchmark/run_columns.py` repeats cgload's part of the round trip on SQLite
+to run it. On the test fixtures it found two faults in the export of cgload
+0.2.1 (decisions D-109 and D-110), fixed in 0.2.2. It also counts, in each
+input file, the values that 0.2.1 would have written differently. Its results
+are `columns.tsv`; the other loaders were not checked in this way.

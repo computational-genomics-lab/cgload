@@ -8,10 +8,11 @@ class of dishonesty as a load reporting a success it cannot back up (D-035b).
 
 Four rules, and each one exists to keep the round trip exact:
 
-1. **Column 2 is the stored `source_program`, verbatim.** It is per-feature
-   already, so an assembly loaded from several files exports correctly with no
-   extra machinery -- an AUGUSTUS gene and a RefSeq gene keep their own column 2
-   in the same output file.
+1. **Column 2 is the stored `source_program`, verbatim, row by row.** An
+   assembly loaded from several files exports correctly with no extra
+   machinery -- an AUGUSTUS gene and a RefSeq gene keep their own column 2 in
+   the same output file -- and so does a feature whose rows were written by
+   different programs (D-110).
 2. **Column 3 is `source_type`, not `feature_type`.** The same reason `verify`
    counts `source_type`: exporting the canonical term would silently rewrite
    `transcript` to `mRNA` and make the round trip lossy on any dialect that uses
@@ -95,11 +96,18 @@ class ExportSummary:
 
 
 def _format_score(score: float | None) -> str:
+    """Column 6: the shortest text that reads back as the stored number (D-109).
+
+    ``f"{score:g}"`` kept six significant digits, so 1234567.5 came back as
+    1.23457e+06 and 0.123456789 as 0.123457, and no count could see it.
+    ``repr`` of a float is the shortest decimal that parses to the same value;
+    a trailing ``.0`` is dropped so an integer score reads as one. Exporting a
+    re-imported file still gives the same bytes.
+    """
     if score is None:
         return "."
-    # AUGUSTUS writes real scores; everything else writes '.'. Trailing zeros
-    # are stripped so a re-export of a re-import is byte-identical.
-    return f"{score:g}"
+    text = repr(float(score))
+    return text[:-2] if text.endswith(".0") else text
 
 
 def _attribute_column(feature, *, include_linkage: bool,
@@ -154,7 +162,9 @@ def _row(feature, segment, attributes: str) -> str:
     return "\t".join(
         (
             feature.seqid,
-            feature.source_program,
+            # The row's own column 2, which a later row of a feature may have
+            # from another program (D-110).
+            getattr(segment, "source", None) or feature.source_program,
             feature.source_type,
             str(segment.start),
             str(segment.end),

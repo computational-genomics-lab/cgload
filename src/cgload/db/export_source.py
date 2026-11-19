@@ -44,6 +44,8 @@ class StoredSegment:
     #: The row's own attributes, when it was stored with attributes that differ
     #: from the first row's (D-096); otherwise None.
     attributes: dict[str, list[str]] | None = None
+    #: The row's own column 2 (D-110).
+    source: str | None = None
 
 
 @dataclass
@@ -215,6 +217,7 @@ def features_where(connection: Connection, condition) -> list[StoredFeature]:
             score=row.score,
             segment_index=row.segment_index,
             strand=row.strand,
+            source=row.source_program,
         )
         if row.source_id is not None and row.source_id in named:
             item = named[row.source_id]

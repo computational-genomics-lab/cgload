@@ -32,3 +32,18 @@ benchmark preflight's download step). The run is recorded in `provenance.tsv`.
 organellar sequence (0), 587,965 multi-row IDs (122,583), 669 exons directly
 under a pseudogene (108). The findings did not change: medaka has no defect of
 any kind, and `hits.tsv` has no medaka rows, before or after.
+
+## What `multi_row_ids` counts, 19 November 2026
+
+**What was wrong.** Nothing in the counts; their name. `cgsurvey.py` adds one
+to `multi_row_ids` each time a row repeats an ID it has already seen, so the
+column counts the rows beyond the first of each ID, not the IDs written on
+several rows. Over the 30 files it is 10,194,007: the 28,211,625 rows less the
+18,017,618 features. The features written on more than one row number
+1,072,125 (the benchmark's reference reader, hard case `multi_row`). A draft of
+the paper read the column as a count of IDs; a review of the draft by another
+language model (ChatGPT) noticed.
+
+**What was done.** The column keeps its name, so that `survey.tsv` stays as it
+was, and the code says what it counts.
+

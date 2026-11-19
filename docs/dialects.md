@@ -21,8 +21,8 @@ error-on-ambiguity rule affordable rather than obstructive.
 | `funannotate` | `funannotate` | none (only `##gff-version 3`) |
 | `augustus` | `AUGUSTUS` | `# This output was generated with AUGUSTUS (version …)` |
 
-Column 2 is `source_program` and is stored verbatim per feature (D-014), so
-detection and provenance read the same field.
+Column 2 is `source_program` and is stored verbatim on every row (D-014,
+D-110), so detection and provenance read the same field.
 
 ## What each dialect actually provides
 

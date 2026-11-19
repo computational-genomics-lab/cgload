@@ -218,7 +218,7 @@ def arrow(axis, start, end, colour=MUTED):
 def figure_design(out: Path) -> None:
     """Figure 1: every step of a load and of `verify`, with what stops each and
     what each writes. The step numbers 1 to 9 are those of the paper's list."""
-    width, height = FULL_WIDTH, 8.5
+    width, height = FULL_WIDTH, 8.55
     figure = plt.figure(figsize=(width, height))
     axis = figure.add_axes((0, 0, 1, 1))
     axis.set_xlim(0, width)
@@ -377,7 +377,7 @@ def figure_design(out: Path) -> None:
          "a name fitting two features; too few matches (default: all)",
          "annotation_run, protein_annotation"),
         ("End-of-load checks", "Compare the stored counts with the independent count: "
-         "features by type, rows, and Parent= links.", "any count short", None),
+         "features by type, rows, and Parent= links.", "any count that differs", None),
         ("Write out", "Planner statistics (PostgreSQL); the annotation as GFF3, with bgzip "
          "and tabix; the manifest.", "",
          "annotation.gff3.gz, .tbi, manifest.json"),
@@ -428,18 +428,20 @@ def figure_design(out: Path) -> None:
             arrow(axis, (corridor, y - 0.05), (x_write + w_write, y - 0.05))
         y -= h + 0.05
     axis.plot([rail, rail], [first_rail, last_rail], color=INK2, linewidth=0.6, zorder=2)
-    rect(left, y, right - left, pad_top + pad_bottom + line, stop_fill)
+    rect(left, y, right - left, pad_top + pad_bottom + 2 * line, stop_fill)
     write(left + pad, y, [
-        ("Any stop in steps 1 to 9, or a killed process: the transaction is rolled back "
-         "and the staging folder deleted. Nothing changes.", INK, "normal")])
-    y -= pad_top + pad_bottom + line + 0.16
+        ("Any stop in steps 1 to 9: the transaction is rolled back and the staging folder "
+         "deleted, so nothing changes.", INK, "normal"),
+        ("A killed process: the database rolls back too, but the staging folder stays on "
+         "disk, outside any assembly, until deleted by hand.", INK, "normal")])
+    y -= pad_top + pad_bottom + 2 * line + 0.16
 
     # --- b: verify -----------------------------------------------------------------
     heading(y, "b", "cgload verify, at any later time: five tiers")
     y -= 0.26
     tiers = [
         ("Source count", "The independent count of the file equals the database's."),
-        ("Parent links", "Every Parent= statement in the file is a stored link."),
+        ("Parent links", "Every feature the file gives a parent has a stored link."),
         ("Stored assembly", "FASTA and index present, SHA-256 as at the load."),
         ("Cross-parser (optional)", "Counts per type in the GFF3 equal those of a "
          "GenBank file."),
@@ -454,11 +456,12 @@ def figure_design(out: Path) -> None:
         rect(x, y, w_r, h_t, CHECK)
         write(x + pad, y, block)
     y -= h_t + 0.06
-    axis.text(left, y, "verify reads the database, the data folder and the input files, "
-              "and changes nothing. Each tier prints PASS, FAIL, or why it could not run;",
-              ha="left", va="top", fontsize=SMALL, color=INK2)
+    axis.text(left, y, "The tiers compare counts. They cannot tell which feature is "
+              "which: a renamed feature, a wrong parent or a changed value keeps every "
+              "count.", ha="left", va="top", fontsize=SMALL, color=INK2)
     y -= line
-    axis.text(left, y, "the command exits with status 2 if a tier fails, and 0 otherwise.",
+    axis.text(left, y, "Each tier prints PASS, FAIL, or why it could not run; verify exits "
+              "with status 2 if a tier fails, and 0 otherwise, also when a tier is skipped.",
               ha="left", va="top", fontsize=SMALL, color=INK2)
     print(f"Figure 1: {y - line - 0.05:.2f} in to spare")
     save(figure, out, "fig1")
@@ -657,8 +660,8 @@ def figure_scale(results: Results, out: Path) -> None:
     panels = [
         ("load_wall_s", 1, "Load time (s)", "s"),
         ("verify_wall_s", 1, "Verify time (s)", "s"),
-        ("load_peak_mb", 1 / 1024, "Peak memory of the load (GB)", "GB"),
-        ("db_bytes", 1 / 1024 ** 3, "Database size (GB)", "GB"),
+        ("load_peak_mb", 1 / 1024, "Peak memory of the load (GiB)", "GiB"),
+        ("db_bytes", 1 / 1024 ** 3, "Database size (GiB)", "GiB"),
     ]
     backends = [("sqlite", "SQLite", BLUE), ("postgres", "PostgreSQL", ORANGE)]
     figure, axes = plt.subplots(2, 2, figsize=(FULL_WIDTH, 4.5))
@@ -1080,8 +1083,10 @@ FAULT_GROUPS = [
     ("Stored assembly damaged or moved", {"F13", "F14", "F15", "F17"}),
     ("Input file edited after the load", {"F16"}),
     ("Parser drops, invents or retypes rows", {"P01", "P02", "P03", "P04", "P06"}),
-    ("Values changed, counts kept (database)", {"F06", "F07", "F08", "F10", "F12"}),
-    ("Values changed, counts kept (parser)", {"P05", "P07", "P08"}),
+    # Strand, start, an attribute, an ID or a parent changed: every count stays.
+    ("Values, IDs or parents changed, counts kept (database)",
+     {"F06", "F07", "F08", "F10", "F12"}),
+    ("Values or IDs changed, counts kept (parser)", {"P05", "P07", "P08"}),
 ]
 
 
@@ -1126,20 +1131,33 @@ def table_faults(results: Results) -> str:
         expected = {r["expected"] for r in members}
         caught = caught_by([r for r in results.fault_trials
                             if r["fault_id"] in ids and r["observed"] == "detected"])
+        failed = failing_exit(results, ids)
         rows.append([title, ", ".join(sorted(ids)), " / ".join(sorted(expected)),
-                     f"{detected} of {trials}", f"{as_expected} of {trials}", caught or "–"])
-    header = ["Fault", "Faults", "Expected", "Detected", "As expected", "Caught by"]
-    return md_table(header, rows, "lllrrl")
+                     f"{detected} of {trials}", f"{failed} of {trials}",
+                     f"{as_expected} of {trials}", caught or "–"])
+    header = ["Fault", "Faults", "Expected", "Reported", "Exit 2", "As expected",
+              "Caught by"]
+    return md_table(header, rows, "lllrrrl")
+
+
+def failing_exit(results: Results, ids) -> int:
+    """Trials of these faults whose command exited with a failing status. A fault
+    can be reported and still exit 0: F16, where verify notices the edited input,
+    skips the source count and passes."""
+    return sum(1 for r in results.fault_trials
+               if r["fault_id"] in ids and r["exit_code"] not in ("0", "NA", ""))
 
 
 def table_faults_full(results: Results) -> str:
     rows = [[r["fault_id"], r["fault"].replace("_", " "), r["layer"], r["expected"],
              f"{number(r['detected'])} of {number(r['genomes'])}",
+             f"{failing_exit(results, {r['fault_id']})} of {number(r['genomes'])}",
              f"{number(r['as_expected'])} of {number(r['genomes'])}",
              caught_by([x for x in results.fault_trials if x["fault_id"] == r["fault_id"]
                         and x["observed"] == "detected"]) or "–"] for r in results.faults]
-    header = ["ID", "Fault", "Layer", "Expected", "Detected", "As expected", "Caught by"]
-    return md_table(header, rows, "llllrrl")
+    header = ["Fault ID", "Fault", "Layer", "Expected", "Reported", "Exit 2", "As expected",
+              "Caught by"]
+    return md_table(header, rows, "llllrrrl")
 
 
 def table_kills(results: Results) -> str:
@@ -1169,7 +1187,7 @@ def table_kills(results: Results) -> str:
             left = [number(trial["leftover_bytes"]) for trial in group]
             if any(left):
                 notes.append(f"{sum(1 for b in left if b)} left staging files, up to "
-                             f"{max(left) / 1024 ** 2:,.0f} MB")
+                             f"{max(left) / 1024 ** 2:,.0f} MiB")
         rows.append([labels.get(tool, tool), species(results.name[accession]),
                      str(len(group)),
                      ", ".join(f"{v} {k}" for k, v in sorted(states.items())),
@@ -1244,9 +1262,9 @@ def table_genomes(results: Results) -> str:
                      f"{number(b['db_bytes']) / 1024 ** 3:.2f}",
                      f"{number(a['data_bytes']) / 1024 ** 3:.2f}"])
     header = ["Organism", "Accession", "Clade", "Rows", "Features", "cgload",
-              "Load s, SQLite", "Load s, PostgreSQL", "Peak GB, SQLite",
-              "Peak GB, PostgreSQL", "Verify s, SQLite", "Verify s, PostgreSQL",
-              "Database GB, SQLite", "Database GB, PostgreSQL", "Data folder GB"]
+              "Load s, SQLite", "Load s, PostgreSQL", "Peak GiB, SQLite",
+              "Peak GiB, PostgreSQL", "Verify s, SQLite", "Verify s, PostgreSQL",
+              "Database GiB, SQLite", "Database GiB, PostgreSQL", "Data folder GiB"]
     return md_table(header, rows, "lllrrl" + "r" * 9)
 
 
@@ -1297,13 +1315,18 @@ def version_of(text: str, kind: str, package: str) -> str:
     return found.group(1)
 
 
+#: The release whose code the benchmark ran (commits 8c999e2 and 9b97178).
+BENCHMARKED_CGLOAD = "0.2.1"
+
+
 def table_versions(results: Results) -> str:
     """Versions as the server's environments recorded them at the time of the run."""
     folder = results.folder / "environment"
-    released = re.search(r'__version__ = "([^"]+)"',
-                         (HERE.parent / "src" / "cgload" / "__init__.py").read_text()).group(1)
-    rows = [["cgload", released, "the loader presented; benchmarked at commits 8c999e2 and "
-             "9b97178, the same code apart from its version string and comments"]]
+    # The version the benchmark ran, not the one installed now: 0.2.2 changed
+    # how export writes columns 2 and 6 after the runs (D-109, D-110).
+    rows = [["cgload", BENCHMARKED_CGLOAD,
+             "the loader presented; benchmarked at commits 8c999e2 and 9b97178, the same "
+             "code apart from its version string and comments"]]
     for label, file, kind, package, used in VERSIONS:
         rows.append([label, version_of((folder / file).read_text(), kind, package), used])
     chado = {r["tool_version"] for r in results.loaders if r["tool"] == "chado"}

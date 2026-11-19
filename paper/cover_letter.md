@@ -13,7 +13,10 @@ annotation into SQLite or PostgreSQL in one transaction, compares what it
 stored with an independent count of the input file, and rolls back a load that
 falls short. We compared it with gffutils, txdbmaker and python-chado on 30
 RefSeq genomes (18.0 million features), under a protocol fixed and tagged
-before the first run. cgload kept every feature and declared its 12 repairs.
+before the first run. cgload kept every feature in every field compared and
+declared its 12 repairs. We are explicit about what its own check can and
+cannot see: it compares counts, so it catches a lost or invented feature but
+not a renamed one or a changed value.
 Each of the other loaders stored some features in another form, or not at all,
 without a message: gffutils 1,072,125 with the setting its documentation
 offers for such files, and python-chado 430,836 in the 21 genomes it finished.

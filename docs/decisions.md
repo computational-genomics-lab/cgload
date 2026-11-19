@@ -2821,3 +2821,34 @@ name in batches. With the names in hand the planner uses the index: 15 ms a
 gene on the same synthetic genome, and no scan. A batch never holds more values
 than the connection allows, which SQLite reports and lets a caller lower
 (AUDIT-8); the ancestor lookup that already ran in batches uses the same rule.
+
+## D-109 — a score is written as the shortest text that reads back the same
+
+**Found on 19 November 2026,** by a row-by-row comparison of GFF3 columns 2, 6
+and 8 between input and export (`benchmark/columns.py`), written after an
+review of the paper's draft by another language model noted that the
+benchmark's round trip never read those columns.
+`export` wrote column 6 with `f"{score:g}"`, which keeps six significant
+digits: 1234567.5 came back as 1.23457e+06, 0.123456789 as 0.123457. The
+database held the full value; only the export lost it. No count changes, so
+`verify` could not see it.
+
+**Decided:** column 6 is `repr(float(score))`, the shortest decimal that parses
+to the stored double, without a trailing `.0`. A re-export of a re-import is
+still byte-identical, which was the reason for stripping zeros in the first
+place.
+
+## D-110 — every row keeps its own column 2
+
+**Found with D-109.** A feature written on several rows took its
+`source_program` from its first row, and `export` wrote that value on every
+row. A CDS whose second row was written by another program came back with the
+first row's program on both. `verify` passed, because counts do not change.
+The `feature` table already had a `source_program` column on every row; the
+normaliser simply filled them all from the first row.
+
+**Decided:** each `Segment` carries its row's own column 2, the loader stores
+it on that row, and `export` writes it back. The feature's `source_program`
+remains its first row's, for detection and the export header. Rows loaded by
+0.2.1 keep the value they were given; only a new load restores the difference.
+

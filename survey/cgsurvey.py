@@ -149,7 +149,9 @@ def survey(path: str, lengths: dict[str, int] | None = None,
     col2_sources: dict[str, int] = defaultdict(int)
     features: dict[str, tuple] = {}       # ID -> (line, seqid, type, s, e, strand, attrs)
     children: dict[str, list] = defaultdict(list)
-    multi_row_ids = 0                     # IDs spread over several rows (legal GFF3)
+    multi_row_ids = 0                     # rows that repeat an ID already seen, i.e. the
+    #                                       rows beyond the first of each multi-row
+    #                                       feature (legal GFF3); not a count of IDs
     id_conflicts: set[str] = set()        # IDs reused for a different type or sequence
     extra_seqids: dict[str, set] = {}     # multi-row IDs that span sequences
 

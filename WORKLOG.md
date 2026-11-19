@@ -511,3 +511,23 @@ ONOS). Nothing in cgload changed; version 0.2.1 stands.
   `export` and `explain` do not check the vocabulary; the strand constraint
   allows `?`; `explain` shows no line number; a `feature` row is a GenBank
   location segment as well as a GFF3 row.
+
+## 19 November 2026, evening: a second AI review, and version 0.2.2
+
+ChatGPT (OpenAI) read the submission files. Every point was checked against
+the code and the data; all held.
+
+- **Text corrected:** 10,194,007 is the rows beyond the first of each
+  multi-row feature, not a count of IDs (1,072,125 features are multi-row);
+  `verify` compares counts and cannot tell which feature is which (F06, F10,
+  P08); a killed load leaves its staging folder; F16 is reported with exit 0
+  (Table 5 and Table S2 now have an "Exit 2" column); parent links are defined
+  per feature (16,566,107) against the census's per-row 26,599,375; sizes are
+  labelled GiB/MiB/KiB, as measured; the census conclusion no longer says the
+  files are clean.
+- **Found by the new row-level check of columns 2, 6 and 8 (`benchmark/columns.py`):**
+  `export` rounded scores to six significant digits (D-109) and wrote a
+  feature's first-row column 2 on all its rows (D-110). Both fixed in 0.2.2.
+- **To run on the server:** `benchmark/run_columns.py` on the 30 genomes, then
+  `benchmark/summarise_columns.py`, whose paragraph replaces the placeholder in
+  the Results.

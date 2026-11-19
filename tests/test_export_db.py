@@ -316,3 +316,58 @@ def test_export_is_no_longer_pending():
     from cgload.cli.main import PENDING
 
     assert "export" not in PENDING
+
+
+# -- columns 2, 6 and 8, row by row (D-109, D-110) ---------------------------
+
+EXAMPLE = Path(__file__).parent.parent / "examples" / "minimal" / "annotation.gff3"
+
+
+def _rows(path: Path) -> list[tuple[str, ...]]:
+    """(column 9's ID, start, end, column 2, column 6 as a number, column 8)."""
+    rows = []
+    for line in path.read_text().splitlines():
+        if line.startswith("#") or not line.strip():
+            continue
+        columns = line.split("\t")
+        identifier = next(
+            (part[3:] for part in columns[8].split(";") if part.startswith("ID=")), ""
+        )
+        score = None if columns[5] == "." else float(columns[5])
+        rows.append((identifier, columns[3], columns[4], columns[1], score, columns[7]))
+    return sorted(rows, key=repr)
+
+
+def test_every_score_is_written_so_that_it_reads_back_the_same():
+    """``%g`` kept six significant digits: 1234567.5 came back as 1.23457e+06,
+    and no count could see it (D-109)."""
+    from cgload.export import _format_score
+
+    for value in (1234567.5, 0.123456789, 98765.4321, 1e-30, 0.5, 3.0):
+        assert float(_format_score(value)) == value
+    assert _format_score(42.0) == "42"
+    assert _format_score(None) == "."
+
+
+def test_source_score_and_phase_survive_the_database_row_by_row(engine, tmp_path):
+    """The benchmark's comparison never read columns 2, 6 and 8, and verify only
+    counts. Here a CDS's second row names another program, and the scores need
+    more than six significant digits: every row must come back as written."""
+    lines, scores, seen_cds = [], iter(["1234567.5", "0.123456789", "98765.4321"]), False
+    for line in EXAMPLE.read_text().splitlines():
+        columns = line.split("\t")
+        if len(columns) == 9:
+            if columns[2] == "CDS":
+                if seen_cds:
+                    columns[1] = "OtherProgram"
+                seen_cds = True
+            columns[5] = next(scores, columns[5])
+            line = "\t".join(columns)
+        lines.append(line)
+    source = tmp_path / "mixed.gff3"
+    source.write_text("\n".join(lines) + "\n")
+
+    report = _load(engine, tmp_path, [(source, None)])
+    written = _export(engine, report.assembly_id, tmp_path / "out.gff3")
+
+    assert _rows(written) == _rows(source)

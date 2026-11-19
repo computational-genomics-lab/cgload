@@ -13,7 +13,7 @@ repository's git history and can be checked there.
 
 Claude (Anthropic), mostly the model Claude Opus 5.5, used through Claude
 Code in two working sessions that the commit messages link to, from 14 October
-to 12 November 2026. The model worked in a cloud workspace on a copy of the
+to 19 November 2026. The model worked in a cloud workspace on a copy of the
 repository. It could not reach the lab server: every benchmark run was started
 by the authors on that server, and the authors sent the results back to the
 model. Every change the model made was committed under the name of the first
@@ -46,6 +46,19 @@ trailer, from 14 October to 10 November 2026. The other 11, from 20 August to
   and under the authors' direction.
   <!-- AUTHORS (to be completed): say what you changed in the draft and how you
   checked it, so that this entry describes the text you submit. -->
+
+## A second model, as reviewer
+
+The authors twice gave the draft to another AI model and asked it for errors and
+limitations: on 11 November 2026 (answered point by point in the repository's
+history, `paper/review_2026-11-11.md` before it was removed) and on 19 November
+2026, when ChatGPT (OpenAI) read the submission files. Every point was checked
+against the code and the results before anything changed. The second review led
+to corrections in the text, to the row-by-row comparison of GFF3 columns 2, 6
+and 8 (`benchmark/columns.py`), and through it to two fixes in cgload 0.2.2
+(decisions D-109 and D-110).
+<!-- AUTHORS (to be completed): name the model of 11 November if it was not
+ChatGPT. -->
 
 ## Where the model's output is kept
 

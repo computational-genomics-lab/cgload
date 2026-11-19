@@ -83,6 +83,9 @@ class Segment:
     #: `end_range`. None when the row repeats the first row's, as RefSeq's
     #: CDS rows usually do.
     attributes: dict[str, list[str]] | None = None
+    #: The row's own column 2 (D-110). The feature's ``source_program`` is its
+    #: first row's; a later row written by another program keeps its own.
+    source: str | None = None
 
 
 @dataclass
@@ -226,6 +229,7 @@ def _group_row(
         score=raw.score,
         inverted=getattr(raw, "inverted", False),
         strand=raw.strand,
+        source=raw.source,
     )
 
     if identifier is None:

@@ -92,8 +92,9 @@ cgload is not on PyPI yet. Install it from GitHub:
 pip install git+https://github.com/computational-genomics-lab/cgload
 ```
 
-For PostgreSQL or MySQL, add the driver: `pip install "cgload[postgres] @
-git+https://github.com/computational-genomics-lab/cgload"`, or `[mysql]`.
+For PostgreSQL, add the driver: `pip install "cgload[postgres] @
+git+https://github.com/computational-genomics-lab/cgload"`. A `[mysql]` extra
+exists, but cgload has no test on MySQL.
 
 From source:
 
@@ -126,8 +127,8 @@ Loaded Demonstratus minimalis / DEMO-1 / Demo_v1 (assembly_id=1)
 ```
 
 The database is a single SQLite file — no server, no credentials, nothing
-running in the background. MySQL and PostgreSQL work through the same code path
-via `--db-url`.
+running in the background. PostgreSQL works through the same code path via
+`--db-url`; MySQL is reached the same way but is untested.
 
 Full walkthrough: [docs/tutorial.md](docs/tutorial.md).
 

@@ -1,4 +1,4 @@
-﻿Organism,Accession,Clade,Rows,Features,cgload,"Load s, SQLite","Load s, PostgreSQL","Peak GB, SQLite","Peak GB, PostgreSQL","Verify s, SQLite","Verify s, PostgreSQL","Database GB, SQLite","Database GB, PostgreSQL",Data folder GB
+﻿Organism,Accession,Clade,Rows,Features,cgload,"Load s, SQLite","Load s, PostgreSQL","Peak GiB, SQLite","Peak GiB, PostgreSQL","Verify s, SQLite","Verify s, PostgreSQL","Database GiB, SQLite","Database GiB, PostgreSQL",Data folder GiB
 Homo sapiens,GCF_000001405.40,vertebrate,4932571,3203237,loaded,641.1,1978.3,29.5,36.4,29.1,47.8,3.00,5.86,3.23
 Mus musculus,GCF_000001635.27,vertebrate,3110422,2003886,loaded,386.8,1180.6,16.8,19.8,18.4,30.1,1.70,3.42,2.63
 Rattus norvegicus,GCF_015227675.2,vertebrate,2209632,1352739,loaded,272.3,804.9,11.4,13.6,13.1,23.0,1.15,2.36,2.53
