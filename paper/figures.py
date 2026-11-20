@@ -1326,7 +1326,9 @@ def table_versions(results: Results) -> str:
     # how export writes columns 2 and 6 after the runs (D-109, D-110).
     rows = [["cgload", BENCHMARKED_CGLOAD,
              "the loader presented; benchmarked at commits 8c999e2 and 9b97178, the same "
-             "code apart from its version string and comments"]]
+             "code apart from its version string and comments"],
+            ["cgload", "0.2.2", "the check of GFF3 columns 2, 6 and 8 (commit dbb51ce, "
+             "20 November 2026)"]]
     for label, file, kind, package, used in VERSIONS:
         rows.append([label, version_of((folder / file).read_text(), kind, package), used])
     chado = {r["tool_version"] for r in results.loaders if r["tool"] == "chado"}

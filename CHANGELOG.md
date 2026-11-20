@@ -23,7 +23,9 @@ one program export as before.
 
 Neither change alters a count, so neither could be seen by `verify` or by the
 benchmark's round-trip comparison, which did not read columns 2, 6 and 8. A
-row-by-row comparison of those columns (`benchmark/columns.py`) found both.
+row-by-row comparison of those columns (`benchmark/columns.py`) found both. In
+the benchmark's 30 genomes the first affected 52 scores, in human and mouse,
+and the second none.
 
 ### Added
 

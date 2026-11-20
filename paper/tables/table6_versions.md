@@ -1,6 +1,7 @@
 | Software | Version | Used for |
 | :-- | :-- | :-- |
 | cgload | 0.2.1 | the loader presented; benchmarked at commits 8c999e2 and 9b97178, the same code apart from its version string and comments |
+| cgload | 0.2.2 | the check of GFF3 columns 2, 6 and 8 (commit dbb51ce, 20 November 2026) |
 | Python | 3.12.15 | cgload, gffutils and the benchmark scripts |
 | SQLite | 3.54.1 | cgload and gffutils databases |
 | PostgreSQL | 16.15 | cgload and Chado databases |

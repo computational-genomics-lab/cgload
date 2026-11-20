@@ -1,0 +1,58 @@
+{
+ "input": "/home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/inputs/GCF_000001635.27/genomic.gff",
+ "output": "/home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/work-columns/columns/GCF_000001635.27/export.gff3",
+ "counts": {
+  "features_extra": 0,
+  "features_missing": 0,
+  "features_row_count_differs": 0,
+  "input_score_beyond_six_digits": 3,
+  "input_source_differs_from_first_row": 0,
+  "phase_differs": 0,
+  "rows_compared": 3110422,
+  "rows_input": 3110422,
+  "rows_missing": 0,
+  "rows_output": 3110422,
+  "rows_span_differs": 0,
+  "score_differs": 0,
+  "score_text_only": 0,
+  "source_differs": 0,
+  "source_encoding_only": 0
+ },
+ "examples": {
+  "input_score_beyond_six_digits": [
+   {
+    "feature": "d324fef7-ce18-4ef2-959c-b8aa4b255e5a",
+    "input": [
+     67531965,
+     70709303,
+     "RefSeq",
+     "3177336",
+     "."
+    ],
+    "output": null
+   },
+   {
+    "feature": "602dff72-0c70-4ca0-b20c-3b4fdfb93957",
+    "input": [
+     113211217,
+     115974574,
+     "RefSeq",
+     "2763317",
+     "."
+    ],
+    "output": null
+   },
+   {
+    "feature": "6a161597-a2e8-4bdf-aa94-ad846c94a120",
+    "input": [
+     52664924,
+     54462155,
+     "RefSeq",
+     "1797232",
+     "."
+    ],
+    "output": null
+   }
+  ]
+ }
+}

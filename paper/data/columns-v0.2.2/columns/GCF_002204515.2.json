@@ -1,0 +1,22 @@
+{
+ "input": "/home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/inputs/GCF_002204515.2/genomic.gff",
+ "output": "/home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/work-columns/columns/GCF_002204515.2/export.gff3",
+ "counts": {
+  "features_extra": 0,
+  "features_missing": 0,
+  "features_row_count_differs": 0,
+  "input_score_beyond_six_digits": 0,
+  "input_source_differs_from_first_row": 0,
+  "phase_differs": 0,
+  "rows_compared": 442376,
+  "rows_input": 442376,
+  "rows_missing": 0,
+  "rows_output": 442376,
+  "rows_span_differs": 0,
+  "score_differs": 0,
+  "score_text_only": 0,
+  "source_differs": 0,
+  "source_encoding_only": 0
+ },
+ "examples": {}
+}

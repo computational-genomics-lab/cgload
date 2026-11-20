@@ -43,7 +43,9 @@ that falls short. We tested it and three other loaders on 30 RefSeq genomes
 (28.2 million GFF3 rows, 18.0 million features) under a protocol fixed beforehand,
 comparing each result with a reference reading that shares no
 code with any loader. cgload stored 18,017,606 features unchanged in every
-field compared, declared the 12 it repaired and lost none. gffutils by default refuses a file that repeats
+field compared, declared the 12 it repaired and lost none. A later row-by-row
+check found that its export rounded 52 scores to six significant digits;
+version 0.2.2 returns every row's source, score and phase as written. gffutils by default refuses a file that repeats
 an ID, as all 30 do, and with `create_unique` it stored 1,072,125 multi-row
 features as separate records without a message. txdbmaker stopped on six plant
 genomes, three of them at rows that cgload also refuses by default.
@@ -487,6 +489,7 @@ as loaded (decisions D-109 and D-110), and it is the version used for this
 comparison. The comparison also counts, in each input file, the values that
 0.2.1 would have written differently: scores with more than six significant
 digits, and rows whose column 2 differs from the first row of their feature.
+It ran on the same server on 20 November 2026.
 
 ### Loaders and versions
 
@@ -672,12 +675,18 @@ the manifest declared. No feature was lost, none changed without a declaration,
 and all 16,566,107 parent links came back, each to the parent the file names.
 SQLite and PostgreSQL gave the same result for every genome.
 
-<!-- AUTHORS: run benchmark/run_columns.py on the server, then
-benchmark/summarise_columns.py on its columns.tsv, and replace the bracketed
-sentence below with the paragraph it prints. Do not submit before. -->
-
-[Columns 2, 6 and 8, row by row: the result of `benchmark/run_columns.py` goes
-here.]
+Columns 2, 6 and 8, which the round trip does not read, were compared
+afterwards with version 0.2.2 (see "Columns 2, 6 and 8"). It wrote back the
+source, score and phase of every row in all 30 genomes as the files had them:
+28,211,625 rows, with no difference in any of the three columns. The 12 rows
+whose span changed are the 12 declared repairs. No feature in the files has
+rows from different programs, but 52 scores have more than six significant
+digits, 49 in human and 3 in mouse. In the 13 that the comparison kept as
+examples, the score lies between 1.1 and 3.2 million and within 41 of the
+row's length. The
+export of version 0.2.1, which the benchmark ran, writes six significant
+digits, so it changed these 52 scores without a message: 1,231,658 became
+1.23166e+06. It changed no other value in these columns.
 
 Load time, memory and size grew in proportion to the number of rows (Figure 3).
 On SQLite, cgload loaded a median 7,961 rows per second; the quickest load, *S.
@@ -909,7 +918,10 @@ predicted. A user who needs those checked has to compare the database with the
 file feature by feature, as our round trip does, and that comparison is not
 part of `cgload verify`. Checking identity as well, for instance by comparing
 the set of IDs and of child and parent pairs, would close much of this gap at
-little cost; it is not in version 0.2.2.
+little cost; it is not in version 0.2.2. The same blind spot hid a fault in
+cgload itself. Its export rounded scores to six significant digits, which
+changed 52 scores in human and mouse and no count; only the later comparison
+of columns 2, 6 and 8 showed it.
 
 Refusing by default has a cost. Seven of the 30 RefSeq files were refused
 until `--repair-envelopes` was given, over rows that carry a documented
@@ -948,8 +960,8 @@ and export together and cannot tell the two apart.
 cannot see a renamed feature, a wrong parent or a changed value (see
 "Verification"). The round-trip comparison can, but it belongs to this
 benchmark, not to cgload. It also left out columns 2, 6 and 8 of every row.
-We compared those afterwards, for cgload only, so for the other loaders the
-counts of changed features are lower bounds. The reference reader shares no
+We compared those afterwards, for cgload 0.2.2 only, so for the other loaders
+the counts of changed features are lower bounds. The reference reader shares no
 code with any loader, but we wrote it, as we wrote cgload; a second,
 independent reading of some of the files would make the reference stronger.
 
@@ -979,7 +991,8 @@ data: does it hold what the file holds? cgload answers part of that question
 after every load. It compares counts of what it stored with counts of the file
 made by code that does not share the loader's assumptions, and stops when they
 differ. On 30 RefSeq genomes it kept every feature in every field we compared,
-declared its 12 repairs and reported every fault that changed a count. Counts
+declared its 12 repairs and reported every fault that changed a count, and
+version 0.2.2 also returns every row's source, score and phase as written. Counts
 cannot show that a name, a link or a value is right; that takes a comparison
 feature by feature, like the one this benchmark made. The protocol, scripts,
 results and figures of this benchmark are public, so the same questions can be
@@ -1047,7 +1060,8 @@ scripts left it. The census scripts and their results are in `survey/` of the
 same repository. The reference readings are not included, because
 `benchmark/truth.py` rebuilds them from the input files. All input files are
 public RefSeq releases, identified by accession and MD5 in
-`paper/data/benchmark-run-2.2/inputs.tsv`.
+`paper/data/benchmark-run-2.2/inputs.tsv`. The check of columns 2, 6 and 8 is
+in `paper/data/columns-v0.2.2/`.
 
 <!-- AUTHORS: GitHub is not an archive. Save the repository at Software
 Heritage (archive.softwareheritage.org/save) and add the identifier (SWHID) of

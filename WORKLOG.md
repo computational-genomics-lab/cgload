@@ -531,3 +531,14 @@ the code and the data; all held.
 - **To run on the server:** `benchmark/run_columns.py` on the 30 genomes, then
   `benchmark/summarise_columns.py`, whose paragraph replaces the placeholder in
   the Results.
+
+## 20 November 2026: columns 2, 6 and 8 on the 30 genomes
+
+`benchmark/run_columns.py` ran on the server with 0.2.2 (tag `v0.2.2`):
+no difference in the program, score or phase of any of 28,211,625 rows; the
+12 rows with changed spans are the 12 repairs. The files hold 52 scores with
+more than six significant digits (49 human, 3 mouse), which 0.2.1's export
+rounded (e.g. 1,231,658 written as 1.23166e+06), and no feature with rows from
+different programs. Results in `paper/data/columns-v0.2.2/`; the paper's
+Results, abstract, Discussion, Conclusions, Data availability and Table 2 say
+so.

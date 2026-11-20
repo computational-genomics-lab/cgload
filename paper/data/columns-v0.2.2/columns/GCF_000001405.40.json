@@ -1,0 +1,135 @@
+{
+ "input": "/home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/inputs/GCF_000001405.40/genomic.gff",
+ "output": "/home/sucheta/galEupy_NEW/cgload/cgload-benchmark-run/work-columns/columns/GCF_000001405.40/export.gff3",
+ "counts": {
+  "features_extra": 0,
+  "features_missing": 0,
+  "features_row_count_differs": 0,
+  "input_score_beyond_six_digits": 49,
+  "input_source_differs_from_first_row": 0,
+  "phase_differs": 0,
+  "rows_compared": 4932571,
+  "rows_input": 4932571,
+  "rows_missing": 0,
+  "rows_output": 4932571,
+  "rows_span_differs": 0,
+  "score_differs": 0,
+  "score_text_only": 0,
+  "source_differs": 0,
+  "source_encoding_only": 0
+ },
+ "examples": {
+  "input_score_beyond_six_digits": [
+   {
+    "feature": "03da9acd-6e4b-4886-96fe-662beae063dd",
+    "input": [
+     13888386,
+     15120043,
+     "RefSeq",
+     "1231658",
+     "."
+    ],
+    "output": null
+   },
+   {
+    "feature": "522b621b-cb9e-4865-9ef6-f4e1e50f2f9f",
+    "input": [
+     56992777,
+     58551725,
+     "RefSeq",
+     "1558949",
+     "."
+    ],
+    "output": null
+   },
+   {
+    "feature": "2b16f98b-0bcc-4885-97ca-ca87ea29a00f",
+    "input": [
+     49916505,
+     51037536,
+     "RefSeq",
+     "1121032",
+     "."
+    ],
+    "output": null
+   },
+   {
+    "feature": "d2d71bbd-fe3d-459b-9f0f-264234cb3b1f",
+    "input": [
+     108714481,
+     109844300,
+     "RefSeq",
+     "1129818",
+     "."
+    ],
+    "output": null
+   },
+   {
+    "feature": "71df46b5-f466-47ac-8a9c-4759199a272b",
+    "input": [
+     140229423,
+     142137463,
+     "RefSeq",
+     "1908041",
+     "."
+    ],
+    "output": null
+   },
+   {
+    "feature": "54fe5a7e-ab2a-4814-8f40-50f28a30a85c",
+    "input": [
+     211373717,
+     212543628,
+     "RefSeq",
+     "1169912",
+     "."
+    ],
+    "output": null
+   },
+   {
+    "feature": "0c791c8a-76c1-4751-94f8-611ce8274e56",
+    "input": [
+     59745278,
+     61256459,
+     "RefSeq",
+     "1511178",
+     "."
+    ],
+    "output": null
+   },
+   {
+    "feature": "881515be-4b19-440f-980a-f2ac047b8494",
+    "input": [
+     75901694,
+     77651964,
+     "RefSeq",
+     "1750271",
+     "."
+    ],
+    "output": null
+   },
+   {
+    "feature": "5a0dfd31-088d-43ad-8924-fbdf48d3fa07",
+    "input": [
+     78595238,
+     79772909,
+     "RefSeq",
+     "1177672",
+     "."
+    ],
+    "output": null
+   },
+   {
+    "feature": "8dc19deb-4919-4531-838f-1de142a1f638",
+    "input": [
+     20726616,
+     21953751,
+     "RefSeq",
+     "1227136",
+     "."
+    ],
+    "output": null
+   }
+  ]
+ }
+}

@@ -427,3 +427,9 @@ to run it. On the test fixtures it found two faults in the export of cgload
 0.2.1 (decisions D-109 and D-110), fixed in 0.2.2. It also counts, in each
 input file, the values that 0.2.1 would have written differently. Its results
 are `columns.tsv`; the other loaders were not checked in this way.
+
+It ran on 20 November 2026 with cgload 0.2.2 (tag `v0.2.2`), results in
+`paper/data/columns-v0.2.2/`. In 28,211,625 rows no value of the three columns
+differed. The files hold 52 scores with more than six significant digits (49
+in human, 3 in mouse), which 0.2.1's export rounded, and no feature with rows
+from different programs.

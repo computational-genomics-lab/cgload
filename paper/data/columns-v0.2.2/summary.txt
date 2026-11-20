@@ -1,0 +1,5 @@
+cgload version(s): 0.2.2; genomes: 30
+
+cgload 0.2.2 wrote back columns 2, 6 and 8 of every row in all 30 genomes as the files had them: 28,211,625 rows, with 0 differences in column 2, 0 in column 6 and 0 in column 8. The input files hold 52 scores with more than six significant digits and 0 rows whose column 2 differs from the first row of their feature, the only values that version 0.2.1 would have written differently.
+
+{'rows_input': 28211625, 'rows_compared': 28211625, 'source_differs': 0, 'source_encoding_only': 0, 'score_differs': 0, 'score_text_only': 0, 'phase_differs': 0, 'features_row_count_differs': 0, 'features_missing': 0, 'features_extra': 0, 'rows_span_differs': 12, 'input_score_beyond_six_digits': 52, 'input_source_differs_from_first_row': 0}
