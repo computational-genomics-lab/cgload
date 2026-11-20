@@ -1023,13 +1023,8 @@ are public, so the same questions can be put to other loaders and other files.
 - RRID:SCR_029282
 - bio.tools ID: biotools:cgload
 - Archived version: Software Heritage,
-  swh:1:rel:27e6b045835e64be3b78bb51ed9c969fe3cfa992 (release v0.2.1),
-  https://archive.softwareheritage.org/swh:1:rel:27e6b045835e64be3b78bb51ed9c969fe3cfa992
-
-<!-- AUTHORS: the archived release must be the version described, v0.2.2 (tagged
-on 20 November). Save the repository again at archive.softwareheritage.org if
-needed, and replace both SWHIDs (here and under "Availability of data and
-materials") with that of release v0.2.2. -->
+  swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962 (release v0.2.2),
+  https://archive.softwareheritage.org/swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:ce34fb036eb8063458ec04aa5f64c3c8231d176a
 
 cgload is installed with pip from its repository, at the version described
 here:
@@ -1079,9 +1074,9 @@ same repository. The reference readings are not included, because
 public RefSeq releases, identified by accession and MD5 in
 `paper/data/benchmark-run-2.2/inputs.tsv`. The check of columns 2, 6 and 8 is
 in `paper/data/columns-v0.2.2/`. The repository, including the benchmark
-results and the census, is archived at Software Heritage; version 0.2.1 is
-release swh:1:rel:27e6b045835e64be3b78bb51ed9c969fe3cfa992
-(https://archive.softwareheritage.org/swh:1:rel:27e6b045835e64be3b78bb51ed9c969fe3cfa992).
+results and the census, is archived at Software Heritage; version 0.2.2 is
+release swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962
+(https://archive.softwareheritage.org/swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:ce34fb036eb8063458ec04aa5f64c3c8231d176a).
 
 ## Competing interests
 
