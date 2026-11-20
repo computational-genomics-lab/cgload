@@ -654,7 +654,7 @@ def table_example() -> str:
     return md_table(header, body, "rllrrrrr", widths=[9, 22, 11, 9, 9, 7, 11, 9])
 
 
-# --- Figure 3: the cost of a load (Q1) ------------------------------------------------
+# --- Figure 4: the cost of a load (Q1) ------------------------------------------------
 
 def figure_scale(results: Results, out: Path) -> None:
     panels = [
@@ -706,10 +706,10 @@ def figure_scale(results: Results, out: Path) -> None:
     figure.legend(handles=handles, loc="upper center", ncol=2, frameon=False,
                   bbox_to_anchor=(0.5, 1.0), handletextpad=0.3, columnspacing=1.5)
     figure.tight_layout(rect=(0, 0, 1, 0.95), h_pad=1.6, w_pad=2.0)
-    save(figure, out, "fig3")
+    save(figure, out, "fig4")
 
 
-# --- Figure 4: what each loader did with each genome (Q3) -----------------------------
+# --- Figure 3: what each loader did with each genome (Q3) -----------------------------
 
 LOADER_COLUMNS = [
     ("cgload-sqlite", "cgload", "SQLite and PostgreSQL"),
@@ -820,7 +820,7 @@ def figure_loaders(results: Results, out: Path) -> None:
         axis.text(chip_x + 0.24, key_y + bar_h / 2, text, ha="left", va="center",
                   fontsize=SMALL, color=INK2)
         chip_x += 0.24 + 0.08 * len(text) + 0.25
-    save(figure, out, "fig4")
+    save(figure, out, "fig3")
 
 
 # --- Figure 5: query waits (Q6) -------------------------------------------------------

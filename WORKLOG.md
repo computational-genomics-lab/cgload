@@ -542,3 +542,18 @@ rounded (e.g. 1,231,658 written as 1.23166e+06), and no feature with rows from
 different programs. Results in `paper/data/columns-v0.2.2/`; the paper's
 Results, abstract, Discussion, Conclusions, Data availability and Table 2 say
 so.
+
+## 20 November 2026: a research article
+
+The authors' reading against BMC Bioinformatics' research-article guidelines:
+the manuscript is now Background, Methods, Results, Discussion (with
+Limitations), Conclusions. The software description is the first part of
+Methods; all use of language models is in one Methods subsection, as Springer
+Nature asks; the check of columns 2, 6 and 8 is part of "Reference reading and
+comparison" and a noted addition in "Changes after the first run". Results run
+from what the files contain, to cgload's load, its agreement with the census,
+the other loaders, faults, killed loads, and cost. Tables and figures are
+renumbered by first citation (figures 3 and 4 swapped files). The authors'
+entries from their Word file are in: e-mail, Software Heritage (still v0.2.1;
+a note asks for v0.2.2's SWHID), competing interests, funding, contributions,
+acknowledgements. Ensembl 2025 (D948–D957) and Buchka et al. (22:152) checked.

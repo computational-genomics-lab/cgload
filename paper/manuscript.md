@@ -3,7 +3,7 @@ title: "cgload: loading genome annotations into a database and checking that eve
 ---
 
 <!--
-Source of the manuscript, laid out as a Software article for BMC
+Source of the manuscript, laid out as a research article for BMC
 Bioinformatics. paper/build.py makes the Word file: it puts in the tables that
 paper/figures.py made from paper/data/benchmark-run-2.2, numbers the citations
 (written here by key, as [@key]) in order of first citation, and shows the
@@ -11,15 +11,7 @@ notes to the authors. Do not type a result number into a table by hand; change
 the data or the script.
 -->
 
-<!-- AUTHORS: This draft was written with a large language model, and the
-section "Use of a large language model" says so. Springer Nature's policy asks
-that such use be documented in the Methods section (here, Implementation), does
-not accept a model as an author, and holds every author fully responsible for
-the text. Read every sentence against what you know before submitting. Places
-that only you can complete are marked like this one; delete each note when it
-is done. -->
-
-**Aditya Upadhyay**^1,2^, **Arijit Panda**^3^ and **Sucheta Tripathy**^1,2,\*^
+**Aditya Upadhyay**^1,2^, **Arijit Panda**^3^ and **Sucheta Tripathy**^1,2\*^
 
 ^1^ Structural Biology and Bioinformatics Division, CSIR-Indian Institute of Chemical Biology, Jadavpur, Kolkata 700032, India.
 ^2^ Academy of Scientific and Innovative Research (AcSIR), Ghaziabad 201002, India.
@@ -27,38 +19,39 @@ is done. -->
 
 \* Corresponding author.
 
-<!-- AUTHORS: give the e-mail address of the corresponding author here (the
-submission system asks for the others). -->
+Corresponding author e-mail address: tsucheta@gmail.com
 
 # Abstract
 
 **Background:** Genome annotations in GFF3 format are often loaded into a
 database before use. A loader can drop or alter features as it reads, and the
-database still answers queries, so the loss goes unseen.
+database still answers queries, so the loss goes unseen. We know of no study
+that measures how often this happens with real files.
 
-**Results:** The Python tool cgload loads an assembly and its annotation
-into SQLite or PostgreSQL in one transaction, compares what it
+**Results:** We developed cgload, a Python tool that loads an assembly and its
+annotation into SQLite or PostgreSQL in one transaction, compares what it
 stored with a count of the input made by separate code, and rolls back a load
-that falls short. We tested it and three other loaders on 30 RefSeq genomes
-(28.2 million GFF3 rows, 18.0 million features) under a protocol fixed beforehand,
-comparing each result with a reference reading that shares no
+that falls short. Under a protocol fixed beforehand, we compared it with three
+other loaders on 30 RefSeq genomes (28.2 million GFF3 rows, 18.0 million
+features), checking each result against a reference reading that shares no
 code with any loader. cgload stored 18,017,606 features unchanged in every
 field compared, declared the 12 it repaired and lost none. A later row-by-row
 check found that its export rounded 52 scores to six significant digits;
-version 0.2.2 returns every row's source, score and phase as written. gffutils by default refuses a file that repeats
-an ID, as all 30 do, and with `create_unique` it stored 1,072,125 multi-row
-features as separate records without a message. txdbmaker stopped on six plant
-genomes, three of them at rows that cgload also refuses by default.
-python-chado did not finish nine genomes and, in the other 21, lost 5.0% of
-the features, four in five without a message. cgload reported all 57 planted
-faults that change a count, 54 of them with a failing exit status, and, as
-predicted, none of 24 that changed a value, an ID or a parent but kept every
-count. Loading the human annotation on SQLite took 641 s and 29.5 GiB of
-memory.
+version 0.2.2 returns every row's source, score and phase as written. gffutils
+by default refuses a file that repeats an ID, as all 30 do, and with
+`create_unique` it stored 1,072,125 multi-row features as separate records
+without a message. txdbmaker stopped on six plant genomes, three of them at
+rows that cgload also refuses by default. python-chado did not finish nine
+genomes and, in the other 21, lost 5.0% of the features, four in five without
+a message. cgload reported all 57 planted faults that change a count, 54 of
+them with a failing exit status, and, as predicted, none of 24 that changed a
+value, an ID or a parent but kept every count. Loading the human annotation on
+SQLite took 641 s and 29.5 GiB of memory.
 
-**Conclusions:** A count of the input by independent code catches silent loss
-at load time. cgload is open source (MIT license):
-https://github.com/computational-genomics-lab/cgload.
+**Conclusions:** Each of the other three loaders changed or lost features
+without a message. A count of the input by independent code catches such loss
+at load time, though not a changed value or name. cgload is open source (MIT
+license): https://github.com/computational-genomics-lab/cgload.
 
 **Keywords:** genome annotation; GFF3; relational database; data integrity; benchmarking; RefSeq
 
@@ -101,12 +94,17 @@ loaded, and do not see what a loader then stores.
 
 We wrote cgload to make that check part of every load. It reads the input file
 twice, once to load it and once, with separate code, to count it, and it keeps
-the load only if the database holds what the count says. We then asked how
-cgload and other loaders behave on real files.
+the load only if the database holds what the count says. To find out whether
+such a check is needed, and whether it works, we ran a benchmark whose protocol
+we fixed before the first run. On 30 RefSeq genomes we asked what the files
+contain that a loader has to handle, whether cgload stores all of it, what
+three widely used loaders keep, change and lose from the same files, which
+kinds of damage cgload's check notices, and what the check costs in time and
+memory.
 
-# Implementation
+# Methods
 
-## Overview
+## The cgload software
 
 cgload is a Python package (3.11 or later) with three runtime dependencies:
 SQLAlchemy, pyfaidx and click. It is used from the command line, and a genome
@@ -127,7 +125,7 @@ index, the annotation as cgload stored it, and a manifest of the load. A
 genome is therefore a set of database rows and a folder, and cgload treats the
 two as one unit.
 
-## The database
+### The database
 
 The schema has 11 tables (Figure 2). It is written once, in
 `src/cgload/db/schema.py`, and SQLAlchemy creates it on either database system.
@@ -177,7 +175,7 @@ describes. The last two tables, `vocabulary` and
 `vocabulary_meta`, are written when the database is created and hold the map
 of type synonyms with its version and checksum.
 
-## Creating a database and describing a genome
+### Creating a database and describing a genome
 
 `cgload init` creates the 11 tables, writes the 46 terms of the type
 vocabulary, and gives the database a random identifier. It refuses a database
@@ -193,7 +191,7 @@ accession and FASTA file), one or more annotation files, and any functional
 annotation files. The repository's `examples/minimal/` holds such a file with
 a small genome; Table 1 shows how cgload stores its first gene.
 
-## Reading and checking the files
+### Reading and checking the files
 
 `cgload load` first reads and checks every annotation file named in the
 configuration, and writes nothing while it does so (Figure 1a, top). A stop at
@@ -243,7 +241,7 @@ must have the length that its CDS implies. Types that the dialect's profile
 does not declare are loaded and named in a warning, or refused with
 `--strict-vocabulary`.
 
-## Populating the database
+### Populating the database
 
 `cgload load` then writes the genome in one transaction, in nine steps (Figure
 1a, bottom):
@@ -293,7 +291,7 @@ process cannot clean up after itself. Its transaction still rolls back, but
 the staging directory stays in the data folder, and so does the folder that a
 `--force` reload had set aside. Neither belongs to a stored assembly, a later
 load does not remove them, and they have to be deleted by hand (see
-"Interrupted loads (Q5)"). With `--force`, an assembly already loaded under the same
+"A killed load leaves the database unchanged"). With `--force`, an assembly already loaded under the same
 name is replaced; its folder is moved aside only at step 9 and deleted only
 after the commit. A successful load prints the assembly's identifier, the
 number and total length of its sequences, and for each file the dialect, the
@@ -311,7 +309,7 @@ columns not shown are listed in Figure 2.
 
 <!-- include tables/table0_example.md -->
 
-## Verification
+### Verification
 
 At the end of the load, cgload counts what it stored and compares the counts
 with an independent count of the file. If any count differs, it rolls the
@@ -338,13 +336,14 @@ parent, and that no feature the file gives a parent was left without one. They
 cannot tell which feature is which, or whether a value is right. A renamed
 feature, a child linked to the wrong parent, two swapped IDs, a removed
 attribute, a wrong strand or a shifted coordinate leaves every count as it was
-(Table 5), and so does a feature lost while another of its type is invented.
+(see "cgload reported every planted fault that changes a count"), and so does
+a feature lost while another of its type is invented.
 Nor do these checks read columns 2, 6 and 8 of the file. In the benchmark,
 agreement feature by feature was measured separately, by comparing cgload's
 export with a reference reading of the file (see "Reference reading and
 comparison"); that comparison is not part of `cgload verify`.
 
-## Reading the database
+### Reading the database
 
 `cgload query` returns features by ID, by region or by functional annotation
 term, as a table or as GFF3, and with `--descendants` also everything below
@@ -358,10 +357,6 @@ the dialect detected in it, its parent, and how the parent was found. `cgload st
 canonical types, and `cgload remove` deletes an assembly's rows and folder in
 one transaction. Because the database is plain SQL, it can also be read with
 any SQL client.
-
-Much of the code, its tests and its documentation were written with a large
-language model, under the authors' direction [@claude]; see "Use of a large
-language model" below.
 
 ## Benchmark design
 
@@ -439,8 +434,8 @@ parents. For each feature it records the sequence, the type, the strand and
 span of every row, the parents, and a digest of all other attributes (keys and
 values sorted, escapes decoded). White space at either end of a tag=value pair
 is not part of it. It does not record columns 2, 6 and 8 of a row (the program
-that wrote it, its score and its phase); these were compared later, for cgload
-only (see "Columns 2, 6 and 8").
+that wrote it, its score and its phase); for cgload these were compared
+separately, row by row, as described below.
 
 A loader's result is reduced to the same record and compared with the
 reference feature by feature. For cgload, the record is read from the GFF3 file
@@ -467,29 +462,18 @@ protocol defines, such as a feature written on several rows, a trans-spliced
 feature, a feature on an organelle or one that crosses the origin. Twelve of
 these cases occur in the 30 files.
 
-### Columns 2, 6 and 8
-
-After a review of our draft by another language model (see "Use of a large
-language model") noted that the reference reading leaves out columns 2, 6 and
-8, we compared them for cgload, outside the registered protocol. A second
-program (`benchmark/columns.py`), which also uses the Python standard library
-only and shares no code with any loader, reads an input file and cgload's
-export of it. It pairs the rows of each feature in coordinate order and
-compares them row by row: column 2 as text after percent-decoding, column 6 as
-a number and column 8 as text. `benchmark/run_columns.py` repeats cgload's part
-of the round trip on SQLite for each of the 30 genomes and runs the comparison.
-
-On the GFF3 excerpts in the repository's tests, this comparison found two ways
-in which the export of version 0.2.1 changed these columns. It wrote scores
-with six significant digits, so 1234567.5 came back as 1.23457e+06. And it
-wrote a feature's first-row column 2 on all its rows, so a later row written by
-another program lost its name. Neither changes a count, so neither `verify` nor
-the round-trip comparison could see them. Version 0.2.2 keeps and writes both
-as loaded (decisions D-109 and D-110), and it is the version used for this
-comparison. The comparison also counts, in each input file, the values that
-0.2.1 would have written differently: scores with more than six significant
-digits, and rows whose column 2 differs from the first row of their feature.
-It ran on the same server on 20 November 2026.
+For cgload we also compared columns 2, 6 and 8, row by row. A second program
+(`benchmark/columns.py`), which likewise uses the Python standard library only
+and shares no code with any loader, reads an input file and cgload's export of
+it, pairs the rows of each feature in coordinate order, and compares column 2
+as text after percent-decoding, column 6 as a number and column 8 as text.
+`benchmark/run_columns.py` repeats cgload's part of the round trip on SQLite
+for each of the 30 genomes. This check was added after all other runs, outside
+the protocol (see "Changes after the first run"), and ran with version 0.2.2 on
+20 November 2026. It also counts, in each input file, the values that version
+0.2.1 writes differently (see "Loaders and versions"): scores with more than
+six significant digits, and rows whose column 2 differs from the first row of
+their feature.
 
 ### Loaders and versions
 
@@ -510,7 +494,10 @@ cgload was benchmarked at two commits of its repository, `8c999e2` and
 `9b97178`, and released as version 0.2.1. The code that loads, verifies and
 exports is the same in all three, apart from the version string and comments.
 Version 0.2.2, the one this paper describes, differs from 0.2.1 only in how it
-keeps and writes back columns 2 and 6 (see "Columns 2, 6 and 8").
+keeps and writes back columns 2 and 6. The export of 0.2.1 wrote scores with
+six significant digits, so 1234567.5 came back as 1.23457e+06, and it wrote a
+feature's first-row column 2 on all its rows. Neither changes a count. Version
+0.2.2 keeps both as loaded (decisions D-109 and D-110 in the repository).
 The query code changed between the two commits (see "Changes after the first
 run"), and the timing was measured after that change.
 
@@ -547,7 +534,7 @@ feature below it; T2, every feature overlapping a 1 Mb window; T3, feature
 counts by type; and T4, every feature on one sequence, written as GFF3. Targets
 were drawn with a seeded generator: 20 genes that have children, 20 windows on
 sequences of at least 1 Mb, and three sequences, the one with the most features
-and two drawn from those with at least 1,000 (Additional file 4). Each target was asked 5 times, in
+and two drawn from those with at least 1,000. Each target was asked 5 times, in
 two ways: one new process per answer, as a user typing a command waits, and one
 process asking T1 to T3 in turn, as a script waits. As commands, cgload was
 asked with `cgload query --id GENE --descendants`, `cgload query --region
@@ -557,7 +544,7 @@ through its Python interface (`children`, `region`, `count_features_of_type`),
 and tabix on cgload's compressed annotation for T2 and T4, with T3 as a full
 scan. From one process, cgload was asked through the functions behind those
 commands. We report the median of the repeated asks; the first asks are in
-Additional file 3. The server did not let us drop the page cache, so no
+Additional file 3, and the sequences drawn for T4 in Additional file 4. The server did not let us drop the page cache, so no
 ask started from a cold disk.
 
 For Q7 we took every row the census flagged, with the class the census gave
@@ -604,46 +591,50 @@ commit and the tests added.
 cgload was therefore corrected on the same 30 genomes it is measured on
 (see Limitations). The results reported here come from three tagged commits
 (`benchmark-run-2`, `benchmark-run-2.1` and `benchmark-run-2.2`), and the
-protocol says which result comes from which. The benchmark scripts were
-written with the same large language model as cgload [@claude].
+protocol says which result comes from which.
 
-## Use of a large language model
+One check was added after all runs, outside the protocol: the row-level
+comparison of columns 2, 6 and 8 described above. On the test files of the
+repository it found the two faults in the export of version 0.2.1 that version
+0.2.2 corrects. On the 30 genomes it was run once, with version 0.2.2.
 
-<!-- AUTHORS: every statement here must be true of the manuscript you submit.
-The first paragraph says what the models did, from the repository's history. The
-second says what you did: change it until it describes what you actually did.
-The review of 11 November 2026 was also by an AI agent: name it here if it was
-not ChatGPT, and add a reference for ChatGPT if the journal asks for one. -->
+## Use of large language models
 
 We used Claude, a large language model made by Anthropic, through Claude Code
 [@claude], from 14 October to 19 November 2026. Under the authors' direction it
 wrote and changed code, tests and documentation of cgload; drafted the
 benchmark protocol with us and wrote the benchmark scripts; analysed the
-results of each run; wrote the scripts that draw every figure and table of
-this paper from the benchmark results; searched the literature for related
-tools; and drafted the text of this manuscript. We also gave the draft, the
-data and the code to a second model, ChatGPT (OpenAI), and asked it for errors;
-every point it raised was checked against the code and the results before
-anything was changed. No figure or number was made
-by asking the model for it directly: figures and tables are the output of
+results of each run; wrote the scripts that draw every figure and table of this
+paper from the benchmark results; searched the literature for related tools;
+and drafted the text of this manuscript. No figure or number was made by asking
+the model for it directly: figures and tables are the output of
 `paper/figures.py`, and the model did not create or alter any image.
+
+We also asked a second model, ChatGPT (OpenAI) [@chatgpt], to review drafts of
+this paper, with its data and code, for errors. We checked every point it
+raised against the code and the results before changing anything. Its review
+of the submission files led to corrections in the text and to the row-level
+comparison of columns 2, 6 and 8, which found the two faults that version 0.2.2
+corrects.
 
 The authors ran every benchmark step on their own server, from the scripts in
 the repository, and every result in this paper comes from those runs. The
 authors reviewed the code, the results and this text, and are fully responsible
-for all of them. The model's output is public: every commit it wrote names it
-in the commit message (70 of the 81 commits up to version 0.2.0), and its
-draft of this manuscript is `paper/manuscript.md` in the repository. Additional file 5 gives the details.
+for all of them. The models' output is public: every commit that Claude wrote
+names it in the commit message (70 of the 81 commits up to version 0.2.0), and
+its draft of this manuscript is `paper/manuscript.md` in the repository.
+Additional file 5 gives the details.
 
 # Results
 
 ## What the files contain
 
-The 30 annotations hold 28,211,625 GFF3 rows on 23,793 sequences, of which 33
+A loader has to cope with whatever real files contain, so we first counted what
+is in the 30 files. The annotations hold 28,211,625 GFF3 rows on 23,793 sequences, of which 33
 are organellar. Writing one feature on several rows is not an edge case:
 1,072,125 features are written on more than one row, and the rows beyond the
-first of each number 10,194,007, over a third of all rows. Exons placed directly under a
-pseudogene, which some readers do not expect, occur 91,009 times in 20 of the
+first of each number 10,194,007, over a third of all rows. Exons placed
+directly under a pseudogene, which some readers do not expect, occur 91,009 times in 20 of the
 30 files. No file had a dangling parent statement, an ID used for two different
 features, or a non-numeric coordinate.
 
@@ -660,48 +651,65 @@ convention. Nearly everything that looks wrong at first reading is therefore
 valid GFF3 or a documented convention that a loader has to store as written,
 but not everything: the 16 findings without a documented exception remain.
 
-## cgload loads and verifies all 30 genomes (Q1, Q2)
+## cgload loaded every genome and kept every feature
 
-cgload loaded all 30 genomes on both SQLite and PostgreSQL (Additional file 1). Twenty-three loaded as they are. Seven were refused at first, each over
+cgload loaded all 30 genomes on both SQLite and PostgreSQL (Q1; Additional
+file 1). Twenty-three loaded as they are. Seven were refused at first, each over
 features lying outside the parent that claims them, or a start after its end,
 and loaded with `--repair-envelopes`, which repaired 12 features in all and
 listed each one. After every one of the 60 loads, `verify` passed the
 source-count, parent-edge and stored-assembly tiers, and for the eight fungi
 the cross-parser tier as well.
 
-The round trip kept 18,017,606 of the 18,017,618 features unchanged in every
+The round trip (Q2) kept 18,017,606 of the 18,017,618 features unchanged in every
 field compared. The other 12 were the repaired ones, changed in their spans as
 the manifest declared. No feature was lost, none changed without a declaration,
 and all 16,566,107 parent links came back, each to the parent the file names.
 SQLite and PostgreSQL gave the same result for every genome.
 
 Columns 2, 6 and 8, which the round trip does not read, were compared
-afterwards with version 0.2.2 (see "Columns 2, 6 and 8"). It wrote back the
-source, score and phase of every row in all 30 genomes as the files had them:
+afterwards with version 0.2.2 (see "Reference reading and comparison"). It
+wrote back the source, score and phase of every row in all 30 genomes as the files had them:
 28,211,625 rows, with no difference in any of the three columns. The 12 rows
 whose span changed are the 12 declared repairs. No feature in the files has
 rows from different programs, but 52 scores have more than six significant
 digits, 49 in human and 3 in mouse. In the 13 that the comparison kept as
 examples, the score lies between 1.1 and 3.2 million and within 41 of the
-row's length. The
-export of version 0.2.1, which the benchmark ran, writes six significant
+row's length. The export of version 0.2.1, which the benchmark ran, writes six significant
 digits, so it changed these 52 scores without a message: 1,231,658 became
 1.23166e+06. It changed no other value in these columns.
 
-Load time, memory and size grew in proportion to the number of rows (Figure 3).
-On SQLite, cgload loaded a median 7,961 rows per second; the quickest load, *S.
-cerevisiae*, took 4.8 s and human took 641 s. PostgreSQL was about three times
-slower (median 2,700 rows per second; human 1,978 s). `verify` took 0.8 to 29 s
-on SQLite and 1.5 to 48 s on PostgreSQL. The load held about 6 KiB of memory per
-row (median 5.7 KiB on SQLite and 6.9 KiB on PostgreSQL), so human needed
-29.5 GiB and 36.4 GiB at its peak. Its database took 3.0 GiB on SQLite and
-5.9 GiB on PostgreSQL, and its data folder 3.2 GiB.
+## cgload's structural checks agree with the census
 
-## What other loaders keep, change and lose (Q3)
+Seven of the 30 files were refused at first. To see whether cgload objects to
+the right rows, we ran its structural checks on the rows the census flagged
+(Q7). cgload accepts the 9 rows that cross the origin of a circular sequence,
+as GFF3 allows. Of the other 102 rows (Table 3), both checkers accepted the 23 rows
+whose only finding is the strand `?`, and both objected to the 13 the census
+classed as errors or unexplained, though cgload loaded 6 of these with a
+warning. For the other 66 rows, nearly all in trans-spliced organelle genes,
+cgload refused the file unless `--repair-envelopes` was given. With it, cgload
+repaired 12 features. Sixty-three of the flagged rows are children of those 12
+features and were accepted once their parent was repaired, up to 10 rows under
+one transcript; 8 flagged rows are themselves among the repaired features. No
+row that the census classed as an error was accepted by cgload without comment.
+cgload objected to 8 features that the census did not flag. Each is a gene or
+pseudogene whose span leaves out a child that the census did flag, so the two
+found the same 11 parent and child pairs from opposite ends.
 
-Table 3 sums up the results and Figure 4 shows them per genome.
+**Table 3. cgload's structural checks and the census on the same rows.**
 
-**Table 3. What each loader kept, changed and lost.**
+<!-- include tables/table5_agreement.md -->
+
+Rows are those the census listed in the 30 files, by the census's classes.
+
+## Other loaders changed or lost features, mostly without a message
+
+Given the same files, the other three loaders changed or lost features, and
+mostly did not say so (Q3). Table 4 sums up the results and Figure 3 shows them
+per genome.
+
+**Table 4. What each loader kept, changed and lost.**
 
 <!-- include tables/table1_loaders.md -->
 
@@ -744,11 +752,11 @@ Sequence Ontology now names lncRNA (SO:0001877) [@so], and its log named the
 type. It dropped their 430,836 exons without a message. It also dropped 238
 long terminal repeats that the *S. pombe* file writes in capitals, and named
 that type too. So four in five of its losses were silent, from none in 9
-genomes to 14.6% of the features in *S. pombe* (Figure 4). These loads kept
+genomes to 14.6% of the features in *S. pombe* (Figure 3). These loads kept
 9,627,024 of 10,167,041 parent links, and python-chado added 670,102
 polypeptide features that the files do not contain.
 
-The hard cases show where the alterations come from (Table 4). gffutils split
+The hard cases show where the alterations come from (Table 5). gffutils split
 every feature written on several rows, and these include the features of most
 other hard cases. txdbmaker's changes and losses fell on rows that overlap, on
 unknown strands and on trans-spliced and organelle transcripts, and its
@@ -757,7 +765,7 @@ hard-case feature; the genomes with trans-spliced genes or unknown strands were
 the ones on which it stopped. cgload kept every hard-case feature or declared
 its repair.
 
-**Table 4. Hard cases and what each loader altered.**
+**Table 5. Hard cases and what each loader altered.**
 
 <!-- include tables/table2_cases.md -->
 
@@ -768,9 +776,9 @@ feature has an attribute with several values. Chado's counts cover its 21
 finished loads and txdbmaker's the transcripts of the 24 genomes it loaded,
 each with its own total; a dash means the case does not occur there.
 
-Table 4 counts features, and the census above counts rows, so their numbers
+Table 5 counts features, and the census above counts rows, so their numbers
 differ for the same cases. The census reads rows as they are written. The
-reference reader behind Table 4 first joins the rows of each feature and puts
+reference reader behind Table 5 first joins the rows of each feature and puts
 each row's coordinates in order. The 31 rows with strand `?` belong to 30
 features, because one gene is written on two rows. The 67 rows outside their
 parent belong to 47 features, since coding sequences written on several rows
@@ -789,10 +797,11 @@ such, the 3 transcripts written with start after end, and 2 coding sequences
 with one or two rows written beyond the end. Its 3 features past the end are 3
 exons written wholly beyond it.
 
-## Faults (Q4)
+## cgload reported every planted fault that changes a count
 
-All 81 fault trials (27 faults in 3 genomes) ended as the protocol predicted
-(Table 5, Additional file 2). `verify` detected every fault that deleted,
+We then damaged loads and loaded genomes on purpose, to see what cgload's
+checks notice (Q4). All 81 fault trials (27 faults in 3 genomes) ended as the protocol predicted
+(Table 6, Additional file 2). `verify` detected every fault that deleted,
 duplicated or retyped a feature, removed a parent link, or damaged or moved
 the stored assembly. Every fault planted in the parser that dropped, added or
 retyped a row stopped the load: one by its structural check (a child whose
@@ -806,9 +815,9 @@ One fault needs a caveat. When the input file was edited after the load
 (F16), `verify` named the file, said it had changed since the load, and skipped
 the source count. It still exited with status 0, because a skipped tier is not
 a failure. A script that reads only the exit status would miss this edit, and
-Table 5 counts it as reported but not as a failing exit.
+Table 6 counts it as reported but not as a failing exit.
 
-**Table 5. Planted faults, grouped by what they do.**
+**Table 6. Planted faults, grouped by what they do.**
 
 <!-- include tables/table3_faults.md -->
 
@@ -817,9 +826,10 @@ Each fault was planted in *Fusarium graminearum*, *A. thaliana* and human.
 those in which its command also exited with a failing status. "Caught by"
 names the check that reported it.
 
-## Interrupted loads (Q5)
+## A killed load leaves the database unchanged
 
-Every killed cgload load left the database as it was (Table 6). After the 20
+A load can also be cut short, by a crash, a full disk or a user (Q5). Every
+killed cgload load left the database as it was (Table 7). After the 20
 killed new loads the database was empty, and the same load then succeeded each
 time. After the 20 killed `--force` reloads, the earlier load was intact and
 passed `verify`. In 28 of the 40 trials, cgload left files on disk outside any
@@ -833,18 +843,29 @@ open none of them. Seventeen were empty. Three held every record of a complete
 load, because the kill came after the last insert but before gffutils wrote the
 metadata it needs to open the file.
 
-**Table 6. What a killed load left behind.**
+**Table 7. What a killed load left behind.**
 
 <!-- include tables/table4_kills.md -->
 
 Each kill came at a random time between 5% and 95% of an uninterrupted load.
 
-## Query waits (Q6)
+## Time, memory and query waits
 
-cgload answered everyday questions more slowly than gffutils (Figure 5,
-Additional file 3). One
-gene with its parts took 0.26 to 0.30 s as a command on SQLite and 0.37 to 0.41
-s on PostgreSQL, against 0.13 to 0.24 s for gffutils. Most of that time is
+cgload's checks and its storage cost memory and time (Q1), and it answers
+everyday questions more slowly than gffutils (Q6).
+
+Load time, memory and size grew in proportion to the number of rows (Figure 4).
+On SQLite, cgload loaded a median 7,961 rows per second; the quickest load, *S.
+cerevisiae*, took 4.8 s and human took 641 s. PostgreSQL was about three times
+slower (median 2,700 rows per second; human 1,978 s). `verify` took 0.8 to 29 s
+on SQLite and 1.5 to 48 s on PostgreSQL. The load held about 6 KiB of memory per
+row (median 5.7 KiB on SQLite and 6.9 KiB on PostgreSQL), so human needed
+29.5 GiB and 36.4 GiB at its peak. Its database took 3.0 GiB on SQLite and
+5.9 GiB on PostgreSQL, and its data folder 3.2 GiB.
+
+One gene with its parts took 0.26 to 0.30 s as a command on SQLite and 0.37
+to 0.41 s on PostgreSQL, against 0.13 to 0.24 s for gffutils (Figure 5,
+Additional file 3). Most of that time is
 the start of a new Python process: asked from one running process, the same
 lookup took 4 to 5 ms on SQLite, 8 to 25 ms on PostgreSQL and 1 ms or less in
 gffutils. For a 1 Mb window, tabix answered in 8 to 36 ms, at least six times
@@ -862,35 +883,14 @@ therefore shows the largest sequence of each genome, and Additional file 4
 all twelve. Writing human chromosome 1 (437,536 rows) took 25.0 s on SQLite,
 88.6 s on PostgreSQL, 14.4 s with gffutils and 0.5 s with tabix.
 
-## cgload's checks against the census (Q7)
-
-The census flagged 110 findings on 102 distinct rows, and counted 9 more that
-cross the origin of a circular sequence. cgload accepts rows of that last kind,
-as GFF3 allows. On the 102 rows (Table 7), both checkers accepted the 23 rows
-whose only finding is the strand `?`, and both objected to the 13 the census
-classed as errors or unexplained, though cgload loaded 6 of these with a
-warning. For the other 66 rows, nearly all in trans-spliced organelle genes,
-cgload refused the file unless `--repair-envelopes` was given. With it, cgload
-repaired 12 features. Sixty-three of the flagged rows are children of those 12
-features and were accepted once their parent was repaired, up to 10 rows under
-one transcript; 8 flagged rows are themselves among the repaired features. No
-row that the census classed as an error was accepted by cgload without comment.
-cgload objected to 8 features that the census did not flag. Each is a gene or
-pseudogene whose span leaves out a child that the census did flag, so the two
-found the same 11 parent and child pairs from opposite ends.
-
-**Table 7. cgload's structural checks and the census on the same rows.**
-
-<!-- include tables/table5_agreement.md -->
-
-Rows are those the census listed in the 30 files, by the census's classes.
-
 # Discussion
 
-Each of the other three loaders stored some features in another form, or not
-at all, without a message: gffutils 1,072,125 features, python-chado 430,836
-in its finished loads and txdbmaker 3 transcripts. The causes differ. RefSeq
-writes coding sequences on several rows that share an ID, as GFF3 allows.
+On the same 30 RefSeq files, each of the other three loaders stored some
+features in another form, or not at all, without a message: gffutils 1,072,125
+features, python-chado 430,836 in its finished loads and txdbmaker 3
+transcripts. cgload kept every feature in every field compared and declared its
+12 repairs. The causes of the silent changes differ. RefSeq writes coding
+sequences on several rows that share an ID, as GFF3 allows.
 gffutils refuses such files by default, which is a safe choice, and with the
 setting its documentation offers for them it stores each row as a feature of
 its own. A user who then asks for a coding sequence by its ID gets one segment
@@ -922,6 +922,14 @@ little cost; it is not in version 0.2.2. The same blind spot hid a fault in
 cgload itself. Its export rounded scores to six significant digits, which
 changed 52 scores in human and mouse and no count; only the later comparison
 of columns 2, 6 and 8 showed it.
+
+For anyone who builds a database from an annotation file, the lesson does not
+depend on cgload. The database should be compared with the file it came from,
+by code that does not share the loader's reading of the file. A count is cheap
+and catches loss; a comparison feature by feature also catches changes. cgload
+makes the first part of every load. The reference reader and comparison scripts
+of this benchmark, which already read gffutils, txdbmaker and Chado databases,
+can be adapted for the second.
 
 Refusing by default has a cost. Seven of the 30 RefSeq files were refused
 until `--repair-envelopes` was given, over rows that carry a documented
@@ -986,17 +994,18 @@ times are indicative only, and we draw no conclusion from them.
 
 # Conclusions
 
-A database built from a GFF3 file deserves the same check as any other copy of
-data: does it hold what the file holds? cgload answers part of that question
-after every load. It compares counts of what it stored with counts of the file
-made by code that does not share the loader's assumptions, and stops when they
-differ. On 30 RefSeq genomes it kept every feature in every field we compared,
-declared its 12 repairs and reported every fault that changed a count, and
-version 0.2.2 also returns every row's source, score and phase as written. Counts
-cannot show that a name, a link or a value is right; that takes a comparison
-feature by feature, like the one this benchmark made. The protocol, scripts,
-results and figures of this benchmark are public, so the same questions can be
-put to other loaders and other files.
+Loaders can change or lose annotation features without saying so: on 30
+RefSeq genomes, each of the three other loaders we tested did. A database built
+from a GFF3 file deserves the same check as any other copy of data: does it hold
+what the file holds? cgload answers part of that question after every load. It
+compares counts of what it stored with counts of the file, made by code that
+does not share the loader's assumptions, and stops when they differ. On the 30
+genomes it kept every feature in every field we compared, declared its 12
+repairs and reported every planted fault that changed a count; version 0.2.2
+also returns every row's source, score and phase as written. Counts cannot show
+that a name, a link or a value is right; that takes a comparison feature by
+feature, like the one this benchmark made. The protocol, scripts and results
+are public, so the same questions can be put to other loaders and other files.
 
 # Availability and requirements
 
@@ -1013,6 +1022,14 @@ put to other loaders and other files.
 - Version described: 0.2.2 (tag `v0.2.2`; source archive in Additional file 6)
 - RRID:SCR_029282
 - bio.tools ID: biotools:cgload
+- Archived version: Software Heritage,
+  swh:1:rel:27e6b045835e64be3b78bb51ed9c969fe3cfa992 (release v0.2.1),
+  https://archive.softwareheritage.org/swh:1:rel:27e6b045835e64be3b78bb51ed9c969fe3cfa992
+
+<!-- AUTHORS: the archived release must be the version described, v0.2.2 (tagged
+on 20 November). Save the repository again at archive.softwareheritage.org if
+needed, and replace both SWHIDs (here and under "Availability of data and
+materials") with that of release v0.2.2. -->
 
 cgload is installed with pip from its repository, at the version described
 here:
@@ -1027,7 +1044,7 @@ For PostgreSQL, add the driver:
 under a minute, as a check that the installation works.
 
 The repository holds test data (`examples/minimal/`, `tests/fixtures/`) with
-expected outputs, a test suite of 573 tests, and the benchmark protocol and
+expected outputs, a test suite of 575 tests, and the benchmark protocol and
 scripts (`benchmark/`). `paper/figures.py` makes every figure and table of this
 paper from the benchmark results.
 
@@ -1035,7 +1052,7 @@ paper from the benchmark results.
 
 CDS: coding sequence; EC: Enzyme Commission; GFF3: Generic Feature Format
 version 3; GO: Gene Ontology; ID: identifier; KEGG: Kyoto Encyclopedia of Genes
-and Genomes; LLM: large language model; MD5: message digest 5; RRID: Research
+and Genomes; MD5: message digest 5; RRID: Research
 Resource Identifier; SO: Sequence Ontology; SQL: Structured Query Language;
 TxDb: transcript database of Bioconductor.
 
@@ -1061,40 +1078,42 @@ same repository. The reference readings are not included, because
 `benchmark/truth.py` rebuilds them from the input files. All input files are
 public RefSeq releases, identified by accession and MD5 in
 `paper/data/benchmark-run-2.2/inputs.tsv`. The check of columns 2, 6 and 8 is
-in `paper/data/columns-v0.2.2/`.
-
-<!-- AUTHORS: GitHub is not an archive. Save the repository at Software
-Heritage (archive.softwareheritage.org/save) and add the identifier (SWHID) of
-tag v0.2.2 to this paragraph. -->
+in `paper/data/columns-v0.2.2/`. The repository, including the benchmark
+results and the census, is archived at Software Heritage; version 0.2.1 is
+release swh:1:rel:27e6b045835e64be3b78bb51ed9c969fe3cfa992
+(https://archive.softwareheritage.org/swh:1:rel:27e6b045835e64be3b78bb51ed9c969fe3cfa992).
 
 ## Competing interests
 
-The authors declare that they have no competing interests.
+The authors declare no competing financial or personal interests that could
+have influenced the work reported in this manuscript.
 
 ## Funding
 
-<!-- AUTHORS: name every funder with grant numbers, and say what role the
-funder had, or that it had none. -->
-
-[To be completed.]
+Funding for this work was provided by Department of Biotechnology (DBT) BIC and
+NNP projects with ids BT/PR40137/BTIS/137/35/2022 and BT/PR40243/BTIS/137/75/2023
+to ST. Fellowship for AU was provided by Council of Scientific and Industrial
+Research, Government of India. The authors acknowledge the financial support for
+the Article Processing Charges (APC) provided by the One Nation One Subscription
+(ONOS) scheme, an initiative of the Ministry of Education, Government of India.
 
 ## Authors' contributions
 
-<!-- AUTHORS: give each author's part, by initials (AU, AP, ST), and end with
-"All authors read and approved the final manuscript." Each author needs a real
-role. -->
+AU: Conceptualization, Methodology, Software, Investigation, Validation, Formal
+analysis, Data curation, Visualization, Writing – original draft.
 
-[To be completed.]
+AP: Conceptualization, Methodology, Writing – review & editing.
+
+ST: Conceptualization, Methodology, Supervision, Project administration,
+Funding acquisition, Writing – review & editing.
+
+All authors read and approved the final manuscript.
 
 ## Acknowledgements
 
-<!-- AUTHORS: name anyone who helped and is not an author, with their
-permission, or write "Not applicable". Do not thank the language model here:
-it is documented under Implementation. -->
+Not applicable.
 
-[To be completed.]
-
-# References
+# References (Vancouver style, remove using endnote later)
 
 {{references}}
 
@@ -1107,7 +1126,7 @@ it is documented under Implementation. -->
 [@txdbmaker]: Pagès H, Carlson M, Aboyoun P, et al. txdbmaker: tools for making TxDb objects from genomic annotations. R package version 1.6.2. Bioconductor. https://doi.org/10.18129/B9.bioc.txdbmaker.
 [@intermine]: Smith RN, Aleksic J, Butano D, et al. InterMine: a flexible data warehouse system for the integration and analysis of heterogeneous biological data. Bioinformatics. 2012;28:3163–5. https://doi.org/10.1093/bioinformatics/bts577.
 [@intermine-tests]: InterMine. Acceptance tests. InterMine documentation. https://intermine.readthedocs.io/en/latest/database/data-integrity-checks/acceptance-tests/. Accessed 10 Nov 2026.
-[@ensembl]: Dyer SC, Austine-Orimoloye O, Azov AG, et al. Ensembl 2025. Nucleic Acids Res. 2025;53:D948–57. https://doi.org/10.1093/nar/gkae1071.
+[@ensembl]: Dyer SC, Austine-Orimoloye O, Azov AG, et al. Ensembl 2025. Nucleic Acids Res. 2025;53(D1):D948–57. https://doi.org/10.1093/nar/gkae1071.
 [@datacheck]: Ensembl. ensembl-datacheck: code for checking Ensembl databases. https://github.com/Ensembl/ensembl-datacheck. Accessed 10 Nov 2026.
 [@gffbase]: Chao K-H. gffbase: a genomic-annotation engine for GFF3 and GTF. Version 0.3.0. 2026. https://github.com/Kuanhao-Chao/gffbase. Accessed 10 Nov 2026.
 [@gffx]: Chen B, Wu D, Zhang G. GFFx: a Rust-based suite of utilities for ultra-fast genomic feature extraction. GigaScience. 2025;14:giaf124. https://doi.org/10.1093/gigascience/giaf124.
@@ -1126,10 +1145,7 @@ it is documented under Implementation. -->
 [@so]: Eilbeck K, Lewis SE, Mungall CJ, et al. The Sequence Ontology: a tool for the unification of genome annotations. Genome Biol. 2005;6:R44. https://doi.org/10.1186/gb-2005-6-5-r44.
 [@biopython]: Cock PJA, Antao T, Chang JT, et al. Biopython: freely available Python tools for computational molecular biology and bioinformatics. Bioinformatics. 2009;25:1422–3. https://doi.org/10.1093/bioinformatics/btp163.
 [@claude]: Anthropic. Claude [large language model], models Claude Opus 5.5 and others, used through Claude Code by A. Upadhyay, 14 October to 19 November 2026. https://www.anthropic.com/claude.
-
-<!-- AUTHORS: check every reference. The pages of the Ensembl 2025 paper and
-the article number of Buchka et al. were written from memory; their DOIs were
-checked. Confirm who used the language model and the model names. -->
+[@chatgpt]: OpenAI. ChatGPT [large language model]. https://chatgpt.com. Accessed 19 Nov 2026.
 
 # Figure legends
 
@@ -1154,18 +1170,18 @@ tables are written by `cgload init`. A line joins each foreign key to the key
 it names, marked with a dot; `feature.parent_id` names a row of the same table.
 The figure is drawn from the schema itself by `paper/figures.py`.
 
-**Figure 3. The cost of loading the 30 genomes with cgload.** Against the
-number of GFF3 rows: (a) load time, (b) time of `cgload verify`, (c) peak
-memory of the load and (d) size of the database. Each point is one genome on
-one database system. Both axes are logarithmic. The values for human, the
-largest genome, are labelled.
-
-**Figure 4. Features changed or lost without a message, per genome and
+**Figure 3. Features changed or lost without a message, per genome and
 loader.** Each cell gives the percentage of the genome's features (for
 txdbmaker, transcripts) that the loader changed or lost without a message.
 Dark grey cells mark genomes a loader did not load. cgload's results were
 identical on SQLite and PostgreSQL. † cgload loaded these genomes with
 `--repair-envelopes` and declared every repair.
+
+**Figure 4. The cost of loading the 30 genomes with cgload.** Against the
+number of GFF3 rows: (a) load time, (b) time of `cgload verify`, (c) peak
+memory of the load and (d) size of the database. Each point is one genome on
+one database system. Both axes are logarithmic. The values for human, the
+largest genome, are labelled.
 
 **Figure 5. Time to answer four everyday tasks on four genomes.** Median time
 of repeated asks, on genomes from 0.1 to 4.9 million rows. Top: one new process
@@ -1189,7 +1205,7 @@ and of the repeated asks, per genome, tool, task and view.
 **Additional file 4 (CSV).** Table S4. The sequences written for T4, and the
 time each tool took to write them.
 
-**Additional file 5 (Markdown).** Use of a large language model
+**Additional file 5 (Markdown).** Use of large language models
 (`paper/llm_use.md` in the repository): which model, what it did, how the
 authors checked it, and where its output is kept.
 

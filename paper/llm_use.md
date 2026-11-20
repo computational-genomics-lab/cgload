@@ -1,4 +1,4 @@
-# Additional file 5: use of a large language model
+# Additional file 5: use of large language models
 
 Springer Nature's policy, which BMC Bioinformatics follows, does not accept a
 large language model as an author and asks that its use be documented in the
@@ -6,8 +6,8 @@ Methods section of the paper. This note is the detailed record behind the
 section "Use of a large language model" of the paper. Its counts come from the
 repository's git history and can be checked there.
 
-<!-- AUTHORS: the facts below are from the git history. The two places marked
-"to be completed" need your own statement before submission. -->
+<!-- AUTHORS: the facts below are from the git history. The one place marked
+"to be completed" needs your own statement before submission. -->
 
 ## Which model, and how it was used
 
@@ -44,8 +44,8 @@ trailer, from 14 October to 10 November 2026. The other 11, from 20 August to
   with a script, and searched the literature for related tools.
 - **The manuscript.** It drafted the text of the manuscript, from the results
   and under the authors' direction.
-  <!-- AUTHORS (to be completed): say what you changed in the draft and how you
-  checked it, so that this entry describes the text you submit. -->
+  The authors read the draft against the code and the results, revised it,
+  and wrote the declarations.
 
 ## A second model, as reviewer
 
@@ -57,8 +57,6 @@ against the code and the results before anything changed. The second review led
 to corrections in the text, to the row-by-row comparison of GFF3 columns 2, 6
 and 8 (`benchmark/columns.py`), and through it to two fixes in cgload 0.2.2
 (decisions D-109 and D-110).
-<!-- AUTHORS (to be completed): name the model of 11 November if it was not
-ChatGPT. -->
 
 ## Where the model's output is kept
 
@@ -71,6 +69,6 @@ figures and tables are the output of `paper/figures.py`.
 
 The authors ran every benchmark step on their own server, from the scripts in
 the repository, and every result in the paper comes from those runs
-(`paper/data/benchmark-run-2.2/`). The test suite (573 tests, and 20 more for
+(`paper/data/benchmark-run-2.2/`). The test suite (575 tests, and 25 more for
 the benchmark) runs in continuous integration on every push. The authors
 reviewed the code, the results and the text, and are responsible for them.
