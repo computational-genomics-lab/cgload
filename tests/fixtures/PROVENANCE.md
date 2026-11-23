@@ -11,7 +11,7 @@ each is a few hundred lines.
 | `augustus_aphaeospermum_pheo_arth1.gff3` | AUGUSTUS 3.4.0, *Apiospora phaeospermum* | `pheo_arth1` | no `exon` rows; `intron`/`start_codon`/`stop_codon` rows carry no `ID`; real score values; **per-gene comment blocks retained verbatim, including the protein-sequence blocks** — 788 comment lines to 399 data lines |
 
 Provided by the project authors from their own analyses. Retained in the
-repository, and therefore in the Zenodo archive, as test data.
+repository, and therefore in its Software Heritage archive, as test data.
 
 ## genbank_maeruginosa_NC_010296.gbff
 

@@ -53,10 +53,10 @@ twine upload dist/*
 
 ## Afterwards
 
-- Archive the release on Zenodo for a DOI: upload the source archive from the
-  GitHub release page to a new version of the project's Zenodo record. The
-  GitHub–Zenodo integration needs an organisation admin, so this step is
-  manual.
+- Archive the release at Software Heritage: ask for the repository with "Save
+  code now" (https://archive.softwareheritage.org/save/) after the tag is
+  pushed. The release's identifier is `swh:1:rel:` followed by the tag
+  object's hash (`git rev-parse vX.Y.Z`), as for v0.2.2.
 - A bioconda recipe can then point at the PyPI source archive. It would let
   users whose system Python is older than 3.11 install cgload with one
   command.

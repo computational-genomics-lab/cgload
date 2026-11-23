@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Per-genome structural-defect tally for RefSeq GFF3, one row per genome.
 
-Extends cgload's tools/preflight_gff3.py in four ways that the survey needs and the
+Extends cgload's preflight_gff3.py in four ways that the survey needs and the
 single-file version does not have:
 
   1. Per-genome tallies emitted as a machine-readable row, not a printout.
@@ -149,9 +149,7 @@ def survey(path: str, lengths: dict[str, int] | None = None,
     col2_sources: dict[str, int] = defaultdict(int)
     features: dict[str, tuple] = {}       # ID -> (line, seqid, type, s, e, strand, attrs)
     children: dict[str, list] = defaultdict(list)
-    multi_row_ids = 0                     # rows that repeat an ID already seen, i.e. the
-    #                                       rows beyond the first of each multi-row
-    #                                       feature (legal GFF3); not a count of IDs
+    multi_row_ids = 0                     # IDs spread over several rows (legal GFF3)
     id_conflicts: set[str] = set()        # IDs reused for a different type or sequence
     extra_seqids: dict[str, set] = {}     # multi-row IDs that span sequences
 

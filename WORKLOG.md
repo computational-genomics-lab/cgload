@@ -153,10 +153,6 @@ removed one likely problem further on.
 | loader: store an envelope disagreement that exists only across the origin | D-091, the *Arabidopsis* refusal |
 | docs: the maize numbers from cgload's own census, and the server run | envelope module, known limitations, README |
 
-Target journal, decided 15 October: *Briefings in Bioinformatics*, as a
-Problem Solving Protocol; *Bioinformatics* if it is refused there. Both are on
-the ONOS APC list (checked by Aditya Upadhyay on the ONOS site, 15 October).
-
 Pushing from this session is still refused (HTTP 403, 15 October): the org has
 not installed the Claude GitHub App. Pushes go from the lab server.
 
@@ -366,17 +362,11 @@ attribute change anywhere; every other table identical.
 
 ## Open
 
-- The paper's draft is `paper/manuscript.md`, now a GigaScience Technical Note
-  (see the entry of 11 November). `paper/build.py` makes the Word file, the
-  five additional files and the figure files in `paper/build/`. Still the
-  authors' to add: e-mail addresses, funding, contributions,
-  acknowledgements, an RRID (SciCrunch) and a bio.tools ID for cgload, and their own statements in the AI disclosure and in
-  `paper/llm_use.md`.
-- Zenodo is not used: the authors give the results as additional files and
-  in `paper/data/` of the repository (12 November). `paper/deposit_zenodo.py`
-  is removed. Any Zenodo drafts made with it can be discarded at zenodo.org.
-  The older record 10.5281/zenodo.23232512 still says "submitted to Database"
-  in its public title.
+- The paper's draft is `paper/manuscript.md`, a BMC Bioinformatics research
+  article (see the entries from 12 November). `paper/build.py` makes the Word
+  file, the five additional files and the figure files in `paper/build/`.
+- The data are additional files and `paper/data/` of the repository, which is
+  archived at Software Heritage.
 - gffbase and GFFx were found after the runs and are not benchmarked; the
   paper says so. gffbase treats a multi-row feature as one feature and is the
   comparison a reviewer is most likely to ask for.
@@ -400,8 +390,8 @@ SQLite, 6.9 KB on PostgreSQL; human 29.5 and 36.4 GB); the three files with an
 inverted mRNA row loaded with `--repair-envelopes`, as the paper says;
 txdbmaker 1.6.2 ran on the server; and the novelty check is done (InterMine's
 acceptance tests and Ensembl's datachecks test the built database against
-curators' rules; gffbase validates a sample of records; GFFx assumes
-well-formed input; none, as documented, recounts the input file).
+curators' rules; gffbase checks its database against its own structural
+rules; GFFx assumes well-formed input; none, as documented, recounts the input file).
 
 ## 10 November 2026: Q8 dropped, release 0.2.0 prepared
 
@@ -410,28 +400,19 @@ section 12) and the paper says so; every result is on RefSeq GFF3. Version
 0.2.0: `__version__`, the changelog, `CITATION.cff`, and the vocabulary lines in
 the README and tutorial, which still showed 43 terms from before D-107 (now 46,
 `10bf08715e85`). 566 tests pass in the default tier, and the 20 of the
-benchmark. `paper/deposit_zenodo.py` was rehearsed against a local stand-in for
-Zenodo's API; it has not met the real one.
+benchmark.
 
-## 11 November 2026: outside review, GigaScience, version 0.2.1
+## 11 November 2026: a review of the draft, version 0.2.1
 
-The authors had the draft reviewed by another AI agent and chose GigaScience
-(Technical Note) over Briefings in Bioinformatics. What was checked and done:
+The authors had the draft reviewed by Claude in a separate session. What was
+checked and done:
 
-- **Journal.** GigaScience allows generative AI in writing when it is declared,
-  cited with tool, model, dates and user, summarised in a section at the end of
-  the paper and in the cover letter, and its output kept in an open repository.
-  It forbids listing or thanking the tool as a contributor, and AI-made or
-  AI-altered images. Abstract in three parts, at most 250 words; figures 170 mm
-  wide, text at least 7 pt, as separate files, with alt text; an "Availability
-  of supporting source code and requirements" section with RRID and bio.tools
-  ID; CC0 for supporting data.
 - **The reviewer read a stale copy of the GitHub page** (3 commits, `query` not
   implemented, a README sentence from the rename). GitHub's `main` had the full
   history and every tag. True of the repository at v0.2.0, and fixed in 0.2.1:
   the README's Scale section still gave one early maize run; `rename.py` and
   `preflight_gff3.py` sat in the root; nine decision numbers were used twice
-  (the later of each pair is now D-0xxb); the superseded JOSS draft
+  (the later of each pair is now D-0xxb); the superseded first draft
   `paper/paper.md` was still there.
 - **Three citations in the authors' copy pointed at the wrong reference**, and
   one in the draft did (NCBI Datasets, after a renumbering). Citations are now
@@ -465,8 +446,8 @@ The authors had the draft reviewed by another AI agent and chose GigaScience
 
 ## 12 November 2026: BMC Bioinformatics, Software article
 
-The authors chose BMC Bioinformatics over GigaScience (journal access under
-ONOS). Nothing in cgload changed; version 0.2.1 stands.
+The authors chose BMC Bioinformatics (journal access under ONOS). Nothing in
+cgload changed; version 0.2.1 stands.
 
 - **Manuscript.** `paper/manuscript.md` is now a BMC Software article:
   Background, Implementation (with the benchmark design and the use of the
@@ -475,7 +456,7 @@ ONOS). Nothing in cgload changed; version 0.2.1 stands.
   abbreviations, Declarations (data availability moved here), References,
   Figure legends, Additional files. The text of each part is unchanged; tables
   are renumbered in their new order (versions first).
-- **No Zenodo.** The data are Additional files 1 to 4 and
+- **Data.** The data are Additional files 1 to 4 and
   `paper/data/benchmark-run-2.2/`; the source archive of v0.2.1 is Additional
   file 6.
 - **Build.** `paper/build.py` gives the Word file A4 pages, double spacing,
@@ -557,3 +538,33 @@ renumbered by first citation (figures 3 and 4 swapped files). The authors'
 entries from their Word file are in: e-mail, Software Heritage (still v0.2.1;
 a note asks for v0.2.2's SWHID), competing interests, funding, contributions,
 acknowledgements. Ensembl 2025 (D948–D957) and Buchka et al. (22:152) checked.
+
+## 23 November 2026: checks before submission
+
+A review of the submission files by Claude, in a separate session, and the
+authors' answers to it:
+
+- **Text.** The abstract's fault sentence counts the 57 faults cgload was
+  expected to catch (15 of them change no count: F13 to F17 touch the stored
+  assembly or the input file). Corrected against the code: a start after its
+  end stops the load unless `--repair-envelopes` is given; cgload writes BGZF
+  and the `.tbi` index itself; txdbmaker was not part of the kill test; the
+  reference tier of `verify` did not run (all 60 reports: no published counts
+  supplied). gffbase 0.3.0 checks its database against its own structural rules
+  after a load (`validate_db`, level "fast"); only its "full" level re-parses a
+  sample of 200 features. BioPerl's Bio::DB::SeqFeature::Store is named as not
+  tested.
+- **Tables.** Table 2 adds SQLAlchemy and the commits of the Chado schema and
+  the Sequence Ontology that `run.sh` fetches; Table S1 adds each input file's
+  annotation release and MD5, checked against the census.
+- **Language models.** One statement for Claude, which the authors used from
+  20 August 2026 (the 11 commits before 14 October carry no trailer but were
+  made with its help), and one for ChatGPT as reviewer.
+- **Operating systems.** CI's default tier passes on Linux, macOS and Windows
+  (run of `dbb51ce`, tag `v0.2.2`); the paper says so.
+- **Figures.** Figure 1's write-out step says that cgload writes the
+  compressed annotation and its index itself; Figure 4 labels human memory
+  29.5 GiB.
+- **Repository.** Plain `pytest` runs the default tier; `survey/cgsurvey.py`
+  is again the file `survey/results/provenance.tsv` records; notes about data
+  deposits that were never used are removed.

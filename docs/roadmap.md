@@ -19,11 +19,11 @@ the previous one is green in CI.
 | 8 | `verify` + `explain` (D-033b, D-034b, D-046..D-051) | A parser made to drop one leaf feature fails the load and rolls it back; a matched GFF3/GenBank pair agrees | **done** (8b, 8c) |
 | 9 | `export` (D-035b, D-052..D-054), `remove` (D-083, D-084), `query` (D-085) | Round trip through the database: export, re-import, identical counts, linkage provenance preserved | **done** |
 | 10 | Large-genome demo, Docker, docs, tutorial | A stranger runs one command and sees a loaded genome; maize timings published | in progress — envelope check (D-046b, D-055) added, scale run pending |
-| 11 | Zenodo archive, v2.0.0 tag, JOSS submission | | |
+| 11 | Archived release, paper | Release archived at Software Heritage; paper describes it | in progress: v0.2.2 archived |
 
 If schedule pressure appears, cut milestone 5 to v2.1 — deliberately, in
 writing here, not by attrition. Milestones 0–4 plus 8–11 is still a complete
-submission.
+release.
 
 ## Out of scope for v2.0
 

@@ -218,14 +218,14 @@ def arrow(axis, start, end, colour=MUTED):
 def figure_design(out: Path) -> None:
     """Figure 1: every step of a load and of `verify`, with what stops each and
     what each writes. The step numbers 1 to 9 are those of the paper's list."""
-    width, height = FULL_WIDTH, 8.55
+    width, height = FULL_WIDTH, 7.75
     figure = plt.figure(figsize=(width, height))
     axis = figure.add_axes((0, 0, 1, 1))
     axis.set_xlim(0, width)
     axis.set_ylim(0, height)
     axis.axis("off")
-    line = 0.112                       # inches per line: 7-point text, 115% leading
-    pad_top, pad_bottom = 0.055, 0.045
+    line = 0.106                       # inches per line: 7-point text, 109% leading
+    pad_top, pad_bottom = 0.046, 0.036
     stop_fill = "#fdeee8"           # a light tint of ORANGE, for what stops a load
     left, right = 0.04, width - 0.17   # the right margin carries one connector
     corridor = width - 0.085
@@ -274,7 +274,7 @@ def figure_design(out: Path) -> None:
     # --- a: the load ---------------------------------------------------------------
     y = height - 0.05
     heading(y, "a", "cgload load: from the input files to a committed genome")
-    y -= 0.28
+    y -= 0.25
 
     inputs = [
         ("Configuration (TOML)", "organism, strain, assembly and the files to load"),
@@ -300,7 +300,7 @@ def figure_design(out: Path) -> None:
     # Phase 1: five checks that read the files and write nothing.
     axis.text(left, y, "Read and check every file. Nothing is written yet.", ha="left",
               va="top", fontsize=7.5, fontweight="bold", color=INK)
-    y -= 0.2
+    y -= 0.18
     reads = [
         ("Tokenise", "Split each line into nine columns and attributes.",
          "a line without nine columns; a bad coordinate, strand or phase",
@@ -339,13 +339,13 @@ def figure_design(out: Path) -> None:
     axis.text(left, y, "A stop names the file, the line and, where one exists, the option "
               "that would help. All files are read and checked before anything is "
               "written.", ha="left", va="top", fontsize=SMALL, color=INK2)
-    flow(width / 2, y - 0.13, y - 0.25)
-    y -= 0.27
+    flow(width / 2, y - 0.12, y - 0.23)
+    y -= 0.25
 
     # Phase 2: the nine steps of the transaction.
     axis.text(left, y, "One transaction: rows into the database, files into a staging "
               "folder", ha="left", va="top", fontsize=7.5, fontweight="bold", color=INK)
-    y -= 0.2
+    y -= 0.18
     w_stop, w_write = 1.78, 1.45
     x_step = left + w_stop + 0.1
     x_write = right - w_write
@@ -357,7 +357,7 @@ def figure_design(out: Path) -> None:
                              (x_write, "Writes", INK)):
         axis.text(x, y, label, ha="left", va="top", fontsize=SMALL, fontweight="bold",
                   color=colour)
-    y -= 0.16
+    y -= 0.15
     steps = [
         ("Stage the assembly", "Copy the FASTA to a staging folder; index it with pyfaidx.",
          "a duplicate or empty sequence", "assembly.fa, assembly.fa.fai"),
@@ -378,8 +378,8 @@ def figure_design(out: Path) -> None:
          "annotation_run, protein_annotation"),
         ("End-of-load checks", "Compare the stored counts with the independent count: "
          "features by type, rows, and Parent= links.", "any count that differs", None),
-        ("Write out", "Planner statistics (PostgreSQL); the annotation as GFF3, with bgzip "
-         "and tabix; the manifest.", "",
+        ("Write out", "PostgreSQL's planner statistics; the annotation as GFF3, "
+         "BGZF-compressed and tabix-indexed by cgload; the manifest.", "",
          "annotation.gff3.gz, .tbi, manifest.json"),
         ("Commit", "Rename the staging folder into place, then commit.",
          "the commit fails (the folder is then moved back)",
@@ -426,7 +426,7 @@ def figure_design(out: Path) -> None:
             axis.plot([ax + aw, corridor, corridor], [start, start, y - 0.05],
                       color=MUTED, linewidth=0.8)
             arrow(axis, (corridor, y - 0.05), (x_write + w_write, y - 0.05))
-        y -= h + 0.05
+        y -= h + 0.035
     axis.plot([rail, rail], [first_rail, last_rail], color=INK2, linewidth=0.6, zorder=2)
     rect(left, y, right - left, pad_top + pad_bottom + 2 * line, stop_fill)
     write(left + pad, y, [
@@ -434,11 +434,11 @@ def figure_design(out: Path) -> None:
          "deleted, so nothing changes.", INK, "normal"),
         ("A killed process: the database rolls back too, but the staging folder stays on "
          "disk, outside any assembly, until deleted by hand.", INK, "normal")])
-    y -= pad_top + pad_bottom + 2 * line + 0.16
+    y -= pad_top + pad_bottom + 2 * line + 0.12
 
     # --- b: verify -----------------------------------------------------------------
     heading(y, "b", "cgload verify, at any later time: five tiers")
-    y -= 0.26
+    y -= 0.22
     tiers = [
         ("Source count", "The independent count of the file equals the database's."),
         ("Parent links", "Every feature the file gives a parent has a stored link."),
@@ -683,7 +683,10 @@ def figure_scale(results: Results, out: Path) -> None:
                   * factor for backend, _, _ in backends}
         higher = max(values, key=values.get)
         for backend, value in values.items():
-            shown = f"{value:,.0f} {unit}" if value >= 10 else f"{value:.1f} {unit}"
+            # Seconds from 10 up are whole, as the text gives them; GiB keep one
+            # decimal (29.5 GiB, not 29), as in the text and Table S1.
+            shown = (f"{value:,.0f} {unit}" if value >= 10 and unit == "s"
+                     else f"{value:,.1f} {unit}")
             up = backend == higher
             axis.annotate(shown, (number(largest["rows"]), value),
                           xytext=(6, 2.5 if up else -2.5), textcoords="offset points",
@@ -1246,13 +1249,35 @@ def name_md(organism: str) -> str:
     return f"*{kept}*" + (f" {rest}" if rest else "")
 
 
+def input_files(results: Results) -> dict[str, tuple[str, str]]:
+    """Each input GFF3 file: its annotation release, from the census, and its MD5.
+
+    An accession does not pin a RefSeq annotation: NCBI replaces some files in
+    place. The release named in the file's own header and the MD5 the benchmark
+    checked before each run do."""
+    survey = HERE.parent / "survey" / "results" / "survey.tsv"
+    census = {row["accession"]: row for row in read_tsv(survey) if row["arm"] == "refseq"}
+    files = {}
+    for row in read_tsv(results.folder / "inputs.tsv"):
+        accession = row["accession"]
+        if accession not in census:
+            raise SystemExit(f"{accession} is not in the census")
+        if census[accession]["file_md5"] != row["gff_md5"]:
+            raise SystemExit(f"{accession}: the census read another file than the benchmark")
+        files[accession] = (census[accession]["annotation_release"], row["gff_md5"])
+    return files
+
+
 def table_genomes(results: Results) -> str:
+    files = input_files(results)
     rows = []
     for g in results.order:
         a = results.scale[(g["accession"], "sqlite")]
         b = results.scale[(g["accession"], "postgres")]
         outcome = "repaired" if g["sqlite_outcome"] == "loaded_with_repair" else "loaded"
-        rows.append([name_md(g["organism"]), g["accession"], g["clade"], n(number(g["rows"])),
+        release, md5 = files[g["accession"]]
+        rows.append([name_md(g["organism"]), g["accession"], release, md5, g["clade"],
+                     n(number(g["rows"])),
                      n(number(g["features"])), outcome,
                      f"{float(a['load_wall_s']):,.1f}", f"{float(b['load_wall_s']):,.1f}",
                      f"{float(a['load_peak_mb']) / 1024:.1f}",
@@ -1261,11 +1286,12 @@ def table_genomes(results: Results) -> str:
                      f"{number(a['db_bytes']) / 1024 ** 3:.2f}",
                      f"{number(b['db_bytes']) / 1024 ** 3:.2f}",
                      f"{number(a['data_bytes']) / 1024 ** 3:.2f}"])
-    header = ["Organism", "Accession", "Clade", "Rows", "Features", "cgload",
+    header = ["Organism", "Accession", "Annotation release", "GFF3 MD5", "Clade", "Rows",
+              "Features", "cgload",
               "Load s, SQLite", "Load s, PostgreSQL", "Peak GiB, SQLite",
               "Peak GiB, PostgreSQL", "Verify s, SQLite", "Verify s, PostgreSQL",
               "Database GiB, SQLite", "Database GiB, PostgreSQL", "Data folder GiB"]
-    return md_table(header, rows, "lllrrl" + "r" * 9)
+    return md_table(header, rows, "lllllrrl" + "r" * 9)
 
 
 def table_sequences(results: Results) -> str:
@@ -1299,6 +1325,7 @@ VERSIONS = [  # (what the paper calls it, file, kind, package name, what it was 
     ("rtracklayer", "env-r.txt", "conda", "bioconductor-rtracklayer", "txdbmaker"),
     ("python-chado", "env-chado-pip.txt", "pip", "chado", "loader compared"),
     ("Python, for python-chado", "env-chado.txt", "conda", "python", "python-chado"),
+    ("SQLAlchemy, for python-chado", "env-chado-pip.txt", "pip", "SQLAlchemy", "python-chado"),
     ("Biopython", "env-chado-pip.txt", "pip", "biopython", "python-chado"),
     ("bcbio-gff", "env-chado-pip.txt", "pip", "bcbio-gff", "python-chado"),
 ]
@@ -1327,14 +1354,20 @@ def table_versions(results: Results) -> str:
     rows = [["cgload", BENCHMARKED_CGLOAD,
              "the loader presented; benchmarked at commits 8c999e2 and 9b97178, the same "
              "code apart from its version string and comments"],
-            ["cgload", "0.2.2", "the check of GFF3 columns 2, 6 and 8 (commit dbb51ce, "
-             "20 November 2026)"]]
+            ["cgload", "0.2.2", "the check of GFF3 columns 2, 6 and 8, run on 20 November "
+             "2026 (tag v0.2.2, commit dbb51ce)"]]
     for label, file, kind, package, used in VERSIONS:
         rows.append([label, version_of((folder / file).read_text(), kind, package), used])
     chado = {r["tool_version"] for r in results.loaders if r["tool"] == "chado"}
     if chado != {"python-chado 2.3.9, Chado 1.31"}:
         raise SystemExit(f"Chado's recorded version is {chado}")
-    rows.insert(-3, ["Chado schema", "1.31", "python-chado's database"])
+    # The schema and the ontology are files that benchmark/run.sh fetches at fixed
+    # commits; chado-inputs.log records their MD5. The lnc_RNA result depends on the
+    # ontology's version, so both are named.
+    at = [row[0] for row in rows].index("python-chado") + 1
+    rows[at:at] = [["Chado schema", "1.31 (GMOD/Chado commit ef04588)", "python-chado's database"],
+                   ["Sequence Ontology", "SO-Ontologies commit 4340c14",
+                    "python-chado's database (so.obo)"]]
     return md_table(["Software", "Version", "Used for"], rows, "lll")
 
 

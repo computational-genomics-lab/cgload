@@ -4,6 +4,17 @@ Decisions referred to as D-0xx are in [docs/decisions.md](docs/decisions.md).
 
 ## Unreleased
 
+### Changed
+
+- `pytest` with no options now runs the default tier: `addopts` leaves out the
+  real-genome tier, which fails without its files, and the server tier. CI asks
+  for each tier with `-m`, as before.
+- `survey/cgsurvey.py` is again byte-identical to tag `survey-v1`, as
+  `survey/results/provenance.tsv` records. Two comments edited after the census
+  ran had changed its MD5.
+- The paper: corrections before submission (`WORKLOG.md`, 23 November 2026),
+  and Table S1 now gives each input file's annotation release and MD5.
+
 ## 0.2.2 (19 November 2026)
 
 `cgload export` now writes GFF3 columns 2 and 6 exactly as they were loaded.
@@ -35,7 +46,8 @@ and the second none.
 ## 0.2.1 (11 November 2026)
 
 No change in behaviour: the code that loads, verifies, exports and queries is
-that of 0.2.0. This is the version the paper describes.
+that of 0.2.0. This is the version the paper's benchmark ran; the paper
+describes 0.2.2.
 
 ### Changed
 

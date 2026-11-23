@@ -1,32 +1,32 @@
-| Organism | Accession | Clade | Rows | Features | cgload | Load s, SQLite | Load s, PostgreSQL | Peak GiB, SQLite | Peak GiB, PostgreSQL | Verify s, SQLite | Verify s, PostgreSQL | Database GiB, SQLite | Database GiB, PostgreSQL | Data folder GiB |
-| :-- | :-- | :-- | --: | --: | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: |
-| *Homo sapiens* | GCF_000001405.40 | vertebrate | 4,932,571 | 3,203,237 | loaded | 641.1 | 1,978.3 | 29.5 | 36.4 | 29.1 | 47.8 | 3.00 | 5.86 | 3.23 |
-| *Mus musculus* | GCF_000001635.27 | vertebrate | 3,110,422 | 2,003,886 | loaded | 386.8 | 1,180.6 | 16.8 | 19.8 | 18.4 | 30.1 | 1.70 | 3.42 | 2.63 |
-| *Rattus norvegicus* | GCF_015227675.2 | vertebrate | 2,209,632 | 1,352,739 | loaded | 272.3 | 804.9 | 11.4 | 13.6 | 13.1 | 23.0 | 1.15 | 2.36 | 2.53 |
-| *Gallus gallus* | GCF_016699485.2 | vertebrate | 2,167,964 | 1,297,179 | loaded | 263.2 | 793.0 | 11.6 | 14.2 | 11.1 | 20.1 | 1.22 | 2.43 | 1.03 |
-| *Canis lupus familiaris* | GCF_014441545.1 | vertebrate | 2,031,047 | 1,274,516 | loaded | 245.9 | 714.1 | 10.4 | 11.8 | 11.6 | 20.6 | 1.05 | 2.16 | 2.29 |
-| *Danio rerio* | GCF_000002035.6 | vertebrate | 1,759,958 | 1,033,297 | loaded | 226.2 | 673.1 | 10.2 | 12.6 | 10.3 | 17.7 | 1.05 | 2.09 | 1.62 |
-| *Oryzias latipes* | GCF_002234675.1 | vertebrate | 1,399,050 | 811,085 | loaded | 155.4 | 467.2 | 6.5 | 7.9 | 7.0 | 12.6 | 0.65 | 1.37 | 0.71 |
-| *Xenopus tropicalis* | GCF_000004195.4 | vertebrate | 1,338,095 | 772,745 | loaded | 166.1 | 494.8 | 7.2 | 8.9 | 7.7 | 12.7 | 0.75 | 1.50 | 1.39 |
-| *Bombyx mori* | GCF_030269925.1 | insect | 668,047 | 406,813 | loaded | 80.8 | 236.0 | 3.5 | 4.3 | 3.8 | 6.2 | 0.35 | 0.73 | 0.45 |
-| *Nasonia vitripennis* | GCF_009193385.2 | insect | 664,088 | 417,439 | loaded | 77.2 | 236.2 | 3.4 | 4.2 | 3.6 | 6.0 | 0.34 | 0.71 | 0.29 |
-| *Apis mellifera* | GCF_003254395.2 | insect | 537,057 | 332,608 | loaded | 64.2 | 190.2 | 2.8 | 3.3 | 2.9 | 5.3 | 0.28 | 0.57 | 0.22 |
-| *Aedes aegypti* | GCF_002204515.2 | insect | 442,376 | 296,164 | loaded | 59.7 | 165.9 | 2.3 | 2.8 | 3.5 | 4.8 | 0.22 | 0.48 | 1.21 |
-| *Drosophila melanogaster* | GCF_000001215.4 | insect | 414,876 | 282,355 | loaded | 62.5 | 184.5 | 3.1 | 3.9 | 2.5 | 4.6 | 0.31 | 0.62 | 0.15 |
-| *Tribolium castaneum* | GCF_000002335.3 | insect | 368,299 | 235,950 | loaded | 45.1 | 127.9 | 1.9 | 2.3 | 2.2 | 3.2 | 0.18 | 0.39 | 0.16 |
-| *Anopheles gambiae* | GCF_000005575.2 | insect | 157,413 | 112,774 | repaired | 25.0 | 75.6 | 1.3 | 1.6 | 1.3 | 2.1 | 0.12 | 0.25 | 0.26 |
-| *Glycine max* | GCF_000004515.6 | plant | 1,202,434 | 818,742 | repaired | 148.8 | 430.7 | 6.2 | 7.6 | 6.9 | 12.7 | 0.62 | 1.30 | 0.95 |
-| *Zea mays* | GCF_902167145.1 | plant | 990,782 | 696,928 | repaired | 132.0 | 365.7 | 5.3 | 6.5 | 7.3 | 10.3 | 0.52 | 1.10 | 2.08 |
-| *Arabidopsis thaliana* | GCF_000001735.4 | plant | 710,747 | 472,741 | repaired | 109.1 | 307.1 | 5.1 | 5.9 | 4.3 | 7.4 | 0.55 | 1.04 | 0.14 |
-| *Oryza sativa* Japonica Group | GCF_034140825.1 | plant | 681,717 | 480,764 | repaired | 86.1 | 252.8 | 3.9 | 4.5 | 4.0 | 6.4 | 0.39 | 0.80 | 0.38 |
-| *Vitis vinifera* | GCF_030704535.1 | plant | 651,270 | 440,385 | loaded | 80.9 | 236.9 | 3.6 | 4.2 | 3.8 | 7.4 | 0.36 | 0.74 | 0.48 |
-| *Solanum lycopersicum* | GCF_000188115.5 | plant | 629,442 | 429,766 | loaded | 79.5 | 224.8 | 3.3 | 4.0 | 4.1 | 7.4 | 0.33 | 0.68 | 0.79 |
-| *Sorghum bicolor* | GCF_000003195.3 | plant | 600,510 | 419,160 | repaired | 74.0 | 218.4 | 3.1 | 3.9 | 3.7 | 6.4 | 0.31 | 0.65 | 0.68 |
-| *Cryptococcus neoformans* H99 | GCF_000149245.1 | fungus | 127,543 | 86,294 | loaded | 15.3 | 46.0 | 0.8 | 0.9 | 1.8 | 2.5 | 0.07 | 0.16 | 0.02 |
-| *Fusarium graminearum* PH-1 | GCF_000240135.3 | fungus | 102,635 | 78,715 | loaded | 14.1 | 43.0 | 0.8 | 0.9 | 1.7 | 2.9 | 0.07 | 0.15 | 0.04 |
-| *Aspergillus nidulans* FGSC A4 | GCF_000149205.2 | fungus | 89,946 | 64,364 | loaded | 11.2 | 35.2 | 0.6 | 0.7 | 1.5 | 2.1 | 0.05 | 0.12 | 0.03 |
-| *Neurospora crassa* OR74A | GCF_000182925.2 | fungus | 82,749 | 64,889 | loaded | 12.0 | 33.9 | 0.6 | 0.7 | 1.7 | 2.9 | 0.05 | 0.12 | 0.04 |
-| *Schizosaccharomyces pombe* | GCF_000002945.2 | fungus | 53,910 | 48,766 | repaired | 8.0 | 21.5 | 0.4 | 0.5 | 1.2 | 1.6 | 0.03 | 0.08 | 0.01 |
-| *Ustilago maydis* 521 | GCF_000328475.2 | fungus | 34,021 | 31,054 | loaded | 5.2 | 17.9 | 0.3 | 0.4 | 1.2 | 1.6 | 0.03 | 0.06 | 0.02 |
-| *Saccharomyces cerevisiae* S288C | GCF_000146045.2 | fungus | 27,135 | 26,776 | loaded | 4.8 | 17.2 | 0.3 | 0.4 | 1.2 | 1.8 | 0.03 | 0.06 | 0.01 |
-| *Candida albicans* SC5314 | GCF_000182965.3 | fungus | 25,889 | 25,487 | loaded | 5.5 | 14.3 | 0.3 | 0.4 | 0.8 | 1.5 | 0.02 | 0.06 | 0.01 |
+| Organism | Accession | Annotation release | GFF3 MD5 | Clade | Rows | Features | cgload | Load s, SQLite | Load s, PostgreSQL | Peak GiB, SQLite | Peak GiB, PostgreSQL | Verify s, SQLite | Verify s, PostgreSQL | Database GiB, SQLite | Database GiB, PostgreSQL | Data folder GiB |
+| :-- | :-- | :-- | :-- | :-- | --: | --: | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: |
+| *Homo sapiens* | GCF_000001405.40 | GCF_000001405.40-RS_2025_08 2025-08-01 | 99c39a02df7339a96d57f5072a90c5a9 | vertebrate | 4,932,571 | 3,203,237 | loaded | 641.1 | 1,978.3 | 29.5 | 36.4 | 29.1 | 47.8 | 3.00 | 5.86 | 3.23 |
+| *Mus musculus* | GCF_000001635.27 | GCF_000001635.27-RS_2024_02 2024-02-01 | 5498a8cb9e5ab340633652d358a384a5 | vertebrate | 3,110,422 | 2,003,886 | loaded | 386.8 | 1,180.6 | 16.8 | 19.8 | 18.4 | 30.1 | 1.70 | 3.42 | 2.63 |
+| *Rattus norvegicus* | GCF_015227675.2 | GCF_015227675.2-RS_2023_06 2023-06-06 | c7533383cdb32b04dd414d7cebf55644 | vertebrate | 2,209,632 | 1,352,739 | loaded | 272.3 | 804.9 | 11.4 | 13.6 | 13.1 | 23.0 | 1.15 | 2.36 | 2.53 |
+| *Gallus gallus* | GCF_016699485.2 | NCBI Gallus gallus Annotation Release 106 2021-12-23 | d365e1e9ab3af33a9598640a4792c6d2 | vertebrate | 2,167,964 | 1,297,179 | loaded | 263.2 | 793.0 | 11.6 | 14.2 | 11.1 | 20.1 | 1.22 | 2.43 | 1.03 |
+| *Canis lupus familiaris* | GCF_014441545.1 | NCBI Canis lupus familiaris Annotation Release 106 2020-12-08 | edeea87dca669256dc3c668d50b7a730 | vertebrate | 2,031,047 | 1,274,516 | loaded | 245.9 | 714.1 | 10.4 | 11.8 | 11.6 | 20.6 | 1.05 | 2.16 | 2.29 |
+| *Danio rerio* | GCF_000002035.6 | GCF_000002035.6-RS_2024_08 2024-08-15 | 086cf1261daf8936a411d5fc6111e63e | vertebrate | 1,759,958 | 1,033,297 | loaded | 226.2 | 673.1 | 10.2 | 12.6 | 10.3 | 17.7 | 1.05 | 2.09 | 1.62 |
+| *Oryzias latipes* | GCF_002234675.1 | NCBI Oryzias latipes Annotation Release 103 2018-01-31 | db602118b6d3d858ed0f09750d3afb86 | vertebrate | 1,399,050 | 811,085 | loaded | 155.4 | 467.2 | 6.5 | 7.9 | 7.0 | 12.6 | 0.65 | 1.37 | 0.71 |
+| *Xenopus tropicalis* | GCF_000004195.4 | GCF_000004195.4-RS_2026_09 2026-09-22 | d2369652e9275a145a39e2297098d325 | vertebrate | 1,338,095 | 772,745 | loaded | 166.1 | 494.8 | 7.2 | 8.9 | 7.7 | 12.7 | 0.75 | 1.50 | 1.39 |
+| *Bombyx mori* | GCF_030269925.1 | GCF_030269925.1-RS_2024_01 2024-01-25 | 94b7983e1eb75b3ad919d096b22c876b | insect | 668,047 | 406,813 | loaded | 80.8 | 236.0 | 3.5 | 4.3 | 3.8 | 6.2 | 0.35 | 0.73 | 0.45 |
+| *Nasonia vitripennis* | GCF_009193385.2 | NCBI Nasonia vitripennis Annotation Release 104 2020-02-12 | 25bb4f0763af38dba6a941ad003f7e74 | insect | 664,088 | 417,439 | loaded | 77.2 | 236.2 | 3.4 | 4.2 | 3.6 | 6.0 | 0.34 | 0.71 | 0.29 |
+| *Apis mellifera* | GCF_003254395.2 | NCBI Apis mellifera Annotation Release 104 2018-09-13 | 3d4826d3d6fe1946c428651e2621533e | insect | 537,057 | 332,608 | loaded | 64.2 | 190.2 | 2.8 | 3.3 | 2.9 | 5.3 | 0.28 | 0.57 | 0.22 |
+| *Aedes aegypti* | GCF_002204515.2 | NCBI Aedes aegypti Annotation Release 101 2017-07-12 | 4d47cd307240414f4902d2d45f1d1786 | insect | 442,376 | 296,164 | loaded | 59.7 | 165.9 | 2.3 | 2.8 | 3.5 | 4.8 | 0.22 | 0.48 | 1.21 |
+| *Drosophila melanogaster* | GCF_000001215.4 | FlyBase Release 6.54 2023-12-26 | 399b4ac37cc123b724895334be589fdc | insect | 414,876 | 282,355 | loaded | 62.5 | 184.5 | 3.1 | 3.9 | 2.5 | 4.6 | 0.31 | 0.62 | 0.15 |
+| *Tribolium castaneum* | GCF_000002335.3 | NCBI Tribolium castaneum Annotation Release 103 2016-03-16 | 943f13495e92d044af1b8a276abef2a3 | insect | 368,299 | 235,950 | loaded | 45.1 | 127.9 | 1.9 | 2.3 | 2.2 | 3.2 | 0.18 | 0.39 | 0.16 |
+| *Anopheles gambiae* | GCF_000005575.2 | Annotation submitted by The International Consortium for the Sequencing of Anopheles Genome 2023-04-03 | 36aaacb27aca9a6c64596bc41661457d | insect | 157,413 | 112,774 | repaired | 25.0 | 75.6 | 1.3 | 1.6 | 1.3 | 2.1 | 0.12 | 0.25 | 0.26 |
+| *Glycine max* | GCF_000004515.6 | GCF_000004515.6-RS_2025_01 2025-01-28 | a95bfb445b6e5ae58f793e68eb912bd5 | plant | 1,202,434 | 818,742 | repaired | 148.8 | 430.7 | 6.2 | 7.6 | 6.9 | 12.7 | 0.62 | 1.30 | 0.95 |
+| *Zea mays* | GCF_902167145.1 | GCF_902167145.1-RS_2025_02 2025-02-14 | f611efa2c8d8dae129c105791a491b0a | plant | 990,782 | 696,928 | repaired | 132.0 | 365.7 | 5.3 | 6.5 | 7.3 | 10.3 | 0.52 | 1.10 | 2.08 |
+| *Arabidopsis thaliana* | GCF_000001735.4 | Annotation submitted by TAIR and Araport 2022-10-20 | 373a2f1b047a198abe5367800375fbe6 | plant | 710,747 | 472,741 | repaired | 109.1 | 307.1 | 5.1 | 5.9 | 4.3 | 7.4 | 0.55 | 1.04 | 0.14 |
+| *Oryza sativa* Japonica Group | GCF_034140825.1 | GCF_034140825.1-RS_2024_06 2024-06-21 | eb9aebec640d7477a5d01906a40e94a4 | plant | 681,717 | 480,764 | repaired | 86.1 | 252.8 | 3.9 | 4.5 | 4.0 | 6.4 | 0.39 | 0.80 | 0.38 |
+| *Vitis vinifera* | GCF_030704535.1 | GCF_030704535.1-RS_2023_09 2023-09-14 | 804c2db388386d5d878ae871312c508f | plant | 651,270 | 440,385 | loaded | 80.9 | 236.9 | 3.6 | 4.2 | 3.8 | 7.4 | 0.36 | 0.74 | 0.48 |
+| *Solanum lycopersicum* | GCF_000188115.5 | NCBI Solanum lycopersicum Annotation Release 103 2018-08-08 | 46a2e9a5932d11d4c07275ae0a47065f | plant | 629,442 | 429,766 | loaded | 79.5 | 224.8 | 3.3 | 4.0 | 4.1 | 7.4 | 0.33 | 0.68 | 0.79 |
+| *Sorghum bicolor* | GCF_000003195.3 | NCBI Sorghum bicolor Annotation Release 101 2017-06-02 | d6b197da0334cc16bdc0aa243c56d671 | plant | 600,510 | 419,160 | repaired | 74.0 | 218.4 | 3.1 | 3.9 | 3.7 | 6.4 | 0.31 | 0.65 | 0.68 |
+| *Cryptococcus neoformans* H99 | GCF_000149245.1 | Annotation submitted by Broad Institute 2018-04-04 | d235c44a69dddfb40a7901b39d19ced9 | fungus | 127,543 | 86,294 | loaded | 15.3 | 46.0 | 0.8 | 0.9 | 1.8 | 2.5 | 0.07 | 0.16 | 0.02 |
+| *Fusarium graminearum* PH-1 | GCF_000240135.3 | Annotation submitted by International Gibberella zeae Genomics Consortium 2024-01-02 | 1a402bed1da4bac75e3f5f3dacb7df3b | fungus | 102,635 | 78,715 | loaded | 14.1 | 43.0 | 0.8 | 0.9 | 1.7 | 2.9 | 0.07 | 0.15 | 0.04 |
+| *Aspergillus nidulans* FGSC A4 | GCF_000149205.2 | Annotation submitted by Broad Institute 2018-01-25 | ba7d4767ad636260893e7830bac9a58b | fungus | 89,946 | 64,364 | loaded | 11.2 | 35.2 | 0.6 | 0.7 | 1.5 | 2.1 | 0.05 | 0.12 | 0.03 |
+| *Neurospora crassa* OR74A | GCF_000182925.2 | Annotation submitted by Broad Institute 2023-04-03 | 10c6e751e1b1cbeaa1039fe543755b33 | fungus | 82,749 | 64,889 | loaded | 12.0 | 33.9 | 0.6 | 0.7 | 1.7 | 2.9 | 0.05 | 0.12 | 0.04 |
+| *Schizosaccharomyces pombe* | GCF_000002945.2 | Annotation submitted by PomBase 2024-08-16 | dddaab9e3ec23315d7815a2175f0d70b | fungus | 53,910 | 48,766 | repaired | 8.0 | 21.5 | 0.4 | 0.5 | 1.2 | 1.6 | 0.03 | 0.08 | 0.01 |
+| *Ustilago maydis* 521 | GCF_000328475.2 | Annotation submitted by Broad Institute 2024-12-03 | 5b3be2705d092700dd31969ac3cca04b | fungus | 34,021 | 31,054 | loaded | 5.2 | 17.9 | 0.3 | 0.4 | 1.2 | 1.6 | 0.03 | 0.06 | 0.02 |
+| *Saccharomyces cerevisiae* S288C | GCF_000146045.2 | SGD R64-5-1 2026-07-10 | 93830ef7ada0a900d5fe3405555cea82 | fungus | 27,135 | 26,776 | loaded | 4.8 | 17.2 | 0.3 | 0.4 | 1.2 | 1.8 | 0.03 | 0.06 | 0.01 |
+| *Candida albicans* SC5314 | GCF_000182965.3 | CGD A22-s07-m01-r01 2025-12-05 | 876733070068a53dc49bf0582b00cbf0 | fungus | 25,889 | 25,487 | loaded | 5.5 | 14.3 | 0.3 | 0.4 | 0.8 | 1.5 | 0.02 | 0.06 | 0.01 |

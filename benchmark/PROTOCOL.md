@@ -433,3 +433,7 @@ It ran on 20 November 2026 with cgload 0.2.2 (tag `v0.2.2`), results in
 differed. The files hold 52 scores with more than six significant digits (49
 in human, 3 in mouse), which 0.2.1's export rounded, and no feature with rows
 from different programs.
+
+**Clarification, 23 November 2026.** The "outside review of its draft" under
+11 November was a review by Claude, the language model that wrote these
+scripts, as `paper/llm_use.md` records. Nothing measured changed.

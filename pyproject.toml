@@ -64,7 +64,9 @@ include = ["cgload*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra --strict-markers --strict-config"
+# The default run leaves out the real-genome tier, which needs files fetched first
+# and fails without them, and the server tier; CI asks for each with -m.
+addopts = "-ra --strict-markers --strict-config -m 'not slow and not requires_server'"
 markers = [
     "slow: real-genome tests; excluded from the default run, nightly in CI",
     "requires_server: needs a live MySQL/PostgreSQL server",
