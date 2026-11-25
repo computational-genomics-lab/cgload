@@ -176,6 +176,8 @@ def test_search_by_words_of_a_product(portal):
     assert rows
     assert all("cell adhesion molecule" in " ".join(item.attributes.get("product", [])).lower()
                for _, item, _ in rows)
+    # Each match names the attribute its words were found in.
+    assert {match.field for match, _, _ in rows} == {"product"}
 
 
 def test_search_by_a_cross_reference_and_its_number(portal):

@@ -363,6 +363,21 @@ class SearchResult:
     indexed: bool
 
 
+def _where_words_are(connection: Connection, assembly_id: int, tokens: list[str],
+                     ids: list[int]) -> list[tuple[int, str]]:
+    """Each feature with the attribute keys its words were found in ("product",
+    or "description, product" when they are spread over two)."""
+    keys: dict[int, set[str]] = {feature_id: set() for feature_id in ids}
+    for start in range(0, len(ids), 500):
+        rows = connection.execute(
+            select(search_term.c.feature_id, search_term.c.field).where(
+                search_term.c.assembly_id == assembly_id, search_term.c.term.in_(tokens),
+                search_term.c.feature_id.in_(ids[start:start + 500])))
+        for feature_id, field in rows:
+            keys[feature_id].add(field.split(":", 1)[0])
+    return [(feature_id, ", ".join(sorted(keys[feature_id])) or "words") for feature_id in ids]
+
+
 def search(connection: Connection, assembly_id: int, text: str, *, indexed: bool = True,
            limit: int = MAX_MATCHES) -> SearchResult:
     """Features of one assembly that ``text`` names, best matches first.
@@ -415,9 +430,9 @@ def search(connection: Connection, assembly_id: int, text: str, *, indexed: bool
                 search_term.c.assembly_id == assembly_id, search_term.c.term == token)
                 for token in tokens]
             every = intersect(*each).subquery()
-            if add(connection.execute(select(every.c.feature_id)
-                                      .order_by(every.c.feature_id).limit(limit)),
-                   ALL_WORDS, "words"):
+            ids = list(connection.execute(select(every.c.feature_id)
+                                          .order_by(every.c.feature_id).limit(limit)).scalars())
+            if add(_where_words_are(connection, assembly_id, tokens, ids), ALL_WORDS):
                 return SearchResult(query, tuple(found.values()), True, indexed)
 
     try:

@@ -556,6 +556,7 @@ def environment(results: Path, url: str) -> None:
     import importlib.metadata as metadata
 
     info = {
+        "started": time.strftime("%Y-%m-%d"),
         "cgload": cgload_version(), "commit": bc.git_commit(bc.HERE.parent),
         "python": platform.python_version(), "platform": platform.platform(),
         "processor": platform.processor(), "cpus": os.cpu_count(), "database": url,

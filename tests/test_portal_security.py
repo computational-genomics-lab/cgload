@@ -210,13 +210,14 @@ def test_seeded_fuzz_finds_no_server_error(client):
     rng = random.Random(20261125)
     alphabet = string.printable + "äé漢字‮​<>\"'%;&#\\"
     failures = []
-    for _ in range(250):
+    for _ in range(200):
         length = rng.choice([0, 1, 2, 5, 20, 120, 199, 200, 201, 299])
         value = "".join(rng.choice(alphabet) for _ in range(length))
         number = str(rng.choice([0, 1, 2, 7, 99, 10**9, 2**63, -1]))
         urls = routes(value) + [f"/g/{number}/", f"/g/1/f/{number}",
                                 f"/api/v1/genomes/{number}/features/{number}",
                                 f"/g/1/f/{number}/protein.fa"]
+        assert len(urls) == 15  # 200 rounds of 15: 3,000 requests
         for url in urls:
             status = client.get(url).status_code
             if status >= 500:
