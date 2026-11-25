@@ -568,3 +568,39 @@ authors' answers to it:
 - **Repository.** Plain `pytest` runs the default tier; `survey/cgsurvey.py`
   is again the file `survey/results/provenance.tsv` records; notes about data
   deposits that were never used are removed.
+
+## 25 November 2026: the portal, and one paper
+
+The authors decided that the paper presents cgload with a web portal for the
+people who use its genomes, as one piece of work. Version 0.3.0 adds
+`cgload index` and `cgload serve` (`docs/portal.md`, decisions D-111 to
+D-114); loading, `verify` and `export` are those of 0.2.2. What the portal had
+to answer, the problems genome portals are known for:
+
+- **Injection and code execution.** The portal opens the database read-only,
+  answers GET and HEAD only, binds every value, runs no other program and
+  sends a Content-Security-Policy with no inline or third-party script; igv.js
+  ships with cgload. Tests send injection strings and a seeded fuzz of 3,000
+  requests; CI runs bandit. Pages name input files, not the loading machine's
+  paths.
+- **Searches that return nothing.** `cgload index` is checked by counting, like
+  a load; an assembly whose index fails its check keeps none, and the portal
+  says names are not searchable rather than returning nothing.
+- **Sequence in the database.** It stays in indexed FASTA beside it; the portal
+  reads it with pyfaidx and serves byte ranges to the genome browser.
+- **Measured as users meet it.** Section 13 of the benchmark protocol, written
+  before the run: the 30 genomes in one database, request times for 200 genes
+  per genome, 1 to 32 clients at once, search recall by gene name, 2,000
+  translations per genome, a security probe, and the database's checksum
+  before and after (`benchmark/run_portal.py`, run by the authors on the lab
+  server).
+
+The paper keeps its flow and gains the portal in each part: the abstract and
+background, a Methods subsection and Figure 3 (pages of the portal, made by
+`paper/screenshots.py` from the Dscam1 test record), Q9 in the benchmark
+design, a Results section with Table 8 and Additional file 6 (Table S5),
+paragraphs in the Discussion and Limitations, and the availability section.
+Figures 3 to 5 became 4 to 6, and the source archive Additional file 7. The
+portal's numbers are filled from `paper/data/portal-v0.3.0/` by
+`paper/figures.py` and `paper/build.py`, and show as [name] until the run's
+results are in.

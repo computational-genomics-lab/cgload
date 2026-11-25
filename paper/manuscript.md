@@ -1,14 +1,15 @@
 ---
-title: "cgload: loading genome annotations into a database and checking that every feature arrived"
+title: "cgload: genome annotations loaded with a completeness check and served through a read-only web portal"
 ---
 
 <!--
 Source of the manuscript, laid out as a research article for BMC
 Bioinformatics. paper/build.py makes the Word file: it puts in the tables that
 paper/figures.py made from paper/data/benchmark-run-2.2, numbers the citations
-(written here by key, as [@key]) in order of first citation, and shows the
-notes to the authors. Do not type a result number into a table by hand; change
-the data or the script.
+(written here by key, as [@key]) in order of first citation, puts in the
+portal's numbers (written here as {{portal:KEY}}) from the portal's results,
+and shows the notes to the authors. Do not type a result number into a table
+by hand; change the data or the script.
 -->
 
 **Aditya Upadhyay**^1,2^, **Arijit Panda**^3^ and **Sucheta Tripathy**^1,2\*^
@@ -23,37 +24,42 @@ Corresponding author e-mail address: tsucheta@gmail.com
 
 # Abstract
 
-**Background:** Genome annotations in GFF3 format are often loaded into a
-database before use. A loader can drop or alter features as it reads, and the
-database still answers queries, so the loss goes unseen. We know of no study
-that measures how often this happens with real files.
+**Background:** Genome annotations in GFF3 format are loaded into databases,
+and most people who use them reach them through a web portal built on such a
+database. A loader can drop or alter features as it reads, and the database
+still answers queries, so the loss reaches the portal unseen. We know of no
+study that measures how often this happens with real files.
 
 **Results:** We developed cgload, a Python tool that loads an assembly and its
 annotation into SQLite or PostgreSQL in one transaction, compares what it
 stored with a count of the input made by separate code, and rolls back a load
-that falls short. Under a protocol fixed beforehand, we compared it with three
-other loaders on 30 RefSeq genomes (28.2 million GFF3 rows, 18.0 million
-features), checking each result against a reference reading that shares no
-code with any loader. cgload stored 18,017,606 features unchanged in every
-field compared, declared the 12 it repaired and lost none. A later row-by-row
-check found that its export rounded 52 scores to six significant digits;
-version 0.2.2 returns every row's source, score and phase as written. gffutils
-by default refuses a file that repeats an ID, as all 30 do, and with
-`create_unique` it stored 1,072,125 multi-row features as separate records
-without a message. txdbmaker stopped on six plant genomes, three of them at
-rows that cgload also refuses by default. python-chado did not finish nine
-genomes and, in the other 21, lost 5.0% of the features, four in five without
-a message. cgload reported all 57 planted faults it was expected to catch, 54 of them with a
-failing exit status, and, as predicted, none of the 24 that changed a value, an
-ID or a parent but kept every count. Loading the human annotation on
-SQLite took 641 s and 29.5 GiB of memory.
+that falls short. Two more commands serve the database as a read-only web
+portal: search by name, product or functional term, gene pages with a genome
+browser, and sequences. Under a protocol fixed
+beforehand, we compared cgload with three other loaders on 30 RefSeq genomes
+(28.2 million GFF3 rows, 18.0 million features), checking each result against
+a reference reading that shares no code with any loader. cgload stored
+18,017,606 features unchanged in every field compared, declared the 12 it
+repaired and lost none. gffutils with `create_unique` stored 1,072,125
+multi-row features as separate records without a message. txdbmaker stopped on six plant genomes. python-chado did not
+finish nine genomes and, in the other 21, lost 5.0% of the features, four in
+five without a message. cgload reported all 57 planted faults it was expected
+to catch and, as predicted, none of the 24 that kept every count. One portal
+then served all 30 genomes from one database: a search by a gene's name listed
+it in {{portal:found}} of {{portal:genes}} cases, a gene page took a median of
+{{portal:gene_page_median}} ms, and none of {{portal:probe_requests}} hostile
+requests caused a server error or changed the database.
+<!-- AUTHORS: check the last sentence against the portal's results. -->
 
 **Conclusions:** Each of the other three loaders changed or lost features
 without a message. A count of the input by independent code catches such loss
-at load time, though not a changed value or name. cgload is open source (MIT
-license): https://github.com/computational-genomics-lab/cgload.
+at load time, though not a changed value or name, and a read-only portal puts
+the checked database in front of its users. cgload is open source (MIT
+license):
+https://github.com/computational-genomics-lab/cgload.
 
-**Keywords:** genome annotation; GFF3; relational database; data integrity; benchmarking; RefSeq
+**Keywords:** genome annotation; GFF3; relational database; data integrity;
+benchmarking; RefSeq; web portal; genome browser
 
 # Background
 
@@ -64,7 +70,11 @@ load it into a database. gffutils builds an SQLite database from a GFF3 file
 organism databases [@chado] and filled by loaders such as the one in Tripal
 [@tripal]. Bioconductor's txdbmaker builds a TxDb, a database of transcripts
 for analysis in R [@granges; @txdbmaker], and data warehouses such as InterMine
-combine annotations from many sources [@intermine].
+combine annotations from many sources [@intermine]. Most people who use an
+annotation never open its file. They meet it through a web portal built on
+such a database, with a search box, a page for each gene, a genome browser and
+sequences to download, as in Ensembl [@ensembl] and the organism databases
+built with Tripal [@tripal].
 
 A loader can drop or change features while it reads a file. GFF3 lets one
 feature be written on several rows that share an ID, which is how RefSeq writes
@@ -77,7 +87,8 @@ rule outright are rare. Rows that follow a documented convention, or carry an
 attribute that documents an exception, are more common, and a loader has to
 take them as written. A loader can finish without a message and still leave
 such features out, or store them in another form. The database then answers
-queries, and nothing downstream can see what is missing.
+queries, and nothing downstream can see what is missing. A portal built on it
+shows its users the reduced annotation as if it were whole.
 
 Large resources test their databases before each release. InterMine's
 acceptance tests are SQL queries with expected answers, such as a minimum
@@ -93,28 +104,53 @@ for fast extraction and assumes well-formed input [@gffx]. Toolkits such as
 GenomeTools [@genometools] and AGAT [@agat] check or repair a file before it is
 loaded, and do not see what a loader then stores.
 
-We wrote cgload to make that check part of every load. It reads the input file
-twice, once to load it and once, with separate code, to count it, and it keeps
-the load only if the database holds what the count says. To find out whether
-such a check is needed, and whether it works, we ran a benchmark whose protocol
-we fixed before the first run. On 30 RefSeq genomes we asked what the files
-contain that a loader has to handle, whether cgload stores all of it, what
-three widely used loaders keep, change and lose from the same files, which
-kinds of damage cgload's check notices, and what the check costs in time and
-memory.
+A group that has annotated a genome of its own needs a portal as well, and the
+options differ in what they need and what they offer. Tripal builds a
+community database on the Drupal content management system, with Chado in
+PostgreSQL, and needs that stack installed and kept up to date [@tripal;
+@tripal-docs]. GenomeHubs sets up an Ensembl database and website for a new
+species in software containers [@genomehubs]. Genome browsers such as JBrowse 2
+[@jbrowse2] and igv.js [@igvjs] show indexed files directly, without a
+database, and find features by the names in those files. Each such site is also a web application on
+the open internet. Injection, in which text that a visitor sends reaches a
+database or a shell as code, is among the commonest flaws of web applications
+[@owasp]. A survey of more than 20,000 bioinformatics websites found that the
+most common server version among them was outdated and vulnerable [@tao], and
+a fifth
+of 2,396 web tools published over a decade never answered during 133 days of
+tests [@kern].
+
+We wrote cgload to check every load against an independent reading of its
+file, and to put the checked database in front of the people who use it. It
+reads the input file twice,
+once to load it and once, with separate code, to count it, and it keeps the
+load only if the database holds what the count says. Two more commands serve
+the database as a portal that only reads: it cannot change the database, runs
+no other program, and passes every value a visitor sends to the database as
+data, never as code. To find out whether such a check is needed, and whether it
+works, we ran a benchmark whose protocol we fixed before the first run. On 30
+RefSeq genomes we asked what the files contain that a loader has to handle,
+whether cgload stores all of it, what three widely used loaders keep, change
+and lose from the same files, which kinds of damage cgload's check notices, and
+what the check costs in time and memory. When the portal was added, we asked,
+under a section of the protocol written before the measurement, how quickly
+and how safely one portal serves all 30 genomes.
 
 # Methods
 
 ## The cgload software
 
 cgload is a Python package (3.11 or later) with three runtime dependencies:
-SQLAlchemy, pyfaidx and click. It is used from the command line, and a genome
-passes through four commands. `cgload init` creates an empty database.
-`cgload load` reads a short configuration file that names an assembly and its
-annotation files, and writes them into the database in one transaction.
-`cgload verify` checks a loaded genome against its input files at any later
-time. `cgload query`, `export`, `explain` and `stats` read the database, and
-`cgload remove` deletes a genome from it. Figure 1a shows every step of a load,
+SQLAlchemy, pyfaidx and click. The portal adds two more, Flask [@flask] and
+waitress [@waitress], installed as an optional extra. cgload is used from the
+command line, and a genome passes through four commands. `cgload init`
+creates an empty database. `cgload load` reads a short configuration file that
+names an assembly and its annotation files, and writes them into the database
+in one transaction. `cgload verify` checks a loaded genome against its input
+files at any later time. `cgload query`, `export`, `explain` and `stats` read
+the database, and `cgload remove` deletes a genome from it. `cgload index` and
+`cgload serve` put the database on the web (see "The portal"). Figure 1a shows
+every step of a load,
 what stops it and what it writes, and Figure 1b the checks of `cgload verify`;
 the sections below follow the figure.
 
@@ -361,6 +397,70 @@ canonical types, and `cgload remove` deletes an assembly's rows and folder in
 one transaction. Because the database is plain SQL, it can also be read with
 any SQL client.
 
+### The portal
+
+`cgload serve` turns a cgload database into a website for the people who use
+its genomes (Figure 3). It is written with Flask [@flask] and served by
+waitress [@waitress], a production web server written in Python, and it reads
+the same database and data folder as the other commands, on SQLite or
+PostgreSQL. One portal serves every genome in the database, and it only reads.
+
+*What a visitor can do.* A feature's page draws its gene with every
+transcript to scale and opens the igv.js genome browser [@igvjs] at its locus
+(Figure 3a). It then lists the feature's attributes, with cross-references
+linked to the databases they name, the functional annotation of its proteins,
+and its whole family from gene to exons. A visitor finds features by searching
+one genome or all of them, by a gene's name or synonym, a locus tag, a
+transcript or protein ID, the words of a product or description, a
+cross-reference such as `GeneID:672`, or a term that eggNOG-mapper or
+InterProScan assigned: a GO term, a KEGG ortholog, a Pfam or InterPro
+accession or an EC number (Figure 3b). Exact IDs are listed first, then exact
+names in any case, then names that begin with the search, then features whose
+text holds every word of it, then functional matches; within each group, genes
+come before transcripts and transcripts before coding sequences. A region page
+shows the browser and the genes in a window of up to 5 Mb. The home page lists
+the genomes, and a genome's page gives its counts by feature type and the
+record of its load, read from the manifest: the checks that `cgload load` ran
+and their outcome, any repairs, and the input files with their SHA-256
+checksums (Figure 3c).
+
+The portal gives as FASTA a feature's genomic sequence, a transcript spliced,
+a coding sequence from its first whole codon, as the phase of its first row
+places it, and the protein. The protein is translated with the NCBI genetic
+code [@gencode] that the file names in `transl_table`, or with the standard
+code when it names none. Where the file declares something that a plain
+translation does not apply, such as a selenocysteine or a ribosomal slippage,
+the page names it. A JSON interface under `/api/v1/` answers the same
+questions for programs, and the four files of each assembly that a genome
+browser reads (the FASTA file, its index, the compressed annotation and its
+tabix index) are served in byte ranges.
+
+*The search index.* Names and words are looked up in an index that
+`cgload index` builds from the features' IDs and attributes: a row for each
+lower-cased term and the feature it names, in two tables kept apart from the
+eleven. The index is checked by counting, as a load is. For each attribute key
+it covers, the number of features that carry the key must equal the number of
+features that reach the index under that key, and an assembly whose counts
+differ is left without an index. Without one, the portal still finds features
+by ID and by functional term, and says that names cannot be searched.
+
+*Safety.* The portal's defences are limits on what it can do. It opens the
+database read-only, SQLite in read-only mode
+and PostgreSQL in read-only transactions, so no request can change it, and it
+answers only GET and HEAD requests. Every value that a request sends reaches
+SQL as a bound parameter, and its length is limited. The portal runs no other
+program, keeps no session and has no accounts. Text from the annotation files
+is escaped wherever a page shows it, and every response carries a Content
+Security Policy [@csp] that lets a page run scripts from the portal only, and
+no inline script. igv.js is served from the cgload package itself, so a page
+loads nothing from another site. Of each assembly's folder, only the four
+browser files can be read, by name. The test suite sends injection strings and
+a seeded fuzz of 3,000 random requests to the portal's routes and checks that
+none fails the server or comes back as code, and continuous integration runs
+the Bandit security linter [@bandit] on the code. `docs/portal.md` in the
+repository describes how to run the portal behind a web server that adds
+HTTPS.
+
 ## Benchmark design
 
 The benchmark follows a protocol (`benchmark/PROTOCOL.md` in the repository)
@@ -386,7 +486,14 @@ and every measurement it affects was repeated (see "Changes after the first run"
 
 It also listed an eighth question, a case study on one of our own genomes with
 its functional annotation. No such genome was available, and the question was
-dropped before any of it was run.
+dropped before any of it was run. A ninth question came with the portal, after
+these runs:
+
+- Q9. Can one portal serve all 30 genomes from one database, how long do its
+  users wait, and does anything they send make it fail?
+
+We wrote its procedure into the protocol as section 13, with what counts as a
+failure of the portal, before the portal was measured.
 
 ### Genomes and input files
 
@@ -496,11 +603,14 @@ anything in its database.
 cgload was benchmarked at two commits of its repository, `8c999e2` and
 `9b97178`, and released as version 0.2.1. The code that loads, verifies and
 exports is the same in all three, apart from the version string and comments.
-Version 0.2.2, the one this paper describes, differs from 0.2.1 only in how it
-keeps and writes back columns 2 and 6. The export of 0.2.1 wrote scores with
+Version 0.2.2 differs from 0.2.1 only in how it keeps and writes back columns
+2 and 6. The export of 0.2.1 wrote scores with
 six significant digits, so 1234567.5 came back as 1.23457e+06, and it wrote a
 feature's first-row column 2 on all its rows. Neither changes a count. Version
 0.2.2 keeps both as loaded (decisions D-109 and D-110 in the repository).
+Version 0.3.0, the one this paper describes, adds the portal and its search
+index (D-111 to D-114). It loads, verifies and exports as 0.2.2 does, and its
+`remove` also deletes a genome's index.
 The query code changed between the two commits (see "Changes after the first
 run"), and the timing was measured after that change.
 
@@ -560,13 +670,41 @@ as `cgload load --repair-envelopes` runs them. The two find problems by
 different routes: the census reads each file as text and checks rows, while
 cgload checks features it has already parsed and assembled.
 
+### Measuring the portal
+
+For Q9, cgload 0.3.0 loaded all 30 genomes into one SQLite database, as a
+group's portal would hold them, with `--repair-envelopes` where a file was
+refused, as for Q1, and `cgload index` built and checked the index of each.
+The portal ran as `cgload serve` with 8 threads in one process, and a client
+on the same server asked it, over the loopback interface, what a user asks.
+For 200 genes with a `Name` in each genome, drawn with a seed, the client
+searched by the gene's name and opened the gene's page, its region (the gene
+with 5 kb on either side, at most 100 kb), the protein of its first coding
+sequence, and a 64 KiB range of each of the two files that the genome browser
+reads, at a seeded offset. It recorded the status, size and time of every
+response, and on which page of results, if any, the search listed the gene.
+The same requests were then sent by 1, 8 and 32 clients at once, for 60 s at
+each level. Up to 2,000 coding sequences per genome, drawn with a seed, were
+translated as the portal translates them, and every protein with a stop codon
+before its end was checked against what the file declares: a translation
+exception, a partial coding sequence or a pseudogene. A security probe sent
+injection strings and 3,000 seeded random requests to the running server,
+recorded every status and checked every response for the security headers.
+The SHA-256 checksum of the database file was taken before the portal started
+and after its last read. Human was also loaded, indexed and asked the same
+requests on PostgreSQL. The protocol counts as a failure of the portal any
+response with a status of 500 or above, a search by a gene's name that does not
+list the gene while no more than 1,000 features match the name, a stop codon
+inside a protein that the file does not explain, a response without the
+security headers or with a script it was sent, and any change to the database.
+
 ### Hardware
 
 All runs used one lab server with Linux 6.5, 80 CPUs, 125 GiB of memory and 8.7
 TiB of disk, and PostgreSQL with default settings. Loads that were timed for Q1
 and Q6 ran alone on the machine. The other loaders ran several at a time (8
 jobs for gffutils, 6 for Chado and 3 for txdbmaker), so their times are
-indicative only. Wall time, CPU time and peak memory were measured for every
+indicative only. Q9 ran on the same server. Wall time, CPU time and peak memory were measured for every
 command. Memory and sizes are given in binary units: 1 GiB is 2^30^ bytes, 1
 MiB 2^20^ and 1 KiB 2^10^.
 
@@ -605,18 +743,24 @@ comparison of columns 2, 6 and 8 described above. On the test files of the
 repository it found the two faults in the export of version 0.2.1 that version
 0.2.2 corrects. On the 30 genomes it was run once, with version 0.2.2.
 
+The portal and Q9 came last. Section 13 of the protocol, which sets out how
+the portal is measured and what counts as its failure, was committed with the
+code of version 0.3.0, before the portal was run on the 30 genomes.
+
 ## Use of large language models
 
 We used Claude, a large language model made by Anthropic [@claude], mainly the
-model Claude Opus 5.5, from 20 August to 23 November 2026. Under the authors'
-direction it wrote and changed code, tests and documentation of cgload and the
-census; drafted the benchmark protocol with us and wrote the benchmark scripts;
-analysed the results of each run; wrote the scripts that draw every figure and
-table of this paper from the benchmark results; searched the literature for
-related tools; drafted the text of this manuscript; and checked drafts and the
-submission files for errors. No figure or number was made by asking the model
-for it directly: figures and tables are the output of `paper/figures.py`, and
-the model did not create or alter any image.
+model Claude Opus 5.5, from 20 August to 25 November 2026. Under the authors'
+direction it wrote and changed code, tests and documentation of cgload,
+including its portal, and of the census; drafted the benchmark protocol with
+us and wrote the benchmark scripts; analysed the results of each run; wrote
+the scripts that make every figure and table of this paper from the results;
+searched the literature for related tools; drafted the text of this
+manuscript; and checked drafts and the submission files for errors. No figure
+or number was made by asking the model for it directly. Figures and tables are
+the output of `paper/figures.py`, and Figure 3 of `paper/screenshots.py`,
+which photographs pages of the portal in a browser and crops them as its
+legend says; no image was edited by hand.
 
 We also asked ChatGPT (OpenAI) [@chatgpt] to review drafts of this paper, with
 its data and code, for errors. Its review led to corrections in the text and to
@@ -628,9 +772,10 @@ The authors ran every benchmark step on their own server, from the scripts in
 the repository, and every result in this paper comes from those runs. The
 authors reviewed the code, the results and this text, and are fully responsible
 for all of them. Claude's work is public in the repository's history: from 14
-October 2026 each commit it wrote names it in the commit message (77 of the 90
-commits up to version 0.2.2), and its draft of this manuscript is
+October 2026 each commit it wrote names it in the commit message (84 of the 97
+commits up to the version submitted), and its draft of this manuscript is
 `paper/manuscript.md`. Additional file 5 gives the details.
+<!-- AUTHORS: recount the commits at the final version (git log). -->
 
 # Results
 
@@ -713,7 +858,7 @@ Rows are those the census listed in the 30 files, by the census's classes.
 ## Other loaders changed or lost features, mostly without a message
 
 Given the same files, the other three loaders changed or lost features, and
-mostly did not say so (Q3). Table 4 sums up the results and Figure 3 shows them
+mostly did not say so (Q3). Table 4 sums up the results and Figure 4 shows them
 per genome.
 
 **Table 4. What each loader kept, changed and lost.**
@@ -759,7 +904,7 @@ Sequence Ontology now names lncRNA (SO:0001877) [@so], and its log named the
 type. It dropped their 430,836 exons without a message. It also dropped 238
 long terminal repeats that the *S. pombe* file writes in capitals, and named
 that type too. So four in five of its losses were silent, from none in 9
-genomes to 14.6% of the features in *S. pombe* (Figure 3). These loads kept
+genomes to 14.6% of the features in *S. pombe* (Figure 4). These loads kept
 9,627,024 of 10,167,041 parent links, and python-chado added 670,102
 polypeptide features that the files do not contain.
 
@@ -861,7 +1006,7 @@ Each kill came at a random time between 5% and 95% of an uninterrupted load.
 cgload's checks and its storage cost memory and time (Q1), and it answers
 everyday questions more slowly than gffutils (Q6).
 
-Load time, memory and size grew in proportion to the number of rows (Figure 4).
+Load time, memory and size grew in proportion to the number of rows (Figure 5).
 On SQLite, cgload loaded a median 7,961 rows per second; the quickest load, *S.
 cerevisiae*, took 4.8 s and human took 641 s. PostgreSQL was about three times
 slower (median 2,700 rows per second; human 1,978 s). `verify` took 0.8 to 29 s
@@ -871,7 +1016,7 @@ row (median 5.7 KiB on SQLite and 6.9 KiB on PostgreSQL), so human needed
 5.9 GiB on PostgreSQL, and its data folder 3.2 GiB.
 
 One gene with its parts took 0.26 to 0.30 s as a command on SQLite and 0.37
-to 0.41 s on PostgreSQL, against 0.13 to 0.24 s for gffutils (Figure 5,
+to 0.41 s on PostgreSQL, against 0.13 to 0.24 s for gffutils (Figure 6,
 Additional file 3). Most of that time is
 the start of a new Python process: asked from one running process, the same
 lookup took 4 to 5 ms on SQLite, 8 to 25 ms on PostgreSQL and 1 ms or less in
@@ -885,10 +1030,69 @@ counts records and cgload counts features.
 For T4, writing out every feature on one sequence, the protocol takes the
 sequence with the most features in each genome and two others drawn at random
 from those with at least 1,000 features. In human the two drawn were small
-scaffolds, so a median over its three sequences would hide the cost. Figure 5
+scaffolds, so a median over its three sequences would hide the cost. Figure 6
 therefore shows the largest sequence of each genome, and Additional file 4
 all twelve. Writing human chromosome 1 (437,536 rows) took 25.0 s on SQLite,
 88.6 s on PostgreSQL, 14.4 s with gffutils and 0.5 s with tabix.
+
+## One portal served all 30 genomes
+
+cgload 0.3.0 loaded {{portal:loaded}} of the {{portal:genomes}} genomes into
+one SQLite database (Q9), {{portal:repaired}} of them with
+`--repair-envelopes`, as for Q1; the database took {{portal:database_gib}} GiB.
+`cgload index` built {{portal:index_terms_million}} million index terms in
+{{portal:index_minutes}} min in all, and its check passed for
+{{portal:index_pass}} genomes.
+
+The client sent {{portal:requests}} requests about {{portal:genes}} genes
+(Table 8), and {{portal:requests_not_ok}} of them were answered with an error.
+A search by a gene's name took a median of {{portal:search_median}} ms, a
+gene's page {{portal:gene_page_median}} ms, a region's page
+{{portal:region_page_median}} ms, and a range of the assembly for the genome
+browser {{portal:range_assembly_median}} ms. Of all the requests,
+{{portal:under_1s_percent}}% were answered within a second, and the slowest
+took {{portal:all_max_s}} s. On PostgreSQL, a human gene's page took a median
+of {{portal:gene_page_pg_median}} ms. The search listed the gene in
+{{portal:found}} of {{portal:genes}} cases ({{portal:found_percent}}%),
+{{portal:found_first_page}} times on the first page of results.
+<!-- AUTHORS: say why the genes not found were missed, from portal_found.tsv;
+one not found among no more than 1,000 matches is a failure under the
+protocol. -->
+
+Users who come at the same time share the one process. With 1, 8 and 32 clients the portal
+answered {{portal:c1_per_second}}, {{portal:c8_per_second}} and
+{{portal:c32_per_second}} requests per second, and with 32 clients half of the
+requests took up to {{portal:c32_p50}} ms and 95% up to {{portal:c32_p95}} ms;
+{{portal:load_test_errors}} requests failed.
+
+Of {{portal:cds_checked}} coding sequences translated,
+{{portal:cds_no_internal_stop}} ({{portal:cds_clean_percent}}%) gave a protein
+without a stop codon before its end. Of the others, {{portal:cds_explained}}
+came from coding sequences for which the file declares a translation exception,
+a partial sequence or a pseudogene, and {{portal:cds_stop_unexplained}} from
+coding sequences for which it declares none of these.
+<!-- AUTHORS: look into each unexplained stop before submission (examples in
+portal_translation.tsv); the protocol counts them as failures. -->
+
+The security probe sent {{portal:probe_requests}} requests to the running
+portal. The portal refused {{portal:probe_400}} as malformed and answered
+{{portal:probe_404}} with "not found"; {{portal:probe_server_errors}} caused a
+server error, {{portal:probe_missing_headers}} came back without the security
+headers, and none returned a script it was sent. The database file was
+{{portal:database_unchanged}} after the run: its SHA-256 checksum was the same
+before the portal started and after its last read.
+<!-- AUTHORS: check this paragraph against portal_security.tsv and
+portal_readonly.tsv. -->
+
+**Table 8. How long the portal took to answer.**
+
+<!-- include tables/table7_portal.md -->
+
+Times run from the client's request to the end of the response, measured on
+the server itself, for 200 genes in each of the 30 genomes held in one SQLite
+database (`cgload serve`, 8 threads, one process), and for 200 human genes on
+PostgreSQL. Percentiles are nearest-rank. Additional file 6 gives the medians
+per genome.
 
 # Discussion
 
@@ -925,7 +1129,7 @@ predicted. A user who needs those checked has to compare the database with the
 file feature by feature, as our round trip does, and that comparison is not
 part of `cgload verify`. Checking identity as well, for instance by comparing
 the set of IDs and of child and parent pairs, would close much of this gap at
-little cost; it is not in version 0.2.2. The same blind spot hid a fault in
+little cost; it is not in version 0.3.0. The same blind spot hid a fault in
 cgload itself. Its export rounded scores to six significant digits, which
 changed 52 scores in human and mouse and no count; only the later comparison
 of columns 2, 6 and 8 showed it.
@@ -937,6 +1141,32 @@ and catches loss; a comparison feature by feature also catches changes. cgload
 makes the first part of every load. The reference reader and comparison scripts
 of this benchmark, which already read gffutils, txdbmaker and Chado databases,
 can be adapted for the second.
+
+The portal is where this check reaches the people who use a genome. A
+biologist who searches for a gene does not read a load log, and a portal on a
+database that lost features gives no sign of it. Had the Chado databases that
+python-chado filled been put behind a portal, it would have offered the 21
+genomes they hold without their 109,181 long non-coding RNAs and the 430,836
+exons of those RNAs, and no page would have said so. cgload's portal shows on each
+genome's page how the genome was loaded and what the checks found, and every
+feature it lists is one that the load stored and counted.
+
+The portal also takes a position among the ways a group can put a genome on
+the web. Tripal runs a whole community website, with user accounts and pages
+that curators edit [@tripal; @tripal-docs], and GenomeHubs brings the Ensembl
+website with a BLAST server beside it [@genomehubs]; both do much more than
+cgload's portal. They also bring a large software stack that has to be
+installed and kept up to date, with security updates of its own; Drupal, on which Tripal is built, issued a highly critical fix for remote
+code execution in 2018 [@drupal]. JBrowse 2 can read cgload's indexed files
+with no code on the server at all [@jbrowse2] and searches the names it
+indexes from them, but the functional annotation and the record of each load
+stay in the database, out of its reach. cgload's portal lies between these:
+two commands on a database that the load has already checked, one Python
+process, and no request that can change the database or start a program.
+Read-only access, bound parameters, escaping and a strict Content Security
+Policy are each standard defences against injection [@owasp]. What the portal
+leaves out matters as much: it has no form that writes and no shell that a
+visitor's text could reach.
 
 Refusing by default has a cost. Seven of the 30 RefSeq files were refused
 until `--repair-envelopes` was given, over rows that carry a documented
@@ -988,7 +1218,22 @@ took about a quarter of a second, mostly to start Python; query waits were
 measured on four genomes, not 30. A killed load leaves its staging files on
 disk, to be deleted by hand. `verify` exits 0 when it skips the source count
 because the input file has changed, so a script that reads only the exit
-status misses the change; this is unchanged in version 0.2.2.
+status misses the change; this is unchanged in version 0.3.0.
+
+The portal and Q9 came after the benchmark. Q9's procedure was fixed before it
+was run, but on the same 30 genomes that cgload had been corrected on, and
+Figure 3 shows the repository's own test record. The portal's times were
+measured with the client on the server, so they leave out the network and the
+time a browser takes to draw igv.js. They are also the times of one process,
+whose threads share Python's interpreter lock: more requests per second need
+more processes behind a web server, which the portal allows because it keeps
+no state. The security probe and the tests are our own, not an audit by an
+outside party. We did not time another portal, since none serves these files
+without converting them first, and installing Tripal or GenomeHubs to do so was
+outside the protocol. The portal translates coding sequences itself, as the
+file describes them. It names the exceptions that a file declares but does not
+apply them, so for such a coding sequence the protein it shows is not the
+curated one. It has no BLAST, no editing and no accounts.
 
 The benchmark was written by cgload's authors, and its protocol was registered
 as a tagged commit in our own public repository, not in an independent
@@ -1012,55 +1257,65 @@ genomes it kept every feature in every field we compared, declared its 12
 repairs and reported every planted fault that changed a count; version 0.2.2
 also returns every row's source, score and phase as written. Counts cannot show
 that a name, a link or a value is right; that takes a comparison feature by
-feature, like the one this benchmark made. The protocol, scripts and results
-are public, so the same questions can be put to other loaders and other files.
+feature, like the one this benchmark made. With `cgload index` and
+`cgload serve` the same database becomes a portal that its users can search
+and browse, that shows how each genome was loaded, and that cannot change what
+it serves; one such portal served all 30 genomes from one database. The
+protocol, scripts and results are public, so the same questions can be put to
+other loaders and other files.
 
 # Availability and requirements
 
 - Project name: cgload
 - Project home page: https://github.com/computational-genomics-lab/cgload
 - Operating system(s): Linux, macOS and Windows (the test suite passes on all
-  three in continuous integration; the benchmark ran on Linux)
+  three in continuous integration; the benchmark and the portal's measurement
+  ran on Linux); the portal is used from any current web browser
 - Programming language: Python 3.11 or later
 - Other requirements: SQLAlchemy 2.0 or later, pyfaidx 0.7 or later, click 8.1
   or later; SQLite 3.8.3 or later (part of Python), or PostgreSQL (tested with
-  version 16) with psycopg 3
+  version 16) with psycopg 3; for the portal, Flask 3.0 or later and waitress
+  3.0 or later
 - License: MIT
 - Any restrictions to use by non-academics: none
-- Version described: 0.2.2 (tag `v0.2.2`; source archive in Additional file 6)
+- Version described: 0.3.0 (tag `v0.3.0`; source archive in Additional file 7)
 - RRID:SCR_029282
 - bio.tools ID: biotools:cgload
-- Archived version: Software Heritage,
-  swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962 (release v0.2.2),
+- Archived version: Software Heritage, release v0.3.0:
+  <!-- AUTHORS: the SWHID of release v0.3.0, once it is tagged and archived. -->
+  The loading results rest on release v0.2.2,
+  swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962,
   https://archive.softwareheritage.org/swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:ce34fb036eb8063458ec04aa5f64c3c8231d176a
 
 cgload is installed with pip from its repository, at the version described
-here:
+here, with the portal:
 
-    pip install "git+https://github.com/computational-genomics-lab/cgload@v0.2.2"
+    pip install "cgload[portal] @ git+https://github.com/computational-genomics-lab/cgload@v0.3.0"
 
-For PostgreSQL, add the driver:
-
-    pip install "cgload[postgres] @ git+https://github.com/computational-genomics-lab/cgload@v0.2.2"
+For PostgreSQL, add its driver as well: `cgload[portal,postgres]`.
 
 `examples/minimal/` in the repository loads and verifies a small genome in
-under a minute, as a check that the installation works.
+under a minute, as a check that the installation works; `cgload index` and
+`cgload serve` then show it in a web browser.
 
 The repository holds test data (`examples/minimal/`, `tests/fixtures/`) with
-expected outputs, a test suite of 575 tests, and the benchmark protocol and
-scripts (`benchmark/`). `paper/figures.py` makes every figure and table of this
-paper from the benchmark results.
+expected outputs, a test suite of 654 tests, the benchmark protocol and
+scripts (`benchmark/`), and the portal's documentation (`docs/portal.md`).
+`paper/figures.py` and `paper/screenshots.py` make every figure and table of
+this paper from the results.
 
 # List of abbreviations
 
-BGZF: blocked GNU zip format; CDS: coding sequence; CPU: central processing
-unit; CSI: coordinate-sorted index; EC: Enzyme Commission; GFF3: Generic Feature
-Format version 3; GO: Gene Ontology; GTF: Gene Transfer Format; ID: identifier;
-KEGG: Kyoto Encyclopedia of Genes and Genomes; MD5: message digest 5; NCBI:
-National Center for Biotechnology Information; RRID: Research Resource
-Identifier; SAM: Sequence Alignment/Map; SHA: Secure Hash Algorithm; SO:
-Sequence Ontology; SQL: Structured Query Language; TOML: Tom's Obvious, Minimal
-Language; TxDb: transcript database of Bioconductor.
+BGZF: blocked GNU zip format; BLAST: Basic Local Alignment Search Tool; CDS:
+coding sequence; CPU: central processing unit; CSI: coordinate-sorted index;
+EC: Enzyme Commission; GFF3: Generic Feature Format version 3; GO: Gene
+Ontology; GTF: Gene Transfer Format; HTTPS: Hypertext Transfer Protocol Secure;
+ID: identifier; JSON: JavaScript Object Notation; KEGG: Kyoto Encyclopedia of
+Genes and Genomes; MD5: message digest 5; NCBI: National Center for
+Biotechnology Information; RRID: Research Resource Identifier; SAM: Sequence
+Alignment/Map; SHA: Secure Hash Algorithm; SO: Sequence Ontology; SQL:
+Structured Query Language; TOML: Tom's Obvious, Minimal Language; TxDb:
+transcript database of Bioconductor.
 
 # Declarations
 
@@ -1075,13 +1330,14 @@ Not applicable.
 ## Availability of data and materials
 
 The datasets supporting the conclusions of this article are included within
-the article and its additional files (Additional files 1 to 4). They are
-available in full in Additional file 6, a copy of the cgload repository as
+the article and its additional files (Additional files 1 to 4 and 6). They are
+available in full in Additional file 7, a copy of the cgload repository as
 submitted, and in the repository itself,
 https://github.com/computational-genomics-lab/cgload: the results folder of
-the benchmark, as its scripts left it, is `paper/data/benchmark-run-2.2/`, and
-the check of columns 2, 6 and 8 is `paper/data/columns-v0.2.2/`. The census
-scripts and their results are in `survey/`. The reference readings are not
+the benchmark, as its scripts left it, is `paper/data/benchmark-run-2.2/`, the
+check of columns 2, 6 and 8 is `paper/data/columns-v0.2.2/`, and the portal's
+measurement is `paper/data/portal-v0.3.0/`. The census scripts and their
+results are in `survey/`. The reference readings are not
 included, because `benchmark/truth.py` rebuilds them from the input files. All
 input files are public RefSeq annotations, identified by accession, annotation
 release and MD5 in Additional file 1. Release v0.2.2 of the repository, which
@@ -1089,6 +1345,8 @@ holds the software, the benchmark results and the census, is archived at
 Software Heritage as swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962
 (https://archive.softwareheritage.org/swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:ce34fb036eb8063458ec04aa5f64c3c8231d176a);
 the check of columns 2, 6 and 8 was added to the repository after that release.
+Release v0.3.0, which adds the portal and its measurement, is archived as
+<!-- AUTHORS: the SWHID of release v0.3.0. -->.
 
 ## Competing interests
 
@@ -1151,11 +1409,24 @@ Not applicable.
 [@pychado]: Galaxy Genome Annotation. python-chado: a Python library for interacting with Chado. Version 2.3.9. https://github.com/galaxy-genome-annotation/python-chado. Accessed 10 Nov 2026.
 [@so]: Eilbeck K, Lewis SE, Mungall CJ, et al. The Sequence Ontology: a tool for the unification of genome annotations. Genome Biol. 2005;6:R44. https://doi.org/10.1186/gb-2005-6-5-r44.
 [@biopython]: Cock PJA, Antao T, Chang JT, et al. Biopython: freely available Python tools for computational molecular biology and bioinformatics. Bioinformatics. 2009;25:1422–3. https://doi.org/10.1093/bioinformatics/btp163.
-[@claude]: Anthropic. Claude [large language model]. https://www.anthropic.com/claude. Used 20 Aug to 23 Nov 2026.
+[@claude]: Anthropic. Claude [large language model]. https://www.anthropic.com/claude. Used 20 Aug to 25 Nov 2026.
 [@pyfaidx]: Shirley MD, Ma Z, Pedersen BS, Wheelan SJ. Efficient "pythonic" access to FASTA files using pyfaidx. PeerJ PrePrints. 2015;3:e970v1. https://doi.org/10.7287/peerj.preprints.970v1.
 [@rcore]: R Core Team. R: a language and environment for statistical computing. Version 4.5.3. Vienna: R Foundation for Statistical Computing; 2026. https://www.R-project.org/.
 [@bioperl]: Stajich JE, Block D, Boulez K, Brenner SE, Chervitz SA, Dagdigian C, et al. The Bioperl toolkit: Perl modules for the life sciences. Genome Res. 2002;12:1611–8. https://doi.org/10.1101/gr.361602.
 [@chatgpt]: OpenAI. ChatGPT [large language model]. https://chatgpt.com. Accessed 19 Nov 2026.
+[@tripal-docs]: Tripal. Tripal 4 documentation: requirements. https://tripaldoc.readthedocs.io/en/latest/install/requirements.html. Accessed 25 Nov 2026.
+[@genomehubs]: Challis RJ, Kumar S, Stevens L, Blaxter M. GenomeHubs: simple containerized setup of a custom Ensembl database and web server for any species. Database. 2017;2017:bax039. https://doi.org/10.1093/database/bax039.
+[@jbrowse2]: Diesh C, Stevens GJ, Xie P, et al. JBrowse 2: a modular genome browser with views of synteny and structural variation. Genome Biol. 2023;24:74. https://doi.org/10.1186/s13059-023-02914-z.
+[@igvjs]: Robinson JT, Thorvaldsdottir H, Turner D, Mesirov JP. igv.js: an embeddable JavaScript implementation of the Integrative Genomics Viewer (IGV). Bioinformatics. 2023;39:btac830. https://doi.org/10.1093/bioinformatics/btac830.
+[@owasp]: OWASP Foundation. OWASP Top 10:2025. https://owasp.org/Top10/2025/. Accessed 25 Nov 2026.
+[@tao]: Tao T, Chen Y, Liu B, Jin X, Yan M, Ji S. Security analysis of bioinformatics web application. In: Yang CN, Peng SL, Jain LC, editors. Security with Intelligent Computing and Big-data Services. SICBS 2018. Advances in Intelligent Systems and Computing, vol 895. Cham: Springer; 2020. https://doi.org/10.1007/978-3-030-16946-6_30.
+[@kern]: Kern F, Fehlmann T, Keller A. On the lifetime of bioinformatics web services. Nucleic Acids Res. 2020;48:12523–33. https://doi.org/10.1093/nar/gkaa1125.
+[@flask]: Pallets. Flask. Version 3.1. https://flask.palletsprojects.com. Accessed 25 Nov 2026.
+[@waitress]: Pylons Project. Waitress. Version 3.0. https://docs.pylonsproject.org/projects/waitress/. Accessed 25 Nov 2026.
+[@gencode]: Elzanowski A, Ostell J. The genetic codes. National Center for Biotechnology Information. Updated 23 Sep 2024. https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi. Accessed 25 Nov 2026.
+[@csp]: West M, Sartori A, editors. Content Security Policy Level 3. W3C Working Draft. https://www.w3.org/TR/CSP3/. Accessed 25 Nov 2026.
+[@bandit]: PyCQA. Bandit: a tool to find common security issues in Python code. Version 1.8.6. https://github.com/PyCQA/bandit. Accessed 25 Nov 2026.
+[@drupal]: Drupal Security Team. Drupal core – highly critical – remote code execution – SA-CORE-2018-002. 28 Mar 2018. https://www.drupal.org/sa-core-2018-002. Accessed 25 Nov 2026.
 
 # Figure legends
 
@@ -1180,20 +1451,34 @@ tables are written by `cgload init`. A line joins each foreign key to the key
 it names, marked with a dot; `feature.parent_id` names a row of the same table.
 The figure is drawn from the schema itself by `paper/figures.py`.
 
-**Figure 3. Features changed or lost without a message, per genome and
+**Figure 3. Three pages of the cgload portal.** The genome is the repository's
+test record of the Dscam1 region of *Drosophila melanogaster* chromosome 2R
+(NCBI NT_033778.4, bases 7,312,924 to 7,386,899, numbered from the start of
+the region), loaded with the record's own sequence. (a) A gene's page:
+its three transcripts drawn to scale, with exons as boxes, coding sequence as
+taller boxes and introns as lines, and igv.js reading the assembly and the
+annotation that cgload wrote, served by the portal itself. The page goes on
+with the gene's attributes, sequences and family. (b) A search by the words of
+a product, with how each feature matched. (c) The genome's page records how it
+was loaded: the checks that `cgload load` ran and their outcome, any repairs,
+and the input files with their checksums. `paper/screenshots.py` photographs
+the pages in Chromium and crops them; it removes the empty rows below the
+browser's tracks and a one-line key under the gene model.
+
+**Figure 4. Features changed or lost without a message, per genome and
 loader.** Each cell gives the percentage of the genome's features (for
 txdbmaker, transcripts) that the loader changed or lost without a message.
 Dark grey cells mark genomes a loader did not load. cgload's results were
 identical on SQLite and PostgreSQL. † cgload loaded these genomes with
 `--repair-envelopes` and declared every repair.
 
-**Figure 4. The cost of loading the 30 genomes with cgload.** Against the
+**Figure 5. The cost of loading the 30 genomes with cgload.** Against the
 number of GFF3 rows: (a) load time, (b) time of `cgload verify`, (c) peak
 memory of the load and (d) size of the database. Each point is one genome on
 one database system. Both axes are logarithmic. The values for human, the
 largest genome, are labelled.
 
-**Figure 5. Time to answer four everyday tasks on four genomes.** Median time
+**Figure 6. Time to answer four everyday tasks on four genomes.** Median time
 of repeated asks, on genomes from 0.1 to 4.9 million rows. Top: one new process
 per answer, as a user typing a command waits. Bottom: one process asking T1 to
 T3 in turn, as a script waits. T4 is shown for the largest sequence of each
@@ -1219,6 +1504,12 @@ time each tool took to write them.
 (`paper/llm_use.md` in the repository): which model, what it did, how the
 authors checked it, and where its output is kept.
 
-**Additional file 6 (ZIP).** Source code of cgload, version 0.2.2: the
+**Additional file 6 (CSV).** Table S5. The portal on each of the 30 genomes:
+the load, the search index and its check, the median time of each kind of
+request, how often a search by a gene's name found it, and the translation of
+its coding sequences.
+
+**Additional file 7 (ZIP).** Source code of cgload, version 0.3.0: the
 repository at the time of submission, with its tests, the benchmark protocol
-and scripts, and the benchmark results.
+and scripts, and the results of the benchmark and of the portal's
+measurement.

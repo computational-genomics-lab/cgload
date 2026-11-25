@@ -8,7 +8,7 @@ come from the repository's git history and can be checked there.
 
 ## Which model, and how it was used
 
-Claude (Anthropic), from 20 August to 23 November 2026, mainly the model
+Claude (Anthropic), from 20 August to 25 November 2026, mainly the model
 Claude Opus 5.5. The model worked on a copy of the repository and could not
 reach the lab server: every benchmark run was started by the authors on that
 server, and the authors sent the results back to the model. Every change the
@@ -24,7 +24,10 @@ among them the census scripts in `survey/`, were also made with Claude's help,
 before the trailer was used; the model versions used for them were not
 recorded. The other two are small edits by the authors on 10 and 12 November
 2026 (the full text of the MIT licence, and the removal of internal review
-notes). The commits that the model wrote after `v0.2.2` carry the trailer too.
+notes). The commits that the model wrote after `v0.2.2` carry the trailer too:
+up to the version submitted with the paper, which adds the portal (0.3.0), 84
+of the 97 commits carry one, 81 of them naming Claude Opus 5.5.
+<!-- AUTHORS: recount at the final version. -->
 
 ## What the model did
 
@@ -32,6 +35,12 @@ notes). The commits that the model wrote after `v0.2.2` carry the trailer too.
   including fixes for the problems the benchmark exposed (decisions D-095 to
   D-110 in `docs/decisions.md`), and wrote the documentation in `docs/`, the
   README and the changelog.
+- **The portal.** On 25 November 2026 the authors asked it to add a web
+  portal. It wrote the portal (`src/cgload/portal/`, with the commands
+  `cgload index` and `cgload serve`), its tests, its documentation
+  (`docs/portal.md`, decisions D-111 to D-114), section 13 of the benchmark
+  protocol, the script that measures the portal on the 30 genomes
+  (`benchmark/run_portal.py`) and the shell script the authors ran for it.
 - **The census and the benchmark.** It helped write the census scripts
   (`survey/`). It drafted the benchmark protocol (`benchmark/PROTOCOL.md`) with
   the authors, wrote the benchmark scripts and their tests (`benchmark/`), wrote
@@ -39,9 +48,13 @@ notes). The commits that the model wrote after `v0.2.2` carry the trailer too.
   results. It found and corrected errors in its own scripts; each is recorded
   with its date in the protocol, section 12.
 - **Figures and tables.** It wrote `paper/figures.py`, which draws every figure
-  and table of the paper from the committed results. No figure or number was
-  made by asking the model for it directly, and the model created or altered no
-  image. It also wrote `paper/build.py`.
+  and table of the paper from the committed results, and `paper/screenshots.py`,
+  which makes Figure 3: it loads the repository's Dscam1 test record into a new
+  database, photographs three pages of the portal in a browser, and crops them.
+  The cropping removes the empty rows below the genome browser's tracks and the
+  one-line key under the gene model, which the legend gives instead, and
+  changes nothing else. No figure or number was made by asking the model for it
+  directly, and no image was edited by hand. It also wrote `paper/build.py`.
 - **The manuscript.** It drafted the text of the manuscript, from the results
   and under the authors' direction. The authors read the draft against the code
   and the results, revised it, and wrote the declarations.
@@ -73,7 +86,8 @@ figures and tables are the output of `paper/figures.py`.
 
 The authors ran every benchmark step on their own server, from the scripts in
 the repository, and every result in the paper comes from those runs
-(`paper/data/benchmark-run-2.2/` and `paper/data/columns-v0.2.2/`). The test
-suite (575 tests, and 25 more for the benchmark) runs in continuous integration
-on every push, on Linux, macOS and Windows. The authors reviewed the code, the
+(`paper/data/benchmark-run-2.2/`, `paper/data/columns-v0.2.2/` and
+`paper/data/portal-v0.3.0/`). The test suite (654 tests, and 26 more for the
+benchmark) runs in continuous integration on every push, on Linux, macOS and
+Windows. The authors reviewed the code, the
 results and the text, and are responsible for them.

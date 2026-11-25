@@ -15,6 +15,10 @@ manuscript.md is the source. This script
   stops the build;
 * shows each note to the authors (`<!-- AUTHORS: ... -->`) in bold, where
   pandoc would drop the comment;
+* puts the portal's numbers in place of each `{{portal:KEY}}`, from
+  tables/portal_numbers.json, which paper/figures.py writes from the portal's
+  results. Until those results exist the file is empty, and each number is
+  shown as **[KEY]**; once it has numbers, a KEY it lacks stops the build;
 * makes a Word file with pandoc, with typographic substitution off, so that
   `--force` stays two hyphens, and gives it what BMC Bioinformatics asks of a
   submission: A4 pages, double line spacing in the text, line numbers and page
@@ -25,6 +29,7 @@ manuscript.md is the source. This script
 from __future__ import annotations
 
 import html
+import json
 import re
 import shutil
 import subprocess
@@ -89,8 +94,23 @@ def number_citations(text: str) -> str:
     return text.replace(marker, listed) + "\n"
 
 
+PORTAL_NUMBER = re.compile(r"\{\{portal:([a-z0-9_]+)\}\}")
+
+
+def portal_numbers(text: str) -> str:
+    path = HERE / "tables" / "portal_numbers.json"
+    numbers = json.loads(path.read_text()) if path.exists() else {}
+    wanted = set(PORTAL_NUMBER.findall(text))
+    if numbers and wanted - numbers.keys():
+        raise SystemExit(f"no portal number for {', '.join(sorted(wanted - numbers.keys()))}")
+    if not numbers and wanted:
+        print(f"the portal's results are pending: {len(wanted)} numbers shown by name",
+              file=sys.stderr)
+    return PORTAL_NUMBER.sub(lambda m: numbers.get(m.group(1), f"**[{m.group(1)}]**"), text)
+
+
 def assemble(source: Path) -> str:
-    text = include_tables(source.read_text())
+    text = portal_numbers(include_tables(source.read_text()))
 
     def note(match: re.Match) -> str:
         return f"\n**[TO THE AUTHORS: {' '.join(match.group(1).split())}]**\n"
@@ -378,7 +398,8 @@ def main() -> int:
               "tables/tableS2_faults.csv": "additional_file_2_table_S2.csv",
               "tables/tableS3_timing.csv": "additional_file_3_table_S3.csv",
               "tables/tableS4_sequences.csv": "additional_file_4_table_S4.csv",
-              "llm_use.md": "additional_file_5_llm_use.md"}
+              "llm_use.md": "additional_file_5_llm_use.md",
+              "tables/tableS5_portal.csv": "additional_file_6_table_S5.csv"}
     for source, name in extras.items():
         if source.endswith(".md"):
             # Notes to the authors are HTML comments; the submitted file leaves them

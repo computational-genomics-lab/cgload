@@ -4,9 +4,14 @@
     python3 paper/figures.py [RESULTS] [--out paper]
 
 RESULTS is a results folder as benchmark/run.sh leaves it; by default the one
-the paper reports, paper/data/benchmark-run-2.2. Figures go to OUT/figures/
-(PDF for the journal, PNG to look at), tables to OUT/tables/ as Markdown.
-Every number is read from RESULTS; none is typed in here. Needs matplotlib.
+the paper reports, paper/data/benchmark-run-2.2. The portal's measurements
+(PROTOCOL.md section 13) are read from --portal, by default
+paper/data/portal-v0.3.0; while that folder does not exist, their tables say
+"pending". Figures go to OUT/figures/ (PDF for the journal, PNG to look at),
+tables to OUT/tables/ as Markdown, and the portal's numbers for the text to
+OUT/tables/portal_numbers.json, which paper/build.py puts in place of each
+{{portal:KEY}}. Every number is read from the results; none is typed in here.
+Figure 3, the portal's pages, is made by paper/screenshots.py. Needs matplotlib.
 """
 
 from __future__ import annotations
@@ -709,7 +714,7 @@ def figure_scale(results: Results, out: Path) -> None:
     figure.legend(handles=handles, loc="upper center", ncol=2, frameon=False,
                   bbox_to_anchor=(0.5, 1.0), handletextpad=0.3, columnspacing=1.5)
     figure.tight_layout(rect=(0, 0, 1, 0.95), h_pad=1.6, w_pad=2.0)
-    save(figure, out, "fig4")
+    save(figure, out, "fig5")
 
 
 # --- Figure 3: what each loader did with each genome (Q3) -----------------------------
@@ -823,7 +828,7 @@ def figure_loaders(results: Results, out: Path) -> None:
         axis.text(chip_x + 0.24, key_y + bar_h / 2, text, ha="left", va="center",
                   fontsize=SMALL, color=INK2)
         chip_x += 0.24 + 0.08 * len(text) + 0.25
-    save(figure, out, "fig3")
+    save(figure, out, "fig4")
 
 
 # --- Figure 5: query waits (Q6) -------------------------------------------------------
@@ -935,7 +940,7 @@ def figure_queries(results: Results, out: Path) -> None:
         box = axes[row_index][0].get_position()
         figure.text(0.012, (box.y0 + box.y1) / 2, view_title, rotation=90, ha="left",
                     va="center", fontsize=7, fontweight="bold", color=INK)
-    save(figure, out, "fig5")
+    save(figure, out, "fig6")
 
 
 # --- tables ----------------------------------------------------------------------------
@@ -1309,6 +1314,203 @@ def table_sequences(results: Results) -> str:
     return md_table(header, rows, "llr" + "r" * len(tools))
 
 
+# --- The portal (Q9; PROTOCOL.md section 13) --------------------------------------------
+
+PENDING = "pending"
+REQUEST_KINDS = [  # (kind in portal_requests.tsv, what the paper calls it)
+    ("search", "Search by the gene's name"),
+    ("gene_page", "Gene page"),
+    ("region_page", "Region page, gene and 5 kb either side"),
+    ("protein", "Protein, as FASTA"),
+    ("range_annotation", "64 KiB of the annotation file"),
+    ("range_assembly", "64 KiB of the assembly file"),
+]
+TRANSLATION_CLASSES = ["no_internal_stop", "stop_declared_exception", "stop_partial",
+                       "stop_pseudo", "stop_unexplained", "failed"]
+
+
+class Portal:
+    """What benchmark/run_portal.py left in its results folder."""
+
+    def __init__(self, folder: Path):
+        self.folder = folder
+        self.loads = read_tsv(folder / "portal_loads.tsv")
+        self.index = read_tsv(folder / "portal_index.tsv")
+        self.requests = read_tsv(folder / "portal_requests.tsv")
+        self.found = read_tsv(folder / "portal_found.tsv")
+        self.concurrency = read_tsv(folder / "portal_concurrency.tsv")
+        self.translation = read_tsv(folder / "portal_translation.tsv")
+        self.security = read_tsv(folder / "portal_security.tsv")
+        self.readonly = read_tsv(folder / "portal_readonly.tsv")
+        self.environment = json.loads((folder / "portal_environment.json").read_text())
+
+    def times(self, backend: str, kind: str, accession: str | None = None) -> list[float]:
+        return [float(r["ms"]) for r in self.requests
+                if r["backend"] == backend and r["kind"] == kind
+                and (accession is None or r["accession"] == accession)]
+
+
+def nearest_rank(values: list[float], share: float) -> float:
+    """The percentile run_portal.py reports: the value at that rank, no interpolation."""
+    ordered = sorted(values)
+    return ordered[min(len(ordered) - 1, int(round(share * (len(ordered) - 1))))]
+
+
+def ms(value: float) -> str:
+    return f"{value:,.0f}" if value >= 100 else f"{value:.1f}"
+
+
+def table_portal(portal: Portal | None) -> str:
+    """Table 8: how long each kind of request took, on SQLite with all 30 genomes in
+    one database, and on PostgreSQL with human."""
+    header = ["Request", "Requests", "Median, ms", "95th percentile, ms", "Slowest, ms",
+              "Median, ms (PostgreSQL, human)", "95th percentile, ms (PostgreSQL, human)"]
+    rows = []
+    for kind, label in REQUEST_KINDS:
+        if portal is None:
+            rows.append([label] + [PENDING] * 6)
+            continue
+        times = portal.times("sqlite", kind)
+        pg = portal.times("postgresql", kind)
+        rows.append([label, n(len(times)), ms(statistics.median(times)),
+                     ms(nearest_rank(times, 0.95)), ms(max(times)),
+                     ms(statistics.median(pg)) if pg else "–",
+                     ms(nearest_rank(pg, 0.95)) if pg else "–"])
+    return md_table(header, rows, "lrrrrrr", [5, 2, 2, 2, 2, 3, 3])
+
+
+def table_portal_genomes(results: Results, portal: Portal | None) -> str:
+    """Table S5: the portal per genome, in the order of Table S1."""
+    header = ["Organism", "Accession", "Loaded", "Index terms", "Index s", "Index check",
+              *[label.split(",")[0] + ", median ms" for _, label in REQUEST_KINDS[:4]],
+              "Genes searched", "Found", "Found on page 1", "CDS translated",
+              "No stop inside", "Stop, exception declared", "Stop, partial CDS",
+              "Stop, pseudogene", "Stop, unexplained"]
+    rows = []
+    for g in results.order:
+        accession = g["accession"]
+        if portal is None:
+            rows.append([name_md(g["organism"]), accession] + [PENDING] * (len(header) - 2))
+            continue
+        load = next((r for r in portal.loads if r["accession"] == accession
+                     and r["backend"] == "sqlite"), None)
+        index = next((r for r in portal.index if r["accession"] == accession
+                      and r["backend"] == "sqlite"), None)
+        found = [r for r in portal.found if r["accession"] == accession]
+        tr = next((r for r in portal.translation if r["accession"] == accession), None)
+        medians = []
+        for kind, _ in REQUEST_KINDS[:4]:
+            times = portal.times("sqlite", kind, accession)
+            medians.append(ms(statistics.median(times)) if times else "–")
+        rows.append([
+            name_md(g["organism"]), accession,
+            {"loaded": "yes", "loaded_with_repair": "repaired"}.get(
+                load["outcome"], load["outcome"]) if load else "–",
+            n(number(index["terms"])) if index else "–",
+            f"{float(index['seconds']):,.1f}" if index else "–",
+            index["check"] if index else "–",
+            *medians, n(len(found)), n(sum(r["found"] == "True" for r in found)),
+            n(sum(r["page"] == "1" for r in found)),
+            *([n(number(tr["checked"]))] + [n(number(tr[key])) for key in
+                                             TRANSLATION_CLASSES[:5]] if tr else ["–"] * 6)])
+    return md_table(header, rows, "ll" + "l" + "rr" + "l" + "r" * (len(header) - 6))
+
+
+def portal_versions(portal: Portal | None) -> list[list[str]]:
+    """Table 2's rows for the portal's run, as its environment recorded them."""
+    from_package = HERE.parent / "src" / "cgload" / "portal" / "static" / "igv" / "VENDORED.md"
+    igv = re.search(r"igv\.js (\d+\.\d+\.\d+)", from_package.read_text()).group(1)
+    if portal is None:
+        return [["cgload", "0.3.0", "the portal (Q9; run pending)"],
+                ["Flask, Werkzeug, Jinja2", PENDING, "the portal"],
+                ["waitress", PENDING, "the portal's web server"],
+                ["igv.js", igv, "the portal's genome browser, served with cgload"]]
+    env = portal.environment
+    packages = env["packages"]
+    when = ""
+    if env.get("started"):
+        import datetime
+
+        day = datetime.date.fromisoformat(env["started"])
+        when = f", run on {day.day} {day:%B %Y}"
+    return [["cgload", env["cgload"], f"the portal (Q9), at commit {env['commit']}{when}"],
+            ["Flask, Werkzeug, Jinja2",
+             f"{packages['flask']}, {packages['werkzeug']}, {packages['jinja2']}", "the portal"],
+            ["waitress", packages["waitress"], "the portal's web server"],
+            ["igv.js", igv, "the portal's genome browser, served with cgload"]]
+
+
+def portal_numbers(portal: Portal) -> dict[str, str]:
+    """The portal's numbers the text quotes, as the text writes them."""
+    out: dict[str, str] = {}
+    loads = [r for r in portal.loads if r["backend"] == "sqlite"]
+    out["genomes"] = n(len(loads))
+    out["loaded"] = n(sum(r["outcome"] in ("loaded", "loaded_with_repair") for r in loads))
+    out["repaired"] = n(sum(r["outcome"] == "loaded_with_repair" for r in loads))
+    out["load_hours"] = f"{sum(float(r['wall_s']) for r in loads) / 3600:.1f}"
+    index = [r for r in portal.index if r["backend"] == "sqlite"]
+    out["index_pass"] = n(sum(r["check"] == "PASS" for r in index))
+    out["index_terms_million"] = f"{sum(number(r['terms']) for r in index) / 1e6:.1f}"
+    out["index_minutes"] = f"{sum(float(r['seconds']) for r in index) / 60:.0f}"
+    human = next((r for r in index if r["accession"] == "GCF_000001405.40"), None)
+    if human:
+        out["index_human_minutes"] = f"{float(human['seconds']) / 60:.1f}"
+    db = portal.readonly[0]
+    out["database_gib"] = f"{number(db['bytes']) / 1024 ** 3:.1f}"
+    out["database_unchanged"] = "unchanged" if db["unchanged"] == "True" else "CHANGED"
+    sqlite = [r for r in portal.requests if r["backend"] == "sqlite"]
+    out["requests"] = n(len(sqlite))
+    out["requests_not_ok"] = n(sum(not 200 <= int(r["status"]) < 400 for r in sqlite))
+    for kind, _ in REQUEST_KINDS:
+        times = portal.times("sqlite", kind)
+        out[f"{kind}_median"] = ms(statistics.median(times))
+        out[f"{kind}_p95"] = ms(nearest_rank(times, 0.95))
+        out[f"{kind}_max"] = ms(max(times))
+        pg = portal.times("postgresql", kind)
+        if pg:
+            out[f"{kind}_pg_median"] = ms(statistics.median(pg))
+            out[f"{kind}_pg_p95"] = ms(nearest_rank(pg, 0.95))
+    every = [float(r["ms"]) for r in sqlite]
+    out["all_p95"] = ms(nearest_rank(every, 0.95))
+    out["all_max_s"] = f"{max(every) / 1000:.1f}"
+    out["under_1s_percent"] = f"{100 * sum(t < 1000 for t in every) / len(every):.1f}"
+    found = portal.found
+    out["genes"] = n(len(found))
+    out["found"] = n(sum(r["found"] == "True" for r in found))
+    out["found_percent"] = f"{100 * sum(r['found'] == 'True' for r in found) / len(found):.1f}"
+    out["found_first_page"] = n(sum(r["page"] == "1" for r in found))
+    missed = [r for r in found if r["found"] != "True"]
+    out["missed"] = n(len(missed))
+    out["missed_few"] = n(sum(1 for r in missed if r["matches"] and int(r["matches"]) <= 1000))
+    for row in portal.concurrency:
+        c = row["clients"]
+        out[f"c{c}_per_second"] = f"{float(row['per_second']):,.0f}"
+        out[f"c{c}_p50"] = ms(float(row["p50_ms"]))
+        out[f"c{c}_p95"] = ms(float(row["p95_ms"]))
+        out[f"c{c}_p99"] = ms(float(row["p99_ms"]))
+        out[f"c{c}_requests"] = n(number(row["requests"]))
+    out["load_test_errors"] = n(sum(number(r["errors"]) for r in portal.concurrency))
+    total = {key: sum(number(r[key]) for r in portal.translation)
+             for key in ["checked", *TRANSLATION_CLASSES]}
+    for key, value in total.items():
+        out[f"cds_{key}"] = n(value)
+    out["cds_clean_percent"] = f"{100 * total['no_internal_stop'] / total['checked']:.2f}"
+    out["cds_explained"] = n(total["stop_declared_exception"] + total["stop_partial"]
+                             + total["stop_pseudo"])
+    probe = portal.security[0]
+    statuses = json.loads(probe["statuses"])
+    out["probe_requests"] = n(number(probe["requests"]))
+    out["probe_server_errors"] = n(number(probe["server_errors"]))
+    out["probe_missing_headers"] = n(number(probe["missing_security_headers"]))
+    out["probe_failures"] = "none" if not probe["failures"] else probe["failures"]
+    for status in ("200", "400", "404", "405"):
+        out[f"probe_{status}"] = n(statuses.get(status, 0))
+    env = portal.environment
+    out["cgload"] = env["cgload"]
+    out["cpus"] = n(env["cpus"])
+    return out
+
+
 VERSIONS = [  # (what the paper calls it, file, kind, package name, what it was used for)
     ("Python", "env.txt", "conda", "python", "cgload, gffutils and the benchmark scripts"),
     ("SQLite", "env.txt", "conda", "libsqlite", "cgload and gffutils databases"),
@@ -1346,7 +1548,7 @@ def version_of(text: str, kind: str, package: str) -> str:
 BENCHMARKED_CGLOAD = "0.2.1"
 
 
-def table_versions(results: Results) -> str:
+def table_versions(results: Results, portal: Portal | None) -> str:
     """Versions as the server's environments recorded them at the time of the run."""
     folder = results.folder / "environment"
     # The version the benchmark ran, not the one installed now: 0.2.2 changed
@@ -1368,6 +1570,7 @@ def table_versions(results: Results) -> str:
     rows[at:at] = [["Chado schema", "1.31 (GMOD/Chado commit ef04588)", "python-chado's database"],
                    ["Sequence Ontology", "SO-Ontologies commit 4340c14",
                     "python-chado's database (so.obo)"]]
+    rows[2:2] = portal_versions(portal)
     return md_table(["Software", "Version", "Used for"], rows, "lll")
 
 
@@ -1385,9 +1588,13 @@ def table_timing(results: Results) -> str:
     return md_table(header, rows, "lllllrr")
 
 
-def write_tables(results: Results, out: Path) -> None:
+def write_tables(results: Results, portal: Portal | None, out: Path) -> None:
     out.mkdir(parents=True, exist_ok=True)
+    numbers = portal_numbers(portal) if portal else {}
+    (out / "portal_numbers.json").write_text(json.dumps(numbers, indent=1, sort_keys=True) + "\n")
     tables = {
+        "table7_portal.md": table_portal(portal),
+        "tableS5_portal.md": table_portal_genomes(results, portal),
         "table0_example.md": table_example(),
         "table1_loaders.md": table_loaders(results),
         "table2_cases.md": table_cases(results),
@@ -1398,7 +1605,7 @@ def write_tables(results: Results, out: Path) -> None:
         "tableS2_faults.md": table_faults_full(results),
         "tableS3_timing.md": table_timing(results),
         "tableS4_sequences.md": table_sequences(results),
-        "table6_versions.md": table_versions(results),
+        "table6_versions.md": table_versions(results, portal),
     }
     for name, text in tables.items():
         (out / name).write_text(text)
@@ -1411,15 +1618,19 @@ def main(argv=None) -> int:
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("results", nargs="?", type=Path,
                         default=HERE / "data" / "benchmark-run-2.2")
+    parser.add_argument("--portal", type=Path, default=HERE / "data" / "portal-v0.3.0")
     parser.add_argument("--out", type=Path, default=HERE)
     args = parser.parse_args(argv)
     results = Results(args.results)
+    portal = Portal(args.portal) if (args.portal / "portal_summary.txt").exists() else None
+    if portal is None:
+        print(f"no portal results in {args.portal}: its tables say pending", file=sys.stderr)
     figure_design(args.out / "figures")
     figure_schema(args.out / "figures")
     figure_scale(results, args.out / "figures")
     figure_loaders(results, args.out / "figures")
     figure_queries(results, args.out / "figures")
-    write_tables(results, args.out / "tables")
+    write_tables(results, portal, args.out / "tables")
     print(f"figures in {args.out / 'figures'}, tables in {args.out / 'tables'}")
     return 0
 
