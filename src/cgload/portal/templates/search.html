@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ query }} · {{ genome.organism }} · {{ portal_title }}{% endblock %}
+{% block body %}
+<h1>Search <em>{{ genome.organism }}</em></h1>
+<p class="sub"><a href="{{ url_for('genome_page', assembly_id=genome.assembly_id) }}">{{ genome.label }}</a></p>
+{% include "_forms.html" %}
+<p>{% if total %}{{ '{:,}'.format(total) }}{% if result.truncated %}+{% endif %} feature{{ 's' if total != 1 }} match <strong>{{ query }}</strong>.{% else %}Nothing matches <strong>{{ query }}</strong>.{% endif %}
+{% if not result.indexed %}<span class="tag warn">names not indexed: IDs and functional terms only</span>{% endif %}</p>
+{% if rows %}
+<table><thead><tr><th>Feature</th><th>Type</th><th>Location</th><th>Description</th><th>Gene</th><th>Matched by</th></tr></thead><tbody>
+{% for match, item, top in rows %}
+<tr>
+  <td><a href="{{ url_for('feature_page', assembly_id=genome.assembly_id, row=item.row_id) }}">{{ feature_name(item) }}</a><br><span class="muted">{{ item.source_id or '' }}</span></td>
+  <td>{{ item.feature_type }}</td>
+  <td>{{ item.seqid }}:{{ '{:,}'.format(item.start) }}-{{ '{:,}'.format(item.end) }} ({{ item.strand }})</td>
+  <td>{{ feature_note(item) }}</td>
+  <td>{% if top and top.row_id != item.row_id %}<a href="{{ url_for('feature_page', assembly_id=genome.assembly_id, row=top.row_id) }}">{{ feature_name(top) }}</a>{% endif %}</td>
+  <td><span class="tag">{{ rank_labels[match.rank] }}</span> <span class="muted">{{ match.field }}</span></td>
+</tr>
+{% endfor %}
+</tbody></table>
+<div class="pager">
+  {% if page > 1 %}<a href="{{ url_for('search_page', assembly_id=genome.assembly_id, q=query, page=page-1) }}">← previous</a>{% endif %}
+  <span class="muted">page {{ page }} of {{ pages }}</span>
+  {% if page < pages %}<a href="{{ url_for('search_page', assembly_id=genome.assembly_id, q=query, page=page+1) }}">next →</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

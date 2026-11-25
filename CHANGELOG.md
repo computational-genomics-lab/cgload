@@ -2,10 +2,39 @@
 
 Decisions referred to as D-0xx are in [docs/decisions.md](docs/decisions.md).
 
-## Unreleased
+## 0.3.0 (unreleased)
+
+The genomes cgload loads can now be put on the web for the people who use
+them. Loading, `verify`, `export` and `query` are those of 0.2.2, and a
+database made by 0.2.2 is read as it is; `cgload index` adds two tables to it.
+
+### Added
+
+- `cgload serve`: a genome portal over a cgload database
+  ([docs/portal.md](docs/portal.md), D-111). Search by name, synonym, locus
+  tag, product, cross-reference or functional term, in one genome or all;
+  gene pages with the gene model drawn to scale, igv.js at the locus, the
+  attributes with cross-references linked, the functional annotation and the
+  whole family; regions; genomic, spliced, coding and protein sequences as
+  FASTA, translated with the genetic code the file names (D-113); GFF3 and
+  the assembly's files with byte ranges; each load's receipt; and a JSON API
+  under `/api/v1/`. It needs the `[portal]` extra (Flask and waitress).
+- `cgload index`: builds the portal's search index and checks it by counting:
+  for each attribute it indexes, the features that carry it in the database
+  against those that reach the index. An assembly whose counts differ keeps
+  no index (D-112).
+- The portal opens the database read-only, answers only GET and HEAD, binds
+  every value it is sent, escapes all text from the files, and sends a
+  Content-Security-Policy that allows no inline script and no script from
+  another site; igv.js 3.8.10 ships with cgload (D-114).
+  `tests/test_portal_security.py` sends injection strings and a seeded fuzz
+  of 3,000 requests, and CI runs bandit on the code.
+- `benchmark/run_portal.py` (PROTOCOL.md section 13): the portal on the
+  benchmark's 30 genomes in one database.
 
 ### Changed
 
+- `cgload remove` also removes the assembly's search index.
 - `pytest` with no options now runs the default tier: `addopts` leaves out the
   real-genome tier, which fails without its files, and the server tier. CI asks
   for each tier with `-m`, as before.

@@ -1,0 +1,6 @@
+{% if browser %}
+<div id="igv" data-name="{{ browser.name }}" data-fasta="{{ browser.fasta }}" data-fai="{{ browser.fai }}" data-locus="{{ browser.locus }}" data-locate="{{ browser.locate }}"{% if browser.gff %} data-gff="{{ browser.gff }}" data-tbi="{{ browser.tbi }}"{% endif %}></div>
+{% if not browser.gff %}<p class="muted">The annotation track is missing: cgload writes a tabix index only for sequences up to 2<sup>29</sup> bp.</p>{% endif %}
+{% else %}
+<p class="muted">The genome browser needs the assembly file, which is not in the data directory the portal was given.</p>
+{% endif %}

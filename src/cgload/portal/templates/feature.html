@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ feature_name(item) }} · {{ genome.organism }} · {{ portal_title }}{% endblock %}
+{% block body %}
+<h1>{{ feature_name(item) }} <span class="tag">{{ item.feature_type }}</span></h1>
+<p class="sub"><a href="{{ url_for('genome_page', assembly_id=genome.assembly_id) }}"><em>{{ genome.organism }}</em> · {{ genome.name }}</a>
+ · <a href="{{ url_for('region_page', assembly_id=genome.assembly_id, r=item.seqid ~ ':' ~ item.start ~ '-' ~ item.end) }}">{{ item.seqid }}:{{ '{:,}'.format(item.start) }}-{{ '{:,}'.format(item.end) }}</a> ({{ item.strand }})
+ · {{ item.segments|length }} row{{ 's' if item.segments|length != 1 }}
+ {% if family.top.row_id != item.row_id %} · part of <a href="{{ feature_url(family.top) }}">{{ feature_name(family.top) }}</a>{% endif %}</p>
+{% if feature_note(item) %}<p>{{ feature_note(item) }}</p>{% endif %}
+
+<h2>Gene model</h2>
+{{ model }}
+<p class="muted">Boxes are exons, taller boxes coding sequence, lines introns; a row is one transcript (or the gene's own rows). Click a row to open it.{% if family.truncated %} This family has {{ '{:,}'.format(family.members|length) }} features.{% endif %}</p>
+
+<h2>Genome browser</h2>
+{% include "_browser.html" %}
+
+<div class="grid">
+<section class="card">
+  <h2>Attributes</h2>
+  <dl class="attrs">
+    <dt>ID</dt><dd>{{ item.source_id or '(none in the file)' }}</dd>
+    <dt>Type in file</dt><dd>{{ item.source_type }}</dd>
+    <dt>Source</dt><dd>{{ item.source_program }}</dd>
+    {% if item.parent_source_id %}<dt>Parent</dt><dd>{{ item.parent_source_id }}</dd>{% endif %}
+    {% for key, values in item.attributes.items() %}
+    <dt>{{ key }}</dt><dd>{% for value in values %}{% set link = xref_link(value) if key in ('Dbxref', 'db_xref', 'Ontology_term') else none %}{% if link %}<a href="{{ link }}" rel="noopener noreferrer" target="_blank">{{ value }}</a>{% else %}{{ value }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+    {% endfor %}
+  </dl>
+</section>
+<section class="card">
+  <h2>Sequences</h2>
+  {% if sequences %}
+  <ul>
+    {% for kind, label in [('genomic', 'Genomic span'), ('spliced', 'Spliced (exons joined)'), ('cds', 'Coding sequence'), ('protein', 'Protein')] %}
+    {% if kind in sequences %}<li><a href="{{ url_for('feature_fasta', assembly_id=genome.assembly_id, row=item.row_id, kind=kind) }}">{{ label }}</a> <span class="muted">{{ '{:,}'.format(sequences[kind]|length) }} {{ 'aa' if kind == 'protein' else 'bp' }}</span></li>{% endif %}
+    {% endfor %}
+  </ul>
+  {% if code %}<p class="muted">Translated by cgload with NCBI genetic code {{ code[0] }} ({{ code[1] }}).</p>{% endif %}
+  {% for note in notes %}<p class="note">The file declares <code>{{ note }}</code>, which this translation does not apply.</p>{% endfor %}
+  {% if 'protein' in sequences %}<pre class="seq">{{ sequences['protein'] }}</pre>{% endif %}
+  {% else %}
+  <p class="muted">The assembly file is not available to the portal, so no sequence can be shown.</p>
+  {% endif %}
+  <p><a href="{{ url_for('family_gff3', assembly_id=genome.assembly_id, row=item.row_id) }}">The whole family as GFF3</a></p>
+</section>
+</div>
+
+{% set annotated = family.annotations %}
+{% if annotated %}
+<h2>Functional annotation</h2>
+<table><thead><tr><th>Feature</th><th>Tool</th><th>Analysis</th><th>Accession</th><th>Description</th><th class="num">Protein span</th><th class="num">E-value</th></tr></thead><tbody>
+{% for depth, member in members %}{% for hit in annotated.get(member.row_id, []) %}
+<tr><td><a href="{{ feature_url(member) }}">{{ feature_name(member) }}</a></td><td>{{ hit.tool }}</td><td>{{ hit.analysis }}</td>
+<td>{% set link = term_link(hit.analysis, hit.accession) %}{% if link %}<a href="{{ link }}" rel="noopener noreferrer" target="_blank">{{ hit.accession }}</a>{% else %}{{ hit.accession }}{% endif %}</td>
+<td>{{ hit.description or '' }}</td><td class="num">{% if hit.protein_start %}{{ hit.protein_start }}–{{ hit.protein_end }}{% endif %}</td><td class="num">{{ '%.2g'|format(hit.evalue) if hit.evalue is not none else '' }}</td></tr>
+{% endfor %}{% endfor %}
+</tbody></table>
+{% endif %}
+
+<h2>Family</h2>
+<table><thead><tr><th>Feature</th><th>Type</th><th>Location</th><th class="num">Rows</th><th class="num">Length (bp)</th></tr></thead><tbody>
+{% for depth, member in members[:5000] %}
+<tr{% if member.row_id == item.row_id %} class="current"{% endif %}>
+  <td class="indent-{{ [depth, 4]|min }}"><a href="{{ feature_url(member) }}">{{ feature_name(member) }}</a></td>
+  <td>{{ member.feature_type }}</td>
+  <td>{{ member.seqid }}:{{ '{:,}'.format(member.start) }}-{{ '{:,}'.format(member.end) }} ({{ member.strand }})</td>
+  <td class="num">{{ member.segments|length }}</td>
+  <td class="num">{{ '{:,}'.format(member.segments|sum(attribute='end') - member.segments|sum(attribute='start') + member.segments|length) }}</td>
+</tr>
+{% endfor %}
+</tbody></table>
+{% if members|length > 5000 %}<p class="muted">{{ '{:,}'.format(members|length - 5000) }} more members are in the GFF3 download.</p>{% endif %}
+{% endblock %}
+{% block scripts %}{% if browser %}<script src="{{ url_for('static', filename='igv/igv.min.js') }}"></script><script src="{{ url_for('static', filename='portal.js') }}"></script>{% endif %}{% endblock %}

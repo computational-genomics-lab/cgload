@@ -437,3 +437,74 @@ from different programs.
 **Clarification, 23 November 2026.** The "outside review of its draft" under
 11 November was a review by Claude, the language model that wrote these
 scripts, as `paper/llm_use.md` records. Nothing measured changed.
+
+## 13. The portal (added 25 November 2026)
+
+Not part of `benchmark-protocol-v1`, and written after its runs. cgload 0.3.0
+adds a web portal (`cgload serve`, `docs/portal.md`), and this section says
+how it is measured on the same 30 genomes. It was written, with
+`run_portal.py`, before that measurement was made. Nothing in it changes a
+result of the earlier sections.
+
+**Questions.**
+
+* P1. Do all 30 genomes load into one database, as a lab's portal would hold
+  them, and does each genome's search index pass its count check (D-112)?
+* P2. How long does a user wait for the things a user asks for: a search by
+  a gene's name, the gene's page, its region, its protein, and the byte ranges
+  of the files the genome browser reads? On SQLite with all 30 genomes, and on
+  PostgreSQL for human.
+* P3. Does a search by a gene's own name list that gene, and on which page?
+* P4. How do the times change with 1, 8 and 32 users at once?
+* P5. Are the proteins the portal shows right? A CDS translated as the portal
+  translates it should have a stop codon only at its end, unless the file
+  says why not.
+* P6. Does any request make the server fail, return a script it was sent, or
+  lack a security header? Does serving change the database?
+
+**Procedure.** `run_portal.py`, whose docstring lists its eight steps, on the
+server of section 4, with the inputs `run.sh` downloaded. The portal is
+`cgload serve` with 8 threads, one process; the client runs on the same
+machine and reaches it over the loopback interface. For each genome, 200
+genes with a `Name` are chosen, seeded by the accession; a gene's requests are
+the search, its page, its region (the gene with 5 kb on each side, at most
+100 kb), the protein of its first CDS, and a 64 KiB range of each of
+`annotation.gff3.gz` and `assembly.fa` at a seeded offset. The load test
+draws from the same requests, each client with its own seed, for 60 s at each
+level. Up to 2,000 CDS per genome, seeded by the accession, are translated. The
+security probe sends the injection strings in the script and 3,000 seeded
+random requests to the server holding all 30 genomes.
+
+**What counts as a failure of the portal.**
+
+* A genome that loaded in the benchmark does not load here, or its index
+  check fails.
+* A response with status 500 or above, or no response.
+* A search by a gene's name that does not list the gene, where no more than
+  1,000 features (20 pages) match that name.
+* A protein with a stop codon inside, from a CDS with no `transl_except`,
+  `exception` or `ribosomal_slippage`, no `start_range`, `end_range` or
+  `partial`, and not part of a pseudogene. Each is listed by ID and looked
+  into, and section 9 applies.
+* A response without the security headers, a script sent in a request and
+  returned in a page, or an answer other than 405 to POST, PUT or DELETE.
+* A database file whose SHA-256 after the serving steps differs from before.
+
+**What is reported.** Per genome and in total: the load outcome and the index
+check (P1); per kind of request, the median, 95th percentile and maximum time
+and the statuses (P2); the share of genes found, and on which page (P3);
+requests per second and the 50th, 95th and 99th percentiles at each level
+(P4); the translation classes (P5); the probe's statuses and failures and the
+database's checksums (P6). The results go to `paper/data/portal-v0.3.0/`.
+
+**Limits known in advance.**
+
+* Server and client share the machine, so the times leave out the network
+  and the browser's own drawing of igv.js.
+* One server process. Its threads share Python's interpreter lock, so
+  requests per second stop rising once that is busy; more needs more
+  processes behind the web server (`docs/portal.md`).
+* Only genes with a `Name` are sampled.
+* The probe is the authors' own, not a test by an outside party.
+* No other portal is timed: none serves these 30 files without converting
+  them first. Tripal reads Chado, whose loading the earlier sections measure.

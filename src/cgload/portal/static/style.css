@@ -1,0 +1,70 @@
+/* cgload portal */
+:root {
+  --ink: #1d2733; --muted: #5b6875; --line: #d9dee4; --soft: #f4f6f8;
+  --accent: #1f6f8b; --accent-soft: #e3f0f4; --ok: #2e7d4f; --warn: #a15c00; --bad: #b3261e;
+  --exon: #6c8fb0; --cds: #1f4e79; --utr: #a9bfd4;
+}
+* { box-sizing: border-box; }
+html { font-size: 15px; }
+body { margin: 0; color: var(--ink); background: #fff;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.45; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+header.top { background: var(--ink); color: #fff; }
+header.top .inner { max-width: 1180px; margin: 0 auto; padding: 10px 18px; display: flex;
+  gap: 18px; align-items: center; flex-wrap: wrap; }
+header.top a.brand { color: #fff; font-weight: 650; font-size: 1.1rem; }
+header.top nav a { color: #cfd8e3; margin-right: 14px; }
+header.top form { margin-left: auto; display: flex; gap: 6px; }
+main { max-width: 1180px; margin: 0 auto; padding: 18px; }
+footer { max-width: 1180px; margin: 30px auto 20px; padding: 0 18px; color: var(--muted);
+  font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 10px; }
+h1 { font-size: 1.55rem; margin: 6px 0 4px; }
+h2 { font-size: 1.15rem; margin: 26px 0 8px; border-bottom: 1px solid var(--line);
+  padding-bottom: 4px; }
+.sub { color: var(--muted); margin: 0 0 14px; }
+input[type=search], input[type=text] { padding: 6px 9px; border: 1px solid var(--line);
+  border-radius: 6px; font-size: 0.95rem; min-width: 260px; }
+button { padding: 6px 12px; border: 0; border-radius: 6px; background: var(--accent);
+  color: #fff; font-size: 0.95rem; cursor: pointer; }
+header.top input[type=search] { border-color: #46576a; background: #2a3746; color: #fff; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line);
+  vertical-align: top; }
+th { background: var(--soft); font-weight: 600; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+.tag { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 0.8rem;
+  background: var(--soft); color: var(--muted); }
+.tag.ok { background: #e4f3ea; color: var(--ok); }
+.tag.fail { background: #fbe7e6; color: var(--bad); }
+.tag.warn { background: #fdf0de; color: var(--warn); }
+.forms { display: flex; gap: 14px; flex-wrap: wrap; margin: 10px 0 4px; }
+.forms form { display: flex; gap: 6px; }
+pre.seq { background: var(--soft); padding: 10px; border-radius: 6px; white-space: pre-wrap;
+  word-break: break-all; font-size: 0.82rem; max-height: 260px; overflow: auto; }
+.muted { color: var(--muted); }
+.note { background: #fdf6e7; border-left: 3px solid var(--warn); padding: 6px 10px;
+  margin: 8px 0; }
+.indent-1 { padding-left: 18px; } .indent-2 { padding-left: 36px; }
+.indent-3 { padding-left: 54px; } .indent-4 { padding-left: 72px; }
+dl.attrs { display: grid; grid-template-columns: max-content 1fr; gap: 3px 14px; margin: 0; }
+dl.attrs dt { color: var(--muted); }
+dl.attrs dd { margin: 0; word-break: break-word; }
+#igv { min-height: 380px; border: 1px solid var(--line); border-radius: 8px; margin-top: 8px; }
+svg.model { width: 100%; height: auto; display: block; }
+svg.model .axis { stroke: #8994a0; stroke-width: 1; }
+svg.model .tick { font-size: 11px; fill: var(--muted); }
+svg.model .label { font-size: 12px; fill: var(--ink); }
+svg.model .intron { stroke: #8a99a8; stroke-width: 1.2; }
+svg.model .exon { fill: var(--exon); }
+svg.model .utr { fill: var(--utr); }
+svg.model .cds { fill: var(--cds); }
+svg.model .hit { fill: transparent; }
+svg.model a:hover .hit { fill: var(--accent-soft); }
+svg.model .selected .hit { fill: #fff4d6; }
+svg.model .selected .label { font-weight: 700; }
+.pager { margin: 12px 0; display: flex; gap: 10px; align-items: center; }
+tr.current td { background: #fff4d6; }

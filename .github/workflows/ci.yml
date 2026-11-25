@@ -20,8 +20,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install "ruff==0.17.0"   # pinned: a new ruff release must not turn CI red on its own
+      - run: pip install "ruff==0.17.0" "bandit==1.8.6"   # pinned: a new release must not turn CI red on its own
       - run: ruff check --output-format=github .
+      # Security lint of the package, the portal included (D-111). Two lines
+      # carry a reasoned `# nosec`; anything else fails the job.
+      - run: bandit -q -r src/cgload
 
   test:
     name: tests (py${{ matrix.python-version }} / ${{ matrix.os }})
@@ -49,7 +52,7 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[test]"
+          pip install -e ".[test,portal]"
       - name: Entry point runs
         run: |
           cgload --version
@@ -65,7 +68,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -e ".[test]"
+      - run: pip install -e ".[test,portal]"
       - run: pytest benchmark/tests -v
 
   build:
@@ -82,8 +85,9 @@ jobs:
       - name: Install the wheel in a fresh environment
         run: |
           python -m venv /tmp/fresh
-          /tmp/fresh/bin/pip install dist/*.whl
+          /tmp/fresh/bin/pip install "$(ls dist/*.whl)[portal]"
           /tmp/fresh/bin/cgload --version
+          /tmp/fresh/bin/python -c "import importlib.resources as r; p = r.files('cgload.portal'); assert (p / 'templates' / 'feature.html').is_file() and (p / 'static' / 'igv' / 'igv.min.js').is_file()"
 
   slow:
     name: real-genome tier
@@ -124,5 +128,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -e ".[test,postgres]"
+      - run: pip install -e ".[test,postgres,portal]"
       - run: pytest -m requires_server -v

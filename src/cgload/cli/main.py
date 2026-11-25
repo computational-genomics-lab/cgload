@@ -20,6 +20,7 @@ from cgload.cli.commands.init import init_command
 from cgload.cli.commands.load import load_command
 from cgload.cli.commands.query import query_command
 from cgload.cli.commands.remove import remove_command
+from cgload.cli.commands.serve import index_command, serve_command
 from cgload.cli.commands.stats import stats_command
 from cgload.cli.commands.verify import verify_command
 
@@ -71,6 +72,8 @@ cli.add_command(export_command)
 cli.add_command(stats_command)
 cli.add_command(query_command)
 cli.add_command(remove_command)
+cli.add_command(index_command)
+cli.add_command(serve_command)
 
 for _name, (_milestone, _summary) in PENDING.items():
     cli.add_command(PendingCommand(_name, _milestone, _summary))

@@ -41,6 +41,7 @@ def test_help_lists_every_v1_command(run):
     expected = {
         "init", "load", "verify", "explain",
         "stats", "query", "export", "remove",
+        "index", "serve",
     }
     result = run.invoke(cli, ["--help"])
     listed = set(cli.commands)

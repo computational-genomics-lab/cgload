@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ genome.organism }} · {{ portal_title }}{% endblock %}
+{% block body %}
+<h1><em>{{ genome.organism }}</em></h1>
+<p class="sub">{{ genome.strain }} · {{ genome.name }}{% if genome.version %} {{ genome.version }}{% endif %}{% if genome.accession %} · {{ genome.accession }}{% endif %} · loaded by cgload {{ genome.cgload_version }}{% if genome.loaded_at %} on {{ genome.loaded_at.strftime('%Y-%m-%d') }}{% endif %}</p>
+{% set query = '' %}{% include "_forms.html" %}
+{% if not genome.indexed %}<p class="note">Names are not searchable yet: only exact IDs and functional terms are. <code>cgload index</code> builds the name index.</p>{% endif %}
+
+<div class="grid">
+  <section class="card">
+    <h2>Features by type</h2>
+    <table><thead><tr><th>Type</th><th class="num">Features</th></tr></thead><tbody>
+    {% for name, count in types %}<tr><td>{{ name }}</td><td class="num">{{ '{:,}'.format(count) }}</td></tr>{% endfor %}
+    </tbody></table>
+  </section>
+  <section class="card">
+    <h2>Sequences</h2>
+    <p class="muted">{{ '{:,}'.format(genome.sequences) }} sequences{% if sequences|length < genome.sequences %}; the {{ sequences|length }} longest:{% endif %}</p>
+    <table><thead><tr><th>Name</th><th class="num">Length (bp)</th></tr></thead><tbody>
+    {% for name, length in sequences %}<tr><td><a href="{{ url_for('region_page', assembly_id=genome.assembly_id, r=name ~ ':1-' ~ ([length, 100000]|min)) }}">{{ name }}</a></td><td class="num">{{ '{:,}'.format(length) }}</td></tr>{% endfor %}
+    </tbody></table>
+  </section>
+</div>
+
+<h2>How this genome was loaded</h2>
+{% if receipt %}
+<table><thead><tr><th>Check at load</th><th>Outcome</th><th>Detail</th></tr></thead><tbody>
+{% for check in receipt.get('verification', []) %}
+<tr><td>{{ check.check }}</td><td><span class="tag {{ 'ok' if check.outcome == 'pass' else ('fail' if check.outcome == 'fail' else 'warn') }}">{{ check.outcome }}</span></td><td>{{ check.detail }}</td></tr>
+{% endfor %}
+</tbody></table>
+{% set repairs = receipt.get('envelope_repairs', []) %}
+<p>{% if repairs %}<span class="tag warn">{{ repairs|length }} repair{{ 's' if repairs|length != 1 }}</span> cgload changed coordinates of {{ repairs|length }} feature{{ 's' if repairs|length != 1 }} to fit their parents, and recorded each change in the receipt.{% else %}<span class="tag ok">no repairs</span> Every row was stored as the file wrote it.{% endif %}</p>
+{% else %}
+<p class="muted">The load's receipt (<code>manifest.json</code>) is not in the data directory the portal was given.</p>
+{% endif %}
+<table><thead><tr><th>Input file</th><th>Format</th><th>Dialect</th><th>SHA-256</th></tr></thead><tbody>
+{% for f in files %}<tr><td>{{ f.name }}</td><td>{{ f.file_format }}</td><td>{{ f.detected_dialect or '' }}</td><td><code class="muted">{{ f.sha256[:16] }}…</code></td></tr>{% endfor %}
+</tbody></table>
+{% if analyses %}
+<h2>Functional annotation</h2>
+<table><thead><tr><th>Tool</th><th>Version</th><th class="num">Proteins in file</th><th class="num">Matched</th><th class="num">Not matched</th></tr></thead><tbody>
+{% for a in analyses %}<tr><td>{{ a.tool }}</td><td>{{ a.tool_version or '' }}</td><td class="num">{{ '{:,}'.format(a.query_count) }}</td><td class="num">{{ '{:,}'.format(a.matched_count) }}</td><td class="num">{{ '{:,}'.format(a.unmatched_count) }}</td></tr>{% endfor %}
+</tbody></table>
+{% endif %}
+
+<h2>Files</h2>
+<ul>
+{% for name, label in [('assembly.fa', 'Assembly (FASTA)'), ('assembly.fa.fai', 'Assembly index (.fai)'), ('annotation.gff3.gz', 'Annotation as stored (GFF3, BGZF)'), ('annotation.gff3.gz.tbi', 'Annotation index (tabix)')] %}
+  {% if genome.path(name) %}<li><a href="{{ url_for('data_file', assembly_id=genome.assembly_id, name=name) }}">{{ label }}</a></li>{% endif %}
+{% endfor %}
+</ul>
+{% endblock %}

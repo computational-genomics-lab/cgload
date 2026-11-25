@@ -130,6 +130,11 @@ def delete_assembly_rows(
     )
     owned_rows = select(feature.c.feature_id).where(feature.c.assembly_id == assembly_id)
 
+    # The portal's search index, where `cgload index` built one (D-112). Its
+    # tables have no foreign keys, so nothing else would remove these rows.
+    from cgload.portal.search import delete_index_rows
+
+    delete_index_rows(connection, assembly_id)
     connection.execute(
         delete(protein_annotation).where(protein_annotation.c.annotation_run_id.in_(runs))
     )

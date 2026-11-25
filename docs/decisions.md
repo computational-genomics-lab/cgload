@@ -2852,3 +2852,91 @@ it on that row, and `export` writes it back. The feature's `source_program`
 remains its first row's, for detection and the export header. Rows loaded by
 0.2.1 keep the value they were given; only a new load restores the difference.
 
+
+## D-111 — a read-only web portal, `cgload serve`
+
+**Reverses** the roadmap's exclusion of a web application, for the reason the
+exclusion itself gave for keeping one out: the security surface. A database
+that only its loader can read is of use to the people who can write a query;
+the people who need its genes are mostly not them. The portal is therefore
+built so that the surface stays small:
+
+- **Read-only by construction.** SQLite is opened with a `file:` URI in
+  `mode=ro` and `PRAGMA query_only=ON`; PostgreSQL connections run with
+  `default_transaction_read_only=on`. Every route answers GET and HEAD only.
+  There are no accounts, sessions, cookies, uploads or forms that change state,
+  so nothing for a cross-site request to forge.
+- **No new query code.** Pages ask `cgload.query` (D-085, D-094, D-108), the
+  code `cgload query` runs and the benchmark timed, plus the search index
+  (D-112). Every value a visitor sends is a bound parameter.
+- **Bounded input.** A search is at most 200 characters, a region 300, a page
+  number 1,000, a region listed or downloaded 5 Mb. Row and assembly ids above
+  2^31 - 1 are refused before they reach the driver (the fuzz test found that
+  one: an id past SQLite's 64-bit range made the driver raise).
+- **Escaped output.** Jinja's autoescaping on every page; the gene model drawing
+  (`portal/model.py`) escapes its labels itself; JSON escapes `<`, `>`, `&`
+  and `'`. A cross-reference becomes a link only when its accession has the
+  form its database uses, and is quoted into the URL.
+- **A strict Content-Security-Policy** on every response: scripts from the
+  portal itself only, no inline script, no frames, no plugins.
+- **Four files per assembly** may be served, by name: the assembly, its `.fai`,
+  the annotation export and its `.tbi`. No path from a request reaches the
+  filesystem.
+- **A production server** (waitress), with the `Server` header reduced to
+  `cgload`, behind which `docs/portal.md` shows nginx with HTTPS.
+
+The web parts are an optional extra (`cgload[portal]`: Flask and waitress),
+outside the core dependency budget, so loading and verifying never import a
+web framework. Tested by `tests/test_portal*.py`: injection strings, path
+traversal, file text that is HTML or script, missing headers, methods, a
+seeded fuzz of 3,000 requests, and the production server under concurrent
+clients; bandit runs in CI.
+
+## D-112 — the search index is a table of its own, checked by counting
+
+People look genes up by name, and the schema indexes IDs but not attribute
+values (D-101). `cgload index` writes one row per name into `search_term`
+(lower case, at most 200 characters, `COLLATE "C"` on PostgreSQL so a prefix
+search written as a range is right), for every feature except the parts of
+another (exons, UTRs, introns, start and stop codons): its ID, the whole value
+of the name, cross-reference and free-text attributes, the accession after a
+cross-reference's prefix, and each word of free text.
+
+**Checked as a load is checked.** For each key, the features carrying it are
+counted in `feature_attribute`, and the features with a term from it in
+`search_term`; any difference rolls the index back and names the key. Both
+counts are SQL, so a fault in how terms are made cannot hide itself (D-008's
+independence, applied to the index).
+
+Built by its own command, not by `load`, so the benchmark's load times and
+database sizes describe what `load` does; the index's own build time and size
+are measured separately (PROTOCOL.md section 13). The tables carry no foreign
+keys; `delete_assembly_rows` deletes an assembly's index rows, so `remove` and
+`load --force` leave none behind.
+
+## D-113 — sequences and proteins come from the stored assembly
+
+The portal reads every base from the assembly `load` copied and indexed
+(D-004). A transcript's spliced sequence is its exons in transcript order: by
+coordinate on one strand, and in the file's order for a trans-spliced feature,
+whose rows lie on both strands (`source_line`). A CDS is read from its first
+whole codon, skipping the first row's phase, and translated with the NCBI
+genetic code its `transl_table` names, or the standard code; an alternative
+start codon reads as M only at the start of a CDS complete at its 5' end. The
+tables are NCBI's (`gc.prt`), all 27 in use.
+
+A file's declared exceptions (`transl_except`, `exception`, ribosomal slippage)
+are shown, not applied. Tested against NCBI's own proteins: the three Dscam1
+isoforms of the GenBank fixture, 21 to 23 exons on the minus strand, translate
+to their `/translation` exactly.
+
+## D-114 — igv.js, served by the portal itself
+
+The genome browser on a page is igv.js 3.8.10 (MIT), vendored as
+`portal/static/igv/igv.min.js`, reading the assembly and the annotation
+export through byte ranges; its checksum is in `portal/static/igv/VENDORED.md`
+and a test compares them. Served from the portal so a page loads no code
+from another site, the policy can stay `script-src 'self'`, and a portal
+without internet access still works. igv.js is told not to fetch its list of
+public genomes. Supersedes the roadmap's "document JBrowse, do not build it":
+JBrowse 2 and IGV still read the same files directly.

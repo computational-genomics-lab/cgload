@@ -17,7 +17,7 @@ authors = [
 ]
 keywords = [
     "genomics", "genome annotation", "GFF3", "GTF", "GenBank",
-    "eukaryotes", "comparative genomics", "eggNOG",
+    "eukaryotes", "comparative genomics", "eggNOG", "genome browser", "web portal",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -43,6 +43,9 @@ dependencies = [
 [project.optional-dependencies]
 mysql = ["pymysql>=1.1"]
 postgres = ["psycopg[binary]>=3.1"]
+# The web portal (D-111): `cgload serve`. Kept out of the core budget above,
+# so loading and verifying never depend on a web framework.
+portal = ["flask>=3.0", "waitress>=3.0"]
 test = ["pytest>=7.4", "pytest-cov>=4.1"]
 dev = ["cgload[test]", "ruff==0.17.0", "build>=1.2"]
 docs = ["mkdocs>=1.6", "mkdocs-material>=9.5"]
@@ -61,6 +64,9 @@ version = { attr = "cgload.__version__" }
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["cgload*"]
+
+[tool.setuptools.package-data]
+"cgload.portal" = ["templates/*.html", "static/*.css", "static/*.js", "static/igv/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

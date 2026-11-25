@@ -1,11 +1,14 @@
 # cgload
 
 **Load genome assemblies and their annotations into a queryable relational
-database, reconcile the incompatible formats different pipelines produce, and
-check that every feature in the file reached the database.**
+database, reconcile the incompatible formats different pipelines produce,
+check that every feature in the file reached the database, and put the result
+on the web for people to search, browse and download.**
 
 cgload counts what it stored and checks that count against the file it read,
-using code that shares nothing with its parser.
+using code that shares nothing with its parser. `cgload serve` then makes the
+database a genome portal: search by gene name, product or GO term, a gene's
+model drawn to scale, a genome browser, sequences and proteins, a JSON API.
 
 ## Why
 
@@ -30,6 +33,11 @@ What it does:
 3. **Functional annotation as queryable relations.** eggNOG-mapper and
    InterProScan output becomes one row per GO term, KO, Pfam domain or EC
    number, not a text blob to grep.
+4. **A portal for the people who use the genome.** `cgload serve` puts the
+   loaded genomes on the web: search, gene pages, igv.js, FASTA and GFF3
+   downloads, and the load's own receipt for every genome. It opens the
+   database read-only and was built against the attacks genome portals
+   suffer, injection first ([docs/portal.md](docs/portal.md)).
 
 ## The checks
 
@@ -84,7 +92,7 @@ profiles that were considered.
 ## Install
 
 Python 3.11 or newer. Three runtime dependencies: `sqlalchemy`, `pyfaidx`,
-`click`.
+`click`; the portal adds `flask` and `waitress`.
 
 cgload is not on PyPI yet. Install it from GitHub:
 
@@ -92,9 +100,10 @@ cgload is not on PyPI yet. Install it from GitHub:
 pip install git+https://github.com/computational-genomics-lab/cgload
 ```
 
-For PostgreSQL, add the driver: `pip install "cgload[postgres] @
-git+https://github.com/computational-genomics-lab/cgload"`. A `[mysql]` extra
-exists, but cgload has no test on MySQL.
+For the portal, install the `[portal]` extra: `pip install "cgload[portal] @
+git+https://github.com/computational-genomics-lab/cgload"`. For PostgreSQL,
+add the driver the same way with `[postgres]` (both: `[portal,postgres]`). A
+`[mysql]` extra exists, but cgload has no test on MySQL.
 
 From source:
 
@@ -129,6 +138,16 @@ Loaded Demonstratus minimalis / DEMO-1 / Demo_v1 (assembly_id=1)
 The database is a single SQLite file — no server, no credentials, nothing
 running in the background. PostgreSQL works through the same code path via
 `--db-url`; MySQL is reached the same way but is untested.
+
+Then put it on the web:
+
+```console
+cgload index        # the search index, checked by counting like a load
+cgload serve        # http://127.0.0.1:8000/
+```
+
+[docs/portal.md](docs/portal.md) covers deployment behind nginx, the JSON API
+and the security model.
 
 Full walkthrough: [docs/tutorial.md](docs/tutorial.md).
 
@@ -197,6 +216,10 @@ annotation, about 5.7 KB per row on SQLite and 6.9 KB on PostgreSQL (medians
 over the 30 genomes), so a human-sized annotation needs 30 to 37 GB. SQLite
 loads about 8,000 rows a second and PostgreSQL about 2,700.
 
+The portal on the same 30 genomes, in one database, is measured by
+[benchmark/run_portal.py](benchmark/run_portal.py): search, page and download
+times, 1 to 32 clients at once, and a security probe (PROTOCOL.md section 13).
+
 All 30 genomes, the protocol and the comparison with other loaders are in
 [benchmark/PROTOCOL.md](benchmark/PROTOCOL.md) and
 [paper/data/benchmark-run-2.2/](paper/data/benchmark-run-2.2/).
@@ -214,6 +237,8 @@ cgload stats     counts per organism, assembly, feature type
 cgload export    write back out as GFF3
 cgload query     features by identifier, region or functional term; read-only
 cgload remove    remove an assembly, rows and files together; transactional
+cgload index     build and check the portal's search index
+cgload serve     the web portal; read-only
 ```
 
 `query` answers with whole features, as TSV or as GFF3:
@@ -238,11 +263,13 @@ rows.
 
 ## Deliberately out of scope
 
-No web layer. Server-side query execution and shelled-out command-line tools are
-where genome portals acquire their attack surface. Because the assembly and its
-annotation are written in browser-native indexed formats, JBrowse 2 — a static
-application with effectively no server-side attack surface — can be pointed
-directly at cgload's output. BLAST is served better by SequenceServer.
+The portal reads; it does not edit, upload, run command-line tools or keep
+accounts. Writing to the database from the web, and shelling out to programs
+such as BLAST, are where genome portals acquire their attack surface, so
+neither is there: loading stays on the command line, behind the checks, and
+BLAST is served better by SequenceServer. The assembly and annotation are also
+written in browser-native indexed formats, so JBrowse 2 can be pointed at
+cgload's output directly as well.
 
 See [docs/roadmap.md](docs/roadmap.md).
 

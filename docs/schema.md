@@ -15,6 +15,16 @@ Functional annotation (eggNOG-mapper, InterProScan) has two tables of its own,
 feature counts do not depend on it. The diagram below leaves them out; Figure 2
 of the paper (`paper/figures/fig2.pdf`) shows all eleven.
 
+The portal's search index adds two tables, `search_term` and `search_index`,
+which `cgload index` creates the first time it runs (D-112). They hold nothing
+that is not already in `feature` and `feature_attribute`: `search_term` has a
+row per lower-cased name, word or identifier and the feature it names, and
+`search_index` a row per indexed assembly with the counts its check passed.
+They have no foreign keys into the eleven; `remove` deletes an assembly's rows
+from them first; `verify` does not read them; and dropping both loses nothing
+that `cgload index` cannot rebuild. They are defined in
+`src/cgload/portal/search.py`.
+
 The definitive statement is `src/cgload/db/schema.py`, which is
 written to be read; this page explains the four choices that are not obvious
 from it.

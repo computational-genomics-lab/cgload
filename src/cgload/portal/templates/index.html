@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>Genomes</h1>
+<p class="sub">{{ genomes|length }} assembl{{ 'y' if genomes|length == 1 else 'ies' }} in this database. Choose one to search it, browse a region, or download its files.</p>
+<table>
+  <thead><tr><th>Organism</th><th>Strain</th><th>Assembly</th><th>Accession</th>
+    <th class="num">Sequences</th><th class="num">Features</th><th>Search</th><th>Loaded</th></tr></thead>
+  <tbody>
+  {% for g in genomes %}
+  <tr>
+    <td><a href="{{ url_for('genome_page', assembly_id=g.assembly_id) }}"><em>{{ g.organism }}</em></a></td>
+    <td>{{ g.strain }}</td>
+    <td>{{ g.name }}{% if g.version %} {{ g.version }}{% endif %}</td>
+    <td>{{ g.accession or '' }}</td>
+    <td class="num">{{ '{:,}'.format(g.sequences) }}</td>
+    <td class="num">{% if g.features is not none %}{{ '{:,}'.format(g.features) }}{% else %}<span class="muted">counting…</span>{% endif %}</td>
+    <td>{% if g.indexed %}<span class="tag ok">names</span>{% else %}<span class="tag warn">IDs only</span>{% endif %}</td>
+    <td>{{ g.loaded_at.strftime('%Y-%m-%d') if g.loaded_at else '' }} <span class="muted">cgload {{ g.cgload_version }}</span></td>
+  </tr>
+  {% else %}
+  <tr><td colspan="8" class="muted">Nothing is loaded yet. Load an assembly with <code>cgload load</code>.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

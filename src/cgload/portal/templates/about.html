@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}About · {{ portal_title }}{% endblock %}
+{% block body %}
+<h1>About this portal</h1>
+<p>This is the web view of a cgload database. cgload loads a genome assembly and its annotation into SQLite or PostgreSQL in one transaction, compares what it stored with an independent count of the input file, and rolls back a load that falls short. Every assembly shown here passed that check when it was loaded; its page shows the load's receipt.</p>
+<h2>What you can do</h2>
+<ul>
+  <li>Search a genome by gene name, synonym, locus tag, protein or transcript ID, a word of a product, a cross-reference such as <code>GeneID:672</code>, or a functional term such as <code>GO:0005524</code>, <code>K00799</code> or <code>PF00069</code>.</li>
+  <li>Open a gene to see its transcripts drawn to scale, its attributes and functional annotation, and its genomic, spliced, coding and protein sequences.</li>
+  <li>Browse any region in the genome browser (igv.js), which reads the assembly and the annotation files that cgload wrote at load.</li>
+  <li>Download a gene's family as GFF3, sequences as FASTA, or the whole assembly and annotation.</li>
+</ul>
+<h2>For programs</h2>
+<p>Every page has a JSON counterpart under <a href="{{ url_for('api_genomes') }}"><code>/api/v1/</code></a>: <code>/api/v1/genomes</code>, <code>/api/v1/genomes/&lt;id&gt;/search?q=</code>, <code>/api/v1/genomes/&lt;id&gt;/features/&lt;row&gt;</code> and <code>/api/v1/genomes/&lt;id&gt;/region?r=</code>.</p>
+<h2>What it does not do</h2>
+<p>The portal changes nothing: it opens the database read-only, has no accounts and takes no uploads. Protein sequences are translated by cgload from the CDS rows, with the genetic code the file names; where a file declares an exception that a plain translation does not apply (<code>transl_except</code>, ribosomal slippage), the page says so.</p>
+{% endblock %}

@@ -47,7 +47,7 @@ class VerifyError(ValueError):
 
 
 class Outcome(Enum):
-    PASS = "pass"  # noqa: S105 - an outcome, not a credential
+    PASS = "pass"  # noqa: S105 - an outcome, not a credential  # nosec B105
     FAIL = "fail"
     #: Preconditions not met. Not a soft failure -- the check did not run, and
     #: the reason is printed so the gap is visible rather than assumed away.

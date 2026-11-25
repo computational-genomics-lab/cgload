@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ region.seqid }}:{{ region.start }}-{{ region.end }} · {{ genome.organism }} · {{ portal_title }}{% endblock %}
+{% block body %}
+<h1>{{ region.seqid }}:{{ '{:,}'.format(region.start) }}-{{ '{:,}'.format(region.end) }}</h1>
+<p class="sub"><a href="{{ url_for('genome_page', assembly_id=genome.assembly_id) }}"><em>{{ genome.organism }}</em> · {{ genome.name }}</a> · {{ '{:,}'.format(region.end - region.start + 1) }} bp of {{ '{:,}'.format(region.length) }}{% if region.circular %} · circular{% endif %}</p>
+{% set region_text = region.seqid ~ ':' ~ region.start ~ '-' ~ region.end %}{% include "_forms.html" %}
+{% include "_browser.html" %}
+{% if too_long %}
+<p class="note">The region is longer than {{ '{:,}'.format(region_limit) }} bp, so its features are not listed; the browser above shows them as you zoom in.</p>
+{% else %}
+<p><a href="{{ url_for('region_fasta', assembly_id=genome.assembly_id, r=region_text) }}">Download this region as FASTA</a></p>
+<h2>{{ listed|length }}{% if more %}+{% endif %} top-level feature{{ 's' if listed|length != 1 }} in this region</h2>
+<table><thead><tr><th>Feature</th><th>Type</th><th>Location</th><th>Description</th></tr></thead><tbody>
+{% for item in listed %}
+<tr><td><a href="{{ feature_url(item) }}">{{ feature_name(item) }}</a></td><td>{{ item.feature_type }}</td><td>{{ '{:,}'.format(item.start) }}-{{ '{:,}'.format(item.end) }} ({{ item.strand }})</td><td>{{ feature_note(item) }}</td></tr>
+{% else %}<tr><td colspan="4" class="muted">No feature lies in this region.</td></tr>{% endfor %}
+</tbody></table>
+{% if more %}<p class="muted">Only the first {{ listed|length }} are listed; narrow the region to see the rest.</p>{% endif %}
+{% endif %}
+{% endblock %}
+{% block scripts %}{% if browser %}<script src="{{ url_for('static', filename='igv/igv.min.js') }}"></script><script src="{{ url_for('static', filename='portal.js') }}"></script>{% endif %}{% endblock %}

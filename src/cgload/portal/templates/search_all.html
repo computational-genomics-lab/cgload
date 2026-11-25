@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ query }} · {{ portal_title }}{% endblock %}
+{% block body %}
+<h1>Search every genome</h1>
+<form action="{{ url_for('search_all') }}" method="get" class="forms"><input type="search" name="q" maxlength="{{ max_query }}" value="{{ query }}" aria-label="Search every genome"><button type="submit">Search</button></form>
+{% if query %}
+<p>{% if groups %}<strong>{{ query }}</strong> matches features in {{ groups|length }} genome{{ 's' if groups|length != 1 }}.{% else %}Nothing matches <strong>{{ query }}</strong> in any genome.{% endif %}</p>
+{% for genome, rows, total, truncated in groups %}
+<h2><a href="{{ url_for('search_page', assembly_id=genome.assembly_id, q=query) }}"><em>{{ genome.organism }}</em></a> <span class="muted">· {{ genome.name }} · {{ '{:,}'.format(total) }}{% if truncated %}+{% endif %} match{{ 'es' if total != 1 }}</span></h2>
+<table><tbody>
+{% for match, item, top in rows %}
+<tr><td><a href="{{ url_for('feature_page', assembly_id=genome.assembly_id, row=item.row_id) }}">{{ feature_name(item) }}</a></td><td>{{ item.feature_type }}</td><td>{{ item.seqid }}:{{ '{:,}'.format(item.start) }}-{{ '{:,}'.format(item.end) }}</td><td>{{ feature_note(item) }}</td><td><span class="tag">{{ rank_labels[match.rank] }}</span></td></tr>
+{% endfor %}
+</tbody></table>
+{% endfor %}
+{% endif %}
+{% endblock %}

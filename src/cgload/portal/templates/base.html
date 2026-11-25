@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ portal_title }}{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+{% block head %}{% endblock %}
+</head>
+<body>
+<header class="top"><div class="inner">
+  <a class="brand" href="{{ url_for('index') }}">{{ portal_title }}</a>
+  <nav>
+    <a href="{{ url_for('index') }}">Genomes</a>
+    <a href="{{ url_for('about') }}">About</a>
+    <a href="{{ url_for('api_genomes') }}">API</a>
+  </nav>
+  <form action="{{ url_for('search_all') }}" method="get" role="search">
+    <input type="search" name="q" maxlength="{{ max_query }}" placeholder="Search every genome: a gene, protein, GO term…" aria-label="Search every genome">
+    <button type="submit">Search</button>
+  </form>
+</div></header>
+<main>
+{% block body %}{% endblock %}
+</main>
+<footer>
+  cgload {{ version }} portal · read-only view of a cgload database · every load it shows was checked against an independent count of its input files.
+</footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>
