@@ -1384,7 +1384,8 @@ other loaders and other files.
 - Version described: 0.4.0 (tag `v0.4.0`; source archive in Additional file 7)
 - RRID:SCR_029282
 - bio.tools ID: biotools:cgload
-- Archived version: Software Heritage, {{swh:v040}}.
+- Archived version: Software Heritage, swh:1:rel:3d82e8c081c8ec28d980c120cc8e6fc3b4ec89d2 (release v0.4.0),
+  https://archive.softwareheritage.org/swh:1:rel:3d82e8c081c8ec28d980c120cc8e6fc3b4ec89d2;origin=https://github.com/computational-genomics-lab/cgload.
   The portal's measurement rests on release v0.3.0,
   swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad,
   https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:27cff3403cd99aae747935485618353d8bd7de79,
@@ -1457,7 +1458,9 @@ the check of columns 2, 6 and 8 was added to the repository after that release.
 Release v0.3.0, with which the portal was measured, is archived as
 swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad
 (https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:27cff3403cd99aae747935485618353d8bd7de79),
-and release v0.4.0, with which BLAST was measured, as {{swh:v040}}.
+and release v0.4.0, with which BLAST was measured, as
+swh:1:rel:3d82e8c081c8ec28d980c120cc8e6fc3b4ec89d2
+(https://archive.softwareheritage.org/swh:1:rel:3d82e8c081c8ec28d980c120cc8e6fc3b4ec89d2;origin=https://github.com/computational-genomics-lab/cgload).
 
 ## Competing interests
 
