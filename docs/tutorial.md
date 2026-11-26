@@ -403,19 +403,24 @@ cgload serve
 ```
 cgload serve: the portal is running, read-only, with 1 genome.
   Open it on this computer:   http://127.0.0.1:8000/
-  or from another computer:   http://10.0.0.239:8000/
+  or from another computer:   http://192.0.2.10:8000/
   Anyone who can reach this computer can open it. To keep it to this computer: --host 127.0.0.1;
   to serve it beyond your network, put a web server with HTTPS in front (docs/portal.md).
   Stop it with Ctrl-C.
 ```
 
-Open one of those addresses in a web browser (yours will differ from
-`10.0.0.239`). Search for `DEMO_000001`, open the gene, look at its model and
-at the genome browser below it, and download its protein. The genome's own
-page shows how it was loaded: the checks of step 5 and the files' checksums.
-`cgload serve` only reads the database, so it can run while you work; stop it
-with Ctrl-C. If port 8000 is taken, it uses the next free port and says so;
-[docs/portal.md](portal.md) covers the rest.
+Open one of those addresses in a web browser; yours will differ from
+`192.0.2.10`, an address kept for examples. Search for `DEMO_000001`, open the
+gene, look at its model and at the genome browser below it, and download its
+protein. The genome's own page shows how it was loaded: the checks of step 5
+and the files' checksums. `cgload serve` only reads the database, so it can
+run while you work; stop it with Ctrl-C. If port 8000 is taken, it uses the
+next free port and says so; [docs/portal.md](portal.md) covers the rest.
+
+With BLAST+ installed, run `cgload blastdb` before `cgload serve`. It builds
+one BLAST database of the genome and another of its proteins, and checks both
+by counting, as the load was checked; the portal then has a BLAST page, and
+the gene's page links its protein to it.
 
 ## 12. Take it out again
 

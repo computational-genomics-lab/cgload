@@ -26,6 +26,7 @@ from flask import (
     Response,
     abort,
     jsonify,
+    make_response,
     redirect,
     render_template,
     request,
@@ -39,6 +40,7 @@ from werkzeug.exceptions import HTTPException
 from cgload import __version__
 from cgload.db.export_source import StoredFeature, load_context
 from cgload.export import export_gff3
+from cgload.portal import blast as blasting
 from cgload.portal.data import (
     ANNOTATION_FILENAME,
     REGION_LIMIT,
@@ -212,18 +214,23 @@ MAX_ID = 2**31 - 1
 
 
 def create_app(portal: PortalData, *, title: str = "cgload portal",
-               count_in_background: bool = True) -> Flask:
-    """The Flask application serving ``portal``."""
+               count_in_background: bool = True, blast: blasting.Blast | None = None) -> Flask:
+    """The Flask application serving ``portal``, and BLAST through ``blast``."""
     app = Flask(__name__)
     app.json_provider_class = SafeJSONProvider
     app.json = SafeJSONProvider(app)
     app.config.update(
-        MAX_CONTENT_LENGTH=4096,
+        # Only a BLAST search sends a body: one query of at most 10,000 letters.
+        MAX_CONTENT_LENGTH=64 * 1024,
         JSON_SORT_KEYS=False,
         SEND_FILE_MAX_AGE_DEFAULT=3600,
         TEMPLATES_AUTO_RELOAD=False,
     )
     app.extensions["cgload_portal"] = portal
+    app.extensions["cgload_blast"] = blast
+
+    def blast_on() -> bool:
+        return blast is not None and blast.ready
 
     if count_in_background:
         threading.Thread(target=_count, args=(portal,), daemon=True,
@@ -234,7 +241,7 @@ def create_app(portal: PortalData, *, title: str = "cgload portal",
         return {"portal_title": title, "version": __version__, "feature_name": feature_name,
                 "feature_note": feature_note, "xref_link": xref_link, "term_link": term_link,
                 "rank_labels": RANK_LABELS, "max_query": MAX_QUERY_LENGTH,
-                "genomes_all": portal.genomes}
+                "genomes_all": portal.genomes, "blast_on": blast_on()}
 
     @app.after_request
     def _headers(response: Response) -> Response:
@@ -373,9 +380,21 @@ def create_app(portal: PortalData, *, title: str = "cgload portal",
         drawing = gene_model_svg(family, lambda member: feature_url(genome, member))
         model = Markup(drawing)  # noqa: S704  # nosec B704
         code = genetic_code(item) if item.feature_type == "CDS" else None
+        blast_links = []
+        for kind, program in (("protein", "blastp"), ("cds", "blastn")):
+            if kind not in sequences:
+                continue
+            accession = (item.attributes.get("protein_id") or [None])[0] \
+                if kind == "protein" else None
+            here = (url_for("blast_page", **{"from": f"{assembly_id}:{row}:{kind}"})
+                    if blast_on() and len(sequences[kind]) <= blasting.MAX_QUERY else None)
+            there = blasting.ncbi_url(program, sequences[kind].rstrip("*"), accession)
+            if here or there:
+                blast_links.append({"kind": kind, "program": program, "here": here,
+                                    "ncbi": there})
         return render_template(
             "feature.html", genome=genome, family=family, item=item, model=model,
-            sequences=sequences, notes=exceptions(item),
+            sequences=sequences, notes=exceptions(item), blast_links=blast_links,
             code=(code, GENETIC_CODES[code][2]) if code else None,
             browser=browser_view(genome, family.top.seqid, family.top.start, family.top.end),
             members=family.depth_first(), feature_url=lambda m: feature_url(genome, m))
@@ -523,6 +542,112 @@ def create_app(portal: PortalData, *, title: str = "cgload portal",
         return jsonify([{"chromosome": item.seqid, "start": item.start, "end": item.end,
                          "name": feature_name(item)} for _, item, _ in rows])
 
+    # -- BLAST -----------------------------------------------------------------
+
+    def blast_form(values: dict | None = None) -> dict:
+        form = {"query": "", "program": "blastp", "genome": "all", "task": blasting.TASKS[0],
+                "evalue": blasting.DEFAULT_EVALUE, "max_hits": str(blasting.DEFAULT_HITS)}
+        for name, value in (values or {}).items():
+            if name in form:
+                text = (value[0] if isinstance(value, list) and value else
+                        value if isinstance(value, str) else form[name])
+                form[name] = text[:3 * blasting.MAX_QUERY]
+        return form
+
+    def blast_view(form: dict, *, result=None, error: str | None = None, status: int = 200):
+        ready = blast_on()
+        genomes = [portal.genome(aid) for aid in sorted(blast.databases)] if ready else []
+        hits = []
+        if result is not None:
+            for hit in result.hits:
+                hits.append({"hit": hit, "genome": portal.genome(hit.assembly_id)
+                             if hit.assembly_id in blast.databases else None,
+                             "url": hit_url(hit)})
+        ncbi = None
+        if result is not None:
+            ncbi = blasting.ncbi_url(result.request.program, result.request.query)
+        page = render_template(
+            "blast.html", ready=ready, form=form, result=result, hits=hits, error=error,
+            genomes=genomes, programs=blast.programs if ready else [],
+            describe=PROGRAM_NOTES, tasks=blasting.TASKS, evalues=blasting.EVALUES,
+            hit_choices=blasting.HIT_CHOICES, max_blast_query=blasting.MAX_QUERY,
+            jobs=blast.jobs if blast else 0, timeout=blast.timeout if blast else 0,
+            ncbi=ncbi, installed=bool(blast and blast.programs))
+        response = make_response(page, status)
+        if status == 503:
+            response.headers["Retry-After"] = "30"
+        return response
+
+    def hit_url(hit: blasting.Hit) -> str:
+        """A protein hit opens its CDS; a genome hit, the region of its best
+        HSP and of the others on its strand within 100 kb, as a gene's exons."""
+        if hit.kind == "proteins":
+            return url_for("feature_page", assembly_id=hit.assembly_id, row=int(hit.subject))
+        low, high = blasting.span_of(hit, within=100_000)
+        return url_for("region_page", assembly_id=hit.assembly_id,
+                       r=f"{hit.subject}:{max(low - 500, 1)}-{min(high + 500, hit.length)}")
+
+    def run_blast(values: dict):
+        """A search, or the reason it was not run: (result, error, status)."""
+        if not blast_on():
+            return None, "BLAST is not set up on this portal.", 503
+        try:
+            return blast.search(blasting.make_request(values, blast.searchable)), None, 200
+        except blasting.QueryError as exc:
+            return None, str(exc), 400
+        except blasting.BlastBusy:
+            return None, (f"The portal is already running {blast.jobs} BLAST "
+                          f"search{'' if blast.jobs == 1 else 'es'}, as many as it allows. "
+                          "Try again in a minute."), 503
+        except blasting.BlastFailed as exc:
+            return None, str(exc), 503
+
+    @app.get("/blast")
+    def blast_page():
+        source = request.args.get("from", "")
+        values: dict = {}
+        if source:
+            match = re.fullmatch(r"(\d{1,10}):(\d{1,10}):(protein|cds)", source)
+            if not match:
+                abort(400, description="'from' is assembly:row:protein or assembly:row:cds")
+            genome = genome_or_404(int(match.group(1)))
+            family = family_or_404(genome, int(match.group(2)))
+            try:
+                sequence = portal.sequences_of(family, family.selected).get(match.group(3))
+            except (FileNotFoundError, ValueError, KeyError):
+                sequence = None
+            if sequence is None:
+                abort(404, description=f"that feature has no {match.group(3)} sequence")
+            sequence = sequence.rstrip("*")
+            name = family.selected.source_id or f"row{family.selected.row_id}"
+            values = {"query": fasta_text(re.sub(r"\s+", "_", name)[:60], sequence)
+                      if len(sequence) <= blasting.MAX_QUERY else "",
+                      "program": "blastp" if match.group(3) == "protein" else "blastn"}
+        return blast_view(blast_form(values))
+
+    @app.post("/blast")
+    def blast_run():
+        values = request.form.to_dict(flat=False)
+        result, error, status = run_blast(values)
+        return blast_view(blast_form(values), result=result, error=error, status=status)
+
+    @app.post("/api/v1/blast")
+    def api_blast():
+        body = request.get_json(silent=True)
+        if body is None:
+            body = request.form.to_dict(flat=False)
+        if not isinstance(body, dict):
+            abort(400, description="send a JSON object: query, program, genome, evalue, "
+                                   "max_hits, task")
+        result, error, status = run_blast(body)
+        if result is None:
+            response = jsonify(error=error, status=status)
+            response.status_code = status
+            if status == 503:
+                response.headers["Retry-After"] = "30"
+            return response
+        return jsonify(blast_json(result, hit_url, portal))
+
     # -- errors --------------------------------------------------------------
 
     @app.errorhandler(HTTPException)
@@ -541,6 +666,41 @@ def create_app(portal: PortalData, *, title: str = "cgload portal",
                                message="Something went wrong; it has been logged."), 500
 
     return app
+
+
+PROGRAM_NOTES = {
+    "blastn": "nucleotide query against the genomes",
+    "tblastn": "protein query against the genomes, translated",
+    "blastp": "protein query against the proteins",
+    "blastx": "nucleotide query, translated, against the proteins",
+}
+
+
+def blast_json(result: blasting.SearchResult, hit_url, portal: PortalData) -> dict:
+    request_ = result.request
+    return {
+        "program": request_.program, "task": request_.task, "evalue": request_.evalue,
+        "max_hits": request_.max_hits, "genomes": list(request_.assembly_ids),
+        "query_length": len(request_.query), "seconds": round(result.seconds, 3),
+        "hits": [{
+            "genome": hit.assembly_id, "organism": _label(portal, hit.assembly_id),
+            "database": hit.kind, "subject": hit.subject, "name": hit.name,
+            "product": hit.product, "length": hit.length, "url": hit_url(hit),
+            "hsps": [{"identity": hsp.pident, "length": hsp.length,
+                      "mismatches": hsp.mismatches, "gap_opens": hsp.gap_opens,
+                      "query_start": hsp.qstart, "query_end": hsp.qend,
+                      "subject_start": hsp.sstart, "subject_end": hsp.send,
+                      "strand": hsp.strand, "evalue": hsp.evalue, "bitscore": hsp.bitscore,
+                      "query": hsp.qseq, "subject_sequence": hsp.sseq} for hsp in hit.hsps],
+        } for hit in result.hits],
+    }
+
+
+def _label(portal: PortalData, assembly_id: int) -> str | None:
+    try:
+        return portal.genome(assembly_id).label
+    except LookupError:
+        return None
 
 
 def _count(portal: PortalData) -> None:

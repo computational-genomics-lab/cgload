@@ -38,6 +38,9 @@
   </ul>
   {% if code %}<p class="muted">Translated by cgload with NCBI genetic code {{ code[0] }} ({{ code[1] }}).</p>{% endif %}
   {% for note in notes %}<p class="note">The file declares <code>{{ note }}</code>, which this translation does not apply.</p>{% endfor %}
+  {% for link in blast_links %}<p class="blast-links">BLAST this {{ 'protein' if link.kind == 'protein' else 'coding sequence' }}:
+  {% if link.here %}<a href="{{ link.here }}">against the genomes here</a>{% endif %}
+  {% if link.ncbi %}<a href="{{ link.ncbi }}" rel="noopener noreferrer" target="_blank">at NCBI</a>{% endif %}</p>{% endfor %}
   {% if 'protein' in sequences %}<pre class="seq">{{ sequences['protein'] }}</pre>{% endif %}
   {% else %}
   <p class="muted">The assembly file is not available to the portal, so no sequence can be shown.</p>

@@ -20,7 +20,8 @@ the previous one is green in CI.
 | 9 | `export` (D-035b, D-052..D-054), `remove` (D-083, D-084), `query` (D-085) | Round trip through the database: export, re-import, identical counts, linkage provenance preserved | **done** |
 | 10 | Large-genome demo, Docker, docs, tutorial | A stranger runs one command and sees a loaded genome; maize timings published | in progress — envelope check (D-046b, D-055) added, scale run pending |
 | 11 | Archived release, paper | Release archived at Software Heritage; paper describes it | in progress: v0.2.2 archived |
-| 12 | Read-only web portal: `serve`, `index` (D-111 to D-114) | Search by name, gene pages, genome browser, JSON API; security and load tests in CI; measured on the 30 genomes (PROTOCOL.md section 13) | **done** in 0.3.0; measurement pending |
+| 12 | Read-only web portal: `serve`, `index` (D-111 to D-115) | Search by name, gene pages, genome browser, JSON API; security and load tests in CI; measured on the 30 genomes (PROTOCOL.md section 13) | **done** in 0.3.0, measured |
+| 13 | BLAST in the portal: `blastdb` (D-116) | Databases checked by counting; each query finds itself; hostile input and a full portal answered in words, in CI and on the 30 genomes (PROTOCOL.md section 14) | **done** in 0.4.0; measurement pending |
 
 If schedule pressure appears, cut milestone 5 to v2.1 — deliberately, in
 writing here, not by attrition. Milestones 0–4 plus 8–11 is still a complete
@@ -34,7 +35,7 @@ Each exclusion has a reason. Anything argued back in must be argued in
 | Excluded | Why |
 |---|---|
 | **A web application that writes** | Accounts, uploads, annotation editing, a hosted service for others. A web layer that writes is the largest security surface a project like this can acquire, and a hosted demo outlives the people who set it up. The read-only portal of D-111 is in; this stays out. |
-| **BLAST, EMBOSS, pairwise alignment, weight matrices** | Thin wrappers around existing tools. No novelty, and all of the remote-code-execution and denial-of-service exposure. SequenceServer does the BLAST-frontend job properly. |
+| **EMBOSS, pairwise alignment, weight matrices** | Thin wrappers around existing tools: no novelty, and the remote-code-execution and denial-of-service exposure that wrappers bring. BLAST, the one search a genome resource is asked for first, is the exception, argued in D-116 and fenced as it describes; SequenceServer remains the full BLAST front end. |
 | **A genome browser of our own** | JBrowse 2 and IGV read indexed FASTA and tabix'd GFF3 directly, and the portal embeds igv.js reading the same files (D-114). Nothing is drawn by code of ours beyond the gene model. |
 | **KEGG / GO integration** | The portal links an accession to its database's page (D-111); it fetches nothing from them. |
 | **User accounts, authentication** | The portal is read-only and has none; access control, where needed, belongs to the web server in front of it (`docs/portal.md`). |

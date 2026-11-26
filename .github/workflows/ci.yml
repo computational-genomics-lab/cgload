@@ -22,8 +22,8 @@ jobs:
           python-version: "3.12"
       - run: pip install "ruff==0.17.0" "bandit==1.8.6"   # pinned: a new release must not turn CI red on its own
       - run: ruff check --output-format=github .
-      # Security lint of the package, the portal included (D-111). Two lines
-      # carry a reasoned `# nosec`; anything else fails the job.
+      # Security lint of the package, the portal included (D-111, D-116). Each
+      # line that carries a `# nosec` says why beside it; anything else fails.
       - run: bandit -q -r src/cgload
 
   test:
@@ -53,6 +53,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[test,portal]"
+      # BLAST+ for the portal's BLAST tests (D-116); on macOS and Windows they
+      # are skipped, and the rest of tests/test_portal_blast.py runs.
+      - name: BLAST+
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -q && sudo apt-get install -y -q ncbi-blast+ && blastp -version
       - name: Entry point runs
         run: |
           cgload --version
@@ -69,6 +74,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -e ".[test,portal]"
+      - run: sudo apt-get update -q && sudo apt-get install -y -q ncbi-blast+
       - run: pytest benchmark/tests -v
 
   build:

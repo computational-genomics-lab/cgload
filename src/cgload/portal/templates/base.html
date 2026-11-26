@@ -12,6 +12,7 @@
   <a class="brand" href="{{ url_for('index') }}">{{ portal_title }}</a>
   <nav>
     <a href="{{ url_for('index') }}">Genomes</a>
+    {% if blast_on %}<a href="{{ url_for('blast_page') }}">BLAST</a>{% endif %}
     <a href="{{ url_for('about') }}">About</a>
     <a href="{{ url_for('api_genomes') }}">API</a>
   </nav>

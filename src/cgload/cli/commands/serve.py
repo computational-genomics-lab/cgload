@@ -173,9 +173,17 @@ def _resolve(db_url: str | None) -> tuple[str, bool]:
               help="The portal's name, shown on every page.")
 @click.option("--url-prefix", default="",
               help="The path the portal is served under, behind a web server: /genomes.")
+@click.option("--blast-jobs", type=click.IntRange(0, 16), default=2, show_default=True,
+              help="BLAST searches run at once; as many again may wait their turn, and "
+              "more are turned away. 0 turns BLAST off.")
+@click.option("--blast-threads", type=click.IntRange(1, 64), default=4, show_default=True,
+              help="Threads each BLAST search uses.")
+@click.option("--blast-timeout", type=click.IntRange(5, 3600), default=120, show_default=True,
+              help="Seconds after which a BLAST search is stopped.")
 @click.pass_context
 def serve_command(ctx: click.Context, db_url: str | None, data_dir: Path | None, host: str,
-                  port: int, threads: int, title: str, url_prefix: str) -> None:
+                  port: int, threads: int, title: str, url_prefix: str, blast_jobs: int,
+                  blast_threads: int, blast_timeout: int) -> None:
     """Serve the database as a read-only web portal.
 
     People search genomes by name, open genes with their transcripts drawn to
@@ -205,8 +213,20 @@ def serve_command(ctx: click.Context, db_url: str | None, data_dir: Path | None,
         click.echo(f"cgload serve: {exc}", err=True)
         sys.exit(2)
 
+    jobs_given = ctx.get_parameter_source("blast_jobs") is not click.core.ParameterSource.DEFAULT
+    try:
+        blast_jobs = blast_jobs_for(threads, blast_jobs, given=jobs_given)
+    except click.UsageError as exc:
+        click.echo(f"cgload serve: {exc.message}", err=True)
+        portal.close()
+        sys.exit(2)
     genomes = portal.genomes()
-    app = create_app(portal, title=title)
+    blast = None
+    if blast_jobs:
+        from cgload.portal.blast import Blast
+
+        blast = Blast(portal, jobs=blast_jobs, threads=blast_threads, timeout=blast_timeout)
+    app = create_app(portal, title=title, blast=blast)
     port_given = ctx.get_parameter_source("port") is not click.core.ParameterSource.DEFAULT
     try:
         server, port_used = open_server(app, host, port, port_given=port_given,
@@ -234,10 +254,41 @@ def serve_command(ctx: click.Context, db_url: str | None, data_dir: Path | None,
     if missing:
         click.echo(f"  {len(missing)} whose assembly file is not found: give --data-dir "
                    f"if the data directory has moved.", err=True)
+    if blast is None and jobs_given:
+        click.echo("  BLAST is off (--blast-jobs 0).", err=True)
+    elif blast is None:
+        click.echo(f"  BLAST is off: --threads {threads} leaves no thread for it; give "
+                   f"--threads 3 or more.", err=True)
+    elif not blast.programs:
+        click.echo("  BLAST is off: BLAST+ is not installed here (conda install -c bioconda "
+                   "blast, or apt install ncbi-blast+).", err=True)
+    elif not blast.databases:
+        click.echo("  BLAST is off: no genome has BLAST databases yet; run `cgload blastdb`.",
+                   err=True)
+    else:
+        click.echo(f"  BLAST: {len(blast.databases)} of {len(genomes)} genome"
+                   f"{'' if len(genomes) == 1 else 's'}, {blast_jobs} search"
+                   f"{'' if blast_jobs == 1 else 'es'} at a time.", err=True)
     logging.basicConfig()  # waitress reports a long queue of requests as a warning
     server.run()  # returns on Ctrl-C, after the requests in hand are answered
     portal.close()
     click.echo("cgload serve: stopped.", err=True)
+
+
+def blast_jobs_for(threads: int, jobs: int, *, given: bool) -> int:
+    """How many BLAST searches may run at once. Searches running and waiting
+    hold up to twice that many of the server's threads, and the pages need
+    some left: a number given with --blast-jobs that leaves none is refused in
+    words; the default is lowered to fit, to 0 (BLAST off) if need be (D-116)."""
+    most = (threads - 1) // 2
+    if jobs <= most:
+        return jobs
+    if given:
+        raise click.UsageError(
+            f"BLAST searches, running and waiting, may hold twice --blast-jobs of the "
+            f"--threads, and the pages need some left: with --threads {threads}, "
+            f"--blast-jobs is at most {most}. Raise --threads or lower --blast-jobs.")
+    return most
 
 
 @click.command("index")
@@ -278,3 +329,51 @@ def index_command(db_url: str | None, assembly_ids: tuple[int, ...]) -> None:
                            f"{count.in_index:,} are indexed" for count in report.failures())
         click.echo(f"assembly {report.assembly_id}: FAIL, no index kept. {detail}", err=True)
     sys.exit(1 if failed else 0)
+
+
+@click.command("blastdb")
+@click.option("--db-url", default=None, help=f"SQLAlchemy URL; defaults to ${ENV_DB_URL}.")
+@click.option("--data-dir", type=click.Path(file_okay=False, path_type=Path), default=None,
+              help="The data directory the assemblies were loaded into, if it has moved.")
+@click.option("--assembly-id", "assembly_ids", type=int, multiple=True,
+              help="This assembly only. Repeatable; every assembly by default.")
+def blastdb_command(db_url: str | None, data_dir: Path | None,
+                    assembly_ids: tuple[int, ...]) -> None:
+    """Build the portal's BLAST databases, and check them by counting.
+
+    For each assembly, two BLAST+ databases go into its data directory, under
+    blast/: the genome, and every CDS translated as the portal translates it.
+    The genome must hold every sequence of the assembly and the proteins one
+    for every CDS feature; an assembly whose counts differ keeps no BLAST
+    database. Needs BLAST+ (makeblastdb) on PATH. The database is only read.
+    """
+    from cgload.portal.blast import build, find_binaries
+    from cgload.portal.data import PortalData, read_only_engine
+
+    makeblastdb = find_binaries().get("makeblastdb")
+    if makeblastdb is None:
+        click.echo("cgload blastdb: makeblastdb is not installed here. Install BLAST+: "
+                   "conda install -c bioconda blast, or apt install ncbi-blast+", err=True)
+        sys.exit(2)
+    resolved, from_environment = _resolve(db_url)
+    try:
+        assert_vocabulary_current(build_engine(resolved, from_environment=from_environment,
+                                               must_exist=True))
+        portal = PortalData(read_only_engine(resolved, from_environment=from_environment),
+                            data_dir=data_dir)
+    except (CredentialInArgumentError, DatabaseNotFoundError, SchemaMissingError,
+            VocabularyMismatchError, FileNotFoundError, ValueError) as exc:
+        click.echo(f"cgload blastdb: {exc}", err=True)
+        sys.exit(2)
+    genomes = portal.genomes()
+    if assembly_ids:
+        unknown = sorted(set(assembly_ids) - {genome.assembly_id for genome in genomes})
+        if unknown:
+            click.echo(f"cgload blastdb: no assembly {', '.join(map(str, unknown))}", err=True)
+            sys.exit(1)
+        genomes = [genome for genome in genomes if genome.assembly_id in assembly_ids]
+    try:
+        results = build(portal, genomes, makeblastdb, log_line=click.echo)
+    finally:
+        portal.close()
+    sys.exit(1 if any(result.check != "PASS" for result in results) else 0)

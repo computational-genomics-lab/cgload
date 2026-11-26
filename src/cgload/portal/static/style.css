@@ -68,3 +68,18 @@ svg.model .selected .hit { fill: #fff4d6; }
 svg.model .selected .label { font-weight: 700; }
 .pager { margin: 12px 0; display: flex; gap: 10px; align-items: center; }
 tr.current td { background: #fff4d6; }
+
+/* BLAST */
+form.blast { display: grid; gap: 8px; max-width: 980px; }
+form.blast textarea { width: 100%; font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.85rem; padding: 8px; border: 1px solid var(--line); border-radius: 6px; }
+form.blast .choices { display: flex; flex-wrap: wrap; gap: 12px; }
+form.blast label { display: flex; flex-direction: column; gap: 3px; font-size: 0.9rem; }
+form.blast select { padding: 5px 6px; border: 1px solid var(--line); border-radius: 6px; }
+form.blast button { justify-self: start; }
+details.alignment { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px;
+  margin: 8px 0; }
+details.alignment summary { cursor: pointer; }
+pre.aln { font-size: 0.8rem; overflow-x: auto; background: var(--soft); padding: 8px;
+  border-radius: 6px; }
+.blast-links a { margin-right: 12px; }

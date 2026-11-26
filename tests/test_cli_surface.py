@@ -41,7 +41,7 @@ def test_help_lists_every_v1_command(run):
     expected = {
         "init", "load", "verify", "explain",
         "stats", "query", "export", "remove",
-        "index", "serve",
+        "index", "serve", "blastdb",
     }
     result = run.invoke(cli, ["--help"])
     listed = set(cli.commands)
@@ -146,16 +146,16 @@ def test_serve_says_where_the_portal_opens():
     connection from another computer would otherwise say nothing."""
     from cgload.cli.commands.serve import where_it_listens
 
-    lines = where_it_listens("0.0.0.0", 8000, "", ["10.0.0.239"])
+    lines = where_it_listens("0.0.0.0", 8000, "", ["192.0.2.10"])
     assert "http://127.0.0.1:8000/" in lines[0]
-    assert "or from another computer:   http://10.0.0.239:8000/" in lines[1]
+    assert "or from another computer:   http://192.0.2.10:8000/" in lines[1]
     assert any("--host 127.0.0.1" in line for line in lines)
     assert any("HTTPS" in line for line in lines) and lines[-1].endswith("Ctrl-C.")
     unknown = where_it_listens("0.0.0.0", 8080, "/genomes", [])
     assert "http://<this computer's address>:8080/genomes" in unknown[1]
     private = where_it_listens("127.0.0.1", 8000)
     assert "http://127.0.0.1:8000/" in private[0] and "leave out --host" in private[1]
-    assert "http://10.0.0.239:8000/" in where_it_listens("10.0.0.239", 8000)[0]
+    assert "http://192.0.2.10:8000/" in where_it_listens("192.0.2.10", 8000)[0]
     assert "http://[fe80::1]:8000/" in where_it_listens("fe80::1", 8000)[0]
     assert "http://[::1]:8000/" in where_it_listens("::1", 8000)[0]
 

@@ -13,7 +13,8 @@ the feature. These tests send both and assert:
   its accession has the expected form;
 * every response carries the security headers, and the policy allows no
   inline script and no script from another site;
-* the portal answers only GET and HEAD.
+* the portal answers only GET and HEAD, and POST on its two BLAST URLs
+  (tests/test_portal_blast.py sends those hostile values in turn).
 
 Plus a seeded fuzz: thousands of random requests over every route, none of
 which may produce a server error.

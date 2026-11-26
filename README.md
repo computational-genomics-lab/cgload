@@ -48,7 +48,7 @@ Loaded Demonstratus minimalis / DEMO-1 / Demo_v1 (assembly_id=1)
 ...
 cgload serve: the portal is running, read-only, with 1 genome.
   Open it on this computer:   http://127.0.0.1:8000/
-  or from another computer:   http://10.0.0.239:8000/
+  or from another computer:   http://192.0.2.10:8000/
   Anyone who can reach this computer can open it. To keep it to this computer: --host 127.0.0.1;
   to serve it beyond your network, put a web server with HTTPS in front (docs/portal.md).
   Stop it with Ctrl-C.
@@ -58,6 +58,11 @@ Open one of the addresses it prints in a web browser. The database is a
 single SQLite file, with no server and no credentials; PostgreSQL works
 through the same code with `--db-url`.
 
+To BLAST the genomes from the portal, install BLAST+ (`conda install -c
+conda-forge -c bioconda blast`, or `sudo apt install ncbi-blast+`) and run
+`cgload blastdb` before `cgload serve`; the portal then has a BLAST page, and
+every gene page links its protein to BLAST here and at NCBI.
+
 ### If something goes wrong
 
 | What you see | What to do |
@@ -66,9 +71,11 @@ through the same code with `--db-url`.
 | `no database at .../cgload.db` | Run the command in the folder where you ran `cgload init`, or give `--db-url`. |
 | `Port 8000 was in use, so it is on port 8001` | Nothing to do: open the address it prints. To choose the port, give `--port 9000`. |
 | `port 9000 is already in use` | The port you asked for is taken. Choose another, or stop the program that holds it. |
-| Another computer cannot open the portal | The server's firewall closes the port. On Ubuntu: `sudo ufw allow from 10.0.0.0/24 to any port 8000 proto tcp` (your network's range). And do not start it with `--host 127.0.0.1`. |
+| Another computer cannot open the portal | The server's firewall closes the port. On Ubuntu: `sudo ufw allow from 192.168.1.0/24 to any port 8000 proto tcp` (your network's range). And do not start it with `--host 127.0.0.1`. |
 | A search for a gene's name finds nothing | Run `cgload index`, and again after loading more genomes. |
 | Your data are not public | Anyone who can reach the computer can open the portal. Keep it to this computer with `--host 127.0.0.1`, or put it behind a web server with a password ([docs/portal.md](docs/portal.md)). |
+| `BLAST is off: BLAST+ is not installed here` | Install BLAST+ as above, run `cgload blastdb`, and start the portal again. |
+| `BLAST is off: no genome has BLAST databases yet` | Run `cgload blastdb`, and again after loading or reloading a genome. |
 | `the portal needs Flask and waitress` | The installation is incomplete. Reinstall: `pip install --force-reinstall git+https://github.com/computational-genomics-lab/cgload`. |
 
 Full walkthrough: [docs/tutorial.md](docs/tutorial.md). The portal, its JSON
@@ -99,8 +106,9 @@ What it does:
    InterProScan output becomes one row per GO term, KO, Pfam domain or EC
    number, not a text blob to grep.
 4. **A portal for the people who use the genome.** `cgload serve` puts the
-   loaded genomes on the web: search, gene pages, igv.js, FASTA and GFF3
-   downloads, and the load's own receipt for every genome. It opens the
+   loaded genomes on the web: search, gene pages, igv.js, BLAST against the
+   genomes and their proteins, FASTA and GFF3 downloads, and the load's own
+   receipt for every genome. It opens the
    database read-only and was built against the attacks genome portals
    suffer, injection first ([docs/portal.md](docs/portal.md)).
 
@@ -270,13 +278,15 @@ rows.
 
 ## Deliberately out of scope
 
-The portal reads; it does not edit, upload, run command-line tools or keep
-accounts. Writing to the database from the web, and shelling out to programs
-such as BLAST, are where genome portals acquire their attack surface, so
-neither is there: loading stays on the command line, behind the checks, and
-BLAST is served better by SequenceServer. The assembly and annotation are also
-written in browser-native indexed formats, so JBrowse 2 can be pointed at
-cgload's output directly as well.
+The portal reads; it does not edit, upload or keep accounts. Writing to the
+database from the web is where genome portals acquire their attack surface, so
+loading stays on the command line, behind the checks. BLAST is the one program
+the portal runs, and it runs as [D-116](docs/decisions.md) sets out: an
+argument list of fixed choices, never a shell, the query as its input and
+never an argument, a few searches at a time. A lab that wants all of BLAST's
+options, or databases of its own, is served better by SequenceServer. The
+assembly and annotation are also written in browser-native indexed formats, so
+JBrowse 2 can be pointed at cgload's output directly as well.
 
 See [docs/roadmap.md](docs/roadmap.md).
 

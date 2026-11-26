@@ -2,6 +2,42 @@
 
 Decisions referred to as D-0xx are in [docs/decisions.md](docs/decisions.md).
 
+## 0.4.0 (26 November 2026)
+
+The portal searches its genomes with BLAST (D-116). Loading, verification,
+export, queries and the portal's other pages are those of 0.3.1, and a
+database made by 0.3.1 is served as it is.
+
+### Added
+
+- `cgload blastdb`: two BLAST+ databases per assembly, in its data directory:
+  the genome, and every CDS translated as the portal translates it. Each is
+  checked by counting: every sequence of the assembly, one protein for every
+  CDS feature, and BLAST+'s own count of what it stored must agree. An
+  assembly whose counts differ keeps no BLAST database, and the portal does
+  not use databases older than the load they were built from.
+- A BLAST page (`/blast`) and `POST /api/v1/blast`: blastn (megablast or
+  blastn), tblastn, blastp and blastx, against one genome or all of them. Hits
+  link to their CDS or to their region, with their alignments.
+- A gene's page links its protein and its coding sequence to BLAST here, with
+  the sequence filled in, and to NCBI BLAST, by accession where the CDS has an
+  NCBI protein_id.
+- `cgload serve --blast-jobs`, `--blast-threads` and `--blast-timeout`. A few
+  searches run at once and as many again may wait; more are turned away with
+  503, so searches cannot take every thread the pages need.
+- `benchmark/run_blast.py` (PROTOCOL.md section 14): BLAST on the benchmark's
+  30 genomes.
+
+### Changed
+
+- The portal answers POST on its two BLAST URLs; every other URL still
+  answers GET and HEAD only. A request body is at most 64 KiB.
+- `docs/portal.md` covers BLAST, and its nginx example limits BLAST requests
+  per visitor. The examples' addresses are ones reserved for documentation.
+
+BLAST+ is not a Python dependency: without it, the portal says that BLAST is
+not set up.
+
 ## 0.3.1 (26 November 2026)
 
 What 0.3.0 showed when other people first ran the portal (D-115). Loading,

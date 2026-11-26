@@ -2966,3 +2966,57 @@ address without saying what it meant.
   administrator rights, an address the computer does not have, a missing
   package and a database with no genomes each get one sentence, not a
   traceback. Ctrl-C stops the portal and says so.
+
+## D-116 — BLAST against the portal's genomes
+
+**Adds** the one kind of request that is not a read of the database: a
+sequence search. A genome resource is asked "is my sequence in these genomes?"
+as often as "where is this gene?", and a portal without BLAST sends its users
+to NCBI, whose databases may hold neither these assemblies nor these
+annotations. It is built so that D-111's two promises still hold: the portal
+writes nothing, and a visitor's text reaches nothing but a bound parameter, or
+here, BLAST's input.
+
+- **Databases built and checked the loader's way.** `cgload blastdb` writes two
+  BLAST+ databases into each assembly's data directory: the genome, and every
+  CDS translated as the portal translates it (D-113). Each is checked by
+  counting, as a load is: the genome database must hold every sequence the
+  database lists, the protein database one protein per CDS feature, and
+  makeblastdb's own count of what it stored must agree. The counts go to
+  `blast/manifest.json`. A database is replaced only after its successor has
+  passed; one that fails is not kept, and its predecessor goes with it, since
+  that may name rows of an earlier load. The portal uses a database only if its
+  manifest names the assembly's current load (`loaded_at`), so a reload hides
+  it until `cgload blastdb` runs again.
+- **A visitor's text is BLAST's input and nothing else.** BLAST+ runs with an
+  argument list, never through a shell, and its programs are found when the
+  portal starts, never from a request. The query goes to standard input as one
+  FASTA record under the header `>query`. Program, task, E-value and number of
+  hits come from fixed lists, and genomes are chosen by assembly id among
+  those with databases. No text from a visitor or from the annotation files
+  becomes an argument: a database's title is `cgload assembly N genome`.
+- **Bounded work.** One sequence of its alphabet's letters, 10 to 10,000 long.
+  At most `--blast-jobs` searches run at once (2 by default); as many again
+  may wait up to 30 s, and any more are turned away at once with 503 and
+  Retry-After, so searches cannot hold every thread the pages need.
+  `cgload serve` refuses a `--blast-jobs` that would let them. A search is
+  stopped after `--blast-timeout` (120 s), a request body is at most 64 KiB,
+  and what BLAST writes to its error stream is logged, not shown.
+- **POST on two URLs.** `/blast` and `/api/v1/blast` answer POST; every other
+  route still answers GET and HEAD only. A search changes nothing, so a
+  cross-site request could at most make a visitor's browser run a search,
+  which the attacker could run directly.
+- **Global BLAST is a link.** A gene's page links its protein and coding
+  sequence to NCBI BLAST with the query filled in: by accession where the CDS
+  names a `protein_id` of NCBI's form, otherwise the sequence itself when it is
+  at most 4,000 letters. The server sends nothing to NCBI.
+
+A protein hit links to its CDS; a genome hit to the region of its HSPs on one
+strand within 100 kb, as a gene's exons lie. BLAST+ is not a Python
+dependency: `cgload blastdb` and `cgload serve` find it on PATH or beside the
+Python running cgload, and without it the portal says BLAST is not set up.
+Tested by `tests/test_portal_blast.py`: queries, choices, the argument list,
+the slots, parsing, hostile values in every field and a seeded fuzz of 600
+searches; with BLAST+ (installed in CI on Linux), the databases' counts, each
+Dscam1 isoform finding itself first, tblastn inside the CDS, blastn on both
+strands at the piece's own coordinates, and blastx.

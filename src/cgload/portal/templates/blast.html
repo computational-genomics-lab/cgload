@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}BLAST · {{ portal_title }}{% endblock %}
+{% block body %}
+<h1>BLAST</h1>
+{% if not ready %}
+<p class="sub">BLAST is not set up on this portal.</p>
+<p class="muted">{% if not installed %}The server has no BLAST+ programs.{% else %}No genome has BLAST databases yet.{% endif %}
+Its keeper can install BLAST+ and run <code>cgload blastdb</code>; the portal then offers BLAST here.
+You can still BLAST a gene's protein at NCBI from its page.</p>
+{% else %}
+<p class="sub">Search the genomes of this portal with BLAST+. One sequence at a time, at most {{ '{:,}'.format(max_blast_query) }} letters;
+{{ jobs }} search{{ 'es' if jobs != 1 }} run at once, each for at most {{ timeout|int }} s.</p>
+<form method="post" action="{{ url_for('blast_run') }}" class="blast">
+  <label for="query">Query: FASTA or plain sequence</label>
+  <textarea id="query" name="query" rows="8" spellcheck="false" maxlength="{{ 3 * max_blast_query }}" required>{{ form.query }}</textarea>
+  <div class="choices">
+    <label>Program
+      <select name="program">{% for name in programs %}<option value="{{ name }}"{% if name == form.program %} selected{% endif %}>{{ name }}: {{ describe[name] }}</option>{% endfor %}</select></label>
+    <label>Against
+      <select name="genome"><option value="all"{% if form.genome == 'all' %} selected{% endif %}>every genome here ({{ genomes|length }})</option>
+      {% for genome in genomes %}<option value="{{ genome.assembly_id }}"{% if form.genome == genome.assembly_id|string %} selected{% endif %}>{{ genome.label }}</option>{% endfor %}</select></label>
+    <label>blastn task
+      <select name="task">{% for task in tasks %}<option value="{{ task }}"{% if task == form.task %} selected{% endif %}>{{ task }}{{ ' (near-identical, fast)' if task == 'megablast' else ' (more distant, slower)' }}</option>{% endfor %}</select></label>
+    <label>E-value at most
+      <select name="evalue">{% for value in evalues %}<option value="{{ value }}"{% if value == form.evalue %} selected{% endif %}>{{ value }}</option>{% endfor %}</select></label>
+    <label>Hits
+      <select name="max_hits">{% for value in hit_choices %}<option value="{{ value }}"{% if value|string == form.max_hits %} selected{% endif %}>{{ value }}</option>{% endfor %}</select></label>
+  </div>
+  <button type="submit">BLAST</button>
+</form>
+{% endif %}
+{% if error %}<p class="note">{{ error }}</p>{% endif %}
+{% if result %}
+<h2>{{ hits|length }} hit{{ 's' if hits|length != 1 }} <span class="muted">{{ result.request.title }}, {{ result.request.program }}{% if result.request.task %} ({{ result.request.task }}){% endif %}, {{ '{:,}'.format(result.request.query|length) }} letters, E-value ≤ {{ result.request.evalue }}, {{ '%.1f'|format(result.seconds) }} s</span></h2>
+{% if ncbi %}<p><a href="{{ ncbi }}" rel="noopener noreferrer" target="_blank">The same query at NCBI BLAST</a>, against NCBI's own databases.</p>{% endif %}
+{% if hits %}
+<table class="blast-hits"><thead><tr><th>#</th><th>Genome</th><th>Hit</th><th>Description</th><th class="num">Identity</th><th class="num">Length</th><th class="num">E-value</th><th class="num">Bits</th><th class="num">Query</th><th class="num">Subject</th></tr></thead><tbody>
+{% for entry in hits %}{% set hit = entry.hit %}{% set best = hit.best %}
+<tr>
+  <td class="num">{{ loop.index }}</td>
+  <td>{% if entry.genome %}<em>{{ entry.genome.organism }}</em>{% endif %}</td>
+  <td><a href="{{ entry.url }}">{{ hit.name }}</a></td>
+  <td>{% if hit.kind == 'proteins' %}{{ hit.product }}{% else %}{{ '{:,}'.format(hit.length) }} bp, {{ best.strand or '' }} strand{% endif %}</td>
+  <td class="num">{{ '%.1f'|format(best.pident) }}%</td>
+  <td class="num">{{ '{:,}'.format(best.length) }}</td>
+  <td class="num">{{ '%.2g'|format(best.evalue) }}</td>
+  <td class="num">{{ '%.0f'|format(best.bitscore) }}</td>
+  <td class="num">{{ best.qstart }}–{{ best.qend }}</td>
+  <td class="num">{{ '{:,}'.format(best.sstart) }}–{{ '{:,}'.format(best.send) }}</td>
+</tr>
+{% endfor %}
+</tbody></table>
+<h2>Alignments</h2>
+{% for entry in hits %}{% set hit = entry.hit %}
+<details class="alignment"{% if loop.first %} open{% endif %}>
+  <summary>{{ loop.index }}. <a href="{{ entry.url }}">{{ hit.name }}</a>{% if hit.product %} {{ hit.product }}{% endif %}
+  {% if entry.genome %}<span class="muted"><em>{{ entry.genome.organism }}</em>, {{ '{:,}'.format(hit.length) }} {{ 'aa' if hit.kind == 'proteins' else 'bp' }}</span>{% endif %}</summary>
+  {% for hsp in hit.hsps %}
+  <p class="muted">Identity {{ '%.1f'|format(hsp.pident) }}% over {{ '{:,}'.format(hsp.length) }}, {{ hsp.mismatches }} mismatches, {{ hsp.gap_opens }} gap openings, E-value {{ '%.2g'|format(hsp.evalue) }}, {{ '%.0f'|format(hsp.bitscore) }} bits{% if hsp.strand %}, {{ hsp.strand }} strand{% endif %}</p>
+<pre class="aln">{% for qs, q, m, s, ss, qe, se in hsp.blocks(result.request.program) %}Query  {{ '%9d'|format(qs) }}  {{ q }}  {{ qe }}
+                  {{ m }}
+Sbjct  {{ '%9d'|format(ss) }}  {{ s }}  {{ se }}
+
+{% endfor %}</pre>
+  {% endfor %}
+</details>
+{% endfor %}
+{% else %}
+<p>Nothing in these genomes matches at that E-value.</p>
+{% endif %}
+{% endif %}
+{% endblock %}

@@ -9,9 +9,10 @@
   <li>Open a gene to see its transcripts drawn to scale, its attributes and functional annotation, and its genomic, spliced, coding and protein sequences.</li>
   <li>Browse any region in the genome browser (igv.js), which reads the assembly and the annotation files that cgload wrote at load.</li>
   <li>Download a gene's family as GFF3, sequences as FASTA, or the whole assembly and annotation.</li>
+  {% if blast_on %}<li><a href="{{ url_for('blast_page') }}">BLAST</a> a sequence against the genomes or their proteins, or send a gene's protein to NCBI BLAST from its page.</li>{% endif %}
 </ul>
 <h2>For programs</h2>
-<p>Every page has a JSON counterpart under <a href="{{ url_for('api_genomes') }}"><code>/api/v1/</code></a>: <code>/api/v1/genomes</code>, <code>/api/v1/genomes/&lt;id&gt;/search?q=</code>, <code>/api/v1/genomes/&lt;id&gt;/features/&lt;row&gt;</code> and <code>/api/v1/genomes/&lt;id&gt;/region?r=</code>.</p>
+<p>Every page has a JSON counterpart under <a href="{{ url_for('api_genomes') }}"><code>/api/v1/</code></a>: <code>/api/v1/genomes</code>, <code>/api/v1/genomes/&lt;id&gt;/search?q=</code>, <code>/api/v1/genomes/&lt;id&gt;/features/&lt;row&gt;</code> and <code>/api/v1/genomes/&lt;id&gt;/region?r=</code>{% if blast_on %}; BLAST is <code>POST /api/v1/blast</code> with a JSON object holding the <code>query</code>{% endif %}.</p>
 <h2>What it does not do</h2>
-<p>The portal changes nothing: it opens the database read-only, has no accounts and takes no uploads. Protein sequences are translated by cgload from the CDS rows, with the genetic code the file names; where a file declares an exception that a plain translation does not apply (<code>transl_except</code>, ribosomal slippage), the page says so.</p>
+<p>The portal changes nothing: it opens the database read-only, has no accounts and takes no uploads{% if blast_on %}; a BLAST search is the one thing sent to it, and BLAST runs here on the portal's own databases{% endif %}. Protein sequences are translated by cgload from the CDS rows, with the genetic code the file names; where a file declares an exception that a plain translation does not apply (<code>transl_except</code>, ribosomal slippage), the page says so.</p>
 {% endblock %}
