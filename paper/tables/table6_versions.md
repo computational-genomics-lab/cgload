@@ -6,6 +6,8 @@
 | Flask, Werkzeug, Jinja2 | 3.1.3, 3.1.9, 3.1.6 | the portal |
 | waitress | 3.0.2 | the portal's web server |
 | igv.js | 3.8.10 | the portal's genome browser, served with cgload |
+| cgload | 0.4.0 | BLAST (Q10; run pending) |
+| BLAST+ | pending | BLAST in the portal (Q10) |
 | Python | 3.12.15 | cgload, gffutils and the benchmark scripts |
 | SQLite | 3.54.1 | cgload and gffutils databases |
 | PostgreSQL | 16.15 | cgload and Chado databases |

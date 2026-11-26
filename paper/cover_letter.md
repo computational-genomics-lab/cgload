@@ -13,10 +13,10 @@ database, and the database is filled by a loader that can drop or alter
 features without a message. cgload covers both steps. It loads an assembly and
 its annotation into SQLite or PostgreSQL in one transaction, compares what it
 stored with an independent count of the input file, and rolls back a load that
-falls short. Two further commands then serve the database as a read-only
+falls short. Further commands then serve the database as a read-only
 portal: search by gene name, product or functional term, gene pages with a
-genome browser, sequences and proteins, and the record of how each genome was
-loaded.
+genome browser, sequences and proteins, BLAST against the genomes and their
+proteins, and the record of how each genome was loaded.
 
 We compared cgload with gffutils, txdbmaker and python-chado on 30 RefSeq
 genomes (18.0 million features), under a protocol fixed and tagged before the
@@ -26,10 +26,12 @@ not at all, without a message. We are explicit about what cgload's own check
 cannot see: it compares counts, so it catches a lost or invented feature but
 not a renamed one or a changed value. One portal then served all 30 genomes
 from a single database, with a median of {{portal:gene_page_median}} ms for a
-gene's page. It was built against the problems genome portals are known for:
-it opens the database read-only, binds every value a visitor sends, runs no
-other program and loads no script from another site, and we tested it with
-injection strings and thousands of random requests. We also report where
+gene's page, and its BLAST found {{blast:found}} of {{blast:queries}} sampled
+sequences in their own place. It was built against the problems genome
+portals are known for: it opens the database read-only, binds every value a
+visitor sends, starts no program but BLAST+, with arguments it chooses, and
+loads no script from another site, and we tested it with injection strings
+and thousands of random requests. We also report where
 cgload is weaker: it needs far more memory than gffutils, answers single
 queries from the command line more slowly, and serves the portal from one
 process.

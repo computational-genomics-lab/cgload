@@ -15,10 +15,11 @@ manuscript.md is the source. This script
   stops the build;
 * shows each note to the authors (`<!-- AUTHORS: ... -->`) in bold, where
   pandoc would drop the comment;
-* puts the portal's numbers in place of each `{{portal:KEY}}`, from
-  tables/portal_numbers.json, which paper/figures.py writes from the portal's
-  results. Until those results exist the file is empty, and each number is
-  shown as **[KEY]**; once it has numbers, a KEY it lacks stops the build;
+* puts the measured numbers in place of each `{{portal:KEY}}` and
+  `{{blast:KEY}}`, from tables/portal_numbers.json and
+  tables/blast_numbers.json, which paper/figures.py writes from the results.
+  Until those results exist a file is empty, and each number is shown as
+  **[portal:KEY]**; once it has numbers, a KEY it lacks stops the build;
 * makes a Word file with pandoc, with typographic substitution off, so that
   `--force` stays two hyphens, and gives it what BMC Bioinformatics asks of a
   submission: A4 pages, double line spacing in the text, line numbers and page
@@ -94,23 +95,28 @@ def number_citations(text: str) -> str:
     return text.replace(marker, listed) + "\n"
 
 
-PORTAL_NUMBER = re.compile(r"\{\{portal:([a-z0-9_]+)\}\}")
+MEASURED = ("portal", "blast")
 
 
-def portal_numbers(text: str) -> str:
-    path = HERE / "tables" / "portal_numbers.json"
-    numbers = json.loads(path.read_text()) if path.exists() else {}
-    wanted = set(PORTAL_NUMBER.findall(text))
-    if numbers and wanted - numbers.keys():
-        raise SystemExit(f"no portal number for {', '.join(sorted(wanted - numbers.keys()))}")
-    if not numbers and wanted:
-        print(f"the portal's results are pending: {len(wanted)} numbers shown by name",
-              file=sys.stderr)
-    return PORTAL_NUMBER.sub(lambda m: numbers.get(m.group(1), f"**[{m.group(1)}]**"), text)
+def measured_numbers(text: str) -> str:
+    for kind in MEASURED:
+        pattern = re.compile(r"\{\{" + kind + r":([a-z0-9_]+)\}\}")
+        path = HERE / "tables" / f"{kind}_numbers.json"
+        numbers = json.loads(path.read_text()) if path.exists() else {}
+        wanted = set(pattern.findall(text))
+        if numbers and wanted - numbers.keys():
+            raise SystemExit(f"no {kind} number for "
+                             f"{', '.join(sorted(wanted - numbers.keys()))}")
+        if not numbers and wanted:
+            print(f"the {kind} results are pending: {len(wanted)} numbers shown by name",
+                  file=sys.stderr)
+        text = pattern.sub(lambda m, numbers=numbers, kind=kind:
+                           numbers.get(m.group(1), f"**[{kind}:{m.group(1)}]**"), text)
+    return text
 
 
 def assemble(source: Path) -> str:
-    text = portal_numbers(include_tables(source.read_text()))
+    text = measured_numbers(include_tables(source.read_text()))
 
     def note(match: re.Match) -> str:
         return f"\n**[TO THE AUTHORS: {' '.join(match.group(1).split())}]**\n"
@@ -399,7 +405,8 @@ def main() -> int:
               "tables/tableS3_timing.csv": "additional_file_3_table_S3.csv",
               "tables/tableS4_sequences.csv": "additional_file_4_table_S4.csv",
               "llm_use.md": "additional_file_5_llm_use.md",
-              "tables/tableS5_portal.csv": "additional_file_6_table_S5.csv"}
+              "tables/tableS5_portal.csv": "additional_file_6_table_S5.csv",
+              "tables/tableS6_blast.csv": "additional_file_8_table_S6.csv"}
     for source, name in extras.items():
         if source.endswith(".md"):
             # Notes to the authors are HTML comments; the submitted file leaves them

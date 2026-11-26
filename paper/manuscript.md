@@ -25,19 +25,18 @@ Corresponding author e-mail address: tsucheta@gmail.com
 # Abstract
 
 **Background:** Genome annotations in GFF3 format are loaded into databases,
-and most people who use them reach them through a web portal built on such a
-database. A loader can drop or alter features as it reads, and the database
+which most users reach through a web portal. A loader can drop or alter features as it reads, and the database
 still answers queries, so the loss reaches the portal unseen. We know of no
-study that measures how often this happens with real files.
+study measuring how often this happens with real files.
 
 **Results:** We developed cgload, a Python tool that loads an assembly and its
 annotation into SQLite or PostgreSQL in one transaction, compares what it
 stored with a count of the input made by separate code, and rolls back a load
-that falls short. Two more commands serve the database as a read-only web
+that falls short. Further commands serve the database as a read-only web
 portal: search by name, product or functional term, gene pages with a genome
-browser, and sequences. Under a protocol fixed
+browser, sequences and BLAST. Under a protocol fixed
 beforehand, we compared cgload with three other loaders on 30 RefSeq genomes
-(28.2 million GFF3 rows, 18.0 million features), checking each result against
+(18.0 million features), checking each result against
 a reference reading that shares no code with any loader. cgload stored
 18,017,606 features unchanged in every field compared, declared the 12 it
 repaired and lost none. gffutils with `create_unique` stored 1,072,125
@@ -45,10 +44,12 @@ multi-row features as separate records without a message. txdbmaker stopped on s
 finish nine genomes and, in the other 21, lost 5.0% of the features, four in
 five without a message. cgload reported all 57 planted faults it was expected
 to catch and, as predicted, none of the 24 that kept every count. One portal
-then served all 30 genomes from one database: searches by name found all
+served all 30 genomes from one database: searches by name found all
 {{portal:genes}} genes sampled, a gene page took a median of
-{{portal:gene_page_median}} ms, and none of {{portal:probe_requests}} injection
-attempts and random requests caused a server error or changed the database.
+{{portal:gene_page_median}} ms, BLAST found {{blast:found}} of
+{{blast:queries}} sampled sequences in their own place, and none of
+{{portal:probe_requests}} injection attempts and random requests caused a
+server error or changed the database.
 
 **Conclusions:** Each of the other three loaders changed or lost features
 without a message. A count of the input by independent code catches such loss
@@ -58,7 +59,7 @@ license):
 https://github.com/computational-genomics-lab/cgload.
 
 **Keywords:** genome annotation; GFF3; relational database; data integrity;
-benchmarking; RefSeq; web portal; genome browser
+benchmarking; RefSeq; web portal; genome browser; BLAST
 
 # Background
 
@@ -436,6 +437,22 @@ questions for programs, and the four files of each assembly that a genome
 browser reads (the FASTA file, its index, the compressed annotation and its
 tabix index) are served in byte ranges.
 
+*BLAST.* `cgload blastdb` builds two BLAST+ databases [@blastplus] for each
+assembly, in its folder: one of the genome's sequences and one of its
+proteins, translated as the portal translates them. It checks both by
+counting, as a load is checked: the genome database must hold every sequence
+of the assembly, the protein database one protein for every coding sequence,
+and BLAST+'s own count of what it stored must equal both. An assembly whose
+counts differ keeps no BLAST database, and the portal does not use one built
+before the assembly's latest load. The BLAST page takes one sequence of 10 to
+10,000 letters and searches one genome or all of them with blastn (as
+megablast, or as blastn for more distant sequence), tblastn, blastp or blastx.
+Each hit links to its coding sequence's page or to the region of the genome it
+lies in, with its alignments, and programs can send the same search as JSON.
+A gene's page also links its protein and coding sequence to BLAST at NCBI
+[@ncbiblast], filled in with the protein's accession or with the sequence
+itself; the visitor's browser makes that request, not the portal.
+
 *The search index.* Names and words are looked up in an index that
 `cgload index` builds from the features' IDs and attributes: a row for each
 lower-cased term and the feature it names, in two tables kept apart from the
@@ -448,16 +465,23 @@ by ID and by functional term, and says that names cannot be searched.
 *Safety.* The portal's defences are limits on what it can do. It opens the
 database read-only, SQLite in read-only mode
 and PostgreSQL in read-only transactions, so no request can change it, and it
-answers only GET and HEAD requests. Every value that a request sends reaches
-SQL as a bound parameter, and its length is limited. The portal runs no other
-program, keeps no session and has no accounts. Text from the annotation files
+answers only GET and HEAD requests, but for the two addresses that take a
+BLAST search. Every value that a request sends reaches SQL as a bound
+parameter, and its length is limited. The one program the portal starts is
+BLAST+, with a list of arguments drawn from fixed choices and never through a
+shell; the query is BLAST's input, under a header the portal writes, and never
+one of its arguments. Two searches run at once by default and as many again
+may wait; any more are turned away at once, so that searches cannot take the
+threads the pages need, and each search is stopped after 120 s. The portal
+keeps no session and has no accounts. Text from the annotation files
 is escaped wherever a page shows it, and every response carries a Content
 Security Policy [@csp] that lets a page run scripts from the portal only, and
 no inline script. igv.js is served from the cgload package itself, so a page
 loads nothing from another site. Of each assembly's folder, only the four
 browser files can be read, by name. The test suite sends injection strings and
-a seeded fuzz of 3,000 random requests to the portal's routes and checks that
-none fails the server or comes back as code, and continuous integration runs
+a seeded fuzz of 3,000 random requests to the portal's routes, and 600 random
+searches to BLAST, and checks that none fails the server or comes back as
+code, and continuous integration runs
 the Bandit security linter [@bandit] on the code. Who can read the data is
 decided by who can reach the portal; where the data are not public,
 `docs/portal.md` in the repository describes how to run it behind a web
@@ -495,7 +519,12 @@ these runs:
   users wait, and does anything they send make it fail?
 
 We wrote its procedure into the protocol as section 13, with what counts as a
-failure of the portal, before the portal was measured.
+failure of the portal, before the portal was measured. A tenth came with
+BLAST, and its procedure became section 14, also before it was run:
+
+- Q10. Does each BLAST database hold what its genome holds, does a sampled
+  sequence find itself, how long does a search take, and does anything sent
+  to BLAST make the portal fail?
 
 ### Genomes and input files
 
@@ -613,11 +642,14 @@ feature's first-row column 2 on all its rows. Neither changes a count. Version
 Version 0.3.0 adds the portal and its search
 index (D-111 to D-114). It loads, verifies and exports as 0.2.2 does, and its
 `remove` also deletes a genome's index. The portal was measured with 0.3.0.
-Version 0.3.1, the one this paper describes, changes only how the portal is
+Version 0.3.1 changes only how the portal is
 installed and started (D-115): Flask and waitress install with cgload, and
 `cgload serve` listens on every network interface by default, lists the
 addresses that open it, moves to the next free port when port 8000 is taken,
 and reports start-up problems in a sentence instead of a traceback.
+Version 0.4.0, the one this paper describes, adds BLAST and `cgload blastdb`
+(D-116); it loads, verifies, exports and serves pages as 0.3.1 does, and BLAST
+was measured with it.
 The query code changed between the two commits (see "Changes after the first
 run"), and the timing was measured after that change.
 
@@ -704,6 +736,36 @@ response with a status of 500 or above, a search by a gene's name that does not
 list the gene while no more than 1,000 features match the name, a stop codon
 inside a protein that the file does not explain, a response without the
 security headers or with a script it was sent, and any change to the database.
+
+### Measuring BLAST
+
+For Q10, cgload 0.4.0 built the BLAST databases of each of the 30 genomes in
+the database of Q9 with `cgload blastdb`, and the portal ran as for Q9, with
+its default BLAST settings: two searches at once, four threads each and a
+limit of 120 s. The client sent its searches as JSON, one at a time. For each
+genome, drawn with a seed, it searched 20 proteins, as the portal serves them,
+with blastp against every genome; 10 stretches of 500 bp without N, from
+sequences of at least 2 kb chosen in proportion to their length, with blastn
+(megablast) against every genome; three of those proteins with tblastn
+against their own genome; and the same three coding sequences with blastx
+against their own genome's proteins. Three proteins, from human,
+*D. melanogaster* and *S. cerevisiae*, were also searched with tblastn against
+all 30 genomes, the slowest search the portal offers. A query found itself if
+its own protein or place was among the hits at 100% identity, over the whole
+stretch for blastn, and, but for tblastn, with the top score; a query whose
+top score another hit shared, as an identical paralogue or a repeat does, was
+counted apart. A load test ran for 60 s with no search, then with 1, 2, 4 and
+8 clients searching with blastp against every genome while one more client
+opened gene pages. A probe sent the injection strings of Q9, strings aimed at
+a shell or at BLAST's own options, and 600 seeded random searches to both
+BLAST addresses, as forms and as JSON. The checksums of the database file and
+of the BLAST databases' manifests were taken before the searches and after
+the probe. The protocol counts as a failure a BLAST database that fails its
+check, a protein or stretch with no stop codon or unknown residue inside that
+does not find itself while no other hit ties with it, a server error other
+than a search turned away or stopped at its limit, a response without the
+security headers or with a script it was sent, and any change to the
+checksums.
 
 ### Hardware
 
@@ -1101,6 +1163,30 @@ database (`cgload serve`, 8 threads, one process), and for 200 human genes on
 PostgreSQL. A gene with no coding sequence has no protein to ask for.
 Percentiles are nearest-rank. Additional file 6 gives the medians per genome.
 
+## BLAST on the 30 genomes
+
+<!-- AUTHORS: Q10's results go here once benchmark/run_blast.py has run on the
+server; Table 9, Table S6 and the numbers below fill in from
+paper/data/blast-v0.4.0/. -->
+
+`cgload blastdb` built the BLAST databases of {{blast:genomes}} genomes in
+{{blast:build_hours}} h, and {{blast:build_pass}} passed their check
+(Q10): {{blast:proteins_million}} million proteins and
+{{blast:genome_gb}} Gb of sequence, in {{blast:disk_gb}} GB on disk. Of
+{{blast:queries}} sampled proteins and stretches, {{blast:found}} found
+themselves (Table 9).
+
+**Table 9. BLAST searches on the 30 genomes.**
+
+<!-- include tables/table9_blast.md -->
+
+Each search was sent alone, through `POST /api/v1/blast`, to the portal
+holding all 30 genomes, with its default BLAST settings (two searches at once,
+four threads each, 120 s limit). A query found itself as "Measuring BLAST"
+defines; a query that tied shared its top score with another hit. Times run
+from the client's request to the end of the answer. Additional file 8 gives
+the results per genome.
+
 # Discussion
 
 On the same 30 RefSeq files, each of the other three loaders stored some
@@ -1136,7 +1222,7 @@ predicted. A user who needs those checked has to compare the database with the
 file feature by feature, as our round trip does, and that comparison is not
 part of `cgload verify`. Checking identity as well, for instance by comparing
 the set of IDs and of child and parent pairs, would close much of this gap at
-little cost; it is not in version 0.3.1. The same blind spot hid a fault in
+little cost; it is not in version 0.4.0. The same blind spot hid a fault in
 cgload itself. Its export rounded scores to six significant digits, which
 changed 52 scores in human and mouse and no count; only the later comparison
 of columns 2, 6 and 8 showed it.
@@ -1162,14 +1248,16 @@ The portal also takes a position among the ways a group can put a genome on
 the web. Tripal runs a whole community website, with user accounts and pages
 that curators edit [@tripal; @tripal-docs], and GenomeHubs brings the Ensembl
 website with a BLAST server beside it [@genomehubs]; both do much more than
-cgload's portal. They also bring a large software stack that has to be
+cgload's portal, and SequenceServer [@sequenceserver] offers far more of
+BLAST's options than its four programs and fixed choices. They also bring a large software stack that has to be
 installed and kept up to date, with security updates of its own; Drupal, on which Tripal is built, issued a highly critical fix for remote
 code execution in 2018 [@drupal]. JBrowse 2 can read cgload's indexed files
 with no code on the server at all [@jbrowse2] and searches the names it
 indexes from them, but the functional annotation and the record of each load
 stay in the database, out of its reach. cgload's portal lies between these:
-two commands on a database that the load has already checked, one Python
-process, and no request that can change the database or start a program.
+a few commands on a database that the load has already checked, one Python
+process, and no request that can change the database; the one program a
+request can start is BLAST+, with arguments the portal chooses.
 Read-only access, bound parameters, escaping and a strict Content Security
 Policy are each standard defences against injection [@owasp]. What the portal
 leaves out matters as much: it has no form that writes and no shell that a
@@ -1225,10 +1313,10 @@ took about a quarter of a second, mostly to start Python; query waits were
 measured on four genomes, not 30. A killed load leaves its staging files on
 disk, to be deleted by hand. `verify` exits 0 when it skips the source count
 because the input file has changed, so a script that reads only the exit
-status misses the change; this is unchanged in version 0.3.1.
+status misses the change; this is unchanged in version 0.4.0.
 
-The portal and Q9 came after the benchmark. Q9's procedure was fixed before it
-was run, but on the same 30 genomes that cgload had been corrected on, and
+The portal, Q9 and Q10 came after the benchmark. Their procedures were fixed
+before they were run, but on the same 30 genomes that cgload had been corrected on, and
 Figure 3 shows the repository's own test record. The portal's times were
 measured with the client on the server, so they leave out the network and the
 time a browser takes to draw igv.js. They are also the times of one process,
@@ -1241,7 +1329,12 @@ without converting them first, and installing Tripal or GenomeHubs to do so was
 outside the protocol. The portal translates coding sequences itself, as the
 file describes them. It names the exceptions that a file declares but does not
 apply them, so for such a coding sequence the protein it shows is not the
-curated one. It has no BLAST, no editing and no accounts.
+curated one, and BLAST searches the same translations. It has no editing and
+no accounts. Its BLAST offers four programs with fixed choices and a query of at
+most 10,000 letters, and stops every search after 120 s, which may be too
+short for a search of every genome; a public portal also needs a limit on
+searches per visitor, which `docs/portal.md` sets in the web server in front
+of it.
 
 The benchmark was written by cgload's authors, and its protocol was registered
 as a tagged commit in our own public repository, not in an independent
@@ -1265,10 +1358,10 @@ genomes it kept every feature in every field we compared, declared its 12
 repairs and reported every planted fault that changed a count; version 0.2.2
 also returns every row's source, score and phase as written. Counts cannot show
 that a name, a link or a value is right; that takes a comparison feature by
-feature, like the one this benchmark made. With `cgload index` and
-`cgload serve` the same database becomes a portal that its users can search
-and browse, that shows how each genome was loaded, and that cannot change what
-it serves; one such portal served all 30 genomes from one database, with a
+feature, like the one this benchmark made. With `cgload index`,
+`cgload blastdb` and `cgload serve` the same database becomes a portal that its
+users can search, browse and BLAST, that shows how each genome was loaded, and
+that cannot change what it serves; one such portal served all 30 genomes from one database, with a
 median of {{portal:gene_page_median}} ms for a gene's page. The
 protocol, scripts and results are public, so the same questions can be put to
 other loaders and other files.
@@ -1284,14 +1377,14 @@ other loaders and other files.
 - Other requirements: SQLAlchemy 2.0 or later, pyfaidx 0.7 or later, click 8.1
   or later, Flask 3.0 or later and waitress 3.0 or later, all installed with
   cgload; SQLite 3.8.3 or later (part of Python), or PostgreSQL (tested with
-  version 16) with psycopg 3
+  version 16) with psycopg 3; for BLAST, BLAST+ (tested with version
+  {{blast:blast_version}}), installed apart
 - License: MIT
 - Any restrictions to use by non-academics: none
-- Version described: 0.3.1 (tag `v0.3.1`; source archive in Additional file 7)
+- Version described: 0.4.0 (tag `v0.4.0`; source archive in Additional file 7)
 - RRID:SCR_029282
 - bio.tools ID: biotools:cgload
-- Archived version: Software Heritage, swh:1:rel:f8c6fcb421bbcced29bc4fb3f75ea2eb00568cc2 (release v0.3.1),
-  https://archive.softwareheritage.org/swh:1:rel:f8c6fcb421bbcced29bc4fb3f75ea2eb00568cc2;origin=https://github.com/computational-genomics-lab/cgload.
+- Archived version: Software Heritage, {{swh:v040}}.
   The portal's measurement rests on release v0.3.0,
   swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad,
   https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:27cff3403cd99aae747935485618353d8bd7de79,
@@ -1302,17 +1395,19 @@ other loaders and other files.
 cgload is installed with pip from its repository, at the version described
 here; the portal comes with it:
 
-    pip install "git+https://github.com/computational-genomics-lab/cgload@v0.3.1"
+    pip install "git+https://github.com/computational-genomics-lab/cgload@v0.4.0"
 
 For PostgreSQL, add its driver:
-`pip install "cgload[postgres] @ git+https://github.com/computational-genomics-lab/cgload@v0.3.1"`.
+`pip install "cgload[postgres] @ git+https://github.com/computational-genomics-lab/cgload@v0.4.0"`.
+BLAST needs BLAST+ beside it, for instance from Bioconda
+(`conda install -c conda-forge -c bioconda blast`).
 
 `examples/minimal/` in the repository loads and verifies a small genome in
-under a minute, as a check that the installation works; `cgload index` and
-`cgload serve` then show it in a web browser.
+under a minute, as a check that the installation works; `cgload index`,
+`cgload blastdb` and `cgload serve` then show it in a web browser.
 
 The repository holds test data (`examples/minimal/`, `tests/fixtures/`) with
-expected outputs, a test suite of 660 tests, the benchmark protocol and
+expected outputs, a test suite of 703 tests, the benchmark protocol and
 scripts (`benchmark/`), and the portal's documentation (`docs/portal.md`).
 `paper/figures.py` and `paper/screenshots.py` make every figure and table of
 this paper from the results.
@@ -1343,13 +1438,14 @@ Not applicable.
 ## Availability of data and materials
 
 The datasets supporting the conclusions of this article are included within
-the article and its additional files (Additional files 1 to 4 and 6). They are
+the article and its additional files (Additional files 1 to 4, 6 and 8). They are
 available in full in Additional file 7, a copy of the cgload repository as
 submitted, and in the repository itself,
 https://github.com/computational-genomics-lab/cgload: the results folder of
 the benchmark, as its scripts left it, is `paper/data/benchmark-run-2.2/`, the
-check of columns 2, 6 and 8 is `paper/data/columns-v0.2.2/`, and the portal's
-measurement is `paper/data/portal-v0.3.0/`. The census scripts and their
+check of columns 2, 6 and 8 is `paper/data/columns-v0.2.2/`, the portal's
+measurement is `paper/data/portal-v0.3.0/`, and BLAST's is
+`paper/data/blast-v0.4.0/`. The census scripts and their
 results are in `survey/`. The reference readings are not
 included, because `benchmark/truth.py` rebuilds them from the input files. All
 input files are public RefSeq annotations, identified by accession, annotation
@@ -1360,7 +1456,8 @@ Software Heritage as swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962
 the check of columns 2, 6 and 8 was added to the repository after that release.
 Release v0.3.0, with which the portal was measured, is archived as
 swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad
-(https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:27cff3403cd99aae747935485618353d8bd7de79).
+(https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:27cff3403cd99aae747935485618353d8bd7de79),
+and release v0.4.0, with which BLAST was measured, as {{swh:v040}}.
 
 ## Competing interests
 
@@ -1440,6 +1537,9 @@ Not applicable.
 [@gencode]: Elzanowski A, Ostell J. The genetic codes. National Center for Biotechnology Information. Updated 23 Sep 2024. https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi. Accessed 25 Nov 2026.
 [@csp]: West M, Sartori A, editors. Content Security Policy Level 3. W3C Working Draft. https://www.w3.org/TR/CSP3/. Accessed 25 Nov 2026.
 [@bandit]: PyCQA. Bandit: a tool to find common security issues in Python code. Version 1.8.6. https://github.com/PyCQA/bandit. Accessed 25 Nov 2026.
+[@blastplus]: Camacho C, Coulouris G, Avagyan V, et al. BLAST+: architecture and applications. BMC Bioinformatics. 2009;10:421. https://doi.org/10.1186/1471-2105-10-421.
+[@ncbiblast]: National Center for Biotechnology Information. BLAST: Basic Local Alignment Search Tool. https://blast.ncbi.nlm.nih.gov. Accessed 26 Nov 2026.
+[@sequenceserver]: Priyam A, Woodcroft BJ, Rai V, et al. Sequenceserver: a modern graphical user interface for custom BLAST databases. Mol Biol Evol. 2019;36:2922–4. https://doi.org/10.1093/molbev/msz185.
 [@drupal]: Drupal Security Team. Drupal core – highly critical – remote code execution – SA-CORE-2018-002. 28 Mar 2018. https://www.drupal.org/sa-core-2018-002. Accessed 25 Nov 2026.
 
 # Figure legends
@@ -1523,7 +1623,11 @@ the load, the search index and its check, the median time of each kind of
 request, how often a search by a gene's name found it, and the translation of
 its coding sequences.
 
-**Additional file 7 (ZIP).** Source code of cgload, version 0.3.1: the
+**Additional file 7 (ZIP).** Source code of cgload, version 0.4.0: the
 repository at the time of submission, with its tests, the benchmark protocol
-and scripts, and the results of the benchmark and of the portal's
-measurement.
+and scripts, and the results of the benchmark and of the measurements of the
+portal and of BLAST.
+
+**Additional file 8 (CSV).** Table S6. BLAST on each of the 30 genomes: the
+build of its databases and their check, and how often its sampled proteins
+and stretches found themselves with each program, with the median time.

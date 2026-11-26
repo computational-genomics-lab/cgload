@@ -1,0 +1,32 @@
+| Organism | Accession | Build check | Sequences | Proteins | Build s | Size, MB | blastp all, found of queries | blastn all, found of queries | tblastn own, found of queries | blastx own, found of queries | blastp, median s | blastn, median s |
+| :-- | :-- | :-- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: |
+| *Homo sapiens* | GCF_000001405.40 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Mus musculus* | GCF_000001635.27 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Rattus norvegicus* | GCF_015227675.2 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Gallus gallus* | GCF_016699485.2 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Canis lupus familiaris* | GCF_014441545.1 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Danio rerio* | GCF_000002035.6 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Oryzias latipes* | GCF_002234675.1 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Xenopus tropicalis* | GCF_000004195.4 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Bombyx mori* | GCF_030269925.1 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Nasonia vitripennis* | GCF_009193385.2 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Apis mellifera* | GCF_003254395.2 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Aedes aegypti* | GCF_002204515.2 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Drosophila melanogaster* | GCF_000001215.4 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Tribolium castaneum* | GCF_000002335.3 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Anopheles gambiae* | GCF_000005575.2 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Glycine max* | GCF_000004515.6 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Zea mays* | GCF_902167145.1 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Arabidopsis thaliana* | GCF_000001735.4 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Oryza sativa* Japonica Group | GCF_034140825.1 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Vitis vinifera* | GCF_030704535.1 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Solanum lycopersicum* | GCF_000188115.5 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Sorghum bicolor* | GCF_000003195.3 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Cryptococcus neoformans* H99 | GCF_000149245.1 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Fusarium graminearum* PH-1 | GCF_000240135.3 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Aspergillus nidulans* FGSC A4 | GCF_000149205.2 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Neurospora crassa* OR74A | GCF_000182925.2 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Schizosaccharomyces pombe* | GCF_000002945.2 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Ustilago maydis* 521 | GCF_000328475.2 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Saccharomyces cerevisiae* S288C | GCF_000146045.2 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |
+| *Candida albicans* SC5314 | GCF_000182965.3 | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending | pending |

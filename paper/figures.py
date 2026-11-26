@@ -1543,6 +1543,184 @@ VERSIONS = [  # (what the paper calls it, file, kind, package name, what it was 
 ]
 
 
+BLAST_KINDS = [  # (program, scope in blast_searches.tsv, what the paper calls it)
+    ("blastp", "all", "blastp: a protein against every genome's proteins"),
+    ("blastn", "all", "blastn (megablast): 500 bp against every genome"),
+    ("tblastn", "own", "tblastn: a protein against its own genome"),
+    ("blastx", "own", "blastx: a coding sequence against its genome's proteins"),
+    ("tblastn", "all", "tblastn: a protein against every genome"),
+]
+
+
+class Blast:
+    """What benchmark/run_blast.py left in its results folder (PROTOCOL.md section 14)."""
+
+    def __init__(self, folder: Path):
+        self.folder = folder
+        self.build = read_tsv(folder / "blast_build.tsv")
+        searches = read_tsv(folder / "blast_searches.tsv")
+        self.searches = [r for r in searches if r["kind"] != "skipped_length"]
+        self.skipped = [r for r in searches if r["kind"] == "skipped_length"]
+        self.concurrency = read_tsv(folder / "blast_concurrency.tsv")
+        self.security = read_tsv(folder / "blast_security.tsv")
+        self.readonly = read_tsv(folder / "blast_readonly.tsv")
+        self.environment = json.loads((folder / "blast_environment.json").read_text())
+
+    def rows(self, program: str, scope: str, accession: str | None = None) -> list[dict]:
+        return [r for r in self.searches if r["program"] == program and r["scope"] == scope
+                and (accession is None or r["accession"] == accession)]
+
+
+def blast_outcomes(rows: list[dict]) -> dict[str, int]:
+    """Found itself; tied with another hit; not found with nothing tied (a failure,
+    section 14, when the query has no stop or X inside); not answered."""
+    answered = [r for r in rows if r["status"] == "200"]
+    found = [r for r in answered if r["found"] == "True"]
+    rest = [r for r in answered if r["found"] != "True"]
+    tied = [r for r in rest if number(r["ties_at_top"]) > 1]
+    missed = [r for r in rest if number(r["ties_at_top"]) <= 1]
+    return {"queries": len(rows), "answered": len(answered), "found": len(found),
+            "tied": len(tied), "missed": len(missed),
+            "missed_plain": sum(r["kind"] in ("plain", "piece") for r in missed),
+            "unanswered": len(rows) - len(answered)}
+
+
+def seconds_of(rows: list[dict]) -> list[float]:
+    return [float(r["ms"]) / 1000 for r in rows if r["status"] == "200"]
+
+
+def s_(value: float) -> str:
+    return f"{value:,.0f}" if value >= 100 else f"{value:.1f}" if value >= 1 else f"{value:.2f}"
+
+
+def table_blast(blast: Blast | None) -> str:
+    """Table 9: each kind of search, whether its queries found themselves, and the time."""
+    header = ["Search", "Queries", "Found itself", "Tied", "Not found", "Not answered",
+              "Median, s", "95th percentile, s", "Slowest, s"]
+    rows = []
+    for program, scope, label in BLAST_KINDS:
+        if blast is None:
+            rows.append([label] + [PENDING] * 8)
+            continue
+        found = blast.rows(program, scope)
+        outcome = blast_outcomes(found)
+        times = seconds_of(found)
+        rows.append([label, n(outcome["queries"]), n(outcome["found"]), n(outcome["tied"]),
+                     n(outcome["missed"]), n(outcome["unanswered"]),
+                     s_(statistics.median(times)) if times else "–",
+                     s_(nearest_rank(times, 0.95)) if times else "–",
+                     s_(max(times)) if times else "–"])
+    return md_table(header, rows, "lrrrrrrrr", [6, 2, 2, 2, 2, 2, 2, 2, 2])
+
+
+def table_blast_genomes(results: Results, blast: Blast | None) -> str:
+    """Table S6: BLAST per genome, in the order of Table S1."""
+    header = ["Organism", "Accession", "Build check", "Sequences", "Proteins", "Build s",
+              "Size, MB", *[f"{program} {scope}, found of queries"
+                            for program, scope, _ in BLAST_KINDS[:4]],
+              "blastp, median s", "blastn, median s"]
+    rows = []
+    for g in results.order:
+        accession = g["accession"]
+        if blast is None:
+            rows.append([name_md(g["organism"]), accession] + [PENDING] * (len(header) - 2))
+            continue
+        build = next((r for r in blast.build if r["accession"] == accession), None)
+        cells = []
+        for program, scope, _ in BLAST_KINDS[:4]:
+            outcome = blast_outcomes(blast.rows(program, scope, accession))
+            cells.append(f"{outcome['found']} of {outcome['queries']}"
+                         if outcome["queries"] else "–")
+        medians = []
+        for program in ("blastp", "blastn"):
+            times = seconds_of(blast.rows(program, "all", accession))
+            medians.append(s_(statistics.median(times)) if times else "–")
+        check = "–"
+        if build:
+            check = "PASS" if build["genome_check"] == build["proteins_check"] == "PASS" \
+                else f"{build['genome_check']}/{build['proteins_check']}"
+        rows.append([name_md(g["organism"]), accession, check,
+                     n(number(build["sequences_in_blast"])) if build else "–",
+                     n(number(build["proteins_in_blast"])) if build else "–",
+                     f"{float(build['wall_s']):,.0f}" if build and build["wall_s"] != "NA"
+                     else "–",
+                     f"{number(build['bytes']) / 1e6:,.0f}" if build else "–",
+                     *cells, *medians])
+    return md_table(header, rows, "lll" + "r" * (len(header) - 3))
+
+
+def blast_versions(blast: Blast | None) -> list[list[str]]:
+    """Table 2's rows for BLAST's run, as its environment recorded them."""
+    if blast is None:
+        return [["cgload", "0.4.0", "BLAST (Q10; run pending)"],
+                ["BLAST+", PENDING, "BLAST in the portal (Q10)"]]
+    env = blast.environment
+    when = ""
+    if env.get("started"):
+        import datetime
+
+        day = datetime.date.fromisoformat(env["started"])
+        when = f", run on {day.day} {day:%B %Y}"
+    commit = env["commit"].rsplit("-g", 1)[-1]
+    return [["cgload", env["cgload"], f"BLAST (Q10), at {commit}{when}"],
+            ["BLAST+", env["blast"], "BLAST in the portal (Q10)"]]
+
+
+def blast_numbers(blast: Blast) -> dict[str, str]:
+    """BLAST's numbers the text quotes, as the text writes them."""
+    out: dict[str, str] = {}
+    build = blast.build
+    out["genomes"] = n(len(build))
+    out["build_pass"] = n(sum(r["genome_check"] == r["proteins_check"] == "PASS"
+                              for r in build))
+    hours = sum(float(r["wall_s"]) for r in build if r["wall_s"] != "NA") / 3600
+    out["build_hours"] = f"{hours:.1f}"
+    out["proteins_million"] = f"{sum(number(r['proteins_in_blast']) for r in build) / 1e6:.2f}"
+    out["genome_gb"] = f"{sum(number(r['genome_letters']) for r in build) / 1e9:.1f}"
+    out["disk_gb"] = f"{sum(number(r['bytes']) for r in build) / 1e9:.1f}"
+    outcome = blast_outcomes(blast.searches)
+    out["queries"] = n(outcome["queries"])
+    out["found"] = n(outcome["found"])
+    out["tied"] = n(outcome["tied"])
+    out["missed"] = n(outcome["missed"])
+    out["missed_plain"] = n(outcome["missed_plain"])
+    out["unanswered"] = n(outcome["unanswered"])
+    for program, scope, _ in BLAST_KINDS:
+        rows = blast.rows(program, scope)
+        key = f"{program}_{scope}"
+        part = blast_outcomes(rows)
+        out[f"{key}_queries"] = n(part["queries"])
+        out[f"{key}_found"] = n(part["found"])
+        out[f"{key}_tied"] = n(part["tied"])
+        out[f"{key}_unanswered"] = n(part["unanswered"])
+        times = seconds_of(rows)
+        if times:
+            out[f"{key}_median"] = s_(statistics.median(times))
+            out[f"{key}_p95"] = s_(nearest_rank(times, 0.95))
+            out[f"{key}_max"] = s_(max(times))
+    for row in blast.concurrency:
+        clients = row["clients"]
+        for key in ("searches_done", "turned_away_503", "other_errors", "pages", "page_errors"):
+            out[f"load{clients}_{key}"] = n(number(row[key]))
+        for key in ("search_p50_ms", "page_p50_ms", "page_p95_ms"):
+            if row[key] not in ("", "NA"):
+                out[f"load{clients}_{key}"] = ms(float(row[key]))
+    probe = blast.security[0]
+    out["probe_requests"] = n(number(probe["requests"]))
+    out["probe_server_errors"] = n(number(probe["server_errors"]))
+    out["probe_missing_headers"] = n(number(probe["missing_security_headers"]))
+    statuses = json.loads(probe["statuses"])
+    for status in ("200", "400", "405", "413", "503"):
+        out[f"probe_{status}"] = n(statuses.get(status, 0))
+    readonly = blast.readonly[0]
+    out["database_unchanged"] = "unchanged" if readonly["database_unchanged"] == "True" \
+        else "CHANGED"
+    out["manifests_unchanged"] = "unchanged" if readonly["manifests_unchanged"] == "True" \
+        else "CHANGED"
+    out["blast_version"] = blast.environment["blast"]
+    return out
+
+
 def version_of(text: str, kind: str, package: str) -> str:
     if kind == "pip":
         found = re.search(rf"^{re.escape(package)}==(\S+)$", text, re.M | re.I)
@@ -1558,7 +1736,8 @@ def version_of(text: str, kind: str, package: str) -> str:
 BENCHMARKED_CGLOAD = "0.2.1"
 
 
-def table_versions(results: Results, portal: Portal | None) -> str:
+def table_versions(results: Results, portal: Portal | None, blast: Blast | None = None
+                   ) -> str:
     """Versions as the server's environments recorded them at the time of the run."""
     folder = results.folder / "environment"
     # The version the benchmark ran, not the one installed now: 0.2.2 changed
@@ -1580,7 +1759,7 @@ def table_versions(results: Results, portal: Portal | None) -> str:
     rows[at:at] = [["Chado schema", "1.31 (GMOD/Chado commit ef04588)", "python-chado's database"],
                    ["Sequence Ontology", "SO-Ontologies commit 4340c14",
                     "python-chado's database (so.obo)"]]
-    rows[2:2] = portal_versions(portal)
+    rows[2:2] = portal_versions(portal) + blast_versions(blast)
     return md_table(["Software", "Version", "Used for"], rows, "lll")
 
 
@@ -1598,13 +1777,18 @@ def table_timing(results: Results) -> str:
     return md_table(header, rows, "lllllrr")
 
 
-def write_tables(results: Results, portal: Portal | None, out: Path) -> None:
+def write_tables(results: Results, portal: Portal | None, out: Path,
+                 blast: Blast | None = None) -> None:
     out.mkdir(parents=True, exist_ok=True)
     numbers = portal_numbers(portal) if portal else {}
     (out / "portal_numbers.json").write_text(json.dumps(numbers, indent=1, sort_keys=True) + "\n")
+    numbers = blast_numbers(blast) if blast else {}
+    (out / "blast_numbers.json").write_text(json.dumps(numbers, indent=1, sort_keys=True) + "\n")
     tables = {
         "table7_portal.md": table_portal(portal),
         "tableS5_portal.md": table_portal_genomes(results, portal),
+        "table9_blast.md": table_blast(blast),
+        "tableS6_blast.md": table_blast_genomes(results, blast),
         "table0_example.md": table_example(),
         "table1_loaders.md": table_loaders(results),
         "table2_cases.md": table_cases(results),
@@ -1615,7 +1799,7 @@ def write_tables(results: Results, portal: Portal | None, out: Path) -> None:
         "tableS2_faults.md": table_faults_full(results),
         "tableS3_timing.md": table_timing(results),
         "tableS4_sequences.md": table_sequences(results),
-        "table6_versions.md": table_versions(results, portal),
+        "table6_versions.md": table_versions(results, portal, blast),
     }
     for name, text in tables.items():
         (out / name).write_text(text)
@@ -1629,18 +1813,22 @@ def main(argv=None) -> int:
     parser.add_argument("results", nargs="?", type=Path,
                         default=HERE / "data" / "benchmark-run-2.2")
     parser.add_argument("--portal", type=Path, default=HERE / "data" / "portal-v0.3.0")
+    parser.add_argument("--blast", type=Path, default=HERE / "data" / "blast-v0.4.0")
     parser.add_argument("--out", type=Path, default=HERE)
     args = parser.parse_args(argv)
     results = Results(args.results)
     portal = Portal(args.portal) if (args.portal / "portal_summary.txt").exists() else None
     if portal is None:
         print(f"no portal results in {args.portal}: its tables say pending", file=sys.stderr)
+    blast = Blast(args.blast) if (args.blast / "blast_summary.txt").exists() else None
+    if blast is None:
+        print(f"no BLAST results in {args.blast}: its tables say pending", file=sys.stderr)
     figure_design(args.out / "figures")
     figure_schema(args.out / "figures")
     figure_scale(results, args.out / "figures")
     figure_loaders(results, args.out / "figures")
     figure_queries(results, args.out / "figures")
-    write_tables(results, portal, args.out / "tables")
+    write_tables(results, portal, args.out / "tables", blast)
     print(f"figures in {args.out / 'figures'}, tables in {args.out / 'tables'}")
     return 0
 

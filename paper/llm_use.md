@@ -42,7 +42,11 @@ of the 103 commits carry one, 87 of them naming Claude Opus 5.5.
   (`benchmark/run_portal.py`) and the shell script the authors ran for it.
   On 26 November, after the authors had run the portal on a second server, it
   made the portal install with cgload and listen on the network by default,
-  with clearer start-up messages and README (version 0.3.1, D-115).
+  with clearer start-up messages and README (version 0.3.1, D-115). The same
+  day, at the authors' request, it added BLAST to the portal and
+  `cgload blastdb` (version 0.4.0, D-116), their tests, section 14 of the
+  benchmark protocol and the script that measures BLAST on the 30 genomes
+  (`benchmark/run_blast.py`).
 - **The census and the benchmark.** It helped write the census scripts
   (`survey/`). It drafted the benchmark protocol (`benchmark/PROTOCOL.md`) with
   the authors, wrote the benchmark scripts and their tests (`benchmark/`), wrote
@@ -88,8 +92,9 @@ figures and tables are the output of `paper/figures.py`.
 
 The authors ran every benchmark step on their own server, from the scripts in
 the repository, and every result in the paper comes from those runs
-(`paper/data/benchmark-run-2.2/`, `paper/data/columns-v0.2.2/` and
-`paper/data/portal-v0.3.0/`). The test suite (660 tests, and 26 more for the
+(`paper/data/benchmark-run-2.2/`, `paper/data/columns-v0.2.2/`,
+`paper/data/portal-v0.3.0/` and `paper/data/blast-v0.4.0/`). The test suite
+(703 tests, and 27 more for the
 benchmark) runs in continuous integration on every push, on Linux, macOS and
 Windows. The authors reviewed the code, the
 results and the text, and are responsible for them.
