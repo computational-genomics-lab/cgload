@@ -508,3 +508,96 @@ database's checksums (P6). The results go to `paper/data/portal-v0.3.0/`.
 * The probe is the authors' own, not a test by an outside party.
 * No other portal is timed: none serves these 30 files without converting
   them first. Tripal reads Chado, whose loading the earlier sections measure.
+
+## 14. BLAST in the portal (added 26 November 2026)
+
+Not part of `benchmark-protocol-v1`, and written, with `run_blast.py`, before
+the measurement it describes. cgload 0.4.0 adds BLAST to the portal
+(`cgload blastdb`, `docs/portal.md`, D-116); this section measures it on the
+database of section 13, which holds all 30 genomes. Nothing in it changes a
+result of the earlier sections.
+
+**Questions.**
+
+* B1. Do BLAST databases build for all 30 genomes, and does each pass its
+  count check: every sequence of the assembly in the genome database, one
+  protein for every CDS feature in the protein database, and BLAST+'s own
+  count of what it stored equal to both? How long does a build take, and how
+  much disk do the databases use?
+* B2. Does a query find itself? A protein of the portal, searched with blastp
+  against every genome, should find its own CDS with the top score at 100%
+  identity; a stretch of a genome, searched with blastn (megablast) against
+  every genome, its own place, at 100% over its whole length; a protein,
+  searched with tblastn against its own genome, an HSP at 100% inside its own
+  CDS's span; a CDS, searched with blastx against its own genome's proteins,
+  its own protein with the top score. This tests the databases, the
+  coordinates and the links, not BLAST's sensitivity, which is NCBI's.
+* B3. How long does a visitor wait for a search, by program, against one
+  genome and against all 30?
+* B4. With 1, 2, 4 and 8 visitors searching at once, how many searches are
+  done and how many turned away (503), and do the pages still answer, and how
+  fast, against the pages with no search running?
+* B5. Does any request to the BLAST URLs make the server fail, return a script
+  it was sent, or lack a security header? Does BLAST change the database or
+  the BLAST databases?
+
+**Procedure.** `run_blast.py`, on the server of section 4, after
+`run_portal.py`, with its work directory. Step 1 runs `cgload blastdb` for
+each genome in turn. The portal is then `cgload serve` with 8 threads and its
+default BLAST settings (2 searches at once, 4 threads each, 120 s limit), and
+the client reaches it over the loopback interface, through `POST
+/api/v1/blast`, one search at a time until step 3. Per genome, seeded by the
+accession: 20 CDS for blastp, their proteins as the portal serves them
+(`protein.fa`), against every genome with 100 hits; 10 stretches of 500 bp
+with no N, from sequences of at least 2 kb chosen in proportion to their
+length, for blastn against every genome with 100 hits; 3 of the 20 proteins,
+those with no stop or X inside first, for tblastn against their own genome,
+and their CDS (`cds.fa`) for blastx against their own genome's proteins.
+Three proteins, from human, *D. melanogaster* and *S. cerevisiae*, are
+searched with tblastn against every genome, the slowest search a visitor can
+ask for. The load test runs 60 s with no searching client and then with 1, 2,
+4 and 8, each sending blastp searches of the sampled proteins against every
+genome, waiting 1 s after a 503, while one more client opens the sampled
+CDS's pages. The security probe sends the injection strings of section 13
+and strings meant for a shell or for BLAST's own options in each field of
+both BLAST URLs, as a form and as JSON, 600 seeded random searches, and
+POST, PUT and DELETE where the portal answers only GET.
+
+**What counts as a failure.**
+
+* A genome whose BLAST database does not build, or fails its count check.
+* A protein or stretch, with no stop or X inside, that does not find itself
+  as B2 states, where nothing else ties with its top score. A query that ties
+  (an identical copy elsewhere, a repeat) is counted, not failed. Each failure
+  is listed and looked into, and section 9 applies.
+* A response with status 500 or above, other than 503 with Retry-After from a
+  full portal or a search stopped at its time limit, or no response.
+* A script sent in a request and returned in a page, a response without the
+  security headers, or an answer other than 405 to a method a URL does not
+  take.
+* A database file, or a BLAST manifest, whose SHA-256 after the searches
+  differs from before.
+
+**What is reported.** Per genome and in total, the build's checks, time,
+peak memory and size (B1); per program and scope, the queries that found
+themselves, those that tied, those that failed, and those stopped at the
+time limit (B2); the median, 95th percentile and maximum time of each
+(B3); per load level, searches done and turned away, and the pages' median
+and 95th percentile times (B4); the probe's statuses and failures, and the
+checksums (B5). The results go to `paper/data/blast-v0.4.0/`.
+
+**Limits known in advance.**
+
+* Server and client share the machine, so the times leave out the network.
+* A self-hit shows that the right sequence is in the right database under
+  the right name and coordinates; it says nothing about distant homologues.
+* The proteins are cgload's translations of the CDS rows (D-113): where the
+  file declares a translation exception, the protein in the database is not
+  the curated one.
+* The E-value of a search against every genome counts all 30 databases;
+  against one genome, only that one.
+* A search stopped at 120 s is counted as stopped, not timed past it; the
+  limit is an option (`--blast-timeout`), and so are the number of searches
+  at once and their threads.
+* The probe is the authors' own, not a test by an outside party.
+* No other BLAST server is timed.
