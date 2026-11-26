@@ -14,6 +14,15 @@ $ cgload index                       # once after loading: the name index
 $ cgload serve                       # http://127.0.0.1:8000/
 ```
 
+By default only the computer that runs `cgload serve` can open the portal;
+another computer gets "connection refused". To open it on your network, run
+`cgload serve --host 0.0.0.0` and browse from the other computers to
+`http://<the server's address>:8000/`. If they still cannot connect, the
+server's firewall is closing the port; on Ubuntu, for example,
+`sudo ufw allow from 10.0.0.0/24 to any port 8000 proto tcp` opens it to a
+network of that range only. Beyond a network you trust, put the portal behind a
+web server with HTTPS (below).
+
 `cgload index` builds the search index of every loaded assembly (or of those
 given with `--assembly-id`) and checks it by counting, as `load` checks a load:
 for each attribute it indexes, the features that carry the attribute are counted
@@ -131,8 +140,9 @@ accounts.
 ### Serving more people at once
 
 One `cgload serve` is one process. Its threads share Python's interpreter
-lock, so it answers about as many requests a second as one core allows
-(`benchmark/PROTOCOL.md` section 13 measures it). The portal only reads and
+lock, so it answers about as many requests a second as one core allows: on the
+benchmark's server, with the 30 genomes in one database, about 40 a second,
+whether 8 or 32 users asked at once (`benchmark/PROTOCOL.md` section 13). The portal only reads and
 keeps no state, so more processes behind the same web server serve more
 people: run one `cgload serve --port 800N` per process, from a systemd
 template unit `cgload@.service` whose command ends `--port %i`, and list them

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ipaddress
 import os
 import sys
 from pathlib import Path
@@ -21,6 +22,37 @@ from cgload.db.init import (
 
 DEFAULT_DB_URL = "sqlite:///cgload.db"
 ENV_DB_URL = "CGLOAD_DB_URL"
+
+
+def _reach(host: str) -> str:
+    """"here" for this computer only, "everywhere" for every interface, or "named"."""
+    if host == "localhost":
+        return "here"
+    try:
+        address = ipaddress.ip_address(host)
+    except ValueError:
+        return "named"
+    return "here" if address.is_loopback else "everywhere" if address.is_unspecified else "named"
+
+
+def where_it_listens(host: str, port: int, prefix: str = "") -> list[str]:
+    """What ``cgload serve`` tells its user about who can open the portal."""
+    path = prefix or "/"
+    def url(name: str) -> str:
+        return f"http://{f'[{name}]' if ':' in name else name}:{port}{path}"
+    elsewhere = url("<this computer's address>")
+    beyond = ("  Listening beyond this computer: put a web server with HTTPS in front "
+              "(docs/portal.md).")
+    reach = _reach(host)
+    if reach == "here":
+        return [f"on {url(host)}, for this computer only.",
+                f"  For the other computers on your network: cgload serve --host 0.0.0.0, "
+                f"then open {elsewhere} on them."]
+    if reach == "everywhere":
+        here = url("::1" if ":" in host else "127.0.0.1")
+        return [f"on port {port} of every network interface: {elsewhere} from other "
+                f"computers, {here} from this one.", beyond]
+    return [f"on {url(host)}", beyond]
 
 
 def _resolve(db_url: str | None) -> tuple[str, bool]:
@@ -76,17 +108,17 @@ def serve_command(db_url: str | None, data_dir: Path | None, host: str, port: in
     genomes = portal.genomes()
     unindexed = [genome for genome in genomes if genome.indexed is None]
     missing = [genome for genome in genomes if genome.fasta is None]
+    where = where_it_listens(host, port, url_prefix or "")
     click.echo(f"cgload serve: {len(genomes)} assembl{'y' if len(genomes) == 1 else 'ies'}, "
-               f"read-only, on http://{host}:{port}{url_prefix or '/'}", err=True)
+               f"read-only, {where[0]}", err=True)
+    for line in where[1:]:
+        click.echo(line, err=True)
     if unindexed:
         click.echo(f"  {len(unindexed)} without a search index: names are not searchable "
                    f"there until `cgload index` is run.", err=True)
     if missing:
         click.echo(f"  {len(missing)} whose assembly file is not found: give --data-dir "
                    f"if the data directory has moved.", err=True)
-    if host not in ("127.0.0.1", "localhost", "::1"):
-        click.echo("  Listening beyond this computer: put a web server with HTTPS in "
-                   "front (docs/portal.md).", err=True)
     app = create_app(portal, title=title)
     serve(app, host=host, port=port, threads=threads, ident="cgload",
           url_prefix=url_prefix or "", clear_untrusted_proxy_headers=True)

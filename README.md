@@ -143,8 +143,11 @@ Then put it on the web:
 
 ```console
 cgload index        # the search index, checked by counting like a load
-cgload serve        # http://127.0.0.1:8000/
+cgload serve        # http://127.0.0.1:8000/, on this computer only
 ```
+
+`cgload serve --host 0.0.0.0` opens it to the other computers on your network
+too, at `http://<this computer's address>:8000/`.
 
 [docs/portal.md](docs/portal.md) covers deployment behind nginx, the JSON API
 and the security model.

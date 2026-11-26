@@ -3,13 +3,13 @@ message: "If you use cgload, please cite it as below."
 title: "cgload"
 abstract: >-
   Loads a genome assembly and its annotation (GFF3, GenBank, eggNOG-mapper and
-  InterProScan output) into SQLite or PostgreSQL in one transaction, and
-  checks the stored features and parent links against an independent count of
-  the input files.
+  InterProScan output) into SQLite or PostgreSQL in one transaction, checks
+  the stored features and parent links against an independent count of the
+  input files, and serves the database as a read-only web portal.
 type: software
 license: MIT
-version: "0.2.2"
-date-released: "2026-11-19"
+version: "0.3.0"
+date-released: "2026-11-26"
 repository-code: "https://github.com/computational-genomics-lab/cgload"
 authors:
   - family-names: Upadhyay
@@ -26,3 +26,4 @@ keywords:
   - GFF3
   - database
   - data integrity
+  - web portal

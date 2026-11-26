@@ -139,3 +139,19 @@ def test_every_flag_a_message_names_exists():
     unknown = {flag: where for flag, where in named.items()
                if flag not in declared | OTHER_PROGRAMS_FLAGS}
     assert not unknown, f"messages name flags no command declares: {unknown}"
+
+
+def test_serve_says_who_can_open_the_portal():
+    """By default only the computer itself can; the message says how to open it
+    to the network, since a refused connection from another computer says nothing."""
+    from cgload.cli.commands.serve import where_it_listens
+
+    first, how = where_it_listens("127.0.0.1", 8000)
+    assert first == "on http://127.0.0.1:8000/, for this computer only."
+    assert "--host 0.0.0.0" in how and "http://<this computer's address>:8000/" in how
+    every = where_it_listens("0.0.0.0", 8080, "/genomes")
+    assert "http://<this computer's address>:8080/genomes" in every[0]
+    assert "http://127.0.0.1:8080/genomes" in every[0] and "HTTPS" in every[1]
+    assert where_it_listens("10.0.0.239", 8000)[0] == "on http://10.0.0.239:8000/"
+    assert where_it_listens("fe80::1", 8000)[0] == "on http://[fe80::1]:8000/"
+    assert where_it_listens("::1", 8000)[0].startswith("on http://[::1]:8000/")

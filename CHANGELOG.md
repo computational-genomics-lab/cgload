@@ -2,7 +2,7 @@
 
 Decisions referred to as D-0xx are in [docs/decisions.md](docs/decisions.md).
 
-## 0.3.0 (unreleased)
+## 0.3.0 (26 November 2026)
 
 The genomes cgload loads can now be put on the web for the people who use
 them. Loading, `verify`, `export` and `query` are those of 0.2.2, and a
@@ -19,6 +19,8 @@ database made by 0.2.2 is read as it is; `cgload index` adds two tables to it.
   FASTA, translated with the genetic code the file names (D-113); GFF3 and
   the assembly's files with byte ranges; each load's receipt; and a JSON API
   under `/api/v1/`. It needs the `[portal]` extra (Flask and waitress).
+- `cgload serve` says who can open the portal: by default only the computer
+  it runs on, and how to open it to a network (`--host 0.0.0.0`).
 - `cgload index`: builds the portal's search index and checks it by counting:
   for each attribute it indexes, the features that carry it in the database
   against those that reach the index. An assembly whose counts differ keeps
