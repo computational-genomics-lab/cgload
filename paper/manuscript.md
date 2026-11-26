@@ -139,10 +139,9 @@ and how safely one portal serves all 30 genomes.
 
 ## The cgload software
 
-cgload is a Python package (3.11 or later) with three runtime dependencies:
-SQLAlchemy, pyfaidx and click. The portal adds two more, Flask [@flask] and
-waitress [@waitress], installed as an optional extra. cgload is used from the
-command line, and a genome passes through four commands. `cgload init`
+cgload is a Python package (3.11 or later) with five runtime dependencies:
+SQLAlchemy, pyfaidx and click, and for the portal Flask [@flask] and waitress
+[@waitress]. cgload is used from the command line, and a genome passes through four commands. `cgload init`
 creates an empty database. `cgload load` reads a short configuration file that
 names an assembly and its annotation files, and writes them into the database
 in one transaction. `cgload verify` checks a loaded genome against its input
@@ -403,6 +402,9 @@ its genomes (Figure 3). It is written with Flask [@flask] and served by
 waitress [@waitress], a production web server written in Python, and it reads
 the same database and data folder as the other commands, on SQLite or
 PostgreSQL. One portal serves every genome in the database, and it only reads.
+By default it listens on every network interface, so that the other computers
+of a lab can open it, and when it starts it lists the addresses that do;
+`--host 127.0.0.1` keeps it to one computer.
 
 *What a visitor can do.* A feature's page draws its gene with every
 transcript to scale and opens the igv.js genome browser [@igvjs] at its locus
@@ -456,9 +458,10 @@ loads nothing from another site. Of each assembly's folder, only the four
 browser files can be read, by name. The test suite sends injection strings and
 a seeded fuzz of 3,000 random requests to the portal's routes and checks that
 none fails the server or comes back as code, and continuous integration runs
-the Bandit security linter [@bandit] on the code. `docs/portal.md` in the
-repository describes how to run the portal behind a web server that adds
-HTTPS.
+the Bandit security linter [@bandit] on the code. Who can read the data is
+decided by who can reach the portal; where the data are not public,
+`docs/portal.md` in the repository describes how to run it behind a web
+server that adds HTTPS and a password.
 
 ## Benchmark design
 
@@ -607,9 +610,14 @@ Version 0.2.2 differs from 0.2.1 only in how it keeps and writes back columns
 six significant digits, so 1234567.5 came back as 1.23457e+06, and it wrote a
 feature's first-row column 2 on all its rows. Neither changes a count. Version
 0.2.2 keeps both as loaded (decisions D-109 and D-110 in the repository).
-Version 0.3.0, the one this paper describes, adds the portal and its search
+Version 0.3.0 adds the portal and its search
 index (D-111 to D-114). It loads, verifies and exports as 0.2.2 does, and its
-`remove` also deletes a genome's index.
+`remove` also deletes a genome's index. The portal was measured with 0.3.0.
+Version 0.3.1, the one this paper describes, changes only how the portal is
+installed and started (D-115): Flask and waitress install with cgload, and
+`cgload serve` listens on every network interface by default, lists the
+addresses that open it, moves to the next free port when port 8000 is taken,
+and reports start-up problems in a sentence instead of a traceback.
 The query code changed between the two commits (see "Changes after the first
 run"), and the timing was measured after that change.
 
@@ -749,7 +757,7 @@ code of version 0.3.0, before the portal was run on the 30 genomes.
 ## Use of large language models
 
 We used Claude, a large language model made by Anthropic [@claude], mainly the
-model Claude Opus 5.5, from 20 August to 25 November 2026. Under the authors'
+model Claude Opus 5.5, from 20 August to 26 November 2026. Under the authors'
 direction it wrote and changed code, tests and documentation of cgload,
 including its portal, and of the census; drafted the benchmark protocol with
 us and wrote the benchmark scripts; analysed the results of each run; wrote
@@ -771,8 +779,8 @@ The authors ran every benchmark step on their own server, from the scripts in
 the repository, and every result in this paper comes from those runs. The
 authors reviewed the code, the results and this text, and are fully responsible
 for all of them. Claude's work is public in the repository's history: from 14
-October 2026 each commit it wrote names it in the commit message (87 of the
-100 commits up to the version submitted), and its draft of this manuscript is
+October 2026 each commit it wrote names it in the commit message (90 of the
+103 commits up to the version submitted), and its draft of this manuscript is
 `paper/manuscript.md`. Additional file 5 gives the details.
 
 # Results
@@ -1128,7 +1136,7 @@ predicted. A user who needs those checked has to compare the database with the
 file feature by feature, as our round trip does, and that comparison is not
 part of `cgload verify`. Checking identity as well, for instance by comparing
 the set of IDs and of child and parent pairs, would close much of this gap at
-little cost; it is not in version 0.3.0. The same blind spot hid a fault in
+little cost; it is not in version 0.3.1. The same blind spot hid a fault in
 cgload itself. Its export rounded scores to six significant digits, which
 changed 52 scores in human and mouse and no count; only the later comparison
 of columns 2, 6 and 8 showed it.
@@ -1217,7 +1225,7 @@ took about a quarter of a second, mostly to start Python; query waits were
 measured on four genomes, not 30. A killed load leaves its staging files on
 disk, to be deleted by hand. `verify` exits 0 when it skips the source count
 because the input file has changed, so a script that reads only the exit
-status misses the change; this is unchanged in version 0.3.0.
+status misses the change; this is unchanged in version 0.3.1.
 
 The portal and Q9 came after the benchmark. Q9's procedure was fixed before it
 was run, but on the same 30 genomes that cgload had been corrected on, and
@@ -1274,33 +1282,37 @@ other loaders and other files.
   ran on Linux); the portal is used from any current web browser
 - Programming language: Python 3.11 or later
 - Other requirements: SQLAlchemy 2.0 or later, pyfaidx 0.7 or later, click 8.1
-  or later; SQLite 3.8.3 or later (part of Python), or PostgreSQL (tested with
-  version 16) with psycopg 3; for the portal, Flask 3.0 or later and waitress
-  3.0 or later
+  or later, Flask 3.0 or later and waitress 3.0 or later, all installed with
+  cgload; SQLite 3.8.3 or later (part of Python), or PostgreSQL (tested with
+  version 16) with psycopg 3
 - License: MIT
 - Any restrictions to use by non-academics: none
-- Version described: 0.3.0 (tag `v0.3.0`; source archive in Additional file 7)
+- Version described: 0.3.1 (tag `v0.3.1`; source archive in Additional file 7)
 - RRID:SCR_029282
 - bio.tools ID: biotools:cgload
-- Archived version: Software Heritage, swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad (release v0.3.0),
-  https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload.
-  The loading results rest on release v0.2.2,
+- Archived version: Software Heritage, release v0.3.1:
+  <!-- AUTHORS: SWHID of v0.3.1 -->.
+  The portal's measurement rests on release v0.3.0,
+  swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad,
+  https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:27cff3403cd99aae747935485618353d8bd7de79,
+  and the loading results on release v0.2.2,
   swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962,
   https://archive.softwareheritage.org/swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:ce34fb036eb8063458ec04aa5f64c3c8231d176a
 
 cgload is installed with pip from its repository, at the version described
-here, with the portal:
+here; the portal comes with it:
 
-    pip install "cgload[portal] @ git+https://github.com/computational-genomics-lab/cgload@v0.3.0"
+    pip install "git+https://github.com/computational-genomics-lab/cgload@v0.3.1"
 
-For PostgreSQL, add its driver as well: `cgload[portal,postgres]`.
+For PostgreSQL, add its driver:
+`pip install "cgload[postgres] @ git+https://github.com/computational-genomics-lab/cgload@v0.3.1"`.
 
 `examples/minimal/` in the repository loads and verifies a small genome in
 under a minute, as a check that the installation works; `cgload index` and
 `cgload serve` then show it in a web browser.
 
 The repository holds test data (`examples/minimal/`, `tests/fixtures/`) with
-expected outputs, a test suite of 655 tests, the benchmark protocol and
+expected outputs, a test suite of 660 tests, the benchmark protocol and
 scripts (`benchmark/`), and the portal's documentation (`docs/portal.md`).
 `paper/figures.py` and `paper/screenshots.py` make every figure and table of
 this paper from the results.
@@ -1346,9 +1358,9 @@ holds the software, the benchmark results and the census, is archived at
 Software Heritage as swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962
 (https://archive.softwareheritage.org/swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:ce34fb036eb8063458ec04aa5f64c3c8231d176a);
 the check of columns 2, 6 and 8 was added to the repository after that release.
-Release v0.3.0, which adds the portal and its measurement, is archived as
+Release v0.3.0, with which the portal was measured, is archived as
 swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad
-(https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload).
+(https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:27cff3403cd99aae747935485618353d8bd7de79).
 
 ## Competing interests
 
@@ -1411,7 +1423,7 @@ Not applicable.
 [@pychado]: Galaxy Genome Annotation. python-chado: a Python library for interacting with Chado. Version 2.3.9. https://github.com/galaxy-genome-annotation/python-chado. Accessed 10 Nov 2026.
 [@so]: Eilbeck K, Lewis SE, Mungall CJ, et al. The Sequence Ontology: a tool for the unification of genome annotations. Genome Biol. 2005;6:R44. https://doi.org/10.1186/gb-2005-6-5-r44.
 [@biopython]: Cock PJA, Antao T, Chang JT, et al. Biopython: freely available Python tools for computational molecular biology and bioinformatics. Bioinformatics. 2009;25:1422–3. https://doi.org/10.1093/bioinformatics/btp163.
-[@claude]: Anthropic. Claude [large language model]. https://www.anthropic.com/claude. Used 20 Aug to 25 Nov 2026.
+[@claude]: Anthropic. Claude [large language model]. https://www.anthropic.com/claude. Used 20 Aug to 26 Nov 2026.
 [@pyfaidx]: Shirley MD, Ma Z, Pedersen BS, Wheelan SJ. Efficient "pythonic" access to FASTA files using pyfaidx. PeerJ PrePrints. 2015;3:e970v1. https://doi.org/10.7287/peerj.preprints.970v1.
 [@rcore]: R Core Team. R: a language and environment for statistical computing. Version 4.5.3. Vienna: R Foundation for Statistical Computing; 2026. https://www.R-project.org/.
 [@bioperl]: Stajich JE, Block D, Boulez K, Brenner SE, Chervitz SA, Dagdigian C, et al. The Bioperl toolkit: Perl modules for the life sciences. Genome Res. 2002;12:1611–8. https://doi.org/10.1101/gr.361602.
@@ -1511,7 +1523,7 @@ the load, the search index and its check, the median time of each kind of
 request, how often a search by a gene's name found it, and the translation of
 its coding sequences.
 
-**Additional file 7 (ZIP).** Source code of cgload, version 0.3.0: the
+**Additional file 7 (ZIP).** Source code of cgload, version 0.3.1: the
 repository at the time of submission, with its tests, the benchmark protocol
 and scripts, and the results of the benchmark and of the portal's
 measurement.

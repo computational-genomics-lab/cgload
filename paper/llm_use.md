@@ -8,7 +8,7 @@ come from the repository's git history and can be checked there.
 
 ## Which model, and how it was used
 
-Claude (Anthropic), from 20 August to 25 November 2026, mainly the model
+Claude (Anthropic), from 20 August to 26 November 2026, mainly the model
 Claude Opus 5.5. The model worked on a copy of the repository and could not
 reach the lab server: every benchmark run was started by the authors on that
 server, and the authors sent the results back to the model. Every change the
@@ -25,8 +25,8 @@ before the trailer was used; the model versions used for them were not
 recorded. The other two are small edits by the authors on 10 and 12 November
 2026 (the full text of the MIT licence, and the removal of internal review
 notes). The commits that the model wrote after `v0.2.2` carry the trailer too:
-up to the version submitted with the paper, which adds the portal (0.3.0), 87
-of the 100 commits carry one, 84 of them naming Claude Opus 5.5.
+up to the version submitted with the paper (0.3.1, which adds the portal), 90
+of the 103 commits carry one, 87 of them naming Claude Opus 5.5.
 
 ## What the model did
 
@@ -40,6 +40,9 @@ of the 100 commits carry one, 84 of them naming Claude Opus 5.5.
   (`docs/portal.md`, decisions D-111 to D-114), section 13 of the benchmark
   protocol, the script that measures the portal on the 30 genomes
   (`benchmark/run_portal.py`) and the shell script the authors ran for it.
+  On 26 November, after the authors had run the portal on a second server, it
+  made the portal install with cgload and listen on the network by default,
+  with clearer start-up messages and README (version 0.3.1, D-115).
 - **The census and the benchmark.** It helped write the census scripts
   (`survey/`). It drafted the benchmark protocol (`benchmark/PROTOCOL.md`) with
   the authors, wrote the benchmark scripts and their tests (`benchmark/`), wrote
@@ -86,7 +89,7 @@ figures and tables are the output of `paper/figures.py`.
 The authors ran every benchmark step on their own server, from the scripts in
 the repository, and every result in the paper comes from those runs
 (`paper/data/benchmark-run-2.2/`, `paper/data/columns-v0.2.2/` and
-`paper/data/portal-v0.3.0/`). The test suite (655 tests, and 26 more for the
+`paper/data/portal-v0.3.0/`). The test suite (660 tests, and 26 more for the
 benchmark) runs in continuous integration on every push, on Linux, macOS and
 Windows. The authors reviewed the code, the
 results and the text, and are responsible for them.
