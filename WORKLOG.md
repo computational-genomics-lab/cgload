@@ -625,3 +625,52 @@ otherwise, and its startup line gave the address without saying what it
 meant. It now says the portal is for that computer only and how to open it to
 a network, and `docs/portal.md` and the README say so too. Release 0.3.0 is
 tagged on the commit with these results.
+
+## 26 November 2026, later: 0.3.1, and BLAST in 0.4.0
+
+Run by the authors on another server, 0.3.0 showed three things a user meets
+first: the portal answered only on 127.0.0.1, a missing package or a taken
+port ended in a traceback, and the README did not say what to do about either.
+Version 0.3.1 (D-115) installs Flask and waitress with cgload, listens on
+every interface by default and lists the addresses that open it, moves to the
+next free port when 8000 is taken, and says each start-up problem in a
+sentence. The documentation's example addresses are now ones reserved for
+documentation, not the lab's own.
+
+The authors then asked for BLAST against the portal's genomes, here and at
+NCBI, for a public portal of the 30 genomes. Version 0.4.0 (D-116):
+
+- **Databases checked like a load.** `cgload blastdb` writes the genome and
+  every CDS translated as the portal translates it, as two BLAST+ databases
+  in each assembly's folder, and counts both: every sequence, one protein per
+  CDS feature, and BLAST+'s own count of what it stored. A failed build keeps
+  nothing; a load newer than its databases hides them from the portal.
+- **A visitor's text is BLAST's input only.** An argument list of fixed
+  choices, never a shell; the query on standard input under the header
+  `>query`; programs found when the portal starts. No text from a visitor or
+  from the files becomes an argument: database titles are `cgload assembly N
+  genome`, and BLASTDB is left out of BLAST's environment.
+- **Searches cannot starve the pages.** Two run at once by default, as many
+  again wait up to 30 s, more get 503 with Retry-After; `cgload serve` lowers
+  the default, and refuses an explicit `--blast-jobs`, that would let searches
+  hold every thread. Each search stops after 120 s. Bodies are at most 64 KiB.
+- **Global BLAST is a link.** A gene's page opens NCBI BLAST with its protein's
+  accession, or the sequence when it is short enough for a link; the server
+  sends nothing to NCBI.
+- **Tested.** `tests/test_portal_blast.py` (43 tests) checks the inputs, the
+  argument list, the slots, the parsing, hostile values in every field and a
+  seeded fuzz of 600 searches without BLAST+, and with BLAST+ each Dscam1
+  isoform finding itself first, tblastn inside the CDS, blastn on both strands
+  at the piece's coordinates, and blastx. BLAST+ runs on a read-only copy of
+  the data as an unprivileged user, as under the systemd unit in
+  `docs/portal.md`. CI installs BLAST+ on Linux.
+
+Section 14 of the benchmark protocol, written before the run, measures BLAST
+on the 30 genomes (`benchmark/run_blast.py`): the databases' build and check,
+whether sampled proteins and genome stretches find themselves with each
+program, the time of each search, 1 to 8 searching clients while another opens
+gene pages, and a probe of both BLAST URLs. The paper gains Q10, "Measuring
+BLAST", a Results section with Table 9 and Table S6 (Additional file 8), which
+fill in from `paper/data/blast-v0.4.0/` once the run is back, and BLAST in the
+abstract (345 words), Methods, Discussion, Limitations and Availability.
+Release 0.4.0 is tagged on that commit.
