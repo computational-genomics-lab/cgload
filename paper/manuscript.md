@@ -1282,8 +1282,8 @@ other loaders and other files.
 - Version described: 0.3.0 (tag `v0.3.0`; source archive in Additional file 7)
 - RRID:SCR_029282
 - bio.tools ID: biotools:cgload
-- Archived version: Software Heritage, release v0.3.0:
-  <!-- AUTHORS: the SWHID of release v0.3.0, once it is tagged and archived. -->
+- Archived version: Software Heritage, swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad (release v0.3.0),
+  https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload.
   The loading results rest on release v0.2.2,
   swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962,
   https://archive.softwareheritage.org/swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:ce34fb036eb8063458ec04aa5f64c3c8231d176a
@@ -1347,7 +1347,8 @@ Software Heritage as swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962
 (https://archive.softwareheritage.org/swh:1:rel:e0db1e5b682047ae65d4e9e21b25749e886a8962;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:ce34fb036eb8063458ec04aa5f64c3c8231d176a);
 the check of columns 2, 6 and 8 was added to the repository after that release.
 Release v0.3.0, which adds the portal and its measurement, is archived as
-<!-- AUTHORS: the SWHID of release v0.3.0. -->.
+swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad
+(https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload).
 
 ## Competing interests
 
