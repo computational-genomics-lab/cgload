@@ -381,7 +381,43 @@ Demonstratus minimalis / DEMO-1 / Demo_v1 1.0
 
 Same counts, and the file was recognised as cgload's own dialect.
 
-## 11. Take it out again
+## 11. Put it on the web
+
+The portal needs a search index of the names in the annotation. Build it, and
+check it, with one command:
+
+```console
+cgload index
+```
+
+```
+assembly 1: 8 features, 17 terms; every key's count matches: PASS
+```
+
+Then start the portal:
+
+```console
+cgload serve
+```
+
+```
+cgload serve: the portal is running, read-only, with 1 genome.
+  Open it on this computer:   http://127.0.0.1:8000/
+  or from another computer:   http://10.0.0.239:8000/
+  Anyone who can reach this computer can open it. To keep it to this computer: --host 127.0.0.1;
+  to serve it beyond your network, put a web server with HTTPS in front (docs/portal.md).
+  Stop it with Ctrl-C.
+```
+
+Open one of those addresses in a web browser (yours will differ from
+`10.0.0.239`). Search for `DEMO_000001`, open the gene, look at its model and
+at the genome browser below it, and download its protein. The genome's own
+page shows how it was loaded: the checks of step 5 and the files' checksums.
+`cgload serve` only reads the database, so it can run while you work; stop it
+with Ctrl-C. If port 8000 is taken, it uses the next free port and says so;
+[docs/portal.md](portal.md) covers the rest.
+
+## 12. Take it out again
 
 `remove` deletes an assembly's rows and its data directory together, or
 neither. First see what it would delete:
@@ -426,8 +462,11 @@ rows alone.
   end up with a database that looks annotated and is not.
 - **Large genomes**: [docs/scalability.md](scalability.md) has a full protocol
   for a 2.18 Gb, 696,928-feature assembly.
-- **Browsing**: point JBrowse 2 at `assembly.fa` and `annotation.gff3.gz` in
-  the data directory. Both are indexed, so no conversion is needed.
+- **Your lab's portal**: [docs/portal.md](portal.md) shows how to keep the
+  portal running on a server, behind a web server with HTTPS.
+- **Other browsers**: JBrowse 2 can read `assembly.fa` and
+  `annotation.gff3.gz` in the data directory directly. Both are indexed, so no
+  conversion is needed.
 
 ## When something goes wrong
 

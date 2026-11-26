@@ -2940,3 +2940,29 @@ from another site, the policy can stay `script-src 'self'`, and a portal
 without internet access still works. igv.js is told not to fetch its list of
 public genomes. Supersedes the roadmap's "document JBrowse, do not build it":
 JBrowse 2 and IGV still read the same files directly.
+
+## D-115 — the portal installs with cgload and opens to the network by default
+
+**Reverses** two choices of D-111, after the portal was first run for other
+people. Flask and waitress were an optional extra, so `pip install cgload` gave
+a `cgload serve` that stopped at once and asked for `cgload[portal]`. And the
+portal listened on 127.0.0.1, so a lab that ran it on its server, as most labs
+will, was refused from every other computer, by a message that gave an
+address without saying what it meant.
+
+- **Five runtime dependencies.** `flask>=3.0` and `waitress>=3.0`, both pure
+  Python, install with cgload. Only `cgload serve` imports them; loading,
+  verifying and `cgload index` still do not. `cgload[portal]` remains, empty,
+  so that instructions already published keep working.
+- **Every interface by default.** The portal only reads and has no accounts,
+  so what listening on 0.0.0.0 costs is who can read the data: anyone who can
+  reach the computer. The start-up lines say exactly that, list the addresses
+  that open the portal, and name `--host 127.0.0.1` for a portal only this
+  computer can open. Behind a web server, `docs/portal.md` starts it with
+  `--host 127.0.0.1`, so that nothing reaches it past the web server.
+- **Start-up problems in words.** When the default port is taken, the next
+  free one of the following ten is used and the start-up lines say so; a port
+  given with `--port` is used or refused, never changed. A port that needs
+  administrator rights, an address the computer does not have, a missing
+  package and a database with no genomes each get one sentence, not a
+  traceback. Ctrl-C stops the portal and says so.

@@ -32,20 +32,23 @@ classifiers = [
 # The dependency budget: four, plus biopython admitted deliberately in D-009.
 # Three. tomllib is standard library because the floor is 3.11 (D-010), and
 # biopython was dropped in D-028b when the GenBank reader turned out not to need
-# it -- the declaration outlived the import. A fourth requires a new entry in
-# docs/decisions.md before the import is written.
+# it -- the declaration outlived the import. Five since D-115: the portal's
+# Flask and waitress install with cgload, and only `cgload serve` imports them.
+# Another requires a new entry in docs/decisions.md before the import is written.
 dependencies = [
     "sqlalchemy>=2.0",
     "pyfaidx>=0.7",
     "click>=8.1",
+    "flask>=3.0",
+    "waitress>=3.0",
 ]
 
 [project.optional-dependencies]
 mysql = ["pymysql>=1.1"]
 postgres = ["psycopg[binary]>=3.1"]
-# The web portal (D-111): `cgload serve`. Kept out of the core budget above,
-# so loading and verifying never depend on a web framework.
-portal = ["flask>=3.0", "waitress>=3.0"]
+# The portal's packages are core dependencies since D-115; the extra stays,
+# empty, so that `pip install "cgload[portal]"` as published still works.
+portal = []
 test = ["pytest>=7.4", "pytest-cov>=4.1"]
 dev = ["cgload[test]", "ruff==0.17.0", "build>=1.2"]
 docs = ["mkdocs>=1.6", "mkdocs-material>=9.5"]

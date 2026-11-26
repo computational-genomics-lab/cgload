@@ -10,6 +10,71 @@ using code that shares nothing with its parser. `cgload serve` then makes the
 database a genome portal: search by gene name, product or GO term, a gene's
 model drawn to scale, a genome browser, sequences and proteins, a JSON API.
 
+## Quick start
+
+You need Python 3.11 or newer. cgload is not on PyPI yet; install it from
+GitHub, best into a fresh virtual or conda environment:
+
+```console
+pip install git+https://github.com/computational-genomics-lab/cgload
+cgload --version
+```
+
+That installs everything, the web portal included. For PostgreSQL, add its
+driver: `pip install "cgload[postgres] @ git+https://github.com/computational-genomics-lab/cgload"`.
+(A `[mysql]` extra exists, but cgload has no test on MySQL.)
+
+Try it on the small genome in the repository:
+
+```console
+git clone https://github.com/computational-genomics-lab/cgload
+cd cgload/examples/minimal
+cgload init                          # an empty database, ./cgload.db
+cgload load --config organism.toml   # load, count, keep it only if the counts agree
+cgload verify --assembly-id 1        # check it again, at any time
+cgload index                         # the portal's search index
+cgload serve                         # the portal
+```
+
+```
+Created 11 tables in sqlite:///cgload.db
+Seeded vocabulary version 1 (46 terms, 10bf08715e85)
+Loaded Demonstratus minimalis / DEMO-1 / Demo_v1 (assembly_id=1)
+  1 sequence regions, 5,000 bp
+  annotation.gff3: funannotate (high) -- 12 features
+    CDS 2, exon 4, gene 3, mRNA 2, tRNA 1
+
+  source count      PASS  12 features in the file, 12 in the database, across 5 type(s); 13 rows in each
+...
+cgload serve: the portal is running, read-only, with 1 genome.
+  Open it on this computer:   http://127.0.0.1:8000/
+  or from another computer:   http://10.0.0.239:8000/
+  Anyone who can reach this computer can open it. To keep it to this computer: --host 127.0.0.1;
+  to serve it beyond your network, put a web server with HTTPS in front (docs/portal.md).
+  Stop it with Ctrl-C.
+```
+
+Open one of the addresses it prints in a web browser. The database is a
+single SQLite file, with no server and no credentials; PostgreSQL works
+through the same code with `--db-url`.
+
+### If something goes wrong
+
+| What you see | What to do |
+|---|---|
+| `cgload: command not found` | The environment you installed cgload into is not active. Activate it, or run `python -m cgload`. |
+| `no database at .../cgload.db` | Run the command in the folder where you ran `cgload init`, or give `--db-url`. |
+| `Port 8000 was in use, so it is on port 8001` | Nothing to do: open the address it prints. To choose the port, give `--port 9000`. |
+| `port 9000 is already in use` | The port you asked for is taken. Choose another, or stop the program that holds it. |
+| Another computer cannot open the portal | The server's firewall closes the port. On Ubuntu: `sudo ufw allow from 10.0.0.0/24 to any port 8000 proto tcp` (your network's range). And do not start it with `--host 127.0.0.1`. |
+| A search for a gene's name finds nothing | Run `cgload index`, and again after loading more genomes. |
+| Your data are not public | Anyone who can reach the computer can open the portal. Keep it to this computer with `--host 127.0.0.1`, or put it behind a web server with a password ([docs/portal.md](docs/portal.md)). |
+| `the portal needs Flask and waitress` | The installation is incomplete. Reinstall: `pip install --force-reinstall git+https://github.com/computational-genomics-lab/cgload`. |
+
+Full walkthrough: [docs/tutorial.md](docs/tutorial.md). The portal, its JSON
+API, deployment behind nginx and its security model:
+[docs/portal.md](docs/portal.md).
+
 ## Why
 
 A parser that silently drops a feature leaves a database that looks populated,
@@ -88,71 +153,6 @@ no change to the reading engine.
 
 **An unrecognised file is refused, not guessed at.** The refusal names the
 profiles that were considered.
-
-## Install
-
-Python 3.11 or newer. Three runtime dependencies: `sqlalchemy`, `pyfaidx`,
-`click`; the portal adds `flask` and `waitress`.
-
-cgload is not on PyPI yet. Install it from GitHub:
-
-```console
-pip install git+https://github.com/computational-genomics-lab/cgload
-```
-
-For the portal, install the `[portal]` extra: `pip install "cgload[portal] @
-git+https://github.com/computational-genomics-lab/cgload"`. For PostgreSQL,
-add the driver the same way with `[postgres]` (both: `[portal,postgres]`). A
-`[mysql]` extra exists, but cgload has no test on MySQL.
-
-From source:
-
-```console
-git clone https://github.com/computational-genomics-lab/cgload
-cd cgload
-pip install -e ".[dev]"
-pytest
-```
-
-## Five minutes
-
-```console
-cd examples/minimal
-cgload init
-cgload load --config organism.toml
-cgload stats
-cgload verify --assembly-id 1
-```
-
-```
-Created 11 tables in sqlite:///cgload.db
-Seeded vocabulary version 1 (46 terms, 10bf08715e85)
-Loaded Demonstratus minimalis / DEMO-1 / Demo_v1 (assembly_id=1)
-  1 sequence regions, 5,000 bp
-  annotation.gff3: funannotate (high) -- 12 features
-    CDS 2, exon 4, gene 3, mRNA 2, tRNA 1
-
-  source count      PASS  12 features in the file, 12 in the database, across 5 type(s); 13 rows in each
-```
-
-The database is a single SQLite file — no server, no credentials, nothing
-running in the background. PostgreSQL works through the same code path via
-`--db-url`; MySQL is reached the same way but is untested.
-
-Then put it on the web:
-
-```console
-cgload index        # the search index, checked by counting like a load
-cgload serve        # http://127.0.0.1:8000/, on this computer only
-```
-
-`cgload serve --host 0.0.0.0` opens it to the other computers on your network
-too, at `http://<this computer's address>:8000/`.
-
-[docs/portal.md](docs/portal.md) covers deployment behind nginx, the JSON API
-and the security model.
-
-Full walkthrough: [docs/tutorial.md](docs/tutorial.md).
 
 ## Your own data
 
@@ -279,6 +279,15 @@ written in browser-native indexed formats, so JBrowse 2 can be pointed at
 cgload's output directly as well.
 
 See [docs/roadmap.md](docs/roadmap.md).
+
+## Developing cgload
+
+```console
+git clone https://github.com/computational-genomics-lab/cgload
+cd cgload
+pip install -e ".[dev]"
+pytest
+```
 
 ## Design notes
 

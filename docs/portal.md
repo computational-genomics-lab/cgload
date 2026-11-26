@@ -8,20 +8,39 @@ built the way it is.
 
 ## Two commands
 
+The portal comes with cgload; nothing else to install. After loading:
+
 ```console
-$ pip install "cgload[portal]"
 $ cgload index                       # once after loading: the name index
-$ cgload serve                       # http://127.0.0.1:8000/
+$ cgload serve
+cgload serve: the portal is running, read-only, with 1 genome.
+  Open it on this computer:   http://127.0.0.1:8000/
+  or from another computer:   http://10.0.0.239:8000/
+  Anyone who can reach this computer can open it. To keep it to this computer: --host 127.0.0.1;
+  to serve it beyond your network, put a web server with HTTPS in front (docs/portal.md).
+  Stop it with Ctrl-C.
 ```
 
-By default only the computer that runs `cgload serve` can open the portal;
-another computer gets "connection refused". To open it on your network, run
-`cgload serve --host 0.0.0.0` and browse from the other computers to
-`http://<the server's address>:8000/`. If they still cannot connect, the
-server's firewall is closing the port; on Ubuntu, for example,
-`sudo ufw allow from 10.0.0.0/24 to any port 8000 proto tcp` opens it to a
-network of that range only. Beyond a network you trust, put the portal behind a
-web server with HTTPS (below).
+Open one of the addresses it prints in a web browser. It listens on every
+network interface of the computer, so the other computers of your network can
+open it too (D-115); `--host 127.0.0.1` keeps it to this computer alone.
+
+**If something is in the way:**
+
+- *Port 8000 is taken* by another program: `cgload serve` uses the next free
+  port and says which. If you asked for a port with `--port`, it tells you the
+  port is taken instead, and you choose another.
+- *Another computer gets "connection refused" or waits forever:* the server's
+  firewall is closing the port. On Ubuntu, for example,
+  `sudo ufw allow from 10.0.0.0/24 to any port 8000 proto tcp` opens it to a
+  network of that range only. Also check that the portal was not started with
+  `--host 127.0.0.1`.
+- *Names find nothing:* run `cgload index` (and again after loading more).
+- *A genome's sequences and browser are missing:* the data directory has moved
+  since loading; give it with `--data-dir`.
+- *Unpublished data:* anyone who can reach the computer can read the portal.
+  Keep it to this computer with `--host 127.0.0.1`, or put it behind a web
+  server that asks for a password (below).
 
 `cgload index` builds the search index of every loaded assembly (or of those
 given with `--assembly-id`) and checks it by counting, as `load` checks a load:
@@ -38,8 +57,8 @@ from there.
 
 | Option | Default | |
 |---|---|---|
-| `--host` | `127.0.0.1` | `0.0.0.0` listens on every interface |
-| `--port` | `8000` | |
+| `--host` | `0.0.0.0`, every interface | `127.0.0.1`: this computer only, as behind a web server |
+| `--port` | `8000` | the next free port if 8000 is taken, unless `--port` is given |
 | `--threads` | `8` | requests served at once |
 | `--title` | `cgload portal` | shown on every page |
 | `--url-prefix` | none | the path behind a web server, e.g. `/genomes` |
@@ -91,7 +110,8 @@ ID to the feature's page.
 
 `cgload serve` runs waitress, a production WSGI server, and is safe to expose
 as it is; it does not speak HTTPS, and should sit behind a web server that
-does. With nginx:
+does, which then is the only thing that reaches it: start it with
+`--host 127.0.0.1`. With nginx:
 
 ```nginx
 server {
@@ -117,7 +137,7 @@ After=network.target
 [Service]
 User=cgload
 Environment=CGLOAD_DB_URL=sqlite:////srv/cgload/cgload.db
-ExecStart=/srv/cgload/env/bin/cgload serve --data-dir /srv/cgload/data --threads 8
+ExecStart=/srv/cgload/env/bin/cgload serve --host 127.0.0.1 --port 8000 --data-dir /srv/cgload/data
 Restart=on-failure
 ProtectSystem=strict
 PrivateTmp=true
@@ -142,11 +162,11 @@ accounts.
 One `cgload serve` is one process. Its threads share Python's interpreter
 lock, so it answers about as many requests a second as one core allows: on the
 benchmark's server, with the 30 genomes in one database, about 40 a second,
-whether 8 or 32 users asked at once (`benchmark/PROTOCOL.md` section 13). The portal only reads and
-keeps no state, so more processes behind the same web server serve more
-people: run one `cgload serve --port 800N` per process, from a systemd
-template unit `cgload@.service` whose command ends `--port %i`, and list them
-in nginx:
+whether 8 or 32 users asked at once (`benchmark/PROTOCOL.md` section 13).
+The portal only reads and keeps no state, so more processes behind the same web server serve more
+people: run one `cgload serve --host 127.0.0.1 --port 800N` per process, from
+a systemd template unit `cgload@.service` whose command ends `--port %i`, and
+list them in nginx:
 
 ```nginx
 upstream cgload {
@@ -167,6 +187,9 @@ its own connections.
   PostgreSQL in read-only transactions. A test reads every page and checks the
   database file is unchanged.
 - It answers GET and HEAD only, and has no session or cookie.
+- It listens on every interface unless told `--host 127.0.0.1`, and says so
+  when it starts; who may read the data is decided by who can reach the
+  computer, or by the web server in front of it.
 - Every value from a request is a bound parameter, and its length is bounded.
 - Text from the annotation files is escaped wherever it is shown; a test loads
   a file whose names are scripts and checks every page.

@@ -215,7 +215,8 @@ class Server:
     """``cgload serve`` in a child process, for the length of a ``with``."""
 
     def __init__(self, url: str, data: Path, port: int, threads: int, log_path: Path) -> None:
-        self.command = ["cgload", "serve", "--db-url", url, "--data-dir", str(data),
+        self.command = ["cgload", "serve", "--host", "127.0.0.1", "--db-url", url,
+                        "--data-dir", str(data),
                         "--port", str(port), "--threads", str(threads)]
         self.base = f"http://127.0.0.1:{port}"
         self.log_path = log_path

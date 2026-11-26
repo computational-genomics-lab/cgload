@@ -141,17 +141,98 @@ def test_every_flag_a_message_names_exists():
     assert not unknown, f"messages name flags no command declares: {unknown}"
 
 
-def test_serve_says_who_can_open_the_portal():
-    """By default only the computer itself can; the message says how to open it
-    to the network, since a refused connection from another computer says nothing."""
+def test_serve_says_where_the_portal_opens():
+    """Every interface by default (D-115), with the addresses to use; a refused
+    connection from another computer would otherwise say nothing."""
     from cgload.cli.commands.serve import where_it_listens
 
-    first, how = where_it_listens("127.0.0.1", 8000)
-    assert first == "on http://127.0.0.1:8000/, for this computer only."
-    assert "--host 0.0.0.0" in how and "http://<this computer's address>:8000/" in how
-    every = where_it_listens("0.0.0.0", 8080, "/genomes")
-    assert "http://<this computer's address>:8080/genomes" in every[0]
-    assert "http://127.0.0.1:8080/genomes" in every[0] and "HTTPS" in every[1]
-    assert where_it_listens("10.0.0.239", 8000)[0] == "on http://10.0.0.239:8000/"
-    assert where_it_listens("fe80::1", 8000)[0] == "on http://[fe80::1]:8000/"
-    assert where_it_listens("::1", 8000)[0].startswith("on http://[::1]:8000/")
+    lines = where_it_listens("0.0.0.0", 8000, "", ["10.0.0.239"])
+    assert "http://127.0.0.1:8000/" in lines[0]
+    assert "or from another computer:   http://10.0.0.239:8000/" in lines[1]
+    assert any("--host 127.0.0.1" in line for line in lines)
+    assert any("HTTPS" in line for line in lines) and lines[-1].endswith("Ctrl-C.")
+    unknown = where_it_listens("0.0.0.0", 8080, "/genomes", [])
+    assert "http://<this computer's address>:8080/genomes" in unknown[1]
+    private = where_it_listens("127.0.0.1", 8000)
+    assert "http://127.0.0.1:8000/" in private[0] and "leave out --host" in private[1]
+    assert "http://10.0.0.239:8000/" in where_it_listens("10.0.0.239", 8000)[0]
+    assert "http://[fe80::1]:8000/" in where_it_listens("fe80::1", 8000)[0]
+    assert "http://[::1]:8000/" in where_it_listens("::1", 8000)[0]
+
+
+def test_the_addresses_offered_are_not_loopback():
+    import ipaddress
+
+    from cgload.cli.commands.serve import network_addresses
+
+    for address in network_addresses():
+        assert not ipaddress.ip_address(address).is_loopback
+
+
+def _listening() -> tuple:
+    import socket
+
+    taken = socket.socket()
+    taken.bind(("127.0.0.1", 0))
+    taken.listen(1)
+    return taken, taken.getsockname()[1]
+
+
+def test_a_taken_default_port_moves_to_the_next_free_one():
+    pytest.importorskip("waitress")
+    from cgload.cli.commands.serve import open_server
+
+    taken, port = _listening()
+    try:
+        server, used = open_server(lambda environ, start: [], "127.0.0.1", port,
+                                   port_given=False, threads=1, url_prefix="")
+        server.close()
+        assert used > port
+    finally:
+        taken.close()
+
+
+def test_a_taken_port_that_was_asked_for_is_refused_in_words():
+    pytest.importorskip("waitress")
+    from cgload.cli.commands.serve import PortalStartError, open_server
+
+    taken, port = _listening()
+    try:
+        with pytest.raises(PortalStartError) as refused:
+            open_server(lambda environ, start: [], "127.0.0.1", port, port_given=True,
+                        threads=1, url_prefix="")
+    finally:
+        taken.close()
+    assert f"port {port} is already in use" in str(refused.value)
+    assert f"--port {port + 1}" in str(refused.value)
+
+
+def test_other_start_up_errors_are_one_sentence():
+    import errno
+    import socket
+
+    from cgload.cli.commands.serve import why_not
+
+    assert "administrator rights" in why_not(OSError(errno.EACCES, "denied"), "0.0.0.0", 80)
+    assert "no address 10.9.9.9" in why_not(OSError(errno.EADDRNOTAVAIL, "x"), "10.9.9.9", 8000)
+    assert "can look up" in why_not(socket.gaierror(-2, "unknown"), "nowhere.invalid", 8000)
+
+
+def test_serve_refuses_a_taken_port_without_a_traceback(tmp_path):
+    """The whole command, up to the port: a clean message and exit status 1."""
+    pytest.importorskip("flask")
+    from cgload.cli.main import cli
+    from click.testing import CliRunner
+
+    db = tmp_path / "cgload.db"
+    runner = CliRunner()
+    assert runner.invoke(cli, ["init", "--db-url", f"sqlite:///{db}"]).exit_code == 0
+    taken, port = _listening()
+    try:
+        result = runner.invoke(cli, ["serve", "--db-url", f"sqlite:///{db}", "--host",
+                                     "127.0.0.1", "--port", str(port)])
+    finally:
+        taken.close()
+    assert result.exit_code == 1
+    assert f"port {port} is already in use" in result.output
+    assert "Traceback" not in result.output

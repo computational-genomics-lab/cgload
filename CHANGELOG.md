@@ -2,6 +2,27 @@
 
 Decisions referred to as D-0xx are in [docs/decisions.md](docs/decisions.md).
 
+## 0.3.1 (26 November 2026)
+
+What 0.3.0 showed when other people first ran the portal (D-115). Loading,
+verification, export, queries and the portal's pages are those of 0.3.0.
+
+### Changed
+
+- The portal installs with cgload: Flask and waitress are runtime
+  dependencies. `cgload[portal]` still installs, as an empty extra.
+- `cgload serve` listens on every network interface by default, so the other
+  computers of a lab can open it, and lists the addresses that open it;
+  `--host 127.0.0.1` keeps it to one computer. Behind a web server,
+  `docs/portal.md` starts it with `--host 127.0.0.1`.
+- When port 8000 is taken, `cgload serve` uses the next free port and says so;
+  a port given with `--port` is refused in words if taken. Other start-up
+  problems (a port that needs administrator rights, an address the computer
+  lacks, a missing package, a database with no genomes) are one sentence, not
+  a traceback, and Ctrl-C says the portal stopped.
+- The README starts with a quick start and a table of what to do when
+  something goes wrong; the tutorial has a step for the portal.
+
 ## 0.3.0 (26 November 2026)
 
 The genomes cgload loads can now be put on the web for the people who use

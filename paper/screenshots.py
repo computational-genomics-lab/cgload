@@ -202,7 +202,8 @@ def main(argv=None) -> int:
         url, data = build(folder, env)
         port = free_port()
         server = subprocess.Popen(  # noqa: S603 - this Python and cgload serve
-            [sys.executable, "-m", "cgload", "serve", "--db-url", url, "--data-dir",
+            [sys.executable, "-m", "cgload", "serve", "--host", "127.0.0.1", "--db-url", url,
+             "--data-dir",
              str(data), "--port", str(port), "--title", "cgload portal"],
             env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         base = f"http://127.0.0.1:{port}"
