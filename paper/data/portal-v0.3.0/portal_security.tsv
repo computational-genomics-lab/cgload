@@ -1,0 +1,2 @@
+requests	statuses	server_errors	missing_security_headers	failures
+3063	{"200": 1232, "302": 12, "308": 1, "400": 511, "404": 1304, "405": 3}	0	0	

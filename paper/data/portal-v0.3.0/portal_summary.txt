@@ -1,0 +1,23 @@
+loads: 31, loaded 24, loaded_with_repair 7
+index: 31 genomes, check PASS 31, 5,054,018 features, 60,698,016 terms, 4,470 s
+pages (postgresql):
+  gene_page            n=   200  median     48.3 ms  p95    141.1 ms  max     366.6 ms  not 2xx/3xx 0
+  protein              n=   109  median     52.7 ms  p95    152.6 ms  max     268.3 ms  not 2xx/3xx 0
+  range_annotation     n=   200  median      3.6 ms  p95     32.9 ms  max      49.5 ms  not 2xx/3xx 0
+  range_assembly       n=   200  median      3.5 ms  p95      3.7 ms  max      51.3 ms  not 2xx/3xx 0
+  region_page          n=   200  median     33.2 ms  p95     66.7 ms  max     108.0 ms  not 2xx/3xx 0
+  search               n=   200  median     50.0 ms  p95     89.4 ms  max     145.8 ms  not 2xx/3xx 0
+pages (sqlite):
+  gene_page            n=  6000  median     20.1 ms  p95     45.0 ms  max     837.3 ms  not 2xx/3xx 0
+  protein              n=  4830  median     18.5 ms  p95     42.4 ms  max     558.0 ms  not 2xx/3xx 0
+  range_annotation     n=  6000  median      3.4 ms  p95     21.1 ms  max      54.0 ms  not 2xx/3xx 0
+  range_assembly       n=  6000  median      3.3 ms  p95     11.7 ms  max      52.4 ms  not 2xx/3xx 0
+  region_page          n=  6000  median     19.3 ms  p95     42.2 ms  max      95.8 ms  not 2xx/3xx 0
+  search               n=  6000  median     23.0 ms  p95     39.5 ms  max     129.7 ms  not 2xx/3xx 0
+search found the gene: 6000 of 6000; not found with at most 1,000 matches (a failure, section 13): 0
+load test  1 clients: 2003 requests, 33.4/s, errors 0, p50 18.4 ms, p95 39.7 ms, p99 59.4 ms
+load test  8 clients: 2455 requests, 40.8/s, errors 0, p50 117.7 ms, p95 437.4 ms, p99 1138.2 ms
+load test 32 clients: 2304 requests, 37.9/s, errors 0, p50 715.3 ms, p95 1175.7 ms, p99 2428.3 ms
+translations: checked 60,000, no_internal_stop 59,813, stop_declared_exception 176, stop_partial 0, stop_pseudo 11, stop_unexplained 0, failed 0
+security probe: 3063 requests, statuses {"200": 1232, "302": 12, "308": 1, "400": 511, "404": 1304, "405": 3}, server errors 0, missing headers 0, failures: none
+database unchanged by serving: True

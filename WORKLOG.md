@@ -604,3 +604,24 @@ Figures 3 to 5 became 4 to 6, and the source archive Additional file 7. The
 portal's numbers are filled from `paper/data/portal-v0.3.0/` by
 `paper/figures.py` and `paper/build.py`, and show as [name] until the run's
 results are in.
+
+## 26 November 2026: the portal's run, and release 0.3.0
+
+The authors ran `benchmark/run_portal.py` on the lab server on 25 November,
+at commit 6e4c5b5 (`paper/data/portal-v0.3.0/`). Nothing the protocol counts
+as a failure happened: all 30 genomes loaded into one database and every
+index check passed; all 34,830 timed requests were answered without an error,
+within a second; every one of 6,000 genes searched for by name was found (28
+tRNA genes, whose names hundreds of genes share, after the first page); no
+translated protein had an unexplained stop codon; and the security probe's
+3,063 requests caused no server error and left the database's checksum as it
+was. One process answered about 40 requests a second however many clients
+asked, as the protocol expected of one Python process. The paper's portal
+numbers are now filled from these results.
+
+Trying the portal on another machine, the authors opened it from a second
+computer and were refused: `cgload serve` listens on 127.0.0.1 unless told
+otherwise, and its startup line gave the address without saying what it
+meant. It now says the portal is for that computer only and how to open it to
+a network, and `docs/portal.md` and the README say so too. Release 0.3.0 is
+tagged on the commit with these results.

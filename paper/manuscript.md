@@ -45,11 +45,10 @@ multi-row features as separate records without a message. txdbmaker stopped on s
 finish nine genomes and, in the other 21, lost 5.0% of the features, four in
 five without a message. cgload reported all 57 planted faults it was expected
 to catch and, as predicted, none of the 24 that kept every count. One portal
-then served all 30 genomes from one database: a search by a gene's name listed
-it in {{portal:found}} of {{portal:genes}} cases, a gene page took a median of
-{{portal:gene_page_median}} ms, and none of {{portal:probe_requests}} hostile
-requests caused a server error or changed the database.
-<!-- AUTHORS: check the last sentence against the portal's results. -->
+then served all 30 genomes from one database: searches by name found all
+{{portal:genes}} genes sampled, a gene page took a median of
+{{portal:gene_page_median}} ms, and none of {{portal:probe_requests}} injection
+attempts and random requests caused a server error or changed the database.
 
 **Conclusions:** Each of the other three loaders changed or lost features
 without a message. A count of the input by independent code catches such loss
@@ -772,10 +771,9 @@ The authors ran every benchmark step on their own server, from the scripts in
 the repository, and every result in this paper comes from those runs. The
 authors reviewed the code, the results and this text, and are fully responsible
 for all of them. Claude's work is public in the repository's history: from 14
-October 2026 each commit it wrote names it in the commit message (84 of the 97
-commits up to the version submitted), and its draft of this manuscript is
+October 2026 each commit it wrote names it in the commit message (87 of the
+100 commits up to the version submitted), and its draft of this manuscript is
 `paper/manuscript.md`. Additional file 5 gives the details.
-<!-- AUTHORS: recount the commits at the final version (git log). -->
 
 # Results
 
@@ -1037,52 +1035,53 @@ all twelve. Writing human chromosome 1 (437,536 rows) took 25.0 s on SQLite,
 
 ## One portal served all 30 genomes
 
-cgload 0.3.0 loaded {{portal:loaded}} of the {{portal:genomes}} genomes into
-one SQLite database (Q9), {{portal:repaired}} of them with
-`--repair-envelopes`, as for Q1; the database took {{portal:database_gib}} GiB.
-`cgload index` built {{portal:index_terms_million}} million index terms in
-{{portal:index_minutes}} min in all, and its check passed for
-{{portal:index_pass}} genomes.
+cgload 0.3.0 loaded all {{portal:genomes}} genomes into one SQLite database in
+{{portal:load_hours}} h (Q9), {{portal:repaired}} of them with
+`--repair-envelopes`, as for Q1. `cgload index` then built
+{{portal:index_terms_million}} million index terms for
+{{portal:index_features_million}} million features in
+{{portal:index_minutes}} min, and its check passed for all
+{{portal:index_pass}} genomes. With its index, the database took
+{{portal:database_gib}} GiB.
 
 The client sent {{portal:requests}} requests about {{portal:genes}} genes
-(Table 8), and {{portal:requests_not_ok}} of them were answered with an error.
-A search by a gene's name took a median of {{portal:search_median}} ms, a
-gene's page {{portal:gene_page_median}} ms, a region's page
-{{portal:region_page_median}} ms, and a range of the assembly for the genome
-browser {{portal:range_assembly_median}} ms. Of all the requests,
-{{portal:under_1s_percent}}% were answered within a second, and the slowest
-took {{portal:all_max_s}} s. On PostgreSQL, a human gene's page took a median
-of {{portal:gene_page_pg_median}} ms. The search listed the gene in
-{{portal:found}} of {{portal:genes}} cases ({{portal:found_percent}}%),
-{{portal:found_first_page}} times on the first page of results.
-<!-- AUTHORS: say why the genes not found were missed, from portal_found.tsv;
-one not found among no more than 1,000 matches is a failure under the
-protocol. -->
+(Table 8). Every one was answered without an error and within a second. A
+search by a gene's name took a median of {{portal:search_median}} ms, a gene's
+page {{portal:gene_page_median}} ms and a region's page
+{{portal:region_page_median}} ms; 95% of all requests took
+{{portal:all_p95}} ms or less, and the slowest took {{portal:gene_page_max}} ms.
+On PostgreSQL, a human gene's page took a median of
+{{portal:gene_page_pg_median}} ms and a search {{portal:search_pg_median}} ms.
+The search by name listed every one of the {{portal:genes}} genes,
+{{portal:found_first_page}} of them on the first page of results. The other
+{{portal:found_later}} were tRNA genes of zebrafish and *X. tropicalis*, whose
+names are each shared by {{portal:found_later_matches_min}} to
+{{portal:found_later_matches_max}} features, and they appeared by page
+{{portal:found_later_max_page}}.
 
-Users who come at the same time share the one process. With 1, 8 and 32 clients the portal
-answered {{portal:c1_per_second}}, {{portal:c8_per_second}} and
-{{portal:c32_per_second}} requests per second, and with 32 clients half of the
-requests took up to {{portal:c32_p50}} ms and 95% up to {{portal:c32_p95}} ms;
-{{portal:load_test_errors}} requests failed.
+Users who come at the same time share the one process. One client asking
+alone received {{portal:c1_per_second}} answers a second, with a median wait of
+{{portal:c1_p50}} ms. More clients did not raise that much:
+{{portal:c8_per_second}} answers a second with 8 clients and
+{{portal:c32_per_second}} with 32, when the median wait was
+{{portal:c32_p50}} ms and the 95th percentile {{portal:c32_p95}} ms. No request
+failed.
 
 Of {{portal:cds_checked}} coding sequences translated,
 {{portal:cds_no_internal_stop}} ({{portal:cds_clean_percent}}%) gave a protein
-without a stop codon before its end. Of the others, {{portal:cds_explained}}
-came from coding sequences for which the file declares a translation exception,
-a partial sequence or a pseudogene, and {{portal:cds_stop_unexplained}} from
-coding sequences for which it declares none of these.
-<!-- AUTHORS: look into each unexplained stop before submission (examples in
-portal_translation.tsv); the protocol counts them as failures. -->
+without a stop codon before its end. The file explained each of the other
+{{portal:cds_explained}}: {{portal:cds_stop_declared_exception}} declare an
+exception to plain translation, and {{portal:cds_stop_pseudo}} are marked as
+pseudogenes. None was unexplained.
 
 The security probe sent {{portal:probe_requests}} requests to the running
-portal. The portal refused {{portal:probe_400}} as malformed and answered
-{{portal:probe_404}} with "not found"; {{portal:probe_server_errors}} caused a
-server error, {{portal:probe_missing_headers}} came back without the security
-headers, and none returned a script it was sent. The database file was
-{{portal:database_unchanged}} after the run: its SHA-256 checksum was the same
-before the portal started and after its last read.
-<!-- AUTHORS: check this paragraph against portal_security.tsv and
-portal_readonly.tsv. -->
+portal. It answered {{portal:probe_200}} normally and redirected
+{{portal:probe_redirects}}, refused {{portal:probe_400}} as malformed, answered
+{{portal:probe_404}} with "not found", and refused the {{portal:probe_405}}
+that used a method other than GET or HEAD. None caused a server error, every
+response carried the security headers, and none returned a script it was sent.
+The database file was unchanged: its SHA-256 checksum was the same before the
+portal started and after its last read.
 
 **Table 8. How long the portal took to answer.**
 
@@ -1091,8 +1090,8 @@ portal_readonly.tsv. -->
 Times run from the client's request to the end of the response, measured on
 the server itself, for 200 genes in each of the 30 genomes held in one SQLite
 database (`cgload serve`, 8 threads, one process), and for 200 human genes on
-PostgreSQL. Percentiles are nearest-rank. Additional file 6 gives the medians
-per genome.
+PostgreSQL. A gene with no coding sequence has no protein to ask for.
+Percentiles are nearest-rank. Additional file 6 gives the medians per genome.
 
 # Discussion
 
@@ -1225,9 +1224,10 @@ was run, but on the same 30 genomes that cgload had been corrected on, and
 Figure 3 shows the repository's own test record. The portal's times were
 measured with the client on the server, so they leave out the network and the
 time a browser takes to draw igv.js. They are also the times of one process,
-whose threads share Python's interpreter lock: more requests per second need
-more processes behind a web server, which the portal allows because it keeps
-no state. The security probe and the tests are our own, not an audit by an
+which answered about 40 requests a second however many clients asked at once;
+its threads share Python's interpreter lock, so serving more needs more
+processes behind a web server, which the portal allows because it keeps no
+state. The security probe and the tests are our own, not an audit by an
 outside party. We did not time another portal, since none serves these files
 without converting them first, and installing Tripal or GenomeHubs to do so was
 outside the protocol. The portal translates coding sequences itself, as the
@@ -1260,7 +1260,8 @@ that a name, a link or a value is right; that takes a comparison feature by
 feature, like the one this benchmark made. With `cgload index` and
 `cgload serve` the same database becomes a portal that its users can search
 and browse, that shows how each genome was loaded, and that cannot change what
-it serves; one such portal served all 30 genomes from one database. The
+it serves; one such portal served all 30 genomes from one database, with a
+median of {{portal:gene_page_median}} ms for a gene's page. The
 protocol, scripts and results are public, so the same questions can be put to
 other loaders and other files.
 
@@ -1299,7 +1300,7 @@ under a minute, as a check that the installation works; `cgload index` and
 `cgload serve` then show it in a web browser.
 
 The repository holds test data (`examples/minimal/`, `tests/fixtures/`) with
-expected outputs, a test suite of 654 tests, the benchmark protocol and
+expected outputs, a test suite of 655 tests, the benchmark protocol and
 scripts (`benchmark/`), and the portal's documentation (`docs/portal.md`).
 `paper/figures.py` and `paper/screenshots.py` make every figure and table of
 this paper from the results.

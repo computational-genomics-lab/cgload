@@ -2,9 +2,9 @@
 | :-- | :-- | :-- |
 | cgload | 0.2.1 | the loader presented; benchmarked at commits 8c999e2 and 9b97178, the same code apart from its version string and comments |
 | cgload | 0.2.2 | the check of GFF3 columns 2, 6 and 8, run on 20 November 2026 (tag v0.2.2, commit dbb51ce) |
-| cgload | 0.3.0 | the portal (Q9; run pending) |
-| Flask, Werkzeug, Jinja2 | pending | the portal |
-| waitress | pending | the portal's web server |
+| cgload | 0.3.0 | the portal (Q9), at commit 6e4c5b5, run on 25 November 2026 |
+| Flask, Werkzeug, Jinja2 | 3.1.3, 3.1.9, 3.1.6 | the portal |
+| waitress | 3.0.2 | the portal's web server |
 | igv.js | 3.8.10 | the portal's genome browser, served with cgload |
 | Python | 3.12.15 | cgload, gffutils and the benchmark scripts |
 | SQLite | 3.54.1 | cgload and gffutils databases |

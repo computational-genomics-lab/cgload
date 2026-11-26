@@ -1,31 +1,31 @@
 ﻿Organism,Accession,Loaded,Index terms,Index s,Index check,"Search by the gene's name, median ms","Gene page, median ms","Region page, median ms","Protein, median ms",Genes searched,Found,Found on page 1,CDS translated,No stop inside,"Stop, exception declared","Stop, partial CDS","Stop, pseudogene","Stop, unexplained"
-Homo sapiens,GCF_000001405.40,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Mus musculus,GCF_000001635.27,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Rattus norvegicus,GCF_015227675.2,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Gallus gallus,GCF_016699485.2,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Canis lupus familiaris,GCF_014441545.1,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Danio rerio,GCF_000002035.6,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Oryzias latipes,GCF_002234675.1,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Xenopus tropicalis,GCF_000004195.4,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Bombyx mori,GCF_030269925.1,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Nasonia vitripennis,GCF_009193385.2,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Apis mellifera,GCF_003254395.2,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Aedes aegypti,GCF_002204515.2,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Drosophila melanogaster,GCF_000001215.4,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Tribolium castaneum,GCF_000002335.3,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Anopheles gambiae,GCF_000005575.2,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Glycine max,GCF_000004515.6,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Zea mays,GCF_902167145.1,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Arabidopsis thaliana,GCF_000001735.4,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Oryza sativa Japonica Group,GCF_034140825.1,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Vitis vinifera,GCF_030704535.1,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Solanum lycopersicum,GCF_000188115.5,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Sorghum bicolor,GCF_000003195.3,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Cryptococcus neoformans H99,GCF_000149245.1,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Fusarium graminearum PH-1,GCF_000240135.3,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Aspergillus nidulans FGSC A4,GCF_000149205.2,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Neurospora crassa OR74A,GCF_000182925.2,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Schizosaccharomyces pombe,GCF_000002945.2,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Ustilago maydis 521,GCF_000328475.2,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Saccharomyces cerevisiae S288C,GCF_000146045.2,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
-Candida albicans SC5314,GCF_000182965.3,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending,pending
+Homo sapiens,GCF_000001405.40,yes,8769886,1685.9,PASS,23.9,29.4,35.0,22.4,200,200,200,2000,1995,5,0,0,0
+Mus musculus,GCF_000001635.27,yes,5088085,549.7,PASS,22.7,23.1,29.2,22.5,200,200,200,2000,1995,5,0,0,0
+Rattus norvegicus,GCF_015227675.2,yes,3397054,254.2,PASS,23.0,21.6,25.4,20.2,200,200,200,2000,1995,5,0,0,0
+Gallus gallus,GCF_016699485.2,yes,2818751,215.9,PASS,22.8,22.0,22.9,23.4,200,200,200,2000,1998,2,0,0,0
+Canis lupus familiaris,GCF_014441545.1,yes,2967382,218.2,PASS,22.3,20.6,20.7,21.9,200,200,200,2000,1990,10,0,0,0
+Danio rerio,GCF_000002035.6,yes,2809770,193.8,PASS,23.8,19.8,19.4,19.4,200,200,174,2000,1987,13,0,0,0
+Oryzias latipes,GCF_002234675.1,yes,1536925,98.7,PASS,22.7,22.2,20.1,20.2,200,200,200,2000,1998,2,0,0,0
+Xenopus tropicalis,GCF_000004195.4,yes,2069980,113.0,PASS,23.4,21.8,27.5,20.9,200,200,198,2000,1997,3,0,0,0
+Bombyx mori,GCF_030269925.1,yes,1058563,40.3,PASS,22.6,21.1,17.6,20.2,200,200,200,2000,1999,1,0,0,0
+Nasonia vitripennis,GCF_009193385.2,yes,1234399,44.1,PASS,22.8,21.3,23.9,19.5,200,200,200,2000,1996,4,0,0,0
+Apis mellifera,GCF_003254395.2,yes,916400,30.6,PASS,22.8,21.5,18.7,19.9,200,200,200,2000,1996,4,0,0,0
+Aedes aegypti,GCF_002204515.2,yes,967621,29.7,PASS,22.4,19.7,28.0,18.2,200,200,200,2000,1996,4,0,0,0
+Drosophila melanogaster,GCF_000001215.4,yes,1456967,41.7,PASS,23.2,20.2,24.3,19.3,200,200,200,2000,1969,31,0,0,0
+Tribolium castaneum,GCF_000002335.3,yes,757560,23.4,PASS,22.6,20.5,18.4,18.8,200,200,200,2000,1995,5,0,0,0
+Anopheles gambiae,GCF_000005575.2,repaired,570777,11.9,PASS,23.8,20.0,18.2,18.4,200,200,200,2000,1961,39,0,0,0
+Glycine max,GCF_000004515.6,repaired,2866096,148.3,PASS,22.6,20.2,20.6,19.0,200,200,200,2000,1994,6,0,0,0
+Zea mays,GCF_902167145.1,repaired,2316333,108.1,PASS,22.5,19.9,24.0,18.8,200,200,200,2000,1995,5,0,0,0
+Arabidopsis thaliana,GCF_000001735.4,repaired,2143447,73.8,PASS,23.2,21.5,31.1,19.7,200,200,200,2000,1998,2,0,0,0
+Oryza sativa Japonica Group,GCF_034140825.1,repaired,1743040,63.4,PASS,22.6,19.9,20.6,18.5,200,200,200,2000,1991,9,0,0,0
+Vitis vinifera,GCF_030704535.1,yes,1522589,54.6,PASS,22.5,20.4,18.3,18.5,200,200,200,2000,1993,7,0,0,0
+Solanum lycopersicum,GCF_000188115.5,yes,1362726,51.1,PASS,22.4,20.0,19.6,18.4,200,200,200,2000,1994,6,0,0,0
+Sorghum bicolor,GCF_000003195.3,repaired,1380654,48.8,PASS,22.6,19.9,21.1,18.4,200,200,200,2000,1996,4,0,0,0
+Cryptococcus neoformans H99,GCF_000149245.1,yes,267028,6.2,PASS,24.1,20.8,17.1,19.1,200,200,200,2000,2000,0,0,0,0
+Fusarium graminearum PH-1,GCF_000240135.3,yes,368421,7.2,PASS,23.9,19.5,18.7,17.9,200,200,200,2000,2000,0,0,0,0
+Aspergillus nidulans FGSC A4,GCF_000149205.2,yes,261873,5.0,PASS,22.5,19.8,16.4,18.1,200,200,200,2000,2000,0,0,0,0
+Neurospora crassa OR74A,GCF_000182925.2,yes,321067,6.3,PASS,22.4,19.5,16.6,18.0,200,200,200,2000,2000,0,0,0,0
+Schizosaccharomyces pombe,GCF_000002945.2,repaired,362050,6.8,PASS,23.5,18.6,19.7,17.2,200,200,200,2000,1990,0,0,10,0
+Ustilago maydis 521,GCF_000328475.2,yes,194351,3.5,PASS,23.8,19.1,16.0,17.7,200,200,200,2000,2000,0,0,0,0
+Saccharomyces cerevisiae S288C,GCF_000146045.2,yes,209250,3.8,PASS,22.5,19.1,16.6,17.6,200,200,200,2000,1999,0,0,1,0
+Candida albicans SC5314,GCF_000182965.3,yes,189085,3.4,PASS,23.6,19.0,16.6,17.5,200,200,200,2000,1996,4,0,0,0

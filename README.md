@@ -219,9 +219,13 @@ annotation, about 5.7 KB per row on SQLite and 6.9 KB on PostgreSQL (medians
 over the 30 genomes), so a human-sized annotation needs 30 to 37 GB. SQLite
 loads about 8,000 rows a second and PostgreSQL about 2,700.
 
-The portal on the same 30 genomes, in one database, is measured by
-[benchmark/run_portal.py](benchmark/run_portal.py): search, page and download
-times, 1 to 32 clients at once, and a security probe (PROTOCOL.md section 13).
+The portal was measured on the same 30 genomes in one 20.6 GiB SQLite
+database by [benchmark/run_portal.py](benchmark/run_portal.py) (PROTOCOL.md
+section 13): a search by a gene's name took a median of 23 ms and a gene's
+page 20 ms, all 6,000 genes searched for by name were found, every one of
+60,000 translated proteins was either free of internal stop codons or
+explained by its file, and 3,063 injection attempts and random requests
+caused no server error and left the database unchanged.
 
 All 30 genomes, the protocol and the comparison with other loaders are in
 [benchmark/PROTOCOL.md](benchmark/PROTOCOL.md) and

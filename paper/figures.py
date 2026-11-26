@@ -1433,7 +1433,8 @@ def portal_versions(portal: Portal | None) -> list[list[str]]:
 
         day = datetime.date.fromisoformat(env["started"])
         when = f", run on {day.day} {day:%B %Y}"
-    return [["cgload", env["cgload"], f"the portal (Q9), at commit {env['commit']}{when}"],
+    commit = env["commit"].rsplit("-g", 1)[-1]  # git describe: v0.2.2-7-g6e4c5b5
+    return [["cgload", env["cgload"], f"the portal (Q9), at commit {commit}{when}"],
             ["Flask, Werkzeug, Jinja2",
              f"{packages['flask']}, {packages['werkzeug']}, {packages['jinja2']}", "the portal"],
             ["waitress", packages["waitress"], "the portal's web server"],
@@ -1451,6 +1452,7 @@ def portal_numbers(portal: Portal) -> dict[str, str]:
     index = [r for r in portal.index if r["backend"] == "sqlite"]
     out["index_pass"] = n(sum(r["check"] == "PASS" for r in index))
     out["index_terms_million"] = f"{sum(number(r['terms']) for r in index) / 1e6:.1f}"
+    out["index_features_million"] = f"{sum(number(r['features']) for r in index) / 1e6:.1f}"
     out["index_minutes"] = f"{sum(float(r['seconds']) for r in index) / 60:.0f}"
     human = next((r for r in index if r["accession"] == "GCF_000001405.40"), None)
     if human:
@@ -1479,6 +1481,13 @@ def portal_numbers(portal: Portal) -> dict[str, str]:
     out["found"] = n(sum(r["found"] == "True" for r in found))
     out["found_percent"] = f"{100 * sum(r['found'] == 'True' for r in found) / len(found):.1f}"
     out["found_first_page"] = n(sum(r["page"] == "1" for r in found))
+    later = [r for r in found if r["found"] == "True" and r["page"] != "1"]
+    out["found_later"] = n(len(later))
+    if later:
+        out["found_later_max_page"] = n(max(int(r["page"]) for r in later))
+        out["found_later_matches_min"] = n(min(int(r["matches"]) for r in later))
+        out["found_later_matches_max"] = n(max(int(r["matches"]) for r in later))
+        out["found_later_genomes"] = n(len({r["accession"] for r in later}))
     missed = [r for r in found if r["found"] != "True"]
     out["missed"] = n(len(missed))
     out["missed_few"] = n(sum(1 for r in missed if r["matches"] and int(r["matches"]) <= 1000))
@@ -1505,6 +1514,7 @@ def portal_numbers(portal: Portal) -> dict[str, str]:
     out["probe_failures"] = "none" if not probe["failures"] else probe["failures"]
     for status in ("200", "400", "404", "405"):
         out[f"probe_{status}"] = n(statuses.get(status, 0))
+    out["probe_redirects"] = n(sum(v for k, v in statuses.items() if k.startswith("3")))
     env = portal.environment
     out["cgload"] = env["cgload"]
     out["cpus"] = n(env["cpus"])

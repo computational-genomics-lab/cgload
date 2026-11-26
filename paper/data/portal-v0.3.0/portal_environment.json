@@ -1,0 +1,20 @@
+{
+ "started": "2026-11-25",
+ "cgload": "0.3.0",
+ "commit": "v0.2.2-7-g6e4c5b5",
+ "python": "3.12.15",
+ "platform": "Linux-6.5.0-35-generic-x86_64-with-glibc2.35",
+ "processor": "x86_64",
+ "cpus": 80,
+ "database": "sqlite:////home/sucheta/cgload-portal-run/work/portal.db",
+ "packages": {
+  "flask": "3.1.3",
+  "werkzeug": "3.1.9",
+  "waitress": "3.0.2",
+  "jinja2": "3.1.6",
+  "sqlalchemy": "2.1.5",
+  "pyfaidx": "0.9.1",
+  "psycopg": "3.3.6"
+ },
+ "memory_kb": 131480360
+}
