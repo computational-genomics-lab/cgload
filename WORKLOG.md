@@ -749,3 +749,41 @@ install leaving the portal running without BLAST.
 
 BLAST's run 2 (v0.4.1) is unaffected: 0.5.0's BLAST, index, loading and pages
 are those of 0.4.1.
+
+## 27 November 2026, later: BLAST's run 2, and the paper's last numbers
+
+Run 2 of section 14 (release v0.4.1, commit 9f3dfbf, on the benchmark's
+server) built and checked the BLAST databases of all 30 genomes in 26 min,
+every check passing: 1.19 million proteins and 24.7 Gb of sequence, 7.1 GB on
+disk. Every one of the 1,081 searches that finished had its query's own
+protein or place among its hits; 1,012 of the 1,083 found themselves as the
+protocol defines it. Looked into, each that did not:
+
+- **blastp, 25 below another protein.** All 25 had their own CDS among the
+  hits at 100% identity over its whole length, 1 to 8 bits below the top hit,
+  a protein of the same genome in 23. The 8 that tied had their own CDS at
+  100% too. BLAST's composition-based statistics score each pair on its own
+  composition.
+- **blastx, 5.** Four as blastp; the fifth, *C. albicans*, first at 99.4%,
+  most likely the genetic code (CTG is serine there, leucine in blastx's
+  standard code).
+- **tblastn against the protein's own genome, 31** (30 with nothing tied, one
+  tied). In every one the search's best HSP lay inside the CDS's span, at 61
+  to 99.7% identity: a spliced protein aligned to its genome, with HSPs that
+  run past exon ends or across short introns. Run 1 had not recorded this;
+  run 2 did.
+- **Stopped at 120 s:** blastp of a 9,561-residue *A. mellifera* protein and
+  tblastn of a 717-residue human protein, both against every genome.
+
+blastn found all 300 stretches at their own coordinates and blastp all 599
+proteins at 100% over their whole length, so none of these points to a wrong
+database or coordinate; none is a fault of cgload, and section 9's repeat does
+not apply. With 1 to 8 searching clients the pages kept a median of 20 to
+22 ms (21 ms with none), and 238 searches from 8 clients were turned away with
+no error; the probe's 872 requests caused no server error; the database and the
+BLAST manifests were unchanged.
+
+The paper takes its last numbers from `paper/data/blast-v0.4.1/`: the Results
+paragraph of run 2, Table 9, Table S6 (Additional file 8), Table 2's rows for
+both runs, and the abstract, which says that every BLAST search that finished
+found its query's own protein or place among its hits (348 words).

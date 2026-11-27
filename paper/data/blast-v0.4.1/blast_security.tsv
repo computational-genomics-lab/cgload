@@ -1,0 +1,2 @@
+requests	statuses	server_errors	busy_503	missing_security_headers	failures
+872	{"200": 72, "400": 792, "405": 8}	0	0	0	

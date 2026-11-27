@@ -8,16 +8,18 @@ come from the repository's git history and can be checked there.
 
 ## Which model, and how it was used
 
-Claude (Anthropic), from 20 August to 26 November 2026, mainly the model
+Claude (Anthropic), from 20 August to 27 November 2026, mainly the model
 Claude Opus 5.5. The model worked on a copy of the repository and could not
 reach the lab server: every benchmark run was started by the authors on that
-server, and the authors sent the results back to the model. Every change the
-model made was committed under the name of the first author, and reached the
+server, and the authors sent the results back to the model. Every commit the
+model made names the first author as its author (git names Claude as the
+committer of 62 of them, from 15 October to 6 November 2026), and reached the
 public repository only when the first author pushed it.
 
 From 14 October 2026 each commit that the model wrote carries a trailer naming
-it (`Co-Authored-By: Claude …`). Up to tag `v0.2.2`, the version the paper
-describes, 77 of the 90 commits carry one, from 14 October to 19 November 2026;
+it (`Co-Authored-By: Claude …`). Up to tag `v0.2.2`, the loader that the
+benchmark compared, 77 of the 90 commits carry one, from 14 October to 19
+November 2026;
 74 of them name Claude Opus 5.5, two Claude Fable 5.2 and one Claude Opus 5.
 Of the 13 commits without a trailer, the 11 from 20 August to 8 October 2026,
 among them the census scripts in `survey/`, were also made with Claude's help,
@@ -25,8 +27,9 @@ before the trailer was used; the model versions used for them were not
 recorded. The other two are small edits by the authors on 10 and 12 November
 2026 (the full text of the MIT licence, and the removal of internal review
 notes). The commits that the model wrote after `v0.2.2` carry the trailer too:
-up to the version submitted with the paper (0.3.1, which adds the portal), 90
-of the 103 commits carry one, 87 of them naming Claude Opus 5.5.
+up to the version submitted with the paper (0.5.0, with the portal, BLAST and
+`cgload portal`), 103 of the 116 commits carry one, 100 of them naming Claude
+Opus 5.5.
 
 ## What the model did
 
@@ -99,7 +102,8 @@ figures and tables are the output of `paper/figures.py`.
 The authors ran every benchmark step on their own server, from the scripts in
 the repository, and every result in the paper comes from those runs
 (`paper/data/benchmark-run-2.2/`, `paper/data/columns-v0.2.2/`,
-`paper/data/portal-v0.3.0/` and `paper/data/blast-v0.4.0/`). The test suite
+`paper/data/portal-v0.3.0/`, `paper/data/blast-v0.4.0/` and
+`paper/data/blast-v0.4.1/`). The test suite
 (722 tests, and 27 more for the
 benchmark) runs in continuous integration on every push, on Linux, macOS and
 Windows. The authors reviewed the code, the

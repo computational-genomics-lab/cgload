@@ -1543,12 +1543,12 @@ VERSIONS = [  # (what the paper calls it, file, kind, package name, what it was 
 ]
 
 
-BLAST_KINDS = [  # (program, scope in blast_searches.tsv, what the paper calls it)
-    ("blastp", "all", "blastp: a protein against every genome's proteins"),
-    ("blastn", "all", "blastn (megablast): 500 bp against every genome"),
-    ("tblastn", "own", "tblastn: a protein against its own genome"),
-    ("blastx", "own", "blastx: a coding sequence against its genome's proteins"),
-    ("tblastn", "all", "tblastn: a protein against every genome"),
+BLAST_KINDS = [  # (program, scope in blast_searches.tsv, Table 9's label)
+    ("blastp", "all", "blastp, every genome"),
+    ("blastn", "all", "blastn, every genome"),
+    ("tblastn", "own", "tblastn, own genome"),
+    ("blastx", "own", "blastx, own genome"),
+    ("tblastn", "all", "tblastn, every genome"),
 ]
 
 
@@ -1595,8 +1595,8 @@ def s_(value: float) -> str:
 
 def table_blast(blast: Blast | None) -> str:
     """Table 9: each kind of search, whether its queries found themselves, and the time."""
-    header = ["Search", "Queries", "Found itself", "Tied", "Not found", "Not answered",
-              "Median, s", "95th percentile, s", "Slowest, s"]
+    header = ["Search", "Queries", "Found itself", "Tied", "Not found", "Stopped",
+              "Median, s", "95th pct., s", "Slowest, s"]
     rows = []
     for program, scope, label in BLAST_KINDS:
         if blast is None:
@@ -1610,7 +1610,7 @@ def table_blast(blast: Blast | None) -> str:
                      s_(statistics.median(times)) if times else "–",
                      s_(nearest_rank(times, 0.95)) if times else "–",
                      s_(max(times)) if times else "–"])
-    return md_table(header, rows, "lrrrrrrrr", [6, 2, 2, 2, 2, 2, 2, 2, 2])
+    return md_table(header, rows, "lrrrrrrrr", [5, 2, 2, 1, 2, 2, 2, 2, 2])
 
 
 def table_blast_genomes(results: Results, blast: Blast | None) -> str:
@@ -1649,21 +1649,25 @@ def table_blast_genomes(results: Results, blast: Blast | None) -> str:
     return md_table(header, rows, "lll" + "r" * (len(header) - 3))
 
 
-def blast_versions(blast: Blast | None) -> list[list[str]]:
-    """Table 2's rows for BLAST's run, as its environment recorded them."""
-    if blast is None:
-        return [["cgload", "0.4.0", "BLAST (Q10; run pending)"],
-                ["BLAST+", PENDING, "BLAST in the portal (Q10)"]]
-    env = blast.environment
-    when = ""
-    if env.get("started"):
-        import datetime
+def blast_versions(blast: Blast | None, blast1: Blast | None = None) -> list[list[str]]:
+    """Table 2's rows for BLAST's two runs, as their environments recorded them."""
+    import datetime
 
-        day = datetime.date.fromisoformat(env["started"])
-        when = f", run on {day.day} {day:%B %Y}"
-    commit = env["commit"].rsplit("-g", 1)[-1]
-    return [["cgload", env["cgload"], f"BLAST (Q10), at {commit}{when}"],
-            ["BLAST+", env["blast"], "BLAST in the portal (Q10)"]]
+    def row(run: Blast, which: str) -> list[str]:
+        env = run.environment
+        when = ""
+        if env.get("started"):
+            day = datetime.date.fromisoformat(env["started"])
+            when = f", run on {day.day} {day:%B %Y}"
+        commit = env["commit"].rsplit("-g", 1)[-1]
+        return ["cgload", env["cgload"], f"BLAST, {which} run (Q10), at {commit}{when}"]
+
+    rows = [row(blast1, "first")] if blast1 is not None else []
+    if blast is None:
+        return rows + [["cgload", "0.4.1", "BLAST, second run (Q10; pending)"],
+                       ["BLAST+", PENDING, "BLAST in the portal (Q10)"]]
+    return rows + [row(blast, "second"), ["BLAST+", blast.environment["blast"],
+                                          "BLAST in the portal (Q10)"]]
 
 
 def blast_numbers(blast: Blast) -> dict[str, str]:
@@ -1742,7 +1746,55 @@ def blast_numbers(blast: Blast) -> dict[str, str]:
         ranks = [int(number(r["own_rank"])) for r in whole]
         if ranks:
             out[f"{key}_missed_rank_max"] = n(max(ranks))
+        gaps = [float(r["top_bits"]) - float(r["own_bits"]) for r in whole
+                if r.get("own_bits") not in (None, "", "NA")]
+        if gaps:  # run 2 records the own hit's score
+            out[f"{key}_missed_gap_min"] = f"{min(gaps):.0f}"
+            out[f"{key}_missed_gap_max"] = f"{max(gaps):.0f}"
+    out["build_minutes"] = f"{hours * 60:.0f}"
+    # Which searches that finished had their own protein or place among the hits
+    # at all, whatever their rank or identity: run 2 records enough to say.
+    present = 0
+    finished = [r for r in blast.searches if r["status"] == "200"]
+    for r in finished:
+        if r["own_rank"] not in ("", "NA") or r.get("nearest_identity") not in (None, "", "NA"):
+            present += 1
+    out["finished"] = n(len(finished))
+    out["own_present"] = n(present)
+    for program, scope in BLAST_KINDS_KEYS:
+        rows = [r for r in blast.rows(program, scope) if r["status"] == "200"]
+        key = f"{program}_{scope}"
+        out[f"{key}_answered"] = n(len(rows))
+        out[f"{key}_own_present"] = n(sum(r["own_rank"] not in ("", "NA") for r in rows))
+        out[f"{key}_own_whole"] = n(sum(
+            r["own_rank"] not in ("", "NA") and float(r["own_identity"]) == 100.0
+            and int(number(r["own_length"])) * (3 if program == "blastx" else 1)
+            in (int(number(r["length"])), int(number(r["length"])) - 3) for r in rows))
+        stopped = [r for r in blast.rows(program, scope) if r["status"] == "503"]
+        if stopped:
+            out[f"{key}_stopped_length"] = n(int(number(stopped[0]["length"])))
+        times = seconds_of(blast.rows(program, scope))
+        if times:
+            out[f"{key}_min"] = s_(min(times))
+    near = [r for r in blast.rows("tblastn", "own") if r["status"] == "200"
+            and r["found"] != "True" and r.get("nearest_identity") not in (None, "", "NA")]
+    if near:
+        identities = [float(r["nearest_identity"]) for r in near]
+        out["tblastn_own_near"] = n(len(near))
+        out["tblastn_own_near_min"] = f"{min(identities):.0f}"
+        out["tblastn_own_near_max"] = f"{max(identities):.1f}"
+        out["tblastn_own_near_best"] = n(sum(float(r["nearest_bits"]) >= float(r["top_bits"])
+                                             for r in near))
+    loaded = [row for row in blast.concurrency if row["clients"] != "0"
+              and row["page_p50_ms"] not in ("", "NA")]
+    if loaded:
+        medians = [float(row["page_p50_ms"]) for row in loaded]
+        out["load_page_p50_min"] = ms(min(medians))
+        out["load_page_p50_max"] = ms(max(medians))
     return out
+
+
+BLAST_KINDS_KEYS = [(program, scope) for program, scope, _ in BLAST_KINDS]
 
 
 def version_of(text: str, kind: str, package: str) -> str:
@@ -1760,8 +1812,8 @@ def version_of(text: str, kind: str, package: str) -> str:
 BENCHMARKED_CGLOAD = "0.2.1"
 
 
-def table_versions(results: Results, portal: Portal | None, blast: Blast | None = None
-                   ) -> str:
+def table_versions(results: Results, portal: Portal | None, blast: Blast | None = None,
+                   blast1: Blast | None = None) -> str:
     """Versions as the server's environments recorded them at the time of the run."""
     folder = results.folder / "environment"
     # The version the benchmark ran, not the one installed now: 0.2.2 changed
@@ -1783,7 +1835,7 @@ def table_versions(results: Results, portal: Portal | None, blast: Blast | None 
     rows[at:at] = [["Chado schema", "1.31 (GMOD/Chado commit ef04588)", "python-chado's database"],
                    ["Sequence Ontology", "SO-Ontologies commit 4340c14",
                     "python-chado's database (so.obo)"]]
-    rows[2:2] = portal_versions(portal) + blast_versions(blast)
+    rows[2:2] = portal_versions(portal) + blast_versions(blast, blast1)
     return md_table(["Software", "Version", "Used for"], rows, "lll")
 
 
@@ -1827,7 +1879,7 @@ def write_tables(results: Results, portal: Portal | None, out: Path,
         "tableS2_faults.md": table_faults_full(results),
         "tableS3_timing.md": table_timing(results),
         "tableS4_sequences.md": table_sequences(results),
-        "table6_versions.md": table_versions(results, portal, blast),
+        "table6_versions.md": table_versions(results, portal, blast, blast1),
     }
     for name, text in tables.items():
         (out / name).write_text(text)

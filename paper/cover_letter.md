@@ -27,8 +27,8 @@ not at all, without a message. We are explicit about what cgload's own check
 cannot see: it compares counts, so it catches a lost or invented feature but
 not a renamed one or a changed value. One portal then served all 30 genomes
 from a single database, with a median of {{portal:gene_page_median}} ms for a
-gene's page, and its BLAST found {{blast:found}} of {{blast:queries}} sampled
-sequences in their own place. It was built against the problems genome
+gene's page, and every BLAST search that finished found its query's own
+protein or place among its hits. It was built against the problems genome
 portals are known for: it opens the database read-only, binds every value a
 visitor sends, starts no program but BLAST+, with arguments it chooses, and
 loads no script from another site, and we tested it with injection strings

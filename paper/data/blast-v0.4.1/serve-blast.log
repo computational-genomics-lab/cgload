@@ -1,0 +1,6 @@
+cgload serve: the portal is running, read-only, with 30 genomes.
+  Open it on this computer:   http://127.0.0.1:8791/
+  Only this computer can open it. For the other computers on your network, leave out --host.
+  Stop it with Ctrl-C.
+  BLAST: 30 of 30 genomes, 2 searches at a time.
+WARNING:waitress.queue:Task queue depth is 1

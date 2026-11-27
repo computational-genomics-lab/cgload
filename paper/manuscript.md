@@ -44,12 +44,11 @@ multi-row features as separate records without a message. txdbmaker stopped on s
 finish nine genomes and, in the other 21, lost 5.0% of the features, four in
 five without a message. cgload reported all 57 planted faults it was expected
 to catch and, as predicted, none of the 24 that kept every count. One portal
-served all 30 genomes from one database: searches by name found all
-{{portal:genes}} genes sampled, a gene page took a median of
-{{portal:gene_page_median}} ms, BLAST found {{blast:found}} of
-{{blast:queries}} sampled sequences in their own place, and none of
-{{portal:probe_requests}} injection attempts and random requests caused a
-server error or changed the database.
+served all 30 genomes: searches by name found all {{portal:genes}} genes
+sampled, a gene page took a median of {{portal:gene_page_median}} ms, every
+BLAST search that finished found its query's own protein or place among its
+hits, and none of {{portal:probe_requests}} injection attempts and random
+requests caused a server error or changed the database.
 
 **Conclusions:** Each of the other three loaders changed or lost features
 without a message. A count of the input by independent code catches such loss
@@ -841,7 +840,7 @@ code of version 0.3.0, before the portal was run on the 30 genomes.
 ## Use of large language models
 
 We used Claude, a large language model made by Anthropic [@claude], mainly the
-model Claude Opus 5.5, from 20 August to 26 November 2026. Under the authors'
+model Claude Opus 5.5, from 20 August to 27 November 2026. Under the authors'
 direction it wrote and changed code, tests and documentation of cgload,
 including its portal, and of the census; drafted the benchmark protocol with
 us and wrote the benchmark scripts; analysed the results of each run; wrote
@@ -863,8 +862,8 @@ The authors ran every benchmark step on their own server, from the scripts in
 the repository, and every result in this paper comes from those runs. The
 authors reviewed the code, the results and this text, and are fully responsible
 for all of them. Claude's work is public in the repository's history: from 14
-October 2026 each commit it wrote names it in the commit message (90 of the
-103 commits up to the version submitted), and its draft of this manuscript is
+October 2026 each commit it wrote names it in the commit message (103 of the
+116 commits up to the version submitted), and its draft of this manuscript is
 `paper/manuscript.md`. Additional file 5 gives the details.
 
 # Results
@@ -1189,9 +1188,9 @@ Percentiles are nearest-rank. Additional file 6 gives the medians per genome.
 
 The first run, with release 0.4.0, met two failures that the protocol names
 (Q10). The BLAST databases of *D. rerio* and *G. gallus* did not build: while
-makeblastdb wrote them, its working folder was renamed and then removed by a
-second build of the same genomes, and the build that failed then removed the
-databases that the other had made, so the portal searched
+makeblastdb wrote them, its working folder was renamed and then removed, which
+only a second build of the same genome does, and the build that failed then
+removed the databases that the other had made, so the portal searched
 {{blast1:genomes_searchable}} of the 30 genomes. Nothing in cgload stopped two
 builds of one genome at once; release 0.4.1 does (D-117), and the second run
 repeated every BLAST measurement on every genome with it. In the first run,
@@ -1204,15 +1203,51 @@ genome. BLAST adjusts each score to the composition of the two sequences it
 aligns, so an identical stretch can score more against a longer protein that
 contains it than against itself.
 
-<!-- AUTHORS: the second run's paragraph goes here once its results are in
-paper/data/blast-v0.4.1/; Table 9 and Table S6 fill in from them. -->
-
-In the second run, `cgload blastdb` built the BLAST databases of
-{{blast:genomes}} genomes in {{blast:build_hours}} h, and
-{{blast:build_pass}} passed their check: {{blast:proteins_million}} million
+In the second run, with release 0.4.1, `cgload blastdb` built the BLAST
+databases of all {{blast:genomes}} genomes in {{blast:build_minutes}} min, and
+all {{blast:build_pass}} passed their check: {{blast:proteins_million}} million
 proteins and {{blast:genome_gb}} Gb of sequence, in {{blast:disk_gb}} GB on
-disk. Of {{blast:queries}} sampled proteins and stretches, {{blast:found}}
-found themselves (Table 9).
+disk (Additional file 8). Every one of the {{blast:finished}} searches that
+finished had its query's own protein or place among its hits;
+{{blast:found}} of the {{blast:queries}} found themselves as the protocol
+defines it (Table 9). blastn found all {{blast:blastn_all_found}} stretches at
+their own coordinates, at 100% identity over their whole length, in a median of
+{{blast:blastn_all_median}} s. Every blastp search that finished had the
+protein's own coding sequence among its hits at 100% identity over its whole
+length: first in {{blast:blastp_all_found}}, tied with an identical protein in
+{{blast:blastp_all_tied}}, and below another protein's score, by
+{{blast:blastp_all_missed_gap_min}} to {{blast:blastp_all_missed_gap_max}}
+bits, in {{blast:blastp_all_missed_db}}, of which
+{{blast:blastp_all_missed_same_genome}} were proteins of the same genome; BLAST
+adjusts each score to the composition of the two sequences it aligns, so an
+identical stretch can score more against a longer protein that contains it
+than against itself. blastx found {{blast:blastx_own_found}} of its 90
+coding sequences' proteins first at 100%; four more ranked below another
+protein in the same way, and the fifth, from *C. albicans*, came first at
+99.4% identity, most likely because blastx translates with the standard
+genetic code and *C. albicans* reads CTG as serine. Of the 90 tblastn
+searches of a protein against its own genome, {{blast:tblastn_own_found}}
+found an HSP at 100% inside its own coding sequence's span; in the other
+{{blast:tblastn_own_near}}, the search's best HSP still lay inside that span,
+at {{blast:tblastn_own_near_min}} to {{blast:tblastn_own_near_max}}%
+identity, which is what aligning a spliced protein to its genome gives when an
+HSP runs past the end of an exon or across a short intron. None of the
+searches that did not find themselves points to a wrong database or
+coordinate, which blastn's exact coordinates and blastp's identical
+whole-length hits would show.
+
+Two searches stopped at the 120 s limit, both of all 30 genomes: blastp of a
+{{blast:blastp_all_stopped_length}}-residue *Apis mellifera* protein, and
+tblastn of a {{blast:tblastn_all_stopped_length}}-residue human protein; the
+two other tblastn searches of all 30 genomes took {{blast:tblastn_all_min}}
+and {{blast:tblastn_all_max}} s. With 1 to 8 clients searching at once, the
+gene pages kept a median of {{blast:load_page_p50_min}} to
+{{blast:load_page_p50_max}} ms, against {{blast:load0_page_p50_ms}} ms with no
+search running; with 8 clients, {{blast:load8_turned_away_503}} searches were
+turned away at once and none failed. None of the probe's
+{{blast:probe_requests}} requests caused a server error, every response
+carried the security headers, {{blast:probe_400}} were refused as invalid, and
+the database and the BLAST manifests were {{blast:database_unchanged}}.
 
 **Table 9. BLAST searches on the 30 genomes.**
 
@@ -1220,10 +1255,16 @@ found themselves (Table 9).
 
 Each search was sent alone, through `POST /api/v1/blast`, to the portal
 holding all 30 genomes, with its default BLAST settings (two searches at once,
-four threads each, 120 s limit). A query found itself as "Measuring BLAST"
-defines; a query that tied shared its top score with another hit. Times run
-from the client's request to the end of the answer. Additional file 8 gives
-the results per genome.
+four threads each, 120 s limit), in the second run: blastp, a protein against
+every genome's proteins; blastn (megablast), 500 bp of a genome against every
+genome; tblastn, a protein against its own genome or every genome; blastx, a
+coding sequence against its own genome's proteins. A query found itself as
+"Measuring BLAST" defines; one that tied shared its top score with another
+hit; not found, it had its own protein or place among the hits all the same,
+below another protein's score or, for tblastn, under 100% identity (see text);
+stopped, it ran past the time limit. 95th pct.: 95th percentile. Times run from the client's
+request to the end of the answer. Additional file 8 gives the results per
+genome; the first run's are in `paper/data/blast-v0.4.0/`.
 
 # Discussion
 
@@ -1369,8 +1410,8 @@ file describes them. It names the exceptions that a file declares but does not
 apply them, so for such a coding sequence the protein it shows is not the
 curated one, and BLAST searches the same translations. It has no editing and
 no accounts. Its BLAST offers four programs with fixed choices and a query of at
-most 10,000 letters, and stops every search after 120 s, which may be too
-short for a search of every genome; a public portal also needs a limit on
+most 10,000 letters, translates with the standard genetic code, and stops
+every search after 120 s, which stopped two searches of all 30 genomes; a public portal also needs a limit on
 searches per visitor, which `docs/portal.md` sets in the web server in front
 of it.
 
@@ -1668,7 +1709,7 @@ the load, the search index and its check, the median time of each kind of
 request, how often a search by a gene's name found it, and the translation of
 its coding sequences.
 
-**Additional file 7 (ZIP).** Source code of cgload, version 0.4.0: the
+**Additional file 7 (ZIP).** Source code of cgload, version 0.5.0: the
 repository at the time of submission, with its tests, the benchmark protocol
 and scripts, and the results of the benchmark and of the measurements of the
 portal and of BLAST.
