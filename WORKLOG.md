@@ -674,3 +674,46 @@ BLAST", a Results section with Table 9 and Table S6 (Additional file 8), which
 fill in from `paper/data/blast-v0.4.0/` once the run is back, and BLAST in the
 abstract (345 words), Methods, Discussion, Limitations and Availability.
 Release 0.4.0 is tagged on that commit.
+
+## 27 November 2026: BLAST's first run, and 0.4.1
+
+The first run of section 14 (release v0.4.0, on the benchmark's server)
+came back with two failures that the protocol names.
+
+- **Two genomes without BLAST databases.** makeblastdb failed for the
+  proteins of *D. rerio* and the genome of *G. gallus*, reporting that the
+  database it had just written was not where it had written it. Its messages
+  name the folders it searched: for *D. rerio* the build's working folder
+  under its final name, `blast`, and for *G. gallus* none at all. The working
+  folder had been renamed, then removed, while makeblastdb ran, and only
+  another build of the same genome does either; two builds of one assembly
+  started together here fail the same way. The build that failed then removed
+  the databases that the other had put in place, as a failed build is meant to
+  (D-116), so the portal served 28 genomes. 0.4.1 takes a lock per assembly for
+  the length of a build and refuses a second one at once, changing nothing
+  (D-117), with tests; makeblastdb's failure message keeps the end of its own
+  output.
+- **Searches that did not find themselves.** In the 28 genomes with
+  databases, blastn found all 280 stretches. Of the blastp searches, 529 found
+  themselves, 7 tied with another protein and 23 did not, with nothing tied;
+  in each of the 23 the protein's own CDS was among the hits at 100% identity
+  over its whole length, below another protein's score, a protein of the same
+  genome in 21. BLAST's composition-based statistics adjust each score to the
+  two sequences aligned. Of 84 tblastn searches against their own genome, 28
+  had no HSP at 100% inside their CDS's span; the run did not record how near
+  they came. blastx missed 4 of 84: three below another protein, as with
+  blastp, and one *C. albicans* CDS found first but at 99.4% identity, most
+  likely because blastx translates with the standard code, where the CTG
+  codons that *C. albicans* reads as serine are leucine.
+- **Stopped at the limit.** One blastp search of a 9,561-residue protein
+  against every genome, and one tblastn search against every genome, of three,
+  passed 120 s and were stopped.
+- **The rest held.** The load test turned away 240 searches from 8 clients,
+  with no error, while the pages kept a median of about 20 ms; the probe's 872
+  requests caused no server error and returned nothing they were sent; the
+  database and the BLAST manifests were unchanged.
+
+As section 9 requires, run 2 repeats every measurement of section 14 on every
+genome with release v0.4.1, from new databases, and also records how near each
+search that did not find itself came; what counts as found is unchanged.
+Run 1's results are `paper/data/blast-v0.4.0/`; the paper reports both runs.

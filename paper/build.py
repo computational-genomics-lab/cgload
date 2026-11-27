@@ -95,7 +95,7 @@ def number_citations(text: str) -> str:
     return text.replace(marker, listed) + "\n"
 
 
-MEASURED = ("portal", "blast")
+MEASURED = ("portal", "blast", "blast1")
 
 
 def measured_numbers(text: str) -> str:

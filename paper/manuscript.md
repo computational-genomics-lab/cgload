@@ -647,9 +647,11 @@ installed and started (D-115): Flask and waitress install with cgload, and
 `cgload serve` listens on every network interface by default, lists the
 addresses that open it, moves to the next free port when port 8000 is taken,
 and reports start-up problems in a sentence instead of a traceback.
-Version 0.4.0, the one this paper describes, adds BLAST and `cgload blastdb`
-(D-116); it loads, verifies, exports and serves pages as 0.3.1 does, and BLAST
-was measured with it.
+Version 0.4.0 adds BLAST and `cgload blastdb` (D-116); it loads, verifies,
+exports and serves pages as 0.3.1 does. Version 0.4.1, the one this paper
+describes, lets only one build of a genome's BLAST databases run at a time
+(D-117), after BLAST's first measurement found two builds spoiling each other;
+BLAST was measured with both.
 The query code changed between the two commits (see "Changes after the first
 run"), and the timing was measured after that change.
 
@@ -765,7 +767,10 @@ check, a protein or stretch with no stop codon or unknown residue inside that
 does not find itself while no other hit ties with it, a server error other
 than a search turned away or stopped at its limit, a response without the
 security headers or with a script it was sent, and any change to the
-checksums.
+checksums. The first run, with cgload 0.4.0, met two of those failures
+(Results), so, as section 9 of the protocol requires, a second run repeated
+every BLAST measurement on every genome with 0.4.1, from new databases, and
+also recorded how near each search that did not find itself came.
 
 ### Hardware
 
@@ -1165,16 +1170,32 @@ Percentiles are nearest-rank. Additional file 6 gives the medians per genome.
 
 ## BLAST on the 30 genomes
 
-<!-- AUTHORS: Q10's results go here once benchmark/run_blast.py has run on the
-server; Table 9, Table S6 and the numbers below fill in from
-paper/data/blast-v0.4.0/. -->
+The first run, with release 0.4.0, met two failures that the protocol names
+(Q10). The BLAST databases of *D. rerio* and *G. gallus* did not build: while
+makeblastdb wrote them, its working folder was renamed and then removed by a
+second build of the same genomes, and the build that failed then removed the
+databases that the other had made, so the portal searched
+{{blast1:genomes_searchable}} of the 30 genomes. Nothing in cgload stopped two
+builds of one genome at once; release 0.4.1 does (D-117), and the second run
+repeated every BLAST measurement on every genome with it. In the first run,
+also, {{blast1:blastp_all_missed_db}} blastp searches in genomes with
+databases did not find themselves as the protocol defines it, with nothing
+tied: in every one, the protein's own coding sequence was among the hits at
+100% identity over its whole length, but below another protein's score,
+which in {{blast1:blastp_all_missed_same_genome}} was a protein of the same
+genome. BLAST adjusts each score to the composition of the two sequences it
+aligns, so an identical stretch can score more against a longer protein that
+contains it than against itself.
 
-`cgload blastdb` built the BLAST databases of {{blast:genomes}} genomes in
-{{blast:build_hours}} h, and {{blast:build_pass}} passed their check
-(Q10): {{blast:proteins_million}} million proteins and
-{{blast:genome_gb}} Gb of sequence, in {{blast:disk_gb}} GB on disk. Of
-{{blast:queries}} sampled proteins and stretches, {{blast:found}} found
-themselves (Table 9).
+<!-- AUTHORS: the second run's paragraph goes here once its results are in
+paper/data/blast-v0.4.1/; Table 9 and Table S6 fill in from them. -->
+
+In the second run, `cgload blastdb` built the BLAST databases of
+{{blast:genomes}} genomes in {{blast:build_hours}} h, and
+{{blast:build_pass}} passed their check: {{blast:proteins_million}} million
+proteins and {{blast:genome_gb}} Gb of sequence, in {{blast:disk_gb}} GB on
+disk. Of {{blast:queries}} sampled proteins and stretches, {{blast:found}}
+found themselves (Table 9).
 
 **Table 9. BLAST searches on the 30 genomes.**
 
@@ -1222,7 +1243,7 @@ predicted. A user who needs those checked has to compare the database with the
 file feature by feature, as our round trip does, and that comparison is not
 part of `cgload verify`. Checking identity as well, for instance by comparing
 the set of IDs and of child and parent pairs, would close much of this gap at
-little cost; it is not in version 0.4.0. The same blind spot hid a fault in
+little cost; it is not in version 0.4.1. The same blind spot hid a fault in
 cgload itself. Its export rounded scores to six significant digits, which
 changed 52 scores in human and mouse and no count; only the later comparison
 of columns 2, 6 and 8 showed it.
@@ -1313,7 +1334,7 @@ took about a quarter of a second, mostly to start Python; query waits were
 measured on four genomes, not 30. A killed load leaves its staging files on
 disk, to be deleted by hand. `verify` exits 0 when it skips the source count
 because the input file has changed, so a script that reads only the exit
-status misses the change; this is unchanged in version 0.4.0.
+status misses the change; this is unchanged in version 0.4.1.
 
 The portal, Q9 and Q10 came after the benchmark. Their procedures were fixed
 before they were run, but on the same 30 genomes that cgload had been corrected on, and
@@ -1381,11 +1402,10 @@ other loaders and other files.
   {{blast:blast_version}}), installed apart
 - License: MIT
 - Any restrictions to use by non-academics: none
-- Version described: 0.4.0 (tag `v0.4.0`; source archive in Additional file 7)
+- Version described: 0.4.1 (tag `v0.4.1`; source archive in Additional file 7)
 - RRID:SCR_029282
 - bio.tools ID: biotools:cgload
-- Archived version: Software Heritage, swh:1:rel:3d82e8c081c8ec28d980c120cc8e6fc3b4ec89d2 (release v0.4.0),
-  https://archive.softwareheritage.org/swh:1:rel:3d82e8c081c8ec28d980c120cc8e6fc3b4ec89d2;origin=https://github.com/computational-genomics-lab/cgload.
+- Archived version: Software Heritage, {{swh:v041}}.
   The portal's measurement rests on release v0.3.0,
   swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad,
   https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:27cff3403cd99aae747935485618353d8bd7de79,
@@ -1396,10 +1416,10 @@ other loaders and other files.
 cgload is installed with pip from its repository, at the version described
 here; the portal comes with it:
 
-    pip install "git+https://github.com/computational-genomics-lab/cgload@v0.4.0"
+    pip install "git+https://github.com/computational-genomics-lab/cgload@v0.4.1"
 
 For PostgreSQL, add its driver:
-`pip install "cgload[postgres] @ git+https://github.com/computational-genomics-lab/cgload@v0.4.0"`.
+`pip install "cgload[postgres] @ git+https://github.com/computational-genomics-lab/cgload@v0.4.1"`.
 BLAST needs BLAST+ beside it, for instance from Bioconda
 (`conda install -c conda-forge -c bioconda blast`).
 
@@ -1408,7 +1428,7 @@ under a minute, as a check that the installation works; `cgload index`,
 `cgload blastdb` and `cgload serve` then show it in a web browser.
 
 The repository holds test data (`examples/minimal/`, `tests/fixtures/`) with
-expected outputs, a test suite of 703 tests, the benchmark protocol and
+expected outputs, a test suite of 705 tests, the benchmark protocol and
 scripts (`benchmark/`), and the portal's documentation (`docs/portal.md`).
 `paper/figures.py` and `paper/screenshots.py` make every figure and table of
 this paper from the results.
@@ -1445,8 +1465,8 @@ submitted, and in the repository itself,
 https://github.com/computational-genomics-lab/cgload: the results folder of
 the benchmark, as its scripts left it, is `paper/data/benchmark-run-2.2/`, the
 check of columns 2, 6 and 8 is `paper/data/columns-v0.2.2/`, the portal's
-measurement is `paper/data/portal-v0.3.0/`, and BLAST's is
-`paper/data/blast-v0.4.0/`. The census scripts and their
+measurement is `paper/data/portal-v0.3.0/`, and BLAST's two runs are
+`paper/data/blast-v0.4.0/` and `paper/data/blast-v0.4.1/`. The census scripts and their
 results are in `survey/`. The reference readings are not
 included, because `benchmark/truth.py` rebuilds them from the input files. All
 input files are public RefSeq annotations, identified by accession, annotation
@@ -1458,9 +1478,10 @@ the check of columns 2, 6 and 8 was added to the repository after that release.
 Release v0.3.0, with which the portal was measured, is archived as
 swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad
 (https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:27cff3403cd99aae747935485618353d8bd7de79),
-and release v0.4.0, with which BLAST was measured, as
+release v0.4.0, with which BLAST was first measured, as
 swh:1:rel:3d82e8c081c8ec28d980c120cc8e6fc3b4ec89d2
-(https://archive.softwareheritage.org/swh:1:rel:3d82e8c081c8ec28d980c120cc8e6fc3b4ec89d2;origin=https://github.com/computational-genomics-lab/cgload).
+(https://archive.softwareheritage.org/swh:1:rel:3d82e8c081c8ec28d980c120cc8e6fc3b4ec89d2;origin=https://github.com/computational-genomics-lab/cgload),
+and release v0.4.1, with which it was measured again, as {{swh:v041}}.
 
 ## Competing interests
 

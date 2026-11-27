@@ -1718,6 +1718,30 @@ def blast_numbers(blast: Blast) -> dict[str, str]:
     out["manifests_unchanged"] = "unchanged" if readonly["manifests_unchanged"] == "True" \
         else "CHANGED"
     out["blast_version"] = blast.environment["blast"]
+    out["genomes_searchable"] = n(sum(r["genome_check"] == "PASS" for r in build))
+    aid = {r["accession"]: r["assembly_id"] for r in build}
+    for program, scope in (("blastp", "all"), ("blastx", "own")):
+        missed = [r for r in blast.rows(program, scope) if r["status"] == "200"
+                  and r["found"] != "True" and number(r["ties_at_top"]) <= 1
+                  and r["kind"] in ("plain", "piece")
+                  and aid.get(r["accession"]) and next(
+                      (b for b in build if b["accession"] == r["accession"]), {}
+                  ).get("proteins_check") == "PASS"]
+        key = f"{program}_{scope}"
+        out[f"{key}_missed_db"] = n(len(missed))
+        def whole_length(r: dict, program: str = program) -> bool:
+            """Its own hit covers the query: the protein, or the CDS's codons."""
+            letters = int(number(r["own_length"])) * (3 if program == "blastx" else 1)
+            return letters in (int(number(r["length"])), int(number(r["length"])) - 3)
+
+        whole = [r for r in missed if r["own_rank"] not in ("", "NA")
+                 and float(r["own_identity"]) == 100.0 and whole_length(r)]
+        out[f"{key}_missed_whole"] = n(len(whole))
+        out[f"{key}_missed_same_genome"] = n(sum(r["top_genome"] == aid[r["accession"]]
+                                                 for r in whole))
+        ranks = [int(number(r["own_rank"])) for r in whole]
+        if ranks:
+            out[f"{key}_missed_rank_max"] = n(max(ranks))
     return out
 
 
@@ -1778,12 +1802,16 @@ def table_timing(results: Results) -> str:
 
 
 def write_tables(results: Results, portal: Portal | None, out: Path,
-                 blast: Blast | None = None) -> None:
+                 blast: Blast | None = None, blast1: Blast | None = None) -> None:
     out.mkdir(parents=True, exist_ok=True)
     numbers = portal_numbers(portal) if portal else {}
     (out / "portal_numbers.json").write_text(json.dumps(numbers, indent=1, sort_keys=True) + "\n")
-    numbers = blast_numbers(blast) if blast else {}
-    (out / "blast_numbers.json").write_text(json.dumps(numbers, indent=1, sort_keys=True) + "\n")
+    # BLAST's run 2 (v0.4.1) fills Table 9, Table S6 and {{blast:KEY}}; run 1
+    # (v0.4.0), whose failures section 9 of the protocol reports, {{blast1:KEY}}.
+    for name, run in (("blast", blast), ("blast1", blast1)):
+        numbers = blast_numbers(run) if run else {}
+        (out / f"{name}_numbers.json").write_text(json.dumps(numbers, indent=1, sort_keys=True)
+                                                 + "\n")
     tables = {
         "table7_portal.md": table_portal(portal),
         "tableS5_portal.md": table_portal_genomes(results, portal),
@@ -1813,7 +1841,10 @@ def main(argv=None) -> int:
     parser.add_argument("results", nargs="?", type=Path,
                         default=HERE / "data" / "benchmark-run-2.2")
     parser.add_argument("--portal", type=Path, default=HERE / "data" / "portal-v0.3.0")
-    parser.add_argument("--blast", type=Path, default=HERE / "data" / "blast-v0.4.0")
+    parser.add_argument("--blast", type=Path, default=HERE / "data" / "blast-v0.4.1",
+                        help="BLAST's run 2 (PROTOCOL.md section 14)")
+    parser.add_argument("--blast1", type=Path, default=HERE / "data" / "blast-v0.4.0",
+                        help="BLAST's run 1, whose failures section 9 reports")
     parser.add_argument("--out", type=Path, default=HERE)
     args = parser.parse_args(argv)
     results = Results(args.results)
@@ -1823,12 +1854,13 @@ def main(argv=None) -> int:
     blast = Blast(args.blast) if (args.blast / "blast_summary.txt").exists() else None
     if blast is None:
         print(f"no BLAST results in {args.blast}: its tables say pending", file=sys.stderr)
+    blast1 = Blast(args.blast1) if (args.blast1 / "blast_summary.txt").exists() else None
     figure_design(args.out / "figures")
     figure_schema(args.out / "figures")
     figure_scale(results, args.out / "figures")
     figure_loaders(results, args.out / "figures")
     figure_queries(results, args.out / "figures")
-    write_tables(results, portal, args.out / "tables", blast)
+    write_tables(results, portal, args.out / "tables", blast, blast1)
     print(f"figures in {args.out / 'figures'}, tables in {args.out / 'tables'}")
     return 0
 
