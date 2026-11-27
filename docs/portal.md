@@ -1,17 +1,61 @@
 # The portal
 
-`cgload serve` turns a cgload database into a website: people search genomes by
+The portal turns a cgload database into a website: people search genomes by
 name, open a gene with its transcripts drawn to scale, browse any region in a
-genome browser and download sequences; programs get the same answers as JSON.
-It also searches the genomes with BLAST (below). It only reads. Decisions
-D-111 to D-117 in `docs/decisions.md` say why it is built the way it is.
+genome browser, download sequences and BLAST the genomes; programs get the
+same answers as JSON. It only reads. Decisions D-111 to D-118 in
+`docs/decisions.md` say why it is built the way it is.
 
-## Two commands
+## One command
 
-The portal comes with cgload; nothing else to install. After loading:
+```console
+$ cgload portal organism.toml
+```
+
+From an organism file (the TOML that `cgload load` reads) to a running portal
+with BLAST, `cgload portal` does, in order, what the separate commands below
+do, and skips what is done already (D-118):
+
+1. creates the database, if there is none and genomes are given;
+2. loads each genome given, with every check of `cgload load`, unless it is
+   loaded already; one that does not load stops the command, in a sentence,
+   before anything is served;
+3. builds the search index of every genome that has none (`cgload index`);
+4. finds BLAST+, or installs it for itself (below);
+5. builds the BLAST databases of every genome that has none (`cgload blastdb`);
+6. starts the portal, read-only (`cgload serve`).
+
+Run it again and it does only what is not done: `cgload portal` alone starts
+the portal over what the database holds, and `cgload portal new.toml` adds a
+genome first. It takes every option of `cgload serve` (`--host`, `--port`,
+the BLAST settings), and:
+
+| Option | | |
+|---|---|---|
+| `--data-dir` | `data` | where genomes being loaded go, as for `cgload load` |
+| `--no-blast` | | no BLAST: neither BLAST+ nor its databases |
+| `--prepare-only` | | everything but starting the portal, for a service that starts `cgload serve` |
+
+**BLAST+, installed by cgload.** BLAST+ is not a Python package, so pip cannot
+install it with cgload. When the computer has none, `cgload portal` installs
+one, once, into cgload's own folder: `<environment>/share/cgload` inside a
+virtual or conda environment, else your data folder, or `CGLOAD_HOME` if you
+set it. It downloads micromamba 2.10.0-0 from mamba-org's GitHub releases,
+runs it only if its SHA-256 is the one cgload carries, and has it install
+BLAST+ 2.17.0 from Bioconda (2.16.0 on ARM Linux). About 900 MB and a few
+minutes. Nothing outside that folder changes, and deleting the folder removes
+it; `cgload serve` and `cgload blastdb` find it there too. Bioconda has no
+BLAST+ for Windows: there, install BLAST+ from NCBI yourself, or run cgload in
+WSL. Without internet, or behind a proxy that blocks it, the portal starts
+without BLAST and says so.
+
+## The commands one by one
+
+The portal comes with cgload. After loading:
 
 ```console
 $ cgload index                       # once after loading: the name index
+$ cgload blastdb                     # once after loading: the BLAST databases
 $ cgload serve
 cgload serve: the portal is running, read-only, with 1 genome.
   Open it on this computer:   http://127.0.0.1:8000/
@@ -94,11 +138,11 @@ from there.
 
 ## BLAST
 
-The portal searches its genomes with BLAST+, which is installed apart from
-cgload, into the same environment or system-wide:
+The portal searches its genomes with BLAST+: the one `cgload portal`
+installed, or one on the computer already, from conda (`conda install -c
+conda-forge -c bioconda blast`) or the system (`sudo apt install ncbi-blast+`).
 
 ```console
-$ conda install -c conda-forge -c bioconda blast   # or: sudo apt install ncbi-blast+
 $ cgload blastdb                                    # once after loading, like cgload index
 assembly 1 (Drosophila melanogaster · Dscam1 region): 1 sequence, 5 proteins: PASS
 $ cgload serve
@@ -213,7 +257,9 @@ could not change them; `PrivateTmp` gives it the scratch space the server
 uses to send large files. BLAST+ installed in the same environment as cgload
 is found there; installed elsewhere, add its directory to the unit's `PATH`
 with `Environment=PATH=...`. Run `cgload blastdb` as the owner of the data
-directory, not from the unit. On PostgreSQL, give the portal a role that can only
+directory, not from the unit: `cgload portal --prepare-only` does every step
+that writes, after loading more genomes, and then `systemctl restart` starts
+the service on them. On PostgreSQL, give the portal a role that can only
 `SELECT`.
 
 Access control, where the data are not public, belongs to the web server

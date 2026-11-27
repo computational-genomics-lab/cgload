@@ -2,6 +2,30 @@
 
 Decisions referred to as D-0xx are in [docs/decisions.md](docs/decisions.md).
 
+## 0.5.0 (27 November 2026)
+
+One command from genome files to a running portal with BLAST (D-118). Loading,
+checking, indexing, BLAST and the portal's pages are those of 0.4.1.
+
+### Added
+
+- `cgload portal [ORGANISM.toml ...]`: creates the database if needed, loads
+  each genome given unless it is loaded already, builds the missing search
+  indexes, finds or installs BLAST+, builds the missing BLAST databases, and
+  starts the portal. Run again, it does only what is not done yet.
+  `--prepare-only` stops before serving, `--no-blast` leaves BLAST out, and
+  every option of `cgload serve` applies.
+- When the computer has no BLAST+, `cgload portal` installs it into cgload's
+  own folder: micromamba 2.10.0-0, checked against its SHA-256, then BLAST+
+  2.17.0 from Bioconda. Nothing outside that folder changes. `cgload serve`
+  and `cgload blastdb` find it there too.
+
+### Changed
+
+- The README's quick start is `pip install` and `cgload portal organism.toml`.
+- Tests that download from the internet are marked `network` and left out of
+  the default run.
+
 ## 0.4.1 (27 November 2026)
 
 What the benchmark's first BLAST run found (PROTOCOL.md section 14). BLAST's

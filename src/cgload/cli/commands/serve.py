@@ -154,32 +154,47 @@ def _resolve(db_url: str | None) -> tuple[str, bool]:
     return db_url or os.environ.get(ENV_DB_URL) or DEFAULT_DB_URL, from_environment
 
 
+def serving_options(command):
+    """The options of how the portal is served, shared by serve and portal."""
+    options = [
+        # Every interface by default, as a lab server needs (D-115); the start-up lines
+        # say who can then open the portal, and --host 127.0.0.1 keeps it to this computer.
+        click.option("--host", default="0.0.0.0", show_default=True,  # noqa: S104  # nosec B104
+                     help="Address to listen on. The default lets every computer that can "
+                     "reach this one open the portal; 127.0.0.1 keeps it to this computer, "
+                     "as behind a web server."),
+        click.option("--port", type=click.IntRange(1, 65535), default=8000, show_default=True,
+                     help="If the default is taken, the next free port is used."),
+        click.option("--threads", type=click.IntRange(1, 64), default=8, show_default=True,
+                     help="Requests served at once."),
+        click.option("--title", default="cgload portal", show_default=True,
+                     help="The portal's name, shown on every page."),
+        click.option("--url-prefix", default="",
+                     help="The path the portal is served under, behind a web server: "
+                     "/genomes."),
+        click.option("--blast-jobs", type=click.IntRange(0, 16), default=2, show_default=True,
+                     help="BLAST searches run at once; as many again may wait their turn, "
+                     "and more are turned away. 0 turns BLAST off."),
+        click.option("--blast-threads", type=click.IntRange(1, 64), default=4,
+                     show_default=True, help="Threads each BLAST search uses."),
+        click.option("--blast-timeout", type=click.IntRange(5, 3600), default=120,
+                     show_default=True, help="Seconds after which a BLAST search is stopped."),
+    ]
+    for option in reversed(options):
+        command = option(command)
+    return command
+
+
+def given(ctx: click.Context, name: str) -> bool:
+    return ctx.get_parameter_source(name) is not click.core.ParameterSource.DEFAULT
+
+
 @click.command("serve")
 @click.option("--db-url", default=None, help=f"SQLAlchemy URL; defaults to ${ENV_DB_URL}.")
 @click.option("--data-dir", type=click.Path(file_okay=False, path_type=Path), default=None,
               help="The data directory the assemblies were loaded into, if it has moved "
               "since the load. The portal reads assemblies and annotation files from it.")
-# Every interface by default, as a lab server needs (D-115); the start-up lines say who
-# can then open the portal, and --host 127.0.0.1 keeps it to this computer.
-@click.option("--host", default="0.0.0.0", show_default=True,  # noqa: S104  # nosec B104
-              help="Address to listen on. The default lets every computer that can reach "
-              "this one open the portal; 127.0.0.1 keeps it to this computer, as behind "
-              "a web server.")
-@click.option("--port", type=click.IntRange(1, 65535), default=8000, show_default=True,
-              help="If the default is taken, the next free port is used.")
-@click.option("--threads", type=click.IntRange(1, 64), default=8, show_default=True,
-              help="Requests served at once.")
-@click.option("--title", default="cgload portal", show_default=True,
-              help="The portal's name, shown on every page.")
-@click.option("--url-prefix", default="",
-              help="The path the portal is served under, behind a web server: /genomes.")
-@click.option("--blast-jobs", type=click.IntRange(0, 16), default=2, show_default=True,
-              help="BLAST searches run at once; as many again may wait their turn, and "
-              "more are turned away. 0 turns BLAST off.")
-@click.option("--blast-threads", type=click.IntRange(1, 64), default=4, show_default=True,
-              help="Threads each BLAST search uses.")
-@click.option("--blast-timeout", type=click.IntRange(5, 3600), default=120, show_default=True,
-              help="Seconds after which a BLAST search is stopped.")
+@serving_options
 @click.pass_context
 def serve_command(ctx: click.Context, db_url: str | None, data_dir: Path | None, host: str,
                   port: int, threads: int, title: str, url_prefix: str, blast_jobs: int,
@@ -189,15 +204,30 @@ def serve_command(ctx: click.Context, db_url: str | None, data_dir: Path | None,
     People search genomes by name, open genes with their transcripts drawn to
     scale, browse regions in a genome browser and download sequences; programs
     get the same answers as JSON under /api/v1/. The database is opened
-    read-only and nothing is ever written.
+    read-only and nothing is ever written. `cgload portal` does everything
+    before this too: load, index, BLAST+ and its databases.
     """
+    run_server("cgload serve", db_url, data_dir, host=host, port=port,
+               port_given=given(ctx, "port"), threads=threads, title=title,
+               url_prefix=url_prefix, blast_jobs=blast_jobs,
+               jobs_given=given(ctx, "blast_jobs"), blast_threads=blast_threads,
+               blast_timeout=blast_timeout)
+
+
+def run_server(name: str, db_url: str | None, data_dir: Path | None, *, host: str, port: int,
+               port_given: bool, threads: int, title: str, url_prefix: str, blast_jobs: int,
+               jobs_given: bool, blast_threads: int, blast_timeout: int,
+               blast_note: str | None = None) -> None:
+    """Open the database read-only and serve it until Ctrl-C; ``name`` heads
+    every message. ``blast_note``, when BLAST is off, says why instead of the
+    usual advice: ``cgload portal`` has said already what it tried."""
     try:
         import waitress  # noqa: F401
 
         from cgload.portal.data import PortalData, read_only_engine
         from cgload.portal.web import create_app
     except ImportError as exc:
-        click.echo(f"cgload serve: the portal needs Flask and waitress, which install with "
+        click.echo(f"{name}: the portal needs Flask and waitress, which install with "
                    f"cgload, but {exc.name} is missing here. Install them with: "
                    f"pip install \"flask>=3.0\" \"waitress>=3.0\"", err=True)
         sys.exit(2)
@@ -210,14 +240,13 @@ def serve_command(ctx: click.Context, db_url: str | None, data_dir: Path | None,
         portal = PortalData(engine, data_dir=data_dir)
     except (CredentialInArgumentError, DatabaseNotFoundError, SchemaMissingError,
             VocabularyMismatchError, FileNotFoundError, ValueError) as exc:
-        click.echo(f"cgload serve: {exc}", err=True)
+        click.echo(f"{name}: {exc}", err=True)
         sys.exit(2)
 
-    jobs_given = ctx.get_parameter_source("blast_jobs") is not click.core.ParameterSource.DEFAULT
     try:
         blast_jobs = blast_jobs_for(threads, blast_jobs, given=jobs_given)
     except click.UsageError as exc:
-        click.echo(f"cgload serve: {exc.message}", err=True)
+        click.echo(f"{name}: {exc.message}", err=True)
         portal.close()
         sys.exit(2)
     genomes = portal.genomes()
@@ -227,17 +256,16 @@ def serve_command(ctx: click.Context, db_url: str | None, data_dir: Path | None,
 
         blast = Blast(portal, jobs=blast_jobs, threads=blast_threads, timeout=blast_timeout)
     app = create_app(portal, title=title, blast=blast)
-    port_given = ctx.get_parameter_source("port") is not click.core.ParameterSource.DEFAULT
     try:
         server, port_used = open_server(app, host, port, port_given=port_given,
                                         threads=threads, url_prefix=url_prefix or "")
     except PortalStartError as exc:
-        click.echo(f"cgload serve: {exc}", err=True)
+        click.echo(f"{name}: {exc}", err=True)
         portal.close()
         sys.exit(1)
 
     count = f"{len(genomes)} genome{'' if len(genomes) == 1 else 's'}"
-    click.echo(f"cgload serve: the portal is running, read-only, with {count}.", err=True)
+    click.echo(f"{name}: the portal is running, read-only, with {count}.", err=True)
     if port_used != port:
         click.echo(f"  Port {port} was in use, so it is on port {port_used}.", err=True)
     addresses = network_addresses() if _reach(host) == "everywhere" else []
@@ -254,17 +282,19 @@ def serve_command(ctx: click.Context, db_url: str | None, data_dir: Path | None,
     if missing:
         click.echo(f"  {len(missing)} whose assembly file is not found: give --data-dir "
                    f"if the data directory has moved.", err=True)
-    if blast is None and jobs_given:
+    if blast_note and (blast is None or not blast.programs or not blast.databases):
+        click.echo(f"  BLAST is off: {blast_note}", err=True)
+    elif blast is None and jobs_given:
         click.echo("  BLAST is off (--blast-jobs 0).", err=True)
     elif blast is None:
         click.echo(f"  BLAST is off: --threads {threads} leaves no thread for it; give "
                    f"--threads 3 or more.", err=True)
     elif not blast.programs:
-        click.echo("  BLAST is off: BLAST+ is not installed here (conda install -c bioconda "
-                   "blast, or apt install ncbi-blast+).", err=True)
+        click.echo("  BLAST is off: BLAST+ is not installed here; `cgload portal` installs "
+                   "it, or conda install -c bioconda blast.", err=True)
     elif not blast.databases:
-        click.echo("  BLAST is off: no genome has BLAST databases yet; run `cgload blastdb`.",
-                   err=True)
+        click.echo("  BLAST is off: no genome has BLAST databases yet; `cgload portal` or "
+                   "`cgload blastdb` builds them.", err=True)
     else:
         click.echo(f"  BLAST: {len(blast.databases)} of {len(genomes)} genome"
                    f"{'' if len(genomes) == 1 else 's'}, {blast_jobs} search"
@@ -272,7 +302,7 @@ def serve_command(ctx: click.Context, db_url: str | None, data_dir: Path | None,
     logging.basicConfig()  # waitress reports a long queue of requests as a warning
     server.run()  # returns on Ctrl-C, after the requests in hand are answered
     portal.close()
-    click.echo("cgload serve: stopped.", err=True)
+    click.echo(f"{name}: stopped.", err=True)
 
 
 def blast_jobs_for(threads: int, jobs: int, *, given: bool) -> int:

@@ -361,11 +361,20 @@ def parse(text: str, kind: str) -> list[Hit]:
 
 def find_binaries(directory: Path | None = None) -> dict[str, str]:
     """The BLAST+ programs this computer has: in ``directory`` if given, else
-    on PATH or beside the Python running cgload, as in a conda environment
-    holding both (a service's PATH may not name it). Resolved once, when the
-    portal starts; never from a request."""
+    on PATH, beside the Python running cgload (as in a conda environment
+    holding both; a service's PATH may not name it), or where ``cgload portal``
+    installed them (D-118). The first place that has all five is used, so that
+    they come from one BLAST+; failing that, each from the first place that has
+    it. Resolved once, when the portal starts; never from a request."""
+    from cgload.portal.install import blast_directories
+
     places = ([str(directory)] if directory is not None
-              else [os.environ.get("PATH", ""), str(Path(sys.executable).parent)])
+              else [os.environ.get("PATH", ""), str(Path(sys.executable).parent),
+                    *map(str, blast_directories())])
+    for place in places:
+        whole = {name: shutil.which(name, path=place) for name in BINARIES}
+        if all(whole.values()):
+            return {name: str(Path(path).resolve()) for name, path in whole.items()}
     found = {}
     for name in BINARIES:
         for place in places:

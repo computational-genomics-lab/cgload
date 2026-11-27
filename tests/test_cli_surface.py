@@ -41,7 +41,7 @@ def test_help_lists_every_v1_command(run):
     expected = {
         "init", "load", "verify", "explain",
         "stats", "query", "export", "remove",
-        "index", "serve", "blastdb",
+        "index", "serve", "blastdb", "portal",
     }
     result = run.invoke(cli, ["--help"])
     listed = set(cli.commands)
@@ -105,6 +105,8 @@ def test_version_is_pep440_parsable():
 #: Flags of other programs that cgload's messages legitimately mention.
 OTHER_PROGRAMS_FLAGS = {
     "--csi",  # tabix --csi, for a sequence too long for a .tbi index (D-082)
+    # micromamba's, in the command that installs BLAST+ for cgload portal (D-118)
+    "--quiet", "--prefix", "--override-channels", "--channel",
 }
 
 

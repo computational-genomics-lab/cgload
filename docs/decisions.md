@@ -3045,3 +3045,54 @@ fails, the message now carries the end of its own output as well. Tested by
 folders as they were, and, with BLAST+, a refused `cgload blastdb` leaves the
 databases in use.
 
+## D-118 — `cgload portal`: from genome files to a running portal in one command
+
+**Adds** the command a person runs to put genomes on the web. Until now a
+portal with BLAST took six commands and a program cgload could not install:
+`init`, `load`, `index`, BLAST+ by hand, `blastdb`, `serve`. A resource is
+used in proportion to how little its users must do before it is useful, and
+each of those steps was a place to stop.
+
+`cgload portal [ORGANISM.toml ...]` runs them in order and skips each one
+that is done: the database is created if there is none and genomes are given;
+each genome given is loaded, with every check of `cgload load`, unless it is
+loaded already (matched as `load` matches it: organism, strain, assembly name
+and version); every assembly without a search index is indexed; BLAST+ is
+found or installed; every assembly without current BLAST databases gets them;
+and the portal starts, read-only, as `cgload serve`. Run again, it does only
+what is not done, so the same command restarts the portal and, given a new
+organism file, adds a genome first. A genome that does not load stops the
+command before anything is served; an index or BLAST database that fails its
+check, or a BLAST+ that cannot be installed, leaves the portal running without
+it, and says so.
+
+**BLAST+ is installed by cgload when the computer has none.** pip cannot
+install it: it is not a Python package. cgload installs it into a folder of
+its own, never system-wide and never on PATH: `CGLOAD_HOME` if set, else
+`<environment>/share/cgload` in a virtual or conda environment cgload may write
+to, else the user's data folder. It downloads micromamba, one program, from
+mamba-org's GitHub releases at a pinned version (2.10.0-0), keeps it only if
+its SHA-256 matches the one written in cgload for that platform, and has it
+create an environment with BLAST+ from Bioconda at a pinned version (2.17.0;
+2.16.0 on ARM Linux, Bioconda's only build there), by an argument list, with
+the channels fixed. micromamba checks each package against the channel's
+checksums. About 900 MB, once. `find_binaries` looks there after PATH and the
+Python's own folder, so `cgload serve` and `cgload blastdb` find it too.
+Bioconda has no BLAST+ for Windows; there, and wherever the install fails, the
+message says how to install BLAST+ by hand and the portal runs without BLAST.
+`--no-blast` skips BLAST altogether.
+
+Why micromamba and Bioconda rather than NCBI's own archives: one mechanism
+gives BLAST+ with its libraries for Linux and macOS on x86-64 and ARM, the
+packages are checked by the installer, and the same route is the one the
+benchmark used. Why not in `cgload serve`: `serve` stays the command that only
+reads, for a service run with a read-only file system (docs/portal.md);
+`cgload portal --prepare-only` does the writing steps and stops, so that such
+a service starts with `serve`.
+
+Tested by `tests/test_portal_command.py`: the whole chain from an organism
+file, again with nothing left to do, the refusals in words, the checksum
+refusing a tampered download before it can run, the install's argument list
+and folder, and a failed install leaving the portal without BLAST; `-m
+network` installs BLAST+ for real.
+

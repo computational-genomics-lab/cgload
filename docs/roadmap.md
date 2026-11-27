@@ -21,7 +21,8 @@ the previous one is green in CI.
 | 10 | Large-genome demo, Docker, docs, tutorial | A stranger runs one command and sees a loaded genome; maize timings published | in progress — envelope check (D-046b, D-055) added, scale run pending |
 | 11 | Archived release, paper | Release archived at Software Heritage; paper describes it | in progress: v0.2.2 archived |
 | 12 | Read-only web portal: `serve`, `index` (D-111 to D-115) | Search by name, gene pages, genome browser, JSON API; security and load tests in CI; measured on the 30 genomes (PROTOCOL.md section 13) | **done** in 0.3.0, measured |
-| 13 | BLAST in the portal: `blastdb` (D-116) | Databases checked by counting; each query finds itself; hostile input and a full portal answered in words, in CI and on the 30 genomes (PROTOCOL.md section 14) | **done** in 0.4.0; measurement pending |
+| 13 | BLAST in the portal: `blastdb` (D-116, D-117) | Databases checked by counting; each query finds itself; hostile input and a full portal answered in words, in CI and on the 30 genomes (PROTOCOL.md section 14) | **done** in 0.4.0; run 1 measured, run 2 pending |
+| 14 | One command from genome files to a portal: `portal` (D-118) | Loads, indexes, installs BLAST+ if needed, builds BLAST databases and serves; run again, does only what is not done | **done** in 0.5.0 |
 
 If schedule pressure appears, cut milestone 5 to v2.1 — deliberately, in
 writing here, not by attrition. Milestones 0–4 plus 8–11 is still a complete

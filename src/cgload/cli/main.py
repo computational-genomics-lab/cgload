@@ -18,6 +18,7 @@ from cgload.cli.commands.explain import explain_command
 from cgload.cli.commands.export import export_command
 from cgload.cli.commands.init import init_command
 from cgload.cli.commands.load import load_command
+from cgload.cli.commands.portal import portal_command
 from cgload.cli.commands.query import query_command
 from cgload.cli.commands.remove import remove_command
 from cgload.cli.commands.serve import blastdb_command, index_command, serve_command
@@ -74,6 +75,7 @@ cli.add_command(query_command)
 cli.add_command(remove_command)
 cli.add_command(index_command)
 cli.add_command(blastdb_command)
+cli.add_command(portal_command)
 cli.add_command(serve_command)
 
 for _name, (_milestone, _summary) in PENDING.items():

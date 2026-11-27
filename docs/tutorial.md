@@ -422,6 +422,12 @@ one BLAST database of the genome and another of its proteins, and checks both
 by counting, as the load was checked; the portal then has a BLAST page, and
 the gene's page links its protein to it.
 
+Everything since step 3, for a genome you want on the web, is one command:
+`cgload portal organism.toml`. It loads the genome unless it is loaded
+already, builds the index, installs BLAST+ for itself if the computer has
+none, builds the BLAST databases and starts the portal; run again, it only
+starts the portal. The steps above are what it does.
+
 ## 12. Take it out again
 
 `remove` deletes an assembly's rows and its data directory together, or

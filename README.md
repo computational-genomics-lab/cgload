@@ -6,76 +6,87 @@ check that every feature in the file reached the database, and put the result
 on the web for people to search, browse and download.**
 
 cgload counts what it stored and checks that count against the file it read,
-using code that shares nothing with its parser. `cgload serve` then makes the
-database a genome portal: search by gene name, product or GO term, a gene's
-model drawn to scale, a genome browser, sequences and proteins, a JSON API.
+using code that shares nothing with its parser. `cgload portal` then makes the
+database a genome portal, in one command: search by gene name, product or GO
+term, a gene's model drawn to scale, a genome browser, sequences and proteins,
+BLAST, a JSON API.
 
 ## Quick start
 
-You need Python 3.11 or newer. cgload is not on PyPI yet; install it from
-GitHub, best into a fresh virtual or conda environment:
+You need Python 3.11 or newer. Install cgload from GitHub, best into a fresh
+virtual or conda environment:
 
 ```console
 pip install git+https://github.com/computational-genomics-lab/cgload
-cgload --version
 ```
 
-That installs everything, the web portal included. For PostgreSQL, add its
-driver: `pip install "cgload[postgres] @ git+https://github.com/computational-genomics-lab/cgload"`.
-(A `[mysql]` extra exists, but cgload has no test on MySQL.)
-
-Try it on the small genome in the repository:
+That installs the loader and the portal. Then one command takes a genome to a
+running portal with BLAST. Try it on the small genome in the repository:
 
 ```console
 git clone https://github.com/computational-genomics-lab/cgload
 cd cgload/examples/minimal
-cgload init                          # an empty database, ./cgload.db
-cgload load --config organism.toml   # load, count, keep it only if the counts agree
-cgload verify --assembly-id 1        # check it again, at any time
-cgload index                         # the portal's search index
-cgload serve                         # the portal
+cgload portal organism.toml
 ```
 
 ```
-Created 11 tables in sqlite:///cgload.db
-Seeded vocabulary version 1 (46 terms, 10bf08715e85)
-Loaded Demonstratus minimalis / DEMO-1 / Demo_v1 (assembly_id=1)
-  1 sequence regions, 5,000 bp
-  annotation.gff3: funannotate (high) -- 12 features
-    CDS 2, exon 4, gene 3, mRNA 2, tRNA 1
-
-  source count      PASS  12 features in the file, 12 in the database, across 5 type(s); 13 rows in each
-...
-cgload serve: the portal is running, read-only, with 1 genome.
+cgload portal: 1 genome to load, then the search index, then BLAST, then the portal.
+  database: created, 11 tables, at sqlite:///cgload.db
+  load: Demonstratus minimalis / DEMO-1 / Demo_v1 ...
+    assembly 1: 1 sequence, 12 features; every check passed (parent edges [annotation.gff3], source count [annotation.gff3])
+  search index: assembly 1, 17 terms; every count matches
+  BLAST+: not on this computer; cgload installs it for itself, once (about 900 MB)
+  downloading micromamba 2.10.0-0, which installs BLAST+ from Bioconda
+  installing BLAST+ 2.17.0 into .../share/cgload/blast (once; a few minutes)
+  BLAST databases: building for 1 genome
+    assembly 1 (Demonstratus minimalis · DEMO-1 · Demo_v1): 1 sequence, 2 proteins: PASS
+cgload portal: the portal is running, read-only, with 1 genome.
   Open it on this computer:   http://127.0.0.1:8000/
   or from another computer:   http://192.0.2.10:8000/
   Anyone who can reach this computer can open it. To keep it to this computer: --host 127.0.0.1;
   to serve it beyond your network, put a web server with HTTPS in front (docs/portal.md).
   Stop it with Ctrl-C.
+  BLAST: 1 of 1 genome, 2 searches at a time.
 ```
 
-Open one of the addresses it prints in a web browser. The database is a
-single SQLite file, with no server and no credentials; PostgreSQL works
-through the same code with `--db-url`.
+Open one of the addresses it prints in a web browser. Each step is done once:
+run `cgload portal` again and it starts the portal at once; give it another
+organism file and it loads that genome first. BLAST+ goes into cgload's own
+folder (inside the environment), not onto the system; `--no-blast` leaves
+BLAST out. On Windows, install BLAST+ yourself, or run cgload in WSL.
 
-To BLAST the genomes from the portal, install BLAST+ (`conda install -c
-conda-forge -c bioconda blast`, or `sudo apt install ncbi-blast+`) and run
-`cgload blastdb` before `cgload serve`; the portal then has a BLAST page, and
-every gene page links its protein to BLAST here and at NCBI.
+**Your own genomes.** An organism file names the assembly's FASTA and its
+GFF3 annotation; copy `examples/minimal/organism.toml` and change the names
+and paths. Then `cgload portal mygenome.toml`, or several at once:
+`cgload portal genomes/*.toml`. The database is a single SQLite file
+(`cgload.db`), with no server and no credentials; PostgreSQL works through
+the same code with `--db-url` and `pip install "cgload[postgres] @ git+https://github.com/computational-genomics-lab/cgload"`.
+
+**Step by step.** `cgload portal` runs commands you can also run yourself:
+
+```console
+cgload init                          # an empty database, ./cgload.db
+cgload load --config organism.toml   # load, count, keep it only if the counts agree
+cgload verify --assembly-id 1        # check it again, at any time
+cgload index                         # the portal's search index
+cgload blastdb                       # the BLAST databases (BLAST+ needed)
+cgload serve                         # the portal, read-only
+```
 
 ### If something goes wrong
 
 | What you see | What to do |
 |---|---|
 | `cgload: command not found` | The environment you installed cgload into is not active. Activate it, or run `python -m cgload`. |
-| `no database at .../cgload.db` | Run the command in the folder where you ran `cgload init`, or give `--db-url`. |
+| `no database at .../cgload.db` | Run the command in the folder that holds `cgload.db`, or give `--db-url`; `cgload portal organism.toml` makes one. |
 | `Port 8000 was in use, so it is on port 8001` | Nothing to do: open the address it prints. To choose the port, give `--port 9000`. |
 | `port 9000 is already in use` | The port you asked for is taken. Choose another, or stop the program that holds it. |
 | Another computer cannot open the portal | The server's firewall closes the port. On Ubuntu: `sudo ufw allow from 192.168.1.0/24 to any port 8000 proto tcp` (your network's range). And do not start it with `--host 127.0.0.1`. |
-| A search for a gene's name finds nothing | Run `cgload index`, and again after loading more genomes. |
+| A search for a gene's name finds nothing | Run `cgload portal` (or `cgload index`), and again after loading more genomes. |
 | Your data are not public | Anyone who can reach the computer can open the portal. Keep it to this computer with `--host 127.0.0.1`, or put it behind a web server with a password ([docs/portal.md](docs/portal.md)). |
-| `BLAST is off: BLAST+ is not installed here` | Install BLAST+ as above, run `cgload blastdb`, and start the portal again. |
-| `BLAST is off: no genome has BLAST databases yet` | Run `cgload blastdb`, and again after loading or reloading a genome. |
+| `BLAST+: cgload cannot install BLAST+ on this computer` | On Windows, or a processor Bioconda does not serve: install BLAST+ by hand (the message says how), then run `cgload portal` again. |
+| `BLAST+: could not download ...` | No internet, or a proxy in the way. Run it again where there is, or install BLAST+ by hand; `--no-blast` starts the portal without it. |
+| `BLAST is off: no genome has BLAST databases yet` | Run `cgload portal` (or `cgload blastdb`), and again after loading or reloading a genome. |
 | `the portal needs Flask and waitress` | The installation is incomplete. Reinstall: `pip install --force-reinstall git+https://github.com/computational-genomics-lab/cgload`. |
 
 Full walkthrough: [docs/tutorial.md](docs/tutorial.md). The portal, its JSON
