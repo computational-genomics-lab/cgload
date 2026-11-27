@@ -32,9 +32,9 @@ study measuring how often this happens with real files.
 **Results:** We developed cgload, a Python tool that loads an assembly and its
 annotation into SQLite or PostgreSQL in one transaction, compares what it
 stored with a count of the input made by separate code, and rolls back a load
-that falls short. Further commands serve the database as a read-only web
-portal: search by name, product or functional term, gene pages with a genome
-browser, sequences and BLAST. Under a protocol fixed
+that falls short. One command, `cgload portal`, then serves it as a read-only
+web portal: search by name, product or functional term, gene pages with a
+genome browser, sequences and BLAST. Under a protocol fixed
 beforehand, we compared cgload with three other loaders on 30 RefSeq genomes
 (18.0 million features), checking each result against
 a reference reading that shares no code with any loader. cgload stored
@@ -124,10 +124,11 @@ We wrote cgload to check every load against an independent reading of its
 file, and to put the checked database in front of the people who use it. It
 reads the input file twice,
 once to load it and once, with separate code, to count it, and it keeps the
-load only if the database holds what the count says. Two more commands serve
-the database as a portal that only reads: it cannot change the database, runs
-no other program, and passes every value a visitor sends to the database as
-data, never as code. To find out whether such a check is needed, and whether it
+load only if the database holds what the count says. One more command,
+`cgload portal`, takes genomes from their files to a portal that only reads,
+installing what it needs: the portal cannot change the database, starts no
+program but BLAST+, with arguments it chooses itself, and passes every value
+a visitor sends to the database as data, never as code. To find out whether such a check is needed, and whether it
 works, we ran a benchmark whose protocol we fixed before the first run. On 30
 RefSeq genomes we asked what the files contain that a loader has to handle,
 whether cgload stores all of it, what three widely used loaders keep, change
@@ -147,8 +148,10 @@ creates an empty database. `cgload load` reads a short configuration file that
 names an assembly and its annotation files, and writes them into the database
 in one transaction. `cgload verify` checks a loaded genome against its input
 files at any later time. `cgload query`, `export`, `explain` and `stats` read
-the database, and `cgload remove` deletes a genome from it. `cgload index` and
-`cgload serve` put the database on the web (see "The portal"). Figure 1a shows
+the database, and `cgload remove` deletes a genome from it. `cgload index`,
+`cgload blastdb` and `cgload serve` put the database on the web, and
+`cgload portal` runs them, and the load before them, as one command (see "The
+portal"). Figure 1a shows
 every step of a load,
 what stops it and what it writes, and Figure 1b the checks of `cgload verify`;
 the sections below follow the figure.
@@ -407,6 +410,18 @@ By default it listens on every network interface, so that the other computers
 of a lab can open it, and when it starts it lists the addresses that do;
 `--host 127.0.0.1` keeps it to one computer.
 
+*One command.* `cgload portal` takes genomes from their organism files to a
+running portal: it creates the database if there is none, loads and checks
+each genome not yet loaded, builds the search index of each genome that has
+none, installs BLAST+ if the computer has none, builds the BLAST databases
+each genome lacks, and starts `cgload serve`. Run again, it does only what is
+not done, so the same command restarts the portal or adds a genome. BLAST+ is
+not a Python package, so pip cannot install it with cgload; `cgload portal`
+installs it into a folder of its own, never system-wide, with micromamba,
+which it runs only if its SHA-256 matches the one cgload carries, from
+Bioconda [@bioconda], which checks each package it fetches. Bioconda builds
+BLAST+ for Linux and macOS; on Windows it is installed by hand.
+
 *What a visitor can do.* A feature's page draws its gene with every
 transcript to scale and opens the igv.js genome browser [@igvjs] at its locus
 (Figure 3a). It then lists the feature's attributes, with cross-references
@@ -648,10 +663,12 @@ installed and started (D-115): Flask and waitress install with cgload, and
 addresses that open it, moves to the next free port when port 8000 is taken,
 and reports start-up problems in a sentence instead of a traceback.
 Version 0.4.0 adds BLAST and `cgload blastdb` (D-116); it loads, verifies,
-exports and serves pages as 0.3.1 does. Version 0.4.1, the one this paper
-describes, lets only one build of a genome's BLAST databases run at a time
-(D-117), after BLAST's first measurement found two builds spoiling each other;
-BLAST was measured with both.
+exports and serves pages as 0.3.1 does. Version 0.4.1 lets only one build of
+a genome's BLAST databases run at a time (D-117), after BLAST's first
+measurement found two builds spoiling each other; BLAST was measured with
+both. Version 0.5.0, the one this paper describes, adds `cgload portal`
+(D-118), which runs the whole chain as one command and installs BLAST+; its
+loading, checks, index, BLAST and pages are those of 0.4.1.
 The query code changed between the two commits (see "Changes after the first
 run"), and the timing was measured after that change.
 
@@ -1243,7 +1260,7 @@ predicted. A user who needs those checked has to compare the database with the
 file feature by feature, as our round trip does, and that comparison is not
 part of `cgload verify`. Checking identity as well, for instance by comparing
 the set of IDs and of child and parent pairs, would close much of this gap at
-little cost; it is not in version 0.4.1. The same blind spot hid a fault in
+little cost; it is not in version 0.5.0. The same blind spot hid a fault in
 cgload itself. Its export rounded scores to six significant digits, which
 changed 52 scores in human and mouse and no count; only the later comparison
 of columns 2, 6 and 8 showed it.
@@ -1334,7 +1351,7 @@ took about a quarter of a second, mostly to start Python; query waits were
 measured on four genomes, not 30. A killed load leaves its staging files on
 disk, to be deleted by hand. `verify` exits 0 when it skips the source count
 because the input file has changed, so a script that reads only the exit
-status misses the change; this is unchanged in version 0.4.1.
+status misses the change; this is unchanged in version 0.5.0.
 
 The portal, Q9 and Q10 came after the benchmark. Their procedures were fixed
 before they were run, but on the same 30 genomes that cgload had been corrected on, and
@@ -1379,10 +1396,10 @@ genomes it kept every feature in every field we compared, declared its 12
 repairs and reported every planted fault that changed a count; version 0.2.2
 also returns every row's source, score and phase as written. Counts cannot show
 that a name, a link or a value is right; that takes a comparison feature by
-feature, like the one this benchmark made. With `cgload index`,
-`cgload blastdb` and `cgload serve` the same database becomes a portal that its
-users can search, browse and BLAST, that shows how each genome was loaded, and
-that cannot change what it serves; one such portal served all 30 genomes from one database, with a
+feature, like the one this benchmark made. With one more command,
+`cgload portal`, the same database becomes a portal that its users can search,
+browse and BLAST, that shows how each genome was loaded, and that cannot
+change what it serves; one such portal served all 30 genomes from one database, with a
 median of {{portal:gene_page_median}} ms for a gene's page. The
 protocol, scripts and results are public, so the same questions can be put to
 other loaders and other files.
@@ -1399,14 +1416,13 @@ other loaders and other files.
   or later, Flask 3.0 or later and waitress 3.0 or later, all installed with
   cgload; SQLite 3.8.3 or later (part of Python), or PostgreSQL (tested with
   version 16) with psycopg 3; for BLAST, BLAST+ (tested with version
-  {{blast:blast_version}}), installed apart
+  {{blast:blast_version}}), which `cgload portal` installs on Linux and macOS
 - License: MIT
 - Any restrictions to use by non-academics: none
-- Version described: 0.4.1 (tag `v0.4.1`; source archive in Additional file 7)
+- Version described: 0.5.0 (tag `v0.5.0`; source archive in Additional file 7)
 - RRID:SCR_029282
 - bio.tools ID: biotools:cgload
-- Archived version: Software Heritage, swh:1:rel:d05da7fb2537f77d0959d33b428ab09b22463298 (release v0.4.1),
-  https://archive.softwareheritage.org/swh:1:rel:d05da7fb2537f77d0959d33b428ab09b22463298;origin=https://github.com/computational-genomics-lab/cgload.
+- Archived version: Software Heritage, {{swh:v050}}.
   The portal's measurement rests on release v0.3.0,
   swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad,
   https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:27cff3403cd99aae747935485618353d8bd7de79,
@@ -1417,19 +1433,19 @@ other loaders and other files.
 cgload is installed with pip from its repository, at the version described
 here; the portal comes with it:
 
-    pip install "git+https://github.com/computational-genomics-lab/cgload@v0.4.1"
+    pip install "git+https://github.com/computational-genomics-lab/cgload@v0.5.0"
 
 For PostgreSQL, add its driver:
-`pip install "cgload[postgres] @ git+https://github.com/computational-genomics-lab/cgload@v0.4.1"`.
-BLAST needs BLAST+ beside it, for instance from Bioconda
-(`conda install -c conda-forge -c bioconda blast`).
+`pip install "cgload[postgres] @ git+https://github.com/computational-genomics-lab/cgload@v0.5.0"`.
+`cgload portal` installs BLAST+ itself on Linux and macOS when it is missing;
+elsewhere, install it from Bioconda or NCBI.
 
-`examples/minimal/` in the repository loads and verifies a small genome in
-under a minute, as a check that the installation works; `cgload index`,
-`cgload blastdb` and `cgload serve` then show it in a web browser.
+In `examples/minimal/` of the repository, `cgload portal organism.toml` takes
+a small genome from its files to a running portal with BLAST in a few
+minutes, as a check that the installation works.
 
 The repository holds test data (`examples/minimal/`, `tests/fixtures/`) with
-expected outputs, a test suite of 705 tests, the benchmark protocol and
+expected outputs, a test suite of 722 tests, the benchmark protocol and
 scripts (`benchmark/`), and the portal's documentation (`docs/portal.md`).
 `paper/figures.py` and `paper/screenshots.py` make every figure and table of
 this paper from the results.
@@ -1564,6 +1580,7 @@ Not applicable.
 [@gencode]: Elzanowski A, Ostell J. The genetic codes. National Center for Biotechnology Information. Updated 23 Sep 2024. https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi. Accessed 25 Nov 2026.
 [@csp]: West M, Sartori A, editors. Content Security Policy Level 3. W3C Working Draft. https://www.w3.org/TR/CSP3/. Accessed 25 Nov 2026.
 [@bandit]: PyCQA. Bandit: a tool to find common security issues in Python code. Version 1.8.6. https://github.com/PyCQA/bandit. Accessed 25 Nov 2026.
+[@bioconda]: Grüning B, Dale R, Sjödin A, et al. Bioconda: sustainable and comprehensive software distribution for the life sciences. Nat Methods. 2018;15:475–6. https://doi.org/10.1038/s41592-018-0046-7.
 [@blastplus]: Camacho C, Coulouris G, Avagyan V, et al. BLAST+: architecture and applications. BMC Bioinformatics. 2009;10:421. https://doi.org/10.1186/1471-2105-10-421.
 [@ncbiblast]: National Center for Biotechnology Information. BLAST: Basic Local Alignment Search Tool. https://blast.ncbi.nlm.nih.gov. Accessed 26 Nov 2026.
 [@sequenceserver]: Priyam A, Woodcroft BJ, Rai V, et al. Sequenceserver: a modern graphical user interface for custom BLAST databases. Mol Biol Evol. 2019;36:2922–4. https://doi.org/10.1093/molbev/msz185.

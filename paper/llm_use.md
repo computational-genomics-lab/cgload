@@ -49,7 +49,10 @@ of the 103 commits carry one, 87 of them naming Claude Opus 5.5.
   (`benchmark/run_blast.py`). On 27 November, from the authors' results of
   that run, it traced the two genomes whose BLAST databases had not built to
   two builds of each running at once, and made a build hold a lock on its
-  genome (version 0.4.1, D-117).
+  genome (version 0.4.1, D-117). The same day, at the authors' request, it
+  wrote `cgload portal`, which takes genomes from their files to a running
+  portal with BLAST in one command and installs BLAST+ when the computer has
+  none (version 0.5.0, D-118), with its tests.
 - **The census and the benchmark.** It helped write the census scripts
   (`survey/`). It drafted the benchmark protocol (`benchmark/PROTOCOL.md`) with
   the authors, wrote the benchmark scripts and their tests (`benchmark/`), wrote
@@ -97,7 +100,7 @@ The authors ran every benchmark step on their own server, from the scripts in
 the repository, and every result in the paper comes from those runs
 (`paper/data/benchmark-run-2.2/`, `paper/data/columns-v0.2.2/`,
 `paper/data/portal-v0.3.0/` and `paper/data/blast-v0.4.0/`). The test suite
-(705 tests, and 27 more for the
+(722 tests, and 27 more for the
 benchmark) runs in continuous integration on every push, on Linux, macOS and
 Windows. The authors reviewed the code, the
 results and the text, and are responsible for them.

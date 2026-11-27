@@ -13,10 +13,11 @@ database, and the database is filled by a loader that can drop or alter
 features without a message. cgload covers both steps. It loads an assembly and
 its annotation into SQLite or PostgreSQL in one transaction, compares what it
 stored with an independent count of the input file, and rolls back a load that
-falls short. Further commands then serve the database as a read-only
-portal: search by gene name, product or functional term, gene pages with a
-genome browser, sequences and proteins, BLAST against the genomes and their
-proteins, and the record of how each genome was loaded.
+falls short. One command, `cgload portal`, then takes the genomes to a
+read-only portal, installing BLAST+ if the computer has none: search by gene
+name, product or functional term, gene pages with a genome browser, sequences
+and proteins, BLAST against the genomes and their proteins, and the record of
+how each genome was loaded.
 
 We compared cgload with gffutils, txdbmaker and python-chado on 30 RefSeq
 genomes (18.0 million features), under a protocol fixed and tagged before the

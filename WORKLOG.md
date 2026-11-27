@@ -717,3 +717,35 @@ As section 9 requires, run 2 repeats every measurement of section 14 on every
 genome with release v0.4.1, from new databases, and also records how near each
 search that did not find itself came; what counts as found is unchanged.
 Run 1's results are `paper/data/blast-v0.4.0/`; the paper reports both runs.
+
+## 27 November 2026, later: `cgload portal` (0.5.0)
+
+The authors' mentor asked that the whole chain run by itself: a person who
+wants the portal should have the dependencies installed, the BLAST databases
+built and the portal started with BLAST, with as little to do as possible.
+Until now that took six commands and BLAST+ installed by hand.
+
+`cgload portal [ORGANISM.toml ...]` (D-118) runs the chain and skips what is
+done: it creates the database if needed, loads each genome given unless it is
+loaded already (with every check of `cgload load`), indexes every genome
+without an index, finds or installs BLAST+, builds the BLAST databases each
+genome lacks and starts `cgload serve`. The README's quick start is now
+`pip install` and `cgload portal organism.toml`.
+
+pip cannot install BLAST+, which is not a Python package, so `cgload portal`
+installs it into a folder of its own: micromamba 2.10.0-0 from its GitHub
+releases, kept only if its SHA-256 is the one written in cgload for the
+platform, then BLAST+ 2.17.0 from Bioconda (2.16.0 on ARM Linux, Bioconda's
+only build there). Here it took 34 s and 900 MB. A service with a read-only
+file system finds an install it cannot write to, since finding and
+installing look at their folders separately (checked as an unprivileged user
+on a read-only environment). `cgload serve` stays the command that only reads;
+`cgload portal --prepare-only` does the writing steps for a service that
+starts `serve`. Tested by `tests/test_portal_command.py` (17 tests, one of them
+`-m network`, which installs BLAST+ for real): the chain from an organism
+file, again with nothing to do, the refusals, a tampered download refused
+before it can run, the install's argument list and folder, and a failed
+install leaving the portal running without BLAST.
+
+BLAST's run 2 (v0.4.1) is unaffected: 0.5.0's BLAST, index, loading and pages
+are those of 0.4.1.
