@@ -225,10 +225,14 @@ def sequences_of(url: str, assembly_id: int) -> list[tuple[str, int]]:
 
 def _row(program: str, accession: str, query: str, length: int, status: int, ms: float,
          answer: dict, scope: str, own_rank, own: dict | None, ties: int, kind: str,
-         *, at_top: bool = True) -> dict:
+         *, at_top: bool = True, nearest: dict | None = None) -> dict:
     """One search. It found itself when its own feature or place is among the
     hits at 100% identity, and, where ``at_top``, with the top score (ties
-    included: an identical copy elsewhere scores the same)."""
+    included: an identical copy elsewhere scores the same).
+
+    Since run 2 (section 14) a row also says how near a search that did not
+    find itself came: its own hit's score, and for tblastn the best HSP in the
+    CDS's span at any identity (``nearest``). What counts as found is as before."""
     hits = answer.get("hits", [])
     top = hits[0] if hits else None
     return {
@@ -243,6 +247,10 @@ def _row(program: str, accession: str, query: str, length: int, status: int, ms:
         "found": own_rank is not None and own is not None and own["identity"] == 100.0
         and top is not None and (not at_top or own["bitscore"] == top["hsps"][0]["bitscore"]),
         "error": answer.get("error", "")[:200] if status != 200 else "",
+        "own_bits": own["bitscore"] if own else None,
+        "nearest_identity": nearest["identity"] if nearest else None,
+        "nearest_length": nearest["length"] if nearest else None,
+        "nearest_bits": nearest["bitscore"] if nearest else None,
     }
 
 
@@ -327,6 +335,17 @@ def search_pieces(base: str, ids: dict[str, int], url: str, args, table: Path) -
                                       answer, "all", rank, own, _ties(hits), "piece"))
 
 
+def _nearest(hits: list[dict], query: dict, assembly_id: int) -> dict | None:
+    """The best-scoring HSP, at any identity, in the CDS's span on its own
+    sequence of its own genome: how near a tblastn search that did not find
+    itself came."""
+    found = [hsp for hit in hits if hit["genome"] == assembly_id
+             and hit["subject"] == query["seqid"] for hsp in hit["hsps"]
+             if query["start"] <= min(hsp["subject_start"], hsp["subject_end"])
+             and max(hsp["subject_start"], hsp["subject_end"]) <= query["end"]]
+    return max(found, key=lambda hsp: hsp["bitscore"], default=None)
+
+
 def _inside(hit: dict, query: dict) -> dict | None:
     """The best HSP of a genome hit that lies in the CDS's span, at 100%."""
     if hit["subject"] != query["seqid"]:
@@ -357,7 +376,8 @@ def search_translated(base: str, ids: dict[str, int], chosen: dict[str, list[dic
                     break
             bc.append_row(table, _row("tblastn", accession, str(query["row"]),
                                       len(query["protein"]), status, ms, answer, "own", rank,
-                                      own, _ties(hits), query["kind"], at_top=False))
+                                      own, _ties(hits), query["kind"], at_top=False,
+                                      nearest=_nearest(hits, query, assembly_id)))
             status, _, _, _, body = http(base, f"/g/{assembly_id}/f/{query['row']}/cds.fa")
             cds = fasta_body(body) if status == 200 else ""
             if not 10 <= len(cds) <= 10_000:
@@ -394,7 +414,7 @@ def search_translated(base: str, ids: dict[str, int], chosen: dict[str, list[dic
                 break
         bc.append_row(table, _row("tblastn", accession, str(query["row"]), len(query["protein"]),
                                   status, ms, answer, "all", rank, own, _ties(hits), query["kind"],
-                                  at_top=False))
+                                  at_top=False, nearest=_nearest(hits, query, ids[accession])))
 
 
 # --------------------------------------------------------------------------

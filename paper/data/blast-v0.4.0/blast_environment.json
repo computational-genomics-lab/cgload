@@ -1,0 +1,18 @@
+{
+ "started": "2026-11-26",
+ "cgload": "0.4.0",
+ "commit": "v0.4.0-2-gede7466",
+ "blast": "2.17.0+",
+ "python": "3.12.15",
+ "platform": "Linux-6.5.0-35-generic-x86_64-with-glibc2.35",
+ "cpus": 80,
+ "database": "sqlite:////home/sucheta/cgload-portal-run/work/portal.db",
+ "serve": {
+  "threads": 8,
+  "blast_jobs": 2,
+  "blast_threads": 4,
+  "blast_timeout_s": 120,
+  "note": "cgload serve's defaults"
+ },
+ "memory_kb": 131480360
+}

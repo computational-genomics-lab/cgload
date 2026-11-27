@@ -601,3 +601,27 @@ checksums (B5). The results go to `paper/data/blast-v0.4.0/`.
   at once and their threads.
 * The probe is the authors' own, not a test by an outside party.
 * No other BLAST server is timed.
+
+**Run 1 and run 2 (added 27 November 2026).** Run 1, with release v0.4.0 on
+26 November, met two of the failures named above, and section 9 applies to
+both.
+
+* The BLAST databases of *D. rerio* and *G. gallus* did not build: makeblastdb
+  reported that the database it had just written was not where it had
+  written it. The messages show the build's working folder renamed and, in
+  the second case, removed while makeblastdb ran, which only another build of
+  the same genome does, and two builds of one assembly started together fail
+  in the same way. cgload had no guard against that; the build that failed
+  then removed the databases the other had built, so the portal served 28
+  genomes. Release v0.4.1 holds a lock per assembly for the length of a build
+  and refuses a second build at once, changing nothing (D-117), with a test.
+* Searches whose own sequence was among the hits at 100% identity over its
+  whole length, but below another hit's score, counted as not found when
+  nothing tied with it; so did tblastn searches with no HSP at 100% identity in
+  their CDS's span. What counts as found is unchanged.
+
+Run 2 repeats every measurement of this section on every genome with release
+v0.4.1, from new databases, and both runs are reported. It also records, for
+each search that did not find itself, how near it came: its own hit's score,
+and for tblastn the best HSP in the CDS's span at any identity. Run 1's
+results are `paper/data/blast-v0.4.0/`, run 2's `paper/data/blast-v0.4.1/`.

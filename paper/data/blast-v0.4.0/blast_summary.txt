@@ -1,0 +1,13 @@
+build: 30 genomes, both checks PASS 28, 1,062,114 proteins, 1,596 s, 6.31 GB
+blastn   all  n= 300  answered  300  found itself 280  (plain 280 of 300; missed with no tie 20)  median 0.8 s, p95 1.0 s, max 2.7 s  not answered: none
+blastp   all  n= 600  answered  599  found itself 529  (plain 526 of 596; missed with no tie 51)  median 2.9 s, p95 13.9 s, max 30.8 s  not answered: 503
+blastx   own  n=  90  answered   84  found itself 80  (plain 80 of 84; missed with no tie 4)  median 0.2 s, p95 1.2 s, max 2.6 s  not answered: 400
+tblastn  all  n=   3  answered    2  found itself 2  (plain 2 of 2; missed with no tie 0)  median 33.0 s, p95 34.9 s, max 34.9 s  not answered: 503
+tblastn  own  n=  90  answered   84  found itself 55  (plain 55 of 84; missed with no tie 28)  median 1.2 s, p95 20.4 s, max 26.9 s  not answered: 400
+load  0 clients: 0 searches done, 0 turned away, 0 errors; search p50 NA ms; pages 1266, p50 21.078 ms, p95 86.596 ms
+load  1 clients: 14 searches done, 0 turned away, 0 errors; search p50 3336.034 ms; pages 1218, p50 19.879 ms, p95 85.946 ms
+load  2 clients: 30 searches done, 0 turned away, 0 errors; search p50 2663.587 ms; pages 1266, p50 19.941 ms, p95 84.299 ms
+load  4 clients: 39 searches done, 0 turned away, 0 errors; search p50 6053.772 ms; pages 1247, p50 19.626 ms, p95 94.543 ms
+load  8 clients: 37 searches done, 240 turned away, 0 errors; search p50 6246.337 ms; pages 1090, p50 21.438 ms, p95 108.634 ms
+security probe: 872 requests, statuses {"200": 72, "400": 792, "405": 8}, server errors 0, missing headers 0, failures: none
+database unchanged: True; BLAST manifests unchanged: True
