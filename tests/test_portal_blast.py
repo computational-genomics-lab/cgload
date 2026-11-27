@@ -523,6 +523,30 @@ def test_a_failed_build_leaves_no_database(built, portal, tmp_path):
     assert not old.exists() and not (genome.directory / "blast.new").exists()
 
 
+def test_a_second_build_of_one_assembly_is_refused_and_changes_nothing(portal, tmp_path):
+    """D-117: a build that cannot take the assembly's lock touches neither its
+    databases nor the one being built. On the benchmark's server two builds of
+    one genome ran at once; one removed what the other had just built."""
+    genome = portal.genome(2)
+    final, work = genome.directory / "blast", genome.directory / "blast.new"
+    for folder, text in ((final, "built"), (work, "being built")):
+        folder.mkdir(exist_ok=True)
+        (folder / "genome.nsq").write_text(text)
+    with blasting.building(genome.directory):
+        results = blasting.build(portal, [genome], str(tmp_path / "makeblastdb"),
+                                 log_line=lambda line: None)
+        with pytest.raises(blasting.BuildBusy), blasting.building(genome.directory):
+            pass
+    assert results[0].check == "FAIL"
+    assert "another cgload blastdb is building" in results[0].problems[0]
+    assert (final / "genome.nsq").read_text() == "built"
+    assert (work / "genome.nsq").read_text() == "being built"
+    with blasting.building(genome.directory):  # free again once the holder is done
+        pass
+    for folder in (final, work):
+        shutil.rmtree(folder)
+
+
 def test_the_blast_options_must_leave_threads_for_the_pages(built):
     from cgload.cli.commands.serve import blast_jobs_for
 
@@ -656,6 +680,18 @@ def test_a_search_through_the_portal_links_to_the_hit(blasted):
     assert f'href="/g/1/f/{row}"' in body and "100.0%" in body
     answer = client.post("/api/v1/blast", json={"query": protein}).get_json()
     assert answer["hits"][0]["url"] == f"/g/1/f/{row}"
+
+
+@needs_blast
+def test_a_build_refused_by_the_lock_leaves_the_databases_in_use(blasted):
+    directory = blasted.portal.genome(1).directory
+    before = (directory / "blast" / "manifest.json").read_text()
+    with blasting.building(directory):
+        refused = CliRunner().invoke(cli, ["blastdb", "--db-url", f"sqlite:///{blasted.db}",
+                                           "--assembly-id", "1"])
+    assert refused.exit_code == 1 and "another cgload blastdb is building" in refused.output
+    assert (directory / "blast" / "manifest.json").read_text() == before
+    assert Blast(blasted.portal).searchable("blastp") == [1, 2, 3]
 
 
 @needs_blast

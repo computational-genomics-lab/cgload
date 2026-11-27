@@ -4,7 +4,7 @@
 name, open a gene with its transcripts drawn to scale, browse any region in a
 genome browser and download sequences; programs get the same answers as JSON.
 It also searches the genomes with BLAST (below). It only reads. Decisions
-D-111 to D-116 in `docs/decisions.md` say why it is built the way it is.
+D-111 to D-117 in `docs/decisions.md` say why it is built the way it is.
 
 ## Two commands
 
@@ -113,7 +113,8 @@ the database lists must be in the genome database, one protein for every CDS
 feature in the protein database, and BLAST+'s own count of what it stored must
 agree. An assembly whose counts differ keeps no BLAST database. Run it again
 after loading more, and after a reload: the portal does not use databases
-older than the load they were built from (D-116).
+older than the load they were built from (D-116). One build of an assembly
+runs at a time; a second is refused at once and changes nothing (D-117).
 
 The BLAST page, linked from every page, takes one sequence, as FASTA or bare,
 of 10 to 10,000 letters, and searches one genome or all of them:

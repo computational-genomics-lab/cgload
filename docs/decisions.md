@@ -3020,3 +3020,28 @@ the slots, parsing, hostile values in every field and a seeded fuzz of 600
 searches; with BLAST+ (installed in CI on Linux), the databases' counts, each
 Dscam1 isoform finding itself first, tblastn inside the CDS, blastn on both
 strands at the piece's own coordinates, and blastx.
+
+## D-117 — One BLAST build of an assembly at a time
+
+**Fixes** a fault that the first BLAST run of the benchmark found
+(`benchmark/PROTOCOL.md` section 14). `cgload blastdb` builds an assembly's
+databases in `blast.new`, puts that folder in place of `blast` when the check
+passes, and on a failure removes both, since an older database may name rows
+of an earlier load (D-116). Two builds of one assembly at the same time
+defeat all three steps: each starts by clearing `blast.new`, so each can pull
+the folder from under the other; the first to pass renames it while the other
+is still writing; and the other, failing, then removes the databases the
+first has just put in place. On the benchmark's server two of the 30 genomes
+were left with no BLAST database this way, and the portal served 28.
+
+`cgload blastdb` now takes the operating system's lock on `blast.lock` in the
+assembly's folder (`flock`, or `msvcrt.locking` on Windows) before it touches
+anything, and holds it until the swap or the clean-up is done. A second build
+of the same assembly is refused at once and changes nothing; builds of
+different assemblies still run side by side. The lock belongs to the process,
+so a build that is killed leaves nothing to clear by hand. When makeblastdb
+fails, the message now carries the end of its own output as well. Tested by
+`tests/test_portal_blast.py`: a build refused by a held lock leaves both
+folders as they were, and, with BLAST+, a refused `cgload blastdb` leaves the
+databases in use.
+

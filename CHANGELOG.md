@@ -2,6 +2,26 @@
 
 Decisions referred to as D-0xx are in [docs/decisions.md](docs/decisions.md).
 
+## 0.4.1 (27 November 2026)
+
+What the benchmark's first BLAST run found (PROTOCOL.md section 14). BLAST's
+searches, the portal's pages and everything else are those of 0.4.0.
+
+### Fixed
+
+- Two `cgload blastdb` building one assembly at the same time spoiled each
+  other: each could clear the other's work, and the one that failed removed
+  the databases the other had just built. On the benchmark's server two of 30
+  genomes were left without BLAST databases. A build now holds a lock on its
+  assembly; a second one is refused at once and changes nothing (D-117).
+- When makeblastdb fails, the message includes the end of its own output.
+
+### Changed
+
+- `benchmark/run_blast.py` also records how near a search that did not find
+  itself came (PROTOCOL.md section 14, run 2); what counts as found is
+  unchanged.
+
 ## 0.4.0 (26 November 2026)
 
 The portal searches its genomes with BLAST (D-116). Loading, verification,

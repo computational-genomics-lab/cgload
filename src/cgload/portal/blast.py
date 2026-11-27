@@ -10,7 +10,9 @@ sequence of the assembly and the protein database one protein for every CDS
 feature, and BLAST+'s own count of what it stored must agree. The counts and
 the outcome go to ``blast/manifest.json``. A database is replaced only once
 its successor has passed; one that fails is not kept, and neither is its
-predecessor, which may name rows of an earlier load.
+predecessor, which may name rows of an earlier load. One build of an
+assembly runs at a time: a second is refused at once and changes nothing,
+since its clean-up would remove what the first is building (D-117).
 
 ``Blast`` (``cgload serve``) runs a search, and is built so that a visitor's
 text never reaches anything but BLAST's input:
@@ -88,6 +90,10 @@ class QueryError(ValueError):
 
 class BlastBusy(RuntimeError):
     """Every BLAST slot was taken for as long as a search may wait."""
+
+
+class BuildBusy(RuntimeError):
+    """Another ``cgload blastdb`` holds this assembly's build lock."""
 
 
 class BlastFailed(RuntimeError):
@@ -601,91 +607,136 @@ def _protein_records(portal, genome, result: BuildResult) -> Iterator[str]:
             yield body[begin:begin + 60] + "\n"
 
 
+LOCK = "blast.lock"
+
+
+@contextlib.contextmanager
+def building(directory: Path) -> Iterator[None]:
+    """Hold the build lock of the assembly in ``directory`` for as long as the
+    block runs, or raise BuildBusy at once if another process holds it. The
+    lock is the operating system's on ``blast.lock``, so it goes with the
+    process that held it, however that process ends (D-117)."""
+    handle = (directory / LOCK).open("a+")
+    try:
+        try:
+            if os.name == "nt":
+                import msvcrt
+
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            raise BuildBusy("another cgload blastdb is building this assembly's BLAST "
+                            "databases now; this one changed nothing. Run it again when "
+                            "that one has finished.") from None
+        try:
+            yield
+        finally:
+            if os.name == "nt":
+                import msvcrt
+
+                with contextlib.suppress(OSError):
+                    msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+    finally:
+        handle.close()
+
+
 def build(portal, genomes, makeblastdb: str, *, log_line=print) -> list[BuildResult]:
     """Build and check the BLAST databases of ``genomes``; see the module docstring."""
-    from cgload import __version__
-
     results = []
     tool = version_of(makeblastdb)
     for genome in genomes:
         result = BuildResult(genome.assembly_id, genome.label, "FAIL")
         results.append(result)
-        started = time.monotonic()
         if genome.directory is None or genome.fasta is None:
             result.problems.append("its assembly file is not where the database says; "
                                    "give --data-dir")
-            continue
-        final = genome.directory / "blast"
-        work = genome.directory / "blast.new"
-        shutil.rmtree(work, ignore_errors=True)
-        work.mkdir()
-        try:
-            with portal.engine.connect() as connection:
-                expected_sequences = connection.execute(
-                    select(func.count()).select_from(sequence_region)
-                    .where(sequence_region.c.assembly_id == genome.assembly_id)).scalar_one()
-                expected_cds = connection.execute(
-                    select(func.count()).select_from(feature).where(
-                        feature.c.assembly_id == genome.assembly_id,
-                        feature.c.feature_type == "CDS",
-                        feature.c.segment_index == 0)).scalar_one()
-
-            added_genome = _makeblastdb(makeblastdb, "nucl", work, "genome",
-                                        f"cgload assembly {genome.assembly_id} genome",
-                                        _genome_records(genome, result))
-            added_proteins = (_makeblastdb(makeblastdb, "prot", work, "proteins",
-                                           f"cgload assembly {genome.assembly_id} proteins",
-                                           _protein_records(portal, genome, result))
-                              if expected_cds else 0)
-            result.cds_features = expected_cds
-            if not (result.sequences == expected_sequences == added_genome):
-                result.problems.append(
-                    f"genome: {expected_sequences:,} sequences in the database, "
-                    f"{result.sequences:,} read from the FASTA, {added_genome:,} in BLAST")
-            if not (result.proteins == expected_cds == added_proteins):
-                result.problems.append(
-                    f"proteins: {expected_cds:,} CDS features, {result.proteins:,} "
-                    f"translated, {added_proteins:,} in BLAST")
-            result.check = "FAIL" if result.problems else "PASS"
-            result.seconds = time.monotonic() - started
-            manifest = {
-                "assembly_id": genome.assembly_id, "label": genome.label,
-                "loaded_at": genome.loaded_at.isoformat() if genome.loaded_at else None,
-                "cgload": __version__, "makeblastdb": tool,
-                "built_at": datetime.now(UTC).isoformat(timespec="seconds"),
-                "genome": {"sequences": result.sequences, "in_database": expected_sequences,
-                           "in_blast": added_genome, "letters": result.genome_letters,
-                           "check": result.check
-                           if not any(p.startswith("genome") for p in result.problems)
-                           else "FAIL"},
-                "proteins": {"cds_features": expected_cds, "translated": result.proteins,
-                             "in_blast": added_proteins, "letters": result.protein_letters,
-                             "with_internal_stop": result.with_internal_stop,
-                             "check": result.check
-                             if not any(p.startswith("proteins") for p in result.problems)
-                             else "FAIL"},
-            }
-            (work / MANIFEST).write_text(json.dumps(manifest, indent=1) + "\n")
-        except (OSError, subprocess.SubprocessError, ValueError, KeyError) as exc:
-            result.problems.append(str(exc))
-            result.check = "FAIL"
-        if result.check == "PASS":
-            old = genome.directory / "blast.old"
-            shutil.rmtree(old, ignore_errors=True)
-            if final.exists():
-                final.rename(old)
-            work.rename(final)
-            shutil.rmtree(old, ignore_errors=True)
         else:
-            # A failed build leaves nothing, not even the old databases: they may
-            # name rows of an earlier load.
-            shutil.rmtree(work, ignore_errors=True)
-            shutil.rmtree(final, ignore_errors=True)
+            try:
+                with building(genome.directory):
+                    _build_one(portal, genome, makeblastdb, tool, result)
+            except BuildBusy as exc:
+                result.problems.append(str(exc))
         log_line(f"assembly {genome.assembly_id} ({genome.label}): "
                  f"{_count(result.sequences, 'sequence')}, "
                  f"{_count(result.proteins, 'protein')}: {result.check}"
                  + "".join(f"\n  {problem}" for problem in result.problems))
     return results
+
+
+def _build_one(portal, genome, makeblastdb: str, tool: str, result: BuildResult) -> None:
+    """One assembly's build, under its lock: blast.new, checked, then swapped in."""
+    from cgload import __version__
+
+    started = time.monotonic()
+    final = genome.directory / "blast"
+    work = genome.directory / "blast.new"
+    shutil.rmtree(work, ignore_errors=True)
+    work.mkdir()
+    try:
+        with portal.engine.connect() as connection:
+            expected_sequences = connection.execute(
+                select(func.count()).select_from(sequence_region)
+                .where(sequence_region.c.assembly_id == genome.assembly_id)).scalar_one()
+            expected_cds = connection.execute(
+                select(func.count()).select_from(feature).where(
+                    feature.c.assembly_id == genome.assembly_id,
+                    feature.c.feature_type == "CDS",
+                    feature.c.segment_index == 0)).scalar_one()
+
+        added_genome = _makeblastdb(makeblastdb, "nucl", work, "genome",
+                                    f"cgload assembly {genome.assembly_id} genome",
+                                    _genome_records(genome, result))
+        added_proteins = (_makeblastdb(makeblastdb, "prot", work, "proteins",
+                                       f"cgload assembly {genome.assembly_id} proteins",
+                                       _protein_records(portal, genome, result))
+                          if expected_cds else 0)
+        result.cds_features = expected_cds
+        if not (result.sequences == expected_sequences == added_genome):
+            result.problems.append(
+                f"genome: {expected_sequences:,} sequences in the database, "
+                f"{result.sequences:,} read from the FASTA, {added_genome:,} in BLAST")
+        if not (result.proteins == expected_cds == added_proteins):
+            result.problems.append(
+                f"proteins: {expected_cds:,} CDS features, {result.proteins:,} "
+                f"translated, {added_proteins:,} in BLAST")
+        result.check = "FAIL" if result.problems else "PASS"
+        result.seconds = time.monotonic() - started
+        manifest = {
+            "assembly_id": genome.assembly_id, "label": genome.label,
+            "loaded_at": genome.loaded_at.isoformat() if genome.loaded_at else None,
+            "cgload": __version__, "makeblastdb": tool,
+            "built_at": datetime.now(UTC).isoformat(timespec="seconds"),
+            "genome": {"sequences": result.sequences, "in_database": expected_sequences,
+                       "in_blast": added_genome, "letters": result.genome_letters,
+                       "check": result.check
+                       if not any(p.startswith("genome") for p in result.problems)
+                       else "FAIL"},
+            "proteins": {"cds_features": expected_cds, "translated": result.proteins,
+                         "in_blast": added_proteins, "letters": result.protein_letters,
+                         "with_internal_stop": result.with_internal_stop,
+                         "check": result.check
+                         if not any(p.startswith("proteins") for p in result.problems)
+                         else "FAIL"},
+        }
+        (work / MANIFEST).write_text(json.dumps(manifest, indent=1) + "\n")
+    except (OSError, subprocess.SubprocessError, ValueError, KeyError) as exc:
+        result.problems.append(str(exc))
+        result.check = "FAIL"
+    if result.check == "PASS":
+        old = genome.directory / "blast.old"
+        shutil.rmtree(old, ignore_errors=True)
+        if final.exists():
+            final.rename(old)
+        work.rename(final)
+        shutil.rmtree(old, ignore_errors=True)
+    else:
+        # A failed build leaves nothing, not even the old databases: they may
+        # name rows of an earlier load.
+        shutil.rmtree(work, ignore_errors=True)
+        shutil.rmtree(final, ignore_errors=True)
 
 
 def _count(number: int, word: str) -> str:
@@ -716,6 +767,8 @@ def _makeblastdb(binary: str, dbtype: str, directory: Path, name: str, title: st
         err.seek(0)
         stdout, stderr = out.read(), err.read()
     if process.returncode != 0:
-        raise OSError(f"makeblastdb failed for {name}: {stderr.strip()[:500]}")
+        said = " ".join(line.strip() for line in stdout.splitlines()[-3:] if line.strip())
+        raise OSError(f"makeblastdb failed for {name}: {stderr.strip()[:500]}"
+                      + (f" (its output ended: {said[:300]})" if said else ""))
     added = re.findall(r"added (\d+) sequences", stdout)
     return sum(int(count) for count in added)

@@ -8,8 +8,8 @@ abstract: >-
   input files, and serves the database as a read-only web portal with BLAST.
 type: software
 license: MIT
-version: "0.4.0"
-date-released: "2026-11-26"
+version: "0.4.1"
+date-released: 2026-11-27
 repository-code: "https://github.com/computational-genomics-lab/cgload"
 authors:
   - family-names: Upadhyay
