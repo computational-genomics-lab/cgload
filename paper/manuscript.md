@@ -1422,7 +1422,8 @@ other loaders and other files.
 - Version described: 0.5.0 (tag `v0.5.0`; source archive in Additional file 7)
 - RRID:SCR_029282
 - bio.tools ID: biotools:cgload
-- Archived version: Software Heritage, {{swh:v050}}.
+- Archived version: Software Heritage, swh:1:rel:32db9ff73bf6280326f588dd8f5aeab322e3f8fc (release v0.5.0),
+  https://archive.softwareheritage.org/swh:1:rel:32db9ff73bf6280326f588dd8f5aeab322e3f8fc;origin=https://github.com/computational-genomics-lab/cgload.
   The portal's measurement rests on release v0.3.0,
   swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad,
   https://archive.softwareheritage.org/swh:1:rel:26af2fd022ceebaff1a602bf15c036c107713aad;origin=https://github.com/computational-genomics-lab/cgload;visit=swh:1:snp:27cff3403cd99aae747935485618353d8bd7de79,
